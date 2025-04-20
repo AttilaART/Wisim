@@ -1,11 +1,9 @@
 package main
 
 import (
-	"cmp"
 	"errors"
 	"fmt"
 	"math/rand"
-	"slices"
 )
 
 // Employee functions
@@ -116,7 +114,7 @@ func layoff(employees []Employee, size_of_layoff int) ([]Employee, int) {
 		to_fire := find_worst_employee()
 
 		if len(employees) >= 1 {
-			employees = slices.Delete(employees, to_fire, to_fire)
+			employees = delete_by_index(employees, to_fire)
 			number_of_employees_who_left += 1
 		} else {
 			return employees, number_of_employees_who_left
@@ -134,27 +132,13 @@ func turnover(employees []Employee, turnover_rate float32) ([]Employee, int) { /
 		employees_leaving_index = append(employees_leaving_index, rand.Intn(len(employees)-1))
 	}
 
-	employees_leaving_index = slices.SortedFunc(func(yield func(int) bool) {
-		for _, num := range employees_leaving_index {
-			if !yield(num) {
-				return
-			}
-		}
-	}, func(a, b int) int {
-		return cmp.Compare(b, a)
-	})
-
-	number_of_employees_who_left := 0
-	for _, index := range employees_leaving_index {
-		if len(employees) >= 1 {
-			employees = slices.Delete(employees, index, index)
-			number_of_employees_who_left += 1
-		} else {
-			return employees, number_of_employees_who_left
-		}
+	if len(employees_leaving_index) > len(employees) {
+		employees_leaving_index = employees_leaving_index[0 : len(employees)-1]
 	}
 
-	return employees, number_of_employees_who_left
+	employees = delete_by_index(employees, employees_leaving_index...)
+
+	return employees, len(employees_leaving_index)
 }
 
 func train_employees(employees []Employee, investment float32, passive_training float32) []Employee {

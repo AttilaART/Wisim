@@ -1,6 +1,7 @@
 package main
 
 import (
+	"archive/zip"
 	"bytes"
 	"encoding/gob"
 	"encoding/json"
@@ -381,8 +382,8 @@ type External_factors struct {
 	Inflation                 float32
 	Intrest_rate              float32
 	Bridge_loans_intrest_rate float32
-	economic_situation_index  float32
-	tax_rate                  float32 // as decimal
+	Economic_situation_index  float32
+	Tax_rate                  float32 // as decimal
 
 	// Personelle
 	Turnover                float32
@@ -438,6 +439,11 @@ func (c Company) mock_simulate_step(decisions Decisions, external_factors Extern
 
 // Gameloop functions
 func (game_state *Game_state) simulate_step() error {
+	game_state.Step_simulated = false
+	game_state.Step += 1
+
+	game_state.External_factors.Month = game_state.Step
+
 	if len(game_state.Companies) != len(game_state.Current_decisions) {
 		return errors.New("amount of decisions does not match number of companies")
 	}
@@ -465,9 +471,12 @@ func (game_state *Game_state) simulate_step() error {
 		game_state.Companies[i].compile_reports(game_state.Current_decisions[i], Results[i], game_state.External_factors)
 
 	}
+
+	game_state.Step_simulated = true
 	println("=================================================== ")
 	println("               Simulation step done!\n")
 	println("===================== RESULTS ===================== ")
+	println("Month: ", game_state.Step)
 	for i, c := range game_state.Companies {
 		fmt.Printf("Company %d: %s:\n", i, c.Name)
 		fmt.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Products_sold)
@@ -481,15 +490,17 @@ func (game_state *Game_state) simulate_step() error {
 
 	println("Total products sold: ", total_products_sold)
 
-	println("============== Purchasing statistics ============== ")
+	purchasing_statistcs[len(purchasing_statistcs)-1].Avr_bang_for_buck_factor += 1
+	//println("============== Purchasing statistics ============== ")
+	//
+	//for _, p := range purchasing_statistcs {
+	//	s, e := json.MarshalIndent(p, "", "    ")
+	//	if e != nil {
+	//		return e
+	//	}
+	//	println(string(s))
+	//}
 
-	for _, p := range purchasing_statistcs {
-		s, e := json.MarshalIndent(p, "", "    ")
-		if e != nil {
-			return e
-		}
-		println(string(s))
-	}
 	return nil
 }
 
@@ -521,8 +532,7 @@ func get_decisions(save_location string, number_of_companies int) ([]Decisions, 
 	decisions := make([]Decisions, number_of_companies)
 	for i := range decisions {
 		decisions_json, err := os.ReadFile(fmt.Sprintf("%s/decisions_company_%d.json", save_location, i))
-
-		println(string(decisions_json))
+		// println(string(decisions_json))
 		if err != nil {
 			return decisions, err
 		}
@@ -536,7 +546,13 @@ func get_decisions(save_location string, number_of_companies int) ([]Decisions, 
 	return decisions, nil
 }
 
-func (game_state Game_state) save_game(location string) error {
+func (game_state Game_state) save_game(location string, compress bool) error {
+	filename := fmt.Sprintf(
+		"%s-%d.json",
+		game_state.Game_name,
+		game_state.Step,
+	)
+
 	var save Save_game
 
 	var population_buffer bytes.Buffer
@@ -555,12 +571,39 @@ func (game_state Game_state) save_game(location string) error {
 		return err
 	}
 
-	err = os.WriteFile(fmt.Sprintf(
-		"%s/%s-%d.json",
-		location,
-		game_state.Game_name,
-		game_state.Step,
-	), save_file, 0644)
+	// Turning file into zip
+	// (IDK what's happening)
+
+	if compress {
+
+		zip_file_buffer := new(bytes.Buffer)
+
+		w := zip.NewWriter(zip_file_buffer)
+
+		file, err := w.Create(filename)
+		if err != nil {
+			return err
+		}
+
+		_, err = file.Write(save_file)
+		if err != nil {
+			return err
+		}
+
+		err = w.Close()
+		if err != nil {
+			return err
+		}
+
+		err = os.WriteFile(fmt.Sprint(location, "/", filename, ".zip"), zip_file_buffer.Bytes(), 0644)
+		if err != nil {
+			return err
+		}
+
+		return nil
+	} // else if !compress {
+
+	err = os.WriteFile(fmt.Sprint(location, "/", filename), save_file, 0644)
 	if err != nil {
 		return err
 	}
@@ -586,10 +629,21 @@ func main() {
 	// Setup game
 	game_state := new_game(sim_config, 4, "Test_game")
 
+	// Load game
+	//game_state, err := load_game("Saves/Test_game-10.json")
+	//if err != nil {
+	//	println(err.Error())
+	//	log.Fatal("Failed to load save")
+	//}
+
 	game_state.Current_decisions, err = get_decisions(
-		fmt.Sprintf("Saves/%s-%d/Decisions", game_state.Game_name, game_state.Step),
+		fmt.Sprintf("Saves/%s-0/Decisions", game_state.Game_name),
 		len(game_state.Companies),
 	)
+	//game_state.Current_decisions, err = get_decisions(
+	//	fmt.Sprintf("Saves/%s-%d/Decisions", game_state.Game_name, game_state.Step),
+	//	len(game_state.Companies),
+	//)
 	if err != nil {
 		println(err.Error())
 		log.Fatal("Failed to get current decisions")
@@ -597,7 +651,7 @@ func main() {
 
 	// fmt.Printf("%+#v\n", game_state.Current_decisions[0])
 
-	for range 1 {
+	for range 10 {
 		err = game_state.simulate_step()
 		if err != nil {
 			println(err.Error())
@@ -614,7 +668,7 @@ func main() {
 	//}
 
 	println("Saving file")
-	err = game_state.save_game("Saves")
+	err = game_state.save_game("Saves", false)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

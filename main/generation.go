@@ -1,9 +1,15 @@
 package main
 
 import (
+	"archive/zip"
+	"bytes"
+	"encoding/gob"
+	"encoding/json"
 	"errors"
+	"io"
 	"log"
 	"math/rand"
+	"os"
 	"slices"
 )
 
@@ -159,8 +165,8 @@ func new_game(sim_config Sim_config, number_of_companies int, game_name string) 
 
 	game_state.External_factors = External_factors{
 		Inflation:                 0.005,
-		economic_situation_index:  1,
-		tax_rate:                  0.147,
+		Economic_situation_index:  1,
+		Tax_rate:                  0.147,
 		Material_price:            10,
 		Energy_price:              96.2,
 		Machine_depreciation_rate: 0.1,
@@ -230,4 +236,75 @@ func new_game(sim_config Sim_config, number_of_companies int, game_name string) 
 	)
 
 	return game_state
+}
+
+func load_game(path string) (Game_state, error) {
+	println("Loading game")
+
+	var save_file []byte
+
+	if path[len(path)-4:] == ".zip" {
+		println("Decompressing save")
+		r, err := zip.OpenReader(path)
+		if err != nil {
+			return Game_state{}, err
+		}
+		defer r.Close()
+
+		save_file_reader, err := r.File[0].Open()
+		if err != nil {
+			return Game_state{}, err
+		}
+		defer save_file_reader.Close()
+
+		save_file, err = io.ReadAll(save_file_reader)
+		if err != nil {
+			return Game_state{}, err
+		}
+
+	} else {
+		println("Opening file")
+		file, err := os.Open(path)
+		if err != nil {
+			return Game_state{}, err
+		}
+		save_file, err = io.ReadAll(file)
+		if err != nil {
+			return Game_state{}, err
+		}
+	}
+
+	var save Save_game
+	err := json.Unmarshal(save_file, &save)
+	if err != nil {
+		return Game_state{}, err
+	}
+
+	var game_state Game_state
+	population_buffer := bytes.NewBuffer(save.Population)
+	decoder := gob.NewDecoder(population_buffer)
+
+	var population Population
+	err = decoder.Decode(&population.Population)
+	if err != nil {
+		return Game_state{}, err
+	}
+
+	game_state = save.Game_state
+	game_state.Population = population
+
+	if len(game_state.Population.Population) == 0 {
+		return game_state, errors.New("Failed to load population")
+	}
+
+	println("Successfully opened ", game_state.Game_name)
+
+	s, err := json.MarshalIndent(game_state.External_factors, "", "    ")
+	if err != nil {
+		return game_state, err
+	}
+
+	println(string(s))
+
+	return game_state, nil
 }

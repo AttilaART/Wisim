@@ -17,7 +17,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		product_availability[i] = c.Items_in_storage
 	}
 
-	if external_factors.economic_situation_index <= 0 {
+	if external_factors.Economic_situation_index <= 0 {
 		return make([]FinanceReportEntry, len(*companies)), make([]Purchasing_statistics, len(offers)+1), errors.New("economic_situation_index cannot be 0")
 	}
 
@@ -31,7 +31,8 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 
 	purchasing_statistics := make([]Purchasing_statistics, len(offers)+1)
 	for i, c := range population.Population {
-		product_purchased, quanity, customer, individual_purchasing_statistics := calculate_purchase(c, offers, avg_price, external_factors, product_availability)
+		customer := calcualte_durability(c)
+		product_purchased, quanity, customer, individual_purchasing_statistics := calculate_purchase(customer, offers, avg_price, external_factors, product_availability)
 		population.Population[i] = customer
 		purchases[product_purchased] += quanity
 
@@ -112,7 +113,21 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	return results, purchasing_statistics, nil
 }
 
+func calcualte_durability(customer Customer) Customer {
+	var new_owned_products []Owned_product
+	for _, p := range customer.Owned_products {
+		p.Remaining_durabilty -= 1
+		if p.Remaining_durabilty > 0 {
+			new_owned_products = append(new_owned_products, p)
+		}
+	}
+
+	customer.Owned_products = new_owned_products
+	return customer
+}
+
 func calculate_purchase(customer Customer, offers []Offer, avg_price float32, external_factors External_factors, product_availability []int) (int, int, Customer, []Purchasing_statistics) { // returns (index of product purchased, quality purchased, customer in question)
+
 	decision_factors := make([]float32, len(offers))
 	purchasing_statistics := make([]Purchasing_statistics, len(offers))
 	for i, o := range offers {
@@ -121,7 +136,7 @@ func calculate_purchase(customer Customer, offers []Offer, avg_price float32, ex
 			customer.Coolness_preference*o.Product.Coolness_factor +
 			customer.Price_preference*is_cheap(o, avg_price) +
 			customer.Bang_for_buck_preference*(o.Product.Quality_factor/o.Price) +
-			customer.Brand_loyalty_factor*customer.Loyalties[i]) * external_factors.economic_situation_index
+			customer.Brand_loyalty_factor*customer.Loyalties[i]) * external_factors.Economic_situation_index
 
 		purchasing_statistics[i] = Purchasing_statistics{
 			Products_sold:  0,

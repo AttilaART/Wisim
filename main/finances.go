@@ -236,7 +236,7 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 
 func profit_taxes(EBIT float64, external_factors External_factors) float64 {
 	if EBIT > 0 {
-		return -round(EBIT*float64(external_factors.tax_rate), 2)
+		return -round(EBIT*float64(external_factors.Tax_rate), 2)
 	}
 	return 0
 }
