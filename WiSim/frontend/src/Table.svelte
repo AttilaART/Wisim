@@ -1,12 +1,11 @@
 <script lang="ts">
   import triangle from "./assets/images/Triangle(right)(white).png";
   import { int } from "../wailsjs/go/models";
+  import { format_number, red, green } from "./helper";
 
-  let red = "rgb(255, 128, 128)";
-  let green = "rgb(128, 255, 128)";
   let currency = "CHF";
 
-  let { data } = $props();
+  let { data, table_type } = $props();
   type FinanceReportEntry = {
     Name: string;
     Group: number;
@@ -21,9 +20,10 @@
     sub_entries: FinanceReportEntry[];
   };
 
-  let make_table = parse_accounting_data(data);
+  let make_table = parse_accounting_data(data, table_type);
   async function parse_accounting_data(
     data: FinanceReportEntry[],
+    table_type: string,
   ): Promise<{ entries: FoldedFinanceReportEntry[]; total_cashflow: number }> {
     let groups: number[] = [];
     let has_folded_entry: boolean[] = [];
@@ -116,13 +116,6 @@
     return { entries: folded_entries, total_cashflow: total_cashflow };
   }
 
-  function format_number(num: number): string {
-    return num.toLocaleString("de-CH", {
-      maximumFractionDigits: 2,
-      minimumFractionDigits: 2,
-    });
-  }
-
   function add_the_third_bool(i: number | boolean): string {
     if (i === true || i === false) {
       return i.toString();
@@ -137,14 +130,15 @@
 {#await make_table}
   loading table...
 {:then result}
-  <table style="text-align: left; overflow-y: scroll;">
+  <table style="text-align: left; ">
     <thead>
       <tr>
-        <th></th>
+        <th style="width: 15; word-wrap: break-word;"></th>
         <th>Name</th>
         <th>Info</th>
-        <th>Group</th>
-        <th>Cash cost?</th>
+        {#if table_type == "Income_statement"}
+          <th>Cash cost?</th>
+        {/if}
         <th style="text-align: right;">Value ({currency})</th>
       </tr>
     </thead>
@@ -154,24 +148,26 @@
       {/each}
     </tbody>
     <tfoot>
-      <tr>
-        <td></td>
-        <td>TOTAL CASHFLOW</td>
-        <td></td>
-        <td></td>
-        <td></td>
-        {#if result.total_cashflow > 0}
-          <td class="value_field" style="color: {green};"
-            >+{format_number(result.total_cashflow)}</td
-          >
-        {:else if result.total_cashflow == 0}
-          <td class="value_field">{format_number(result.total_cashflow)}</td>
-        {:else}
-          <td class="value_field" style="color: {red};"
-            >{format_number(result.total_cashflow)}</td
-          >
-        {/if}
-      </tr>
+      {#if table_type == "Income_statement"}
+        <tr>
+          <td></td>
+          <td>TOTAL CASHFLOW</td>
+
+          <td></td>
+          <td></td>
+          {#if result.total_cashflow > 0}
+            <td class="value_field" style="color: {green};"
+              >+{format_number(result.total_cashflow)}</td
+            >
+          {:else if result.total_cashflow == 0}
+            <td class="value_field">{format_number(result.total_cashflow)}</td>
+          {:else}
+            <td class="value_field" style="color: {red};"
+              >{format_number(result.total_cashflow)}</td
+            >
+          {/if}
+        </tr>
+      {/if}
     </tfoot>
   </table>
 {:catch error}
@@ -179,62 +175,69 @@
 {/await}
 
 {#snippet folded_table_row(folded_entry: FoldedFinanceReportEntry)}
-  <tr>
-    <td>
-      <div hidden>
-        {() => {
-          folded_entries_state[folded_entry.index] = false;
-        }}
-      </div>
-      <button
-        class="fold_button"
-        onclick={() => {
-          folded_entries_state[folded_entry.index] =
-            !folded_entries_state[folded_entry.index];
+  {#if folded_entry.sub_entries.length > 1}
+    <tr>
+      <td>
+        <div hidden>
+          {() => {
+            folded_entries_state[folded_entry.index] = false;
+          }}
+        </div>
+        <button
+          class="fold_button"
+          onclick={() => {
+            folded_entries_state[folded_entry.index] =
+              !folded_entries_state[folded_entry.index];
 
-          folded_entries_state = folded_entries_state;
-        }}
-        ><img
-          src={triangle}
-          height="10px"
-          width="10px"
-          alt="Triangle for folding entries"
-          style="transform: rotate({Number(
-            folded_entries_state[folded_entry.index],
-          ) * 90}deg)"
-        /></button
-      ></td
-    >
-    <td>{folded_entry.entry.Name}</td>
-    <td>{folded_entry.entry.Info}</td>
-    <td>{folded_entry.entry.Group}</td>
-    <td>{add_the_third_bool(folded_entry.entry.Cash_cost)}</td>
-    {#if folded_entry.entry.Value > 0}
-      <td class="value_field" style="color: {green};"
-        >+{format_number(folded_entry.entry.Value)}</td
+            folded_entries_state = folded_entries_state;
+          }}
+          ><img
+            src={triangle}
+            height="10px"
+            width="10px"
+            alt="Triangle for folding entries"
+            style="transform: rotate({Number(
+              folded_entries_state[folded_entry.index],
+            ) * 90}deg)"
+          /></button
+        ></td
       >
-    {:else if folded_entry.entry.Value == 0}
-      <td class="value_field">{format_number(folded_entry.entry.Value)}</td>
-    {:else}
-      <td class="value_field" style="color: {red};"
-        >{format_number(folded_entry.entry.Value)}</td
-      >
+      <td>{folded_entry.entry.Name}</td>
+      <td>{folded_entry.entry.Info}</td>
+
+      {#if table_type == "Income_statement"}
+        <td>{add_the_third_bool(folded_entry.entry.Cash_cost)}</td>
+      {/if}
+      {#if folded_entry.entry.Value > 0}
+        <td class="value_field" style="color: {green};"
+          >+{format_number(folded_entry.entry.Value)}</td
+        >
+      {:else if folded_entry.entry.Value == 0}
+        <td class="value_field">{format_number(folded_entry.entry.Value)}</td>
+      {:else}
+        <td class="value_field" style="color: {red};"
+          >{format_number(folded_entry.entry.Value)}</td
+        >
+      {/if}
+    </tr>
+    {#if folded_entries_state[folded_entry.index]}
+      {#each folded_entry.sub_entries as sub_entry}
+        {@render table_row(sub_entry, 0.8)}
+      {/each}
     {/if}
-  </tr>
-  {#if folded_entries_state[folded_entry.index]}
-    {#each folded_entry.sub_entries as sub_entry}
-      {@render table_row(sub_entry)}
-    {/each}
+  {:else}
+    {@render table_row(folded_entry.sub_entries[0], 1)}
   {/if}
 {/snippet}
 
-{#snippet table_row(entry: FinanceReportEntry)}
-  <tr style="opacity: 80%;">
+{#snippet table_row(entry: FinanceReportEntry, opacity: number)}
+  <tr style="opacity: {opacity * 100}%;">
     <td></td>
     <td>{entry.Name}</td>
     <td>{entry.Info}</td>
-    <td>{entry.Group}</td>
-    <td>{entry.Cash_cost}</td>
+    {#if table_type == "Income_statement"}
+      <td>{entry.Cash_cost}</td>
+    {/if}
     {#if entry.Value > 0}
       <td class="value_field" style="color: {green};"
         >+{format_number(entry.Value)}</td
@@ -254,10 +257,6 @@
     background-color: transparent;
     border-color: transparent;
     --folded: false;
-  }
-
-  .value_field {
-    font-family: "JetBrains mono", "Courier New", Courier, monospace;
-    text-align: right;
+    width: 15px;
   }
 </style>

@@ -15,7 +15,21 @@ import (
 //go:embed all:frontend/dist
 var assets embed.FS
 
-var game_state_pointer *simulation.Game_state = nil
+var game_state struct {
+	is_loaded bool
+	state     simulation.Game_state
+} = struct {
+	is_loaded bool
+	state     simulation.Game_state
+}{false, simulation.Game_state{}}
+
+var old_game_state struct {
+	is_loaded bool
+	state     simulation.Game_state
+} = struct {
+	is_loaded bool
+	state     simulation.Game_state
+}{false, simulation.Game_state{}}
 
 func main() {
 	sim_config_file, err := os.ReadFile("simulation/Config/sim_config.json")
@@ -31,15 +45,10 @@ func main() {
 		os.Exit(2)
 	}
 
-	game_state := simulation.New_game(sim_config, 4, "Test_ui")
+	game_state.state = simulation.New_game(sim_config, 4, "Test_ui")
+	game_state.is_loaded = true
 
-	game_state_pointer = &game_state
-	game_state.Current_decisions, err = simulation.Get_decisions("simulation/Saves/Test_game-0/Decisions", 4)
-	if err != nil {
-		log.Fatal(err.Error())
-	}
-
-	err = game_state.Simulate_step()
+	game_state.state.Current_decisions, err = simulation.Get_decisions("simulation/Saves/Test_game-0/Decisions", 4)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

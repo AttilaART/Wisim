@@ -4,6 +4,16 @@ import {simulation} from '../models';
 
 export function Get_accounting_data(arg1:number,arg2:number,arg3:string):Promise<Array<simulation.FinanceReportEntry>>;
 
+export function Get_bank_balance(arg1:number):Promise<number>;
+
+export function Get_current_stock(arg1:number):Promise<number>;
+
 export function Get_financial_report(arg1:number,arg2:number):Promise<simulation.Financial_Report>;
 
+export function Get_simulation_step():Promise<number>;
+
 export function Greet(arg1:string):Promise<string>;
+
+export function Revert_simulation():Promise<void>;
+
+export function Trigger_simulation():Promise<number>;

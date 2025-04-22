@@ -203,14 +203,15 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 		company.Reports[len(company.Reports)-1].Balance_sheet.add_to_liabilities(
 			"Bridge loan",
 			bridge_loans,
-			"",
+			"You are automatically lent out bridge loans when your balance goes beneath 0",
 			true,
 			-company.Balance)
 		// financial_report.Total_income += -company.Balance
 		// financial_report.EBIT += -company.Balance
 		// financial_report.Profit += -company.Balance
 		financial_report.New_bridge_loan += -company.Balance
-		company.Balance = 0
+		// company.Balance = 0
+		company.Balance = -company.Balance
 	}
 
 	// calculate Liabilities

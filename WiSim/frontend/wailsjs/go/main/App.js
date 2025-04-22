@@ -6,10 +6,30 @@ export function Get_accounting_data(arg1, arg2, arg3) {
   return window['go']['main']['App']['Get_accounting_data'](arg1, arg2, arg3);
 }
 
+export function Get_bank_balance(arg1) {
+  return window['go']['main']['App']['Get_bank_balance'](arg1);
+}
+
+export function Get_current_stock(arg1) {
+  return window['go']['main']['App']['Get_current_stock'](arg1);
+}
+
 export function Get_financial_report(arg1, arg2) {
   return window['go']['main']['App']['Get_financial_report'](arg1, arg2);
 }
 
+export function Get_simulation_step() {
+  return window['go']['main']['App']['Get_simulation_step']();
+}
+
 export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
+}
+
+export function Revert_simulation() {
+  return window['go']['main']['App']['Revert_simulation']();
+}
+
+export function Trigger_simulation() {
+  return window['go']['main']['App']['Trigger_simulation']();
 }

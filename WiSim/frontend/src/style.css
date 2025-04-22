@@ -24,3 +24,89 @@ body {
     height: 100vh;
     text-align: center;
 }
+
+
+
+  .loader {
+    margin: auto auto;
+    width: fit-content;
+    font-weight: bold;
+    font-family: monospace;
+    font-size: 30px;
+    clip-path: inset(0 3ch 0 0);
+    animation: l4 1s steps(4) infinite;
+  }
+  .loader:before {
+    content: "Loading...";
+  }
+  @keyframes l4 {
+    to {
+      clip-path: inset(0 -1ch 0 0);
+    }
+  }
+  .popup {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    align-content: center;
+    background-color: rgba(0, 0, 0, 0.2);
+  }
+
+  .popup_content {
+    position: relative;
+    height: 45%;
+    width: 45%;
+    margin: auto auto;
+    background-color: rgba(20, 20, 20, 1);
+    border-radius: 10px;
+    align-content: center;
+    box-shadow: 5px 5px 15px rgba(0, 0, 0, 0.5);
+  }
+
+  .tab_selector {
+    display: flex;
+    margin: 10px;
+    background-color: rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    border-radius: 10px;
+    height: fit-content;
+  }
+
+
+  .tab_button.button {
+    text-align: center;
+    height: fit-content;
+    padding: 10px;
+    margin: 0px 0px 0px 0px;
+    border-radius: 0;
+    flex: 1 1 fit-content;
+  }
+  
+
+  button {
+    background-color: rgba(0, 0, 0, 0);
+    text-align: left;
+    color: rgba(255, 255, 255, 1);
+    width: 120px;
+    height: 30px;
+    border-radius: 3px;
+    border: none;
+    padding: 0 10px;
+    cursor: pointer;
+    font-size: 17px;
+  }
+
+  button:hover {
+    background-color: rgba(255, 255, 255, 0.5);
+  }
+
+  button:active {
+    background-color: rgba(255, 255, 255, 1);
+    color: #000;
+  }
+
+
+  .value_field {
+    font-family: "JetBrains mono", "Courier New", Courier, monospace;
+    text-align: right;
+  }
