@@ -193,12 +193,13 @@
           }}
           ><img
             src={triangle}
+            class="fold_image"
             height="10px"
             width="10px"
             alt="Triangle for folding entries"
             style="transform: rotate({Number(
               folded_entries_state[folded_entry.index],
-            ) * 90}deg)"
+            ) * 90}deg);"
           /></button
         ></td
       >
@@ -258,5 +259,11 @@
     border-color: transparent;
     --folded: false;
     width: 15px;
+    padding: 0px;
+  }
+
+  .fold_image {
+    position: relative;
+    top: -2px;
   }
 </style>

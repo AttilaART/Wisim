@@ -4,7 +4,6 @@ import (
 	"WiSim/simulation"
 	"embed"
 	"encoding/json"
-	"log"
 	"os"
 
 	"github.com/wailsapp/wails/v2"
@@ -18,18 +17,22 @@ var assets embed.FS
 var game_state struct {
 	is_loaded bool
 	state     simulation.Game_state
+	config    simulation.Sim_config
 } = struct {
 	is_loaded bool
 	state     simulation.Game_state
-}{false, simulation.Game_state{}}
+	config    simulation.Sim_config
+}{false, simulation.Game_state{}, simulation.Sim_config{}}
 
 var old_game_state struct {
 	is_loaded bool
 	state     simulation.Game_state
+	config    simulation.Sim_config
 } = struct {
 	is_loaded bool
 	state     simulation.Game_state
-}{false, simulation.Game_state{}}
+	config    simulation.Sim_config
+}{false, simulation.Game_state{}, simulation.Sim_config{}}
 
 func main() {
 	sim_config_file, err := os.ReadFile("simulation/Config/sim_config.json")
@@ -38,19 +41,10 @@ func main() {
 		os.Exit(1)
 	}
 
-	var sim_config simulation.Sim_config
-	err = json.Unmarshal(sim_config_file, &sim_config)
+	err = json.Unmarshal(sim_config_file, &game_state.config)
 	if err != nil {
 		println("Error in sim_config.json")
 		os.Exit(2)
-	}
-
-	game_state.state = simulation.New_game(sim_config, 4, "Test_ui")
-	game_state.is_loaded = true
-
-	game_state.state.Current_decisions, err = simulation.Get_decisions("simulation/Saves/Test_game-0/Decisions", 4)
-	if err != nil {
-		log.Fatal(err.Error())
 	}
 
 	// Create an instance of the app structure

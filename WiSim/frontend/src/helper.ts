@@ -1,13 +1,13 @@
 
-export function format_number(num: number | any, add_plus?: boolean): string {
+export function format_number(num: number | any, add_plus?: boolean, decimal_places: number = 2): string {
   if (typeof num != typeof 1) {
     return num.toString()
   }
 
   if (!add_plus || num <= 0) {
     return num.toLocaleString("de-CH", {
-      maximumFractionDigits: 2,
-      minimumFractionDigits: 2,
+      maximumFractionDigits: decimal_places,
+      minimumFractionDigits: decimal_places,
     });
   }
 

@@ -2,6 +2,7 @@
   type Button = {
     Text: string;
     Style: string;
+    Show: number; // -1 == hide, 0==grey out, 1==show
     Onclick_function: () => void;
   };
   const { buttons, expand }: { buttons: Button[]; expand: boolean } = $props();
@@ -19,11 +20,19 @@
 </div>
 
 {#snippet sidebar_button(button_data: Button)}
-  <button
-    class="sidebar_button"
-    style={button_data.Style}
-    onclick={button_data.Onclick_function}>{@html button_data.Text}</button
-  >
+  {#if button_data.Show == 1}
+    <button
+      class="sidebar_button"
+      style={button_data.Style}
+      onclick={button_data.Onclick_function}>{@html button_data.Text}</button
+    >
+  {:else if button_data.Show == 0}
+    <button
+      class="sidebar_button"
+      style="{button_data.Style} opacity: 60%"
+      onclick={button_data.Onclick_function}>{@html button_data.Text}</button
+    >
+  {/if}
 {/snippet}
 
 <style>

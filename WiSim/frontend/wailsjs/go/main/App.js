@@ -26,6 +26,10 @@ export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
+export function New_simulation() {
+  return window['go']['main']['App']['New_simulation']();
+}
+
 export function Revert_simulation() {
   return window['go']['main']['App']['Revert_simulation']();
 }

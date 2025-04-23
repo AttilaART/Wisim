@@ -2,8 +2,13 @@
   import background_image from "./assets/images/Temp_background_image.png";
   import GameInterface from "./Game_interface.svelte";
   import Sidebar from "./Sidebar.svelte";
+  import Popup from "./Popup.svelte";
+  import { New_simulation } from "../wailsjs/go/main/App";
+
+  import { month_counter, loading } from "./store";
 
   let background_image_blur = $state(0);
+  let is_loading = $state($loading);
 
   let mode = $state({
     main_menu: true,
@@ -11,9 +16,13 @@
   });
 
   function load_singleplayer() {
-    background_image_blur = 4;
-    mode.main_menu = false;
-    mode.game_interface = true;
+    $loading = true;
+    start_new_game().then(() => {
+      background_image_blur = 4;
+      mode.main_menu = false;
+      mode.game_interface = true;
+      $loading = false;
+    });
   }
 
   function load_main_menu() {
@@ -21,9 +30,16 @@
     mode.main_menu = true;
     mode.game_interface = false;
   }
+
+  async function start_new_game() {
+    $month_counter = await New_simulation();
+  }
 </script>
 
 <main>
+  <!--{#if is_loading}
+    <Popup button_data={null} content={'<div class="loader"></div>'}></Popup>
+  {/if}-->
   <div
     style="position: absolute; height: 100vh; width: 100%; z-index: 0; overflow: hidden;"
   >
@@ -31,7 +47,7 @@
       style="background-image: url({background_image}); filter: blur({background_image_blur}px); position: absolute; width: 110%; height: 110%; left: -10px; top: -10px"
     ></div>
   </div>
-  <div class="main_div" style="z-index: 20">
+  <div class="main_div" style="">
     {#if mode.main_menu}
       <div class="main_menu">
         <h1 style="padding: 0 8px;">WiSim</h1>
@@ -42,21 +58,25 @@
             {
               Text: "Singleplayer",
               Style: "",
+              Show: 1,
               Onclick_function: load_singleplayer,
             },
             {
               Text: "Host game",
               Style: "",
+              Show: 1,
               Onclick_function: () => {},
             },
             {
               Text: "Join game",
               Style: "",
+              Show: 1,
               Onclick_function: () => {},
             },
             {
               Text: "Settings",
               Style: "margin-top: auto",
+              Show: 1,
               Onclick_function: () => {},
             },
           ]}

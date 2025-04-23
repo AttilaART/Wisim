@@ -130,18 +130,68 @@ func (a *App) Trigger_simulation() (int, error) {
 	return game_state.state.Step, nil
 }
 
-func (a *App) Revert_simulation() error {
+func (a *App) Revert_simulation() (int, error) {
 	if !game_state.is_loaded {
-		return errors.New("game hasn't loaded yet")
+		return 0, errors.New("game hasn't loaded yet")
 	}
 	if game_state.state.Step == old_game_state.state.Step {
-		return errors.New("cannot go back to previous step")
+		return 0, errors.New("cannot go back to previous step")
 	}
 	if !old_game_state.is_loaded {
-		return errors.New("cannot go back to previous step")
+		return 0, errors.New("cannot go back to previous step")
 	}
 
 	game_state.state = old_game_state.state
 
-	return nil
+	return game_state.state.Step, nil
 }
+
+func (a *App) New_simulation() (int, error) {
+	var err error
+	game_state.state = simulation.New_game(game_state.config, 4, "Test_ui")
+	game_state.is_loaded = true
+
+	game_state.state.Current_decisions, err = simulation.Get_decisions("simulation/Saves/Test_game-0/Decisions", 4)
+	if err != nil {
+		return 0, err
+	}
+
+	return game_state.state.Step, nil
+}
+
+//  let option = {
+//    title: {
+//      text: "",
+//    },
+//    tooltip: {},
+//    legend: {
+//      data: ["sales"],
+//    },
+//    xAxis: {
+//      data: ["Shirts", "Cardigans", "Chiffons", "Pants", "Heels", "Socks"],
+//    },
+//    yAxis: {},
+//    series: [
+//      {
+//        name: "sales",
+//        type: "bar",
+//        data: [5, 20, 36, 10, 10, 20],
+//      },
+//    ],
+//  };
+
+type Graph_data struct {
+	xAxis  []string
+	yAxis  []string
+	series []Series
+}
+
+type Series struct {
+	name string
+	data []float64
+}
+
+// Request format: company
+//func (a *App) Get_graph_data(request string, start_month int, end_month int) (Graph_data error){
+//  tokens := strings.Split(request, " ")
+//}

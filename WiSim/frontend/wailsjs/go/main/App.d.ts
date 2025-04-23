@@ -14,6 +14,8 @@ export function Get_simulation_step():Promise<number>;
 
 export function Greet(arg1:string):Promise<string>;
 
-export function Revert_simulation():Promise<void>;
+export function New_simulation():Promise<number>;
+
+export function Revert_simulation():Promise<number>;
 
 export function Trigger_simulation():Promise<number>;

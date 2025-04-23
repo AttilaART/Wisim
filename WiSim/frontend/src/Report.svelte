@@ -79,10 +79,18 @@
   <table>
     <thead>
       <tr>
-        <th style="width: auto; text-align: left;">Month</th>
-        <th style="width: 20%; text-align: right;">{$month_counter - 2}</th>
-        <th style="width: 20%; text-align: right;">{$month_counter - 1}</th>
-        <th style="width: 20%; text-align: right;">{$month_counter}</th>
+        <th style="width: auto; text-align: left;">Month / Year</th>
+        <th style="width: 20%; text-align: right;"
+          >{($month_counter - 1) % 13} / {Math.floor(
+            ($month_counter - 2) / 12,
+          )}</th
+        >
+        <th style="width: 20%; text-align: right;"
+          >{$month_counter % 13} / {Math.floor(($month_counter - 1) / 12)}</th
+        >
+        <th style="width: 20%; text-align: right;"
+          >{($month_counter + 1) % 13} / {Math.floor($month_counter / 12)}
+        </th>
       </tr>
     </thead>
     <tbody>

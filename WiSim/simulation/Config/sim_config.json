@@ -52,7 +52,7 @@
     ],
     "Balance": 1000000
   },
-  "Population_size": 1000,
+  "Population_size": 1000000,
   "Min_base_need": 1,
   "Max_base_need": 4,
   "Quality_bias": 1,

@@ -2,12 +2,14 @@
   import Popup from "./Popup.svelte";
   import Reports from "./Reports.svelte";
   import Sidebar from "./Sidebar.svelte";
+  import { format_number } from "./helper";
   import {
     Get_simulation_step,
     Get_bank_balance,
     Get_current_stock,
     Trigger_simulation,
     Revert_simulation,
+    New_simulation,
   } from "../wailsjs/go/main/App";
 
   import { month_counter } from "./store";
@@ -15,6 +17,8 @@
   let { return_function } = $props();
   let is_error: boolean = $state(false);
   let error: Error | undefined = $state(undefined);
+  let try_cancel_sim: boolean = false;
+  let reports_tab__greyed_out: number = $state(0);
 
   type Menu_state = {
     Dashboard: boolean;
@@ -35,6 +39,12 @@
   month_counter.subscribe((value) => {
     get_balance();
     get_products_in_storage();
+
+    if (value < 0) {
+      reports_tab__greyed_out = 0;
+    } else {
+      reports_tab__greyed_out = 1;
+    }
   });
 
   async function get_month() {
@@ -62,12 +72,7 @@
 
   async function cancel_simulation() {
     is_simulating = false;
-    try {
-      Revert_simulation();
-    } catch (exception) {
-      is_error = true;
-      error = exception;
-    }
+    try_cancel_sim = true;
   }
 
   async function trigger_simulation() {
@@ -85,7 +90,25 @@
 
     setTimeout(() => {
       is_simulating = false;
+      console.log(try_cancel_sim);
+
+      if (try_cancel_sim) {
+        let month_promise = Revert_simulation();
+        month_promise.then(
+          (value) => {
+            $month_counter = value;
+          },
+          (reason) => {
+            is_error = true;
+            error = reason;
+          },
+        );
+      }
+      try_cancel_sim = false;
     }, 1000);
+
+    try_cancel_sim = false;
+
     //try {
     //  month_temp = await Trigger_simulation();
     //} catch (exception) {
@@ -132,7 +155,7 @@
       Class: "popup_button",
       Onclick_function: () => {
         is_error = false;
-        error = undefined;
+        error = null;
       },
     }}
     content={`<div> <h2>An Error has occured</h2> <br> ${error}</div>`}
@@ -148,6 +171,7 @@
         {
           Text: "Return to main menu",
           Style: "",
+          Show: 1,
           Onclick_function: () => {
             return_function();
           },
@@ -161,6 +185,7 @@
         {
           Text: "Dashboard",
           Style: "",
+          Show: 1,
           Onclick_function: () => {
             load_menus("Dashboard");
           },
@@ -168,6 +193,7 @@
         {
           Text: "Decisions",
           Style: "",
+          Show: 1,
           Onclick_function: () => {
             load_menus("Decisions");
           },
@@ -175,13 +201,17 @@
         {
           Text: "Reports",
           Style: "",
+          Show: reports_tab__greyed_out,
           Onclick_function: () => {
+            //if (reports_tab__greyed_out == 1) {
             load_menus("Reports");
+            //}
           },
         },
         {
           Text: "Simulate",
           Style: "margin-top: auto",
+          Show: 1,
           Onclick_function: () => {
             trigger_simulation();
           },
@@ -201,17 +231,24 @@
     {/if}
   </div>
   <div class="bottom" style="grid-column: 2; grid-row: 2;">
-    <div class="bottom_data">Bank balance: {bank_balance}</div>
-    <div class="bottom_data">Products in storage: {products_in_stock}</div>
-    <div class="bottom_data">Month {$month_counter}</div>
+    <div class="bottom_data">
+      Bank balance: {format_number(bank_balance, true)}
+    </div>
+    <div class="bottom_data">
+      Products in storage: {format_number(products_in_stock, false, 0)}
+    </div>
+    <div class="bottom_data">
+      Month / Year: {($month_counter + 1) % 13} / {Math.floor(
+        $month_counter / 12,
+      )}
+    </div>
   </div>
 </div>
 
 <style>
   .game_interface {
     height: calc(100% - 20px);
-    width: auto;
-    max-width: 100%;
+    width: calc(100% - 20px);
     max-height: calc(100% - 20px);
     padding: 10px;
     background-image: linear-gradient(
