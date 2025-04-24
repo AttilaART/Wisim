@@ -88,20 +88,9 @@ func (a *App) Get_accounting_data(company int, step int, data string) ([]simulat
 }
 
 func (a *App) Get_financial_report(company int, step int) (simulation.Financial_Report, error) {
-	if !game_state.is_loaded {
-		return simulation.Financial_Report{}, errors.New("game hasn't loaded yet")
-	}
-
-	if company > len((game_state.state).Companies)-1 || company < 0 {
-		return simulation.Financial_Report{}, errors.New("invalid company")
-	}
-
-	if step > game_state.state.Step {
-		return simulation.Financial_Report{}, errors.New("this step hasn't been simulated yet")
-	}
-
-	if step < 0 {
-		return simulation.Financial_Report{}, errors.New("step cannot be less than 0")
+	err := check_request(company, step)
+	if err != nil {
+		return simulation.Financial_Report{}, err
 	}
 
 	s, err := json.MarshalIndent(game_state.state.Companies[company].Reports[step].Financial_Report, "-->", "    ")
@@ -111,6 +100,24 @@ func (a *App) Get_financial_report(company int, step int) (simulation.Financial_
 	println(string(s))
 
 	return game_state.state.Companies[company].Reports[step].Financial_Report, nil
+}
+
+func (a *App) Get_sales_report(company int, step int) (simulation.Sales_report, error) {
+	err := check_request(company, step)
+	if err != nil {
+		return simulation.Sales_report{}, err
+	}
+
+	return game_state.state.Companies[company].Reports[step].Sales_report, nil
+}
+
+func (a *App) Get_personelle_report(company int, step int) (simulation.Personelle_report, error) {
+	err := check_request(company, step)
+	if err != nil {
+		return simulation.Personelle_report{}, err
+	}
+
+	return game_state.state.Companies[company].Reports[step].Personelle_report, nil
 }
 
 func (a *App) Trigger_simulation() (int, error) {

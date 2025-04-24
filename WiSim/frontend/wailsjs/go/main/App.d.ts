@@ -10,6 +10,10 @@ export function Get_current_stock(arg1:number):Promise<number>;
 
 export function Get_financial_report(arg1:number,arg2:number):Promise<simulation.Financial_Report>;
 
+export function Get_personelle_report(arg1:number,arg2:number):Promise<simulation.Personelle_report>;
+
+export function Get_sales_report(arg1:number,arg2:number):Promise<simulation.Sales_report>;
+
 export function Get_simulation_step():Promise<number>;
 
 export function Greet(arg1:string):Promise<string>;

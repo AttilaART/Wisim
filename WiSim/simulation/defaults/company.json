@@ -21,6 +21,7 @@
       "Id": 1,
       "Production_capacity": 10000,
       "Required_workers": 5,
+      "Minimum_workers": 3,
       "Energy_use": 1,
       "Value": 100000
     },

@@ -76,6 +76,96 @@ export namespace simulation {
 	        this.Profit = source["Profit"];
 	    }
 	}
+	export class Personelle_report {
+	    Number_of_employees: number;
+	    Number_of_hires: number;
+	    Avg_pay: number;
+	    Minimum_pay: number;
+	    Maximum_pay: number;
+	    Standard_dev_pay: number;
+	    Minimum_skill: number;
+	    Maximum_skill: number;
+	    Avg_skill: number;
+	    Standard_dev_skill: number;
+	    Marketing_Number_of_employees: number;
+	    Marketing_Number_of_hires: number;
+	    Marketing_Avg_pay: number;
+	    Marketing_Minimum_pay: number;
+	    Marketing_Maximum_pay: number;
+	    Marketing_Standard_dev_pay: number;
+	    Marketing_Minimum_skill: number;
+	    Marketing_Maximum_skill: number;
+	    Marketing_Avg_skill: number;
+	    Marketing_Standard_dev_skill: number;
+	    Production_Number_of_employees: number;
+	    Production_Number_of_hires: number;
+	    Production_Avg_pay: number;
+	    Production_Minimum_pay: number;
+	    Production_Maximum_pay: number;
+	    Production_Standard_dev_pay: number;
+	    Production_Minimum_skill: number;
+	    Production_Maximum_skill: number;
+	    Production_Avg_skill: number;
+	    Production_Standard_dev_skill: number;
+	    Production_avg_productivity: number;
+	    Production_minimum_productivity: number;
+	    Prouduction_maximum_productivity: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Personelle_report(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Number_of_employees = source["Number_of_employees"];
+	        this.Number_of_hires = source["Number_of_hires"];
+	        this.Avg_pay = source["Avg_pay"];
+	        this.Minimum_pay = source["Minimum_pay"];
+	        this.Maximum_pay = source["Maximum_pay"];
+	        this.Standard_dev_pay = source["Standard_dev_pay"];
+	        this.Minimum_skill = source["Minimum_skill"];
+	        this.Maximum_skill = source["Maximum_skill"];
+	        this.Avg_skill = source["Avg_skill"];
+	        this.Standard_dev_skill = source["Standard_dev_skill"];
+	        this.Marketing_Number_of_employees = source["Marketing_Number_of_employees"];
+	        this.Marketing_Number_of_hires = source["Marketing_Number_of_hires"];
+	        this.Marketing_Avg_pay = source["Marketing_Avg_pay"];
+	        this.Marketing_Minimum_pay = source["Marketing_Minimum_pay"];
+	        this.Marketing_Maximum_pay = source["Marketing_Maximum_pay"];
+	        this.Marketing_Standard_dev_pay = source["Marketing_Standard_dev_pay"];
+	        this.Marketing_Minimum_skill = source["Marketing_Minimum_skill"];
+	        this.Marketing_Maximum_skill = source["Marketing_Maximum_skill"];
+	        this.Marketing_Avg_skill = source["Marketing_Avg_skill"];
+	        this.Marketing_Standard_dev_skill = source["Marketing_Standard_dev_skill"];
+	        this.Production_Number_of_employees = source["Production_Number_of_employees"];
+	        this.Production_Number_of_hires = source["Production_Number_of_hires"];
+	        this.Production_Avg_pay = source["Production_Avg_pay"];
+	        this.Production_Minimum_pay = source["Production_Minimum_pay"];
+	        this.Production_Maximum_pay = source["Production_Maximum_pay"];
+	        this.Production_Standard_dev_pay = source["Production_Standard_dev_pay"];
+	        this.Production_Minimum_skill = source["Production_Minimum_skill"];
+	        this.Production_Maximum_skill = source["Production_Maximum_skill"];
+	        this.Production_Avg_skill = source["Production_Avg_skill"];
+	        this.Production_Standard_dev_skill = source["Production_Standard_dev_skill"];
+	        this.Production_avg_productivity = source["Production_avg_productivity"];
+	        this.Production_minimum_productivity = source["Production_minimum_productivity"];
+	        this.Prouduction_maximum_productivity = source["Prouduction_maximum_productivity"];
+	    }
+	}
+	export class Sales_report {
+	    Products_sold: number;
+	    Difference_to_previous_month: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Sales_report(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Products_sold = source["Products_sold"];
+	        this.Difference_to_previous_month = source["Difference_to_previous_month"];
+	    }
+	}
 
 }
 

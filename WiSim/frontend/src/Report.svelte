@@ -3,7 +3,29 @@
   import { get } from "svelte/store";
   import { month_counter } from "./store";
 
-  let { get_report } = $props();
+  interface properties {
+    get_report: (month: number) => object;
+    colour_values: boolean;
+    show_plus: boolean;
+    decimal_places: number;
+    custom_rows: { row_name: string; properties: custom_row_properties }[];
+  }
+
+  interface custom_row_properties {
+    colour_values: boolean;
+    show_plus: boolean;
+    decimal_places: number;
+  }
+
+  let {
+    get_report,
+    colour_values = false,
+    show_plus = false,
+    decimal_places = 0,
+    custom_rows = [],
+  }: properties = $props();
+
+  console.log(custom_rows);
 
   month_counter.subscribe((month) => {
     sep_key_values(get_report, month);
@@ -27,6 +49,11 @@
     loading: true,
     error: null,
   });
+
+  let custom_rows_names: string[] = [];
+  for (let i in custom_rows) {
+    custom_rows_names.push(custom_rows[i].row_name);
+  }
 
   async function sep_key_values(get_values, month: number) {
     let keys: string[] = [];
@@ -95,12 +122,23 @@
     </thead>
     <tbody>
       {#each data.data as pair}
-        {@render row(
-          pair.key,
-          pair.two_months_ago_value,
-          pair.last_month_value,
-          pair.current_value,
-        )}
+        {#if custom_rows_names.includes(pair.key)}
+          {@render row(
+            pair.key,
+            pair.two_months_ago_value,
+            pair.last_month_value,
+            pair.current_value,
+            custom_rows[custom_rows_names.indexOf(pair.key)].properties,
+          )}
+        {:else}
+          {@render row(
+            pair.key,
+            pair.two_months_ago_value,
+            pair.last_month_value,
+            pair.current_value,
+            null,
+          )}
+        {/if}
       {/each}
     </tbody>
   </table>
@@ -108,26 +146,72 @@
   failed to load data: <br />
   {data.error}
 {/if}
-{#snippet row(key: string, two_years_ago, previous_year, current_value)}
+
+{#snippet row(
+  key: string,
+  two_years_ago,
+  previous_year,
+  current_value,
+  custom_properties,
+)}
   <tr>
-    <td style="text-align: left;">{key}</td>
-    {@render value_entry(two_years_ago)}
-    {@render value_entry(previous_year)}
-    {@render value_entry(current_value)}
+    <td style="text-align: left;">{key.replaceAll("_", " ")}</td>
+    {#if custom_properties != null}
+      {@render value_entry(
+        two_years_ago,
+        custom_properties.show_plus,
+        custom_properties.colour_values,
+        custom_properties.decimal_places,
+      )}
+      {@render value_entry(
+        previous_year,
+        custom_properties.show_plus,
+        custom_properties.colour_values,
+        custom_properties.decimal_places,
+      )}
+      {@render value_entry(
+        current_value,
+        custom_properties.show_plus,
+        custom_properties.colour_values,
+        custom_properties.decimal_places,
+      )}
+    {:else}
+      {@render value_entry(
+        two_years_ago,
+        show_plus,
+        colour_values,
+        decimal_places,
+      )}
+      {@render value_entry(
+        previous_year,
+        show_plus,
+        colour_values,
+        decimal_places,
+      )}
+      {@render value_entry(
+        current_value,
+        show_plus,
+        colour_values,
+        decimal_places,
+      )}
+    {/if}
   </tr>
 {/snippet}
 
-{#snippet value_entry(value)}
+{#snippet value_entry(value, show_plus, colour_values, decimal_places)}
   {#if typeof value == typeof 1}
-    {#if value > 0}
-      <td class="value_field" style="color: {green}">+{format_number(value)}</td
+    {#if value > 0 && colour_values}
+      <td class="value_field" style="color: {green}"
+        >{format_number(value, show_plus, decimal_places)}</td
       >
-    {:else if value == 0}
-      <td class="value_field">{format_number(value)}</td>
+    {:else if value < 0 && colour_values}
+      <td class="value_field" style="color: {red}"
+        >{format_number(value, show_plus, decimal_places)}</td
+      >
     {:else}
-      <td class="value_field" style="color: {red}">{format_number(value)}</td>
+      <td class="value_field">{format_number(value)}</td>
     {/if}
-  {:else}
-    <td class="value_field">{value}</td>
+  {:else if typeof value == typeof "string"}
+    <td class="value_field">{value.replaceAll("_", " ")}</td>
   {/if}
 {/snippet}

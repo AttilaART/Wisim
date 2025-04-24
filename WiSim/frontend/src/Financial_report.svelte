@@ -107,7 +107,13 @@
   </div>
   <div class="grid_item" style="grid-column: 1 / span 2; grid-row: 2;">
     <h2>Financial report</h2>
-    <Report get_report={get_financial_data}></Report>
+    <Report
+      get_report={get_financial_data}
+      colour_values={true}
+      show_plus={true}
+      decimal_places={2}
+      custom_rows={[]}
+    ></Report>
   </div>
   <div class="grid_item" style="grid-column: 1 / span 2; grid-row: 3;">
     <h2>Income and loss statement</h2>

@@ -4,6 +4,8 @@ import (
 	"WiSim/simulation"
 	"embed"
 	"encoding/json"
+	"fmt"
+	"log"
 	"os"
 
 	"github.com/wailsapp/wails/v2"
@@ -45,6 +47,15 @@ func main() {
 	if err != nil {
 		println("Error in sim_config.json")
 		os.Exit(2)
+	}
+
+	game_state.state.Current_decisions, err = simulation.Get_decisions(
+		fmt.Sprintf("Saves/%s-%d/Decisions", game_state.state.Game_name, game_state.state.Step),
+		len(game_state.state.Companies),
+	)
+	if err != nil {
+		println(err.Error())
+		log.Fatal("Failed to get current decisions")
 	}
 
 	// Create an instance of the app structure

@@ -1,5 +1,7 @@
 <script lang="ts">
   import Financial_report from "./Financial_report.svelte";
+  import PersonelleReport from "./PersonelleReport.svelte";
+  import SalesReport from "./Sales_report.svelte";
 
   import { month_counter } from "./store";
 
@@ -7,14 +9,14 @@
     overview: true,
     finances: false,
     sales: false,
-    employees: false,
+    personelle: false,
     production: false,
   });
   function load_reports_overview() {
     reports_tabs_state.overview = true;
     reports_tabs_state.finances = false;
     reports_tabs_state.sales = false;
-    reports_tabs_state.employees = false;
+    reports_tabs_state.personelle = false;
     reports_tabs_state.production = false;
   }
 
@@ -22,28 +24,28 @@
     reports_tabs_state.overview = false;
     reports_tabs_state.finances = true;
     reports_tabs_state.sales = false;
-    reports_tabs_state.employees = false;
+    reports_tabs_state.personelle = false;
     reports_tabs_state.production = false;
   }
   function load_reports_sales() {
     reports_tabs_state.overview = false;
     reports_tabs_state.finances = false;
     reports_tabs_state.sales = true;
-    reports_tabs_state.employees = false;
+    reports_tabs_state.personelle = false;
     reports_tabs_state.production = false;
   }
-  function load_reports_employees() {
+  function load_reports_personelle() {
     reports_tabs_state.overview = false;
     reports_tabs_state.finances = false;
     reports_tabs_state.sales = false;
-    reports_tabs_state.employees = true;
+    reports_tabs_state.personelle = true;
     reports_tabs_state.production = false;
   }
   function load_reports_production() {
     reports_tabs_state.overview = false;
     reports_tabs_state.finances = false;
     reports_tabs_state.sales = false;
-    reports_tabs_state.employees = false;
+    reports_tabs_state.personelle = false;
     reports_tabs_state.production = true;
   }
 </script>
@@ -60,8 +62,8 @@
       <button class="button tab_button" onclick={load_reports_sales}
         >Sales</button
       >
-      <button class="button tab_button" onclick={load_reports_employees}
-        >Employees</button
+      <button class="button tab_button" onclick={load_reports_personelle}
+        >personelle</button
       >
       <button class="button tab_button" onclick={load_reports_production}
         >Production</button
@@ -69,17 +71,13 @@
     </div>
     {#if reports_tabs_state.overview}
       <div>Overview is under construction</div>
-    {/if}
-    {#if reports_tabs_state.finances}
+    {:else if reports_tabs_state.finances}
       <Financial_report></Financial_report>
-    {/if}
-    {#if reports_tabs_state.sales}
-      <div>Sales is under construction</div>
-    {/if}
-    {#if reports_tabs_state.employees}
-      <div>Employees is under construction</div>
-    {/if}
-    {#if reports_tabs_state.production}
+    {:else if reports_tabs_state.sales}
+      <SalesReport></SalesReport>
+    {:else if reports_tabs_state.personelle}
+      <PersonelleReport></PersonelleReport>
+    {:else if reports_tabs_state.production}
       <div>Production is under construction</div>
     {/if}
   </div>
@@ -90,7 +88,10 @@
   >
     <div class="grid_item">
       <h2>Reports</h2>
-      <p>This page will have contents after the first step is simlated.</p>
+      <p>
+        Here you will be able to see the reports generated for the last few
+        months
+      </p>
     </div>
   </div>
 {/if}

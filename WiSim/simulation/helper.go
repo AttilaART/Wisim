@@ -22,10 +22,10 @@ func rand_income(mean_income int, standard_dev int) int {
 	return income
 }
 
-func find_employee_by_id(id int, employees []Employee) (Employee, error) {
-	for i := range employees {
-		if employees[i].Id == id {
-			return employees[i], nil
+func find_employee_by_id(id int, employees *[]Employee) (Employee, error) {
+	for i := range *employees {
+		if (*employees)[i].Id == id {
+			return (*employees)[i], nil
 		}
 	}
 	return Employee{}, errors.New(fmt.Sprint("could not find employee with Id ", id))

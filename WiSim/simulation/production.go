@@ -1,7 +1,9 @@
 package simulation
 
 import (
+	"encoding/json"
 	"errors"
+	"fmt"
 	"log"
 	"slices"
 )
@@ -220,12 +222,15 @@ func produce(machines []Machine, product Product, production_report Production_r
 
 	energy_use := 0.0
 	for _, m := range machines {
-		base_prod_of_machine, bonus_prod_of_machine := production_of_machine(m, employees)
+		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(m, &employees)
 		base_production += base_prod_of_machine
 		bonus_production += bonus_prod_of_machine
 
 		energy_use += float64(m.Energy_use)
 	}
+
+	fmt.Printf("base_production: %d\n", base_production)
+	fmt.Printf("bonus_production: %d\n", bonus_production)
 
 	production_report.Products_produced = base_production + bonus_production
 	production_report.Base_production = base_production
@@ -233,8 +238,12 @@ func produce(machines []Machine, product Product, production_report Production_r
 
 	production_report.Material_used = product.Material_use * float32(production_report.Products_produced)
 	production_report.Energy_used = float32(energy_use)
-	Income_entries[0] = FinanceReportEntry{"Material costs", production, "The cost of materials used in your products", true, -round(float64(external_factors.Material_price)*float64(production_report.Material_used), 2)}
-	Income_entries[1] = FinanceReportEntry{"Energy costs", production, "The cost of energy used by machines in production", true, -round(float64(external_factors.Energy_price)*float64(production_report.Energy_used), 2)}
+
+	material_costs := -round(float64(external_factors.Material_price)*float64(production_report.Material_used), 2)
+	energy_costs := -round(float64(external_factors.Energy_price)*float64(production_report.Energy_used), 2)
+
+	Income_entries[0] = FinanceReportEntry{"Material costs", production, "The cost of materials used in your products", true, material_costs}
+	Income_entries[1] = FinanceReportEntry{"Energy costs", production, "The cost of energy used by machines in production", true, energy_costs}
 
 	production_report.Avg_machine_productivity = float32(production_report.Products_produced) / float32(len(machines))
 
@@ -242,11 +251,19 @@ func produce(machines []Machine, product Product, production_report Production_r
 }
 
 // return (base production, bonus production)
-func production_of_machine(machine Machine, employees []Employee) (int, int) {
+func calculate_machine_production(machine Machine, employees *[]Employee) (int, int) {
 	// calculate averages
 	var skill float32 = 0
 	var motivation float32 = 0
 	var working_hours float32 = 0
+
+	if machine.Minimum_workers <= 0 {
+		panic("machine.Minimum_workers <= 0")
+	}
+
+	if len(machine.Assigned_workers_ids) < machine.Minimum_workers {
+		return 0, 0
+	}
 
 	for _, id := range machine.Assigned_workers_ids {
 		e, err := find_employee_by_id(id, employees)
@@ -257,6 +274,15 @@ func production_of_machine(machine Machine, employees []Employee) (int, int) {
 		skill += e.Skill
 		motivation += e.Motivation
 		working_hours += e.Working_hours
+
+		println("<----------------------->")
+		println("Employee: ", id)
+		s, err := json.MarshalIndent(e, "", "    ")
+		if err != nil {
+			log.Fatal(err.Error())
+		}
+		println(string(s))
+		println("<----------------------->")
 	}
 
 	num_assigned_workers := len(machine.Assigned_workers_ids)
@@ -266,6 +292,12 @@ func production_of_machine(machine Machine, employees []Employee) (int, int) {
 
 	base_production := int(float32(machine.Production_capacity) * (working_hours / 8))
 	bonus_production := int(float32(base_production)*skill*motivation) - base_production
+
+	fmt.Printf("machine base_production: %d\n", base_production)
+	fmt.Printf("machine skill: %f\n", skill)
+	fmt.Printf("machine motivation: %f\n", skill)
+	fmt.Printf("machine working_hours: %f\n", skill)
+	fmt.Printf("Workers assigned: %d\n", len(machine.Assigned_workers_ids))
 
 	return base_production, bonus_production
 }

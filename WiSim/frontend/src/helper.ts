@@ -1,5 +1,9 @@
 
-export function format_number(num: number | any, add_plus?: boolean, decimal_places: number = 2): string {
+export function format_number(num: number | any, add_plus?: boolean, decimal_places?: number): string {
+  if (decimal_places == undefined) {
+    decimal_places == 2
+  }
+
   if (typeof num != typeof 1) {
     return num.toString()
   }
@@ -11,7 +15,7 @@ export function format_number(num: number | any, add_plus?: boolean, decimal_pla
     });
   }
 
-  return `+${num.toLocaleString("de-CH", { maximumFractionDigits: 2, minimumFractionDigits: 2 })}`
+  return `+${num.toLocaleString("de-CH", { maximumFractionDigits: decimal_places, minimumFractionDigits: decimal_places })}`
 }
 
 

@@ -18,6 +18,14 @@ export function Get_financial_report(arg1, arg2) {
   return window['go']['main']['App']['Get_financial_report'](arg1, arg2);
 }
 
+export function Get_personelle_report(arg1, arg2) {
+  return window['go']['main']['App']['Get_personelle_report'](arg1, arg2);
+}
+
+export function Get_sales_report(arg1, arg2) {
+  return window['go']['main']['App']['Get_sales_report'](arg1, arg2);
+}
+
 export function Get_simulation_step() {
   return window['go']['main']['App']['Get_simulation_step']();
 }

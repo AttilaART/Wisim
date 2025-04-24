@@ -178,6 +178,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		Machine_on_offer: Machine{
 			Production_capacity: 15000,
 			Required_workers:    5,
+			Minimum_workers:     3,
 			Energy_use:          0.5,
 			Value:               100000,
 		},

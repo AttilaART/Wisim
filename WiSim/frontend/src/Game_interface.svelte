@@ -19,6 +19,7 @@
   let error: Error | undefined = $state(undefined);
   let try_cancel_sim: boolean = false;
   let reports_tab__greyed_out: number = $state(0);
+  let bottom_data_height: number = $state();
 
   type Menu_state = {
     Dashboard: boolean;
@@ -161,7 +162,10 @@
     content={`<div> <h2>An Error has occured</h2> <br> ${error}</div>`}
   ></Popup>
 {/if}
-<div class="game_interface">
+<div
+  class="game_interface"
+  style="grid-template-rows: auto {bottom_data_height + 22}px;"
+>
   <div
     style="display: flex; flex-direction: column; grid-column: 1; grid-row: 1 / span 2;"
   >
@@ -230,7 +234,11 @@
       <Reports></Reports>
     {/if}
   </div>
-  <div class="bottom" style="grid-column: 2; grid-row: 2;">
+  <div
+    class="bottom"
+    style="grid-column: 2; grid-row: 2; height: fit-content;"
+    bind:clientHeight={bottom_data_height}
+  >
     <div class="bottom_data">
       Bank balance: {format_number(bank_balance, true)}
     </div>
@@ -258,7 +266,7 @@
     );
     display: grid;
     grid-template-columns: calc(200px + 20px) auto;
-    grid-template-rows: auto 50px;
+    grid-template-rows: auto 55px;
     overflow: hidden;
   }
 

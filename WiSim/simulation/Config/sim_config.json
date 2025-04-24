@@ -22,30 +22,35 @@
       {
         "Production_capacity": 15000,
         "Required_workers": 5,
+        "Minimum_workers": 3,
         "Energy_use": 0.5,
         "Value": 90000
       },
       {
         "Production_capacity": 15000,
         "Required_workers": 5,
+        "Minimum_workers": 3,
         "Energy_use": 0.5,
         "Value": 90000
       },
       {
         "Production_capacity": 15000,
         "Required_workers": 5,
+        "Minimum_workers": 3,
         "Energy_use": 0.5,
         "Value": 90000
       },
       {
         "Production_capacity": 15000,
         "Required_workers": 5,
+        "Minimum_workers": 3,
         "Energy_use": 0.5,
         "Value": 90000
       },
       {
         "Production_capacity": 15000,
         "Required_workers": 5,
+        "Minimum_workers": 3,
         "Energy_use": 0.5,
         "Value": 90000
       }

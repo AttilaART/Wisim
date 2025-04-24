@@ -7,10 +7,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"log"
 	"os"
-	"strconv"
-	"strings"
 )
 
 type Save_game struct {
@@ -151,6 +148,7 @@ type Product struct {
 type Machine struct {
 	Production_capacity  int
 	Required_workers     int
+	Minimum_workers      int
 	Assigned_workers_ids []int
 	Energy_use           float32
 	Value                float32
@@ -363,7 +361,8 @@ type Production_report struct {
 }
 
 type Sales_report struct {
-	Products_sold int
+	Products_sold                int
+	Difference_to_previous_month int
 }
 
 type Customer struct {
@@ -456,7 +455,7 @@ type Purchasing_statistics struct {
 
 func (c Company) Mock_simulate_step(decisions Decisions, external_factors External_factors) Report {
 	results := FinanceReportEntry{"Predicted sales", predictions, "The amount of you predict you'll make", true, float64(decisions.Sales_projection) * float64(decisions.Selling_price)}
-	c.compile_reports(decisions, results, external_factors)
+	c.compile_reports(decisions, results, Purchasing_statistics{Products_sold: decisions.Sales_projection}, external_factors)
 	return c.Reports[len(c.Reports)-1]
 }
 
@@ -484,14 +483,14 @@ func (game_state *Game_state) Simulate_step() error {
 	println("---------------- Simulatig economy ----------------")
 	Results, purchasing_statistcs, err := game_state.Population.simulate_economy(&game_state.Companies, game_state.External_factors)
 	if err != nil {
-		log.Fatal(err.Error())
+		return err
 	}
 	println("Simulatig economy done!")
 
 	println("================ Compiling reports =============== ")
 	for i := range game_state.Companies {
 		fmt.Printf("Compiling reports for company %d\n", i)
-		game_state.Companies[i].compile_reports(game_state.Current_decisions[i], Results[i], game_state.External_factors)
+		game_state.Companies[i].compile_reports(game_state.Current_decisions[i], Results[i], purchasing_statistcs[i], game_state.External_factors)
 
 	}
 
@@ -514,26 +513,37 @@ func (game_state *Game_state) Simulate_step() error {
 	println("Total products sold: ", total_products_sold)
 
 	purchasing_statistcs[len(purchasing_statistcs)-1].Avr_bang_for_buck_factor += 1
-	//println("============== Purchasing statistics ============== ")
-	//
-	//for _, p := range purchasing_statistcs {
-	//	s, e := json.MarshalIndent(p, "", "    ")
-	//	if e != nil {
-	//		return e
-	//	}
-	//	println(string(s))
-	//}
 
+	missing_products := 0.0
+	for _, p := range game_state.Population.Population {
+		missing_products += float64(p.Base_need - len(p.Owned_products))
+	}
+	missing_products /= float64(len(game_state.Population.Population))
+	fmt.Printf("avr missing products: %f\n", missing_products)
+
+	// println("============== Purchasing statistics ============== ")
+	//
+	//	for _, p := range purchasing_statistcs {
+	//		s, e := json.MarshalIndent(p, "", "    ")
+	//		if e != nil {
+	//			return e
+	//		}
+	//		println(string(s))
+	//	}
 	return nil
 }
 
-func (company *Company) compile_reports(decisions Decisions, results FinanceReportEntry, external_factors External_factors) error {
-	products_sold, err := strconv.Atoi(strings.Split(results.Info, " ")[0])
-	if err != nil {
-		return err
-	}
+func (company *Company) compile_reports(decisions Decisions, results FinanceReportEntry, purchasing_statistcs Purchasing_statistics, external_factors External_factors) error {
+	products_sold := purchasing_statistcs.Products_sold
+
 	company.Reports[len(company.Reports)-1].Sales_report.Products_sold = products_sold
-	company.Items_in_storage -= company.Reports[len(company.Reports)-1].Sales_report.Products_sold
+	if external_factors.Month > 0 {
+		company.Reports[len(company.Reports)-1].Sales_report.Difference_to_previous_month = products_sold - company.Reports[len(company.Reports)-2].Sales_report.Products_sold
+	} else {
+		company.Reports[len(company.Reports)-1].Sales_report.Difference_to_previous_month = products_sold
+	}
+
+	company.Items_in_storage -= products_sold
 	company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement = append(company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement, results)
 
 	// Finance

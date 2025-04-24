@@ -55,7 +55,7 @@
             folded_entries[i] = {
               index: Number(i),
               entry: {
-                Name: capitalise_first_letter(int.int[groups[i]]).replace(
+                Name: capitalise_first_letter(int.int[groups[i]]).replaceAll(
                   "_",
                   " ",
                 ),
@@ -130,7 +130,7 @@
 {#await make_table}
   loading table...
 {:then result}
-  <table style="text-align: left; ">
+  <table style="text-align: left; overflow-x: scroll;">
     <thead>
       <tr>
         <th style="width: 15; word-wrap: break-word;"></th>
