@@ -5,10 +5,10 @@
   import Popup from "./Popup.svelte";
   import { New_simulation } from "../wailsjs/go/main/App";
 
-  import { month_counter, loading } from "./store";
+  import { month_counter } from "./store";
 
   let background_image_blur = $state(0);
-  let is_loading = $state($loading);
+  let is_loading = $state(false);
 
   let mode = $state({
     main_menu: true,
@@ -16,12 +16,12 @@
   });
 
   function load_singleplayer() {
-    $loading = true;
+    is_loading = true;
     start_new_game().then(() => {
       background_image_blur = 4;
       mode.main_menu = false;
       mode.game_interface = true;
-      $loading = false;
+      is_loading = false;
     });
   }
 
@@ -37,9 +37,11 @@
 </script>
 
 <main>
-  <!--{#if is_loading}
-    <Popup button_data={null} content={'<div class="loader"></div>'}></Popup>
-  {/if}-->
+  {#if is_loading}
+    <div>
+      <Popup button_data={null} content={'<div class="loader"></div>'}></Popup>
+    </div>
+  {/if}
   <div
     style="position: absolute; height: 100vh; width: 100%; z-index: 0; overflow: hidden;"
   >
