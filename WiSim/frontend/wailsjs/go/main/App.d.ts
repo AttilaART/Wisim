@@ -10,7 +10,9 @@ export function Get_current_stock(arg1:number):Promise<number>;
 
 export function Get_financial_report(arg1:number,arg2:number):Promise<simulation.Financial_Report>;
 
-export function Get_personelle_report(arg1:number,arg2:number):Promise<simulation.Personelle_report>;
+export function Get_personelle_report(arg1:number,arg2:number,arg3:string):Promise<simulation.Personelle_sub_report>;
+
+export function Get_production_report(arg1:number,arg2:number):Promise<simulation.Production_report>;
 
 export function Get_sales_report(arg1:number,arg2:number):Promise<simulation.Sales_report>;
 

@@ -13,8 +13,11 @@
 
   interface custom_row_properties {
     colour_values: boolean;
+    invert_colour?: boolean;
     show_plus: boolean;
     decimal_places: number;
+    custom_name?: string;
+    info?: string;
   }
 
   let {
@@ -24,8 +27,6 @@
     decimal_places = 0,
     custom_rows = [],
   }: properties = $props();
-
-  console.log(custom_rows);
 
   month_counter.subscribe((month) => {
     sep_key_values(get_report, month);
@@ -53,6 +54,20 @@
   let custom_rows_names: string[] = [];
   for (let i in custom_rows) {
     custom_rows_names.push(custom_rows[i].row_name);
+    //// also add invert_colour property if it doesn't exist
+    //
+    //if (!Object.hasOwn(custom_rows[i].properties, "invert_colour")) {
+    //  Object.defineProperty(custom_rows[i].properties, "invert_colour", {
+    //    value: false,
+    //  });
+    //}
+  }
+
+  function bool_to_plus_or_minus_one(bool: boolean): number {
+    if (bool) {
+      return 1;
+    }
+    return -1;
   }
 
   async function sep_key_values(get_values, month: number) {
@@ -107,6 +122,7 @@
     <thead>
       <tr>
         <th style="width: auto; text-align: left;">Month / Year</th>
+        <th style="width: auto; text-align: left;"></th>
         <th style="width: 20%; text-align: right;"
           >{($month_counter - 1) % 13} / {Math.floor(
             ($month_counter - 2) / 12,
@@ -155,56 +171,81 @@
   custom_properties,
 )}
   <tr>
-    <td style="text-align: left;">{key.replaceAll("_", " ")}</td>
     {#if custom_properties != null}
+      {#if custom_properties.custom_name}
+        <td style="text-align: left;">{custom_properties.custom_name}</td>
+      {:else}
+        <td style="text-align: left;">{key.replaceAll("_", " ")}</td>
+      {/if}
+      {#if custom_properties.info}
+        <td style="opacity: 80%; text-align: left;">{custom_properties.info}</td
+        >
+      {:else}
+        <td></td>
+      {/if}
       {@render value_entry(
         two_years_ago,
         custom_properties.show_plus,
         custom_properties.colour_values,
         custom_properties.decimal_places,
+        custom_properties.invert_colour,
       )}
       {@render value_entry(
         previous_year,
         custom_properties.show_plus,
         custom_properties.colour_values,
         custom_properties.decimal_places,
+        custom_properties.invert_colour,
       )}
       {@render value_entry(
         current_value,
         custom_properties.show_plus,
         custom_properties.colour_values,
         custom_properties.decimal_places,
+        custom_properties.invert_colour,
       )}
     {:else}
+      <td style="text-align: left;">{key.replaceAll("_", " ")}</td>
+
+      <td></td>
       {@render value_entry(
         two_years_ago,
         show_plus,
         colour_values,
         decimal_places,
+        false,
       )}
       {@render value_entry(
         previous_year,
         show_plus,
         colour_values,
         decimal_places,
+        false,
       )}
       {@render value_entry(
         current_value,
         show_plus,
         colour_values,
         decimal_places,
+        false,
       )}
     {/if}
   </tr>
 {/snippet}
 
-{#snippet value_entry(value, show_plus, colour_values, decimal_places)}
+{#snippet value_entry(
+  value,
+  show_plus,
+  colour_values,
+  decimal_places,
+  invert_colour,
+)}
   {#if typeof value == typeof 1}
-    {#if value > 0 && colour_values}
+    {#if -bool_to_plus_or_minus_one(invert_colour) * value > 0 && colour_values}
       <td class="value_field" style="color: {green}"
         >{format_number(value, show_plus, decimal_places)}</td
       >
-    {:else if value < 0 && colour_values}
+    {:else if -bool_to_plus_or_minus_one(invert_colour) * value < 0 && colour_values}
       <td class="value_field" style="color: {red}"
         >{format_number(value, show_plus, decimal_places)}</td
       >

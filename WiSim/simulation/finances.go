@@ -104,15 +104,15 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 	financial_report.Cash_costs = 0
 	financial_report.Non_cash_costs = 0
 	financial_report.Total_expenses_before_tax = 0
-	financial_report.EBIT = 0
+	financial_report.Operating_profit = 0
 	financial_report.Taxes = 0
 	financial_report.Bridge_loan_repayments = 0
 	financial_report.Loan_repayments = 0
 	financial_report.Total_expenses_after_tax = 0
-	financial_report.Profit = financial_report.Total_expenses_after_tax + financial_report.Total_income
+	financial_report.Net_Profit = financial_report.Total_expenses_after_tax + financial_report.Total_income
 
 	for _, e := range company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement {
-		financial_report.Profit += e.Value
+		financial_report.Net_Profit += e.Value
 		if e.Value > 0 && (e.Group != loans || e.Group != bridge_loans) {
 			financial_report.Total_income += e.Value
 		} else {
@@ -125,7 +125,7 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 			}
 		}
 		if e.Group != loan_intrest && e.Group != bridge_loan_intrest {
-			financial_report.EBIT += e.Value
+			financial_report.Operating_profit += e.Value
 		}
 		if e.Group == loans {
 			financial_report.Loan_repayments += e.Value
@@ -138,7 +138,7 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 		}
 	}
 
-	financial_report.Taxes = profit_taxes(financial_report.EBIT, external_factors)
+	financial_report.Taxes = profit_taxes(financial_report.Operating_profit, external_factors)
 	company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement(
 		"Taxes",
 		taxes,
@@ -146,7 +146,7 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 		true,
 		financial_report.Taxes)
 
-	financial_report.Profit += financial_report.Taxes
+	financial_report.Net_Profit += financial_report.Taxes
 	financial_report.Total_expenses_after_tax += financial_report.Taxes
 	financial_report.Cash_costs += financial_report.Taxes
 	company.Balance += financial_report.Taxes
@@ -167,7 +167,7 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 				financial_report.Cash_costs -= e.Value
 				financial_report.Total_expenses_before_tax -= e.Value
 				financial_report.Total_expenses_after_tax -= e.Value
-				financial_report.Profit -= e.Value
+				financial_report.Net_Profit -= e.Value
 				financial_report.Bridge_loan_repayments -= e.Value
 			} else if company.Balance < e.Value {
 				company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities[i].Value = e.Value - company.Balance
@@ -175,7 +175,7 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 				financial_report.Cash_costs -= company.Balance
 				financial_report.Total_expenses_before_tax -= company.Balance
 				financial_report.Total_expenses_after_tax -= company.Balance
-				financial_report.Profit -= company.Balance
+				financial_report.Net_Profit -= company.Balance
 				financial_report.Bridge_loan_repayments -= company.Balance
 				company.Balance = 0
 				break

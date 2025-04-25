@@ -212,10 +212,10 @@ type Financial_Report struct {
 	Cash_costs                float64
 	Total_expenses_before_tax float64
 	Total_expenses_after_tax  float64
-	EBIT                      float64
+	Operating_profit          float64
 	Taxes                     float64
 
-	Profit float64
+	Net_Profit float64
 }
 
 func (f *Balance_sheet) add_to_income_statement(name string, group int, info string, cash_cost bool, value float64) {
@@ -292,7 +292,12 @@ var AllGroups = []struct {
 }
 
 type Personelle_report struct {
-	// General info
+	General    Personelle_sub_report
+	Marketing  Personelle_sub_report
+	Production Personelle_sub_report
+}
+
+type Personelle_sub_report struct {
 	Number_of_employees float32
 	Number_of_hires     float32
 
@@ -306,45 +311,14 @@ type Personelle_report struct {
 	Avg_skill          float32
 	Standard_dev_skill float32
 
-	top_employees    []Employee
-	bottom_employees []Employee
-
-	// Marketing
-	Marketing_Number_of_employees float32
-	Marketing_Number_of_hires     float32
-
-	Marketing_Avg_pay          float32
-	Marketing_Minimum_pay      float32
-	Marketing_Maximum_pay      float32
-	Marketing_Standard_dev_pay float32
-
-	Marketing_Minimum_skill      float32
-	Marketing_Maximum_skill      float32
-	Marketing_Avg_skill          float32
-	Marketing_Standard_dev_skill float32
-
-	// Production
-	Production_Number_of_employees float32
-	Production_Number_of_hires     float32
-
-	Production_Avg_pay          float32
-	Production_Minimum_pay      float32
-	Production_Maximum_pay      float32
-	Production_Standard_dev_pay float32
-
-	Production_Minimum_skill      float32
-	Production_Maximum_skill      float32
-	Production_Avg_skill          float32
-	Production_Standard_dev_skill float32
-
-	Production_avg_productivity      float32
-	Production_minimum_productivity  float32
-	Prouduction_maximum_productivity float32
+	avg_productivity     float32
+	minimum_productivity float32
+	maximum_productivity float32
 }
 
 type Production_report struct {
-	Machines_purchased       []Machine
-	Machines_sold            []Machine
+	Machines_purchased       int
+	Machines_sold            int
 	Worker_surplus           int
 	Avg_machine_productivity float32
 	// Max_machine_productivity float32

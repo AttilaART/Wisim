@@ -111,13 +111,31 @@ func (a *App) Get_sales_report(company int, step int) (simulation.Sales_report, 
 	return game_state.state.Companies[company].Reports[step].Sales_report, nil
 }
 
-func (a *App) Get_personelle_report(company int, step int) (simulation.Personelle_report, error) {
+func (a *App) Get_personelle_report(company int, step int, employee_type string) (simulation.Personelle_sub_report, error) {
 	err := check_request(company, step)
 	if err != nil {
-		return simulation.Personelle_report{}, err
+		return simulation.Personelle_sub_report{}, err
 	}
 
-	return game_state.state.Companies[company].Reports[step].Personelle_report, nil
+	switch employee_type {
+	case "General":
+		return game_state.state.Companies[company].Reports[step].Personelle_report.General, nil
+	case "Production":
+		return game_state.state.Companies[company].Reports[step].Personelle_report.Production, nil
+	case "Marketing":
+		return game_state.state.Companies[company].Reports[step].Personelle_report.Marketing, nil
+	}
+
+	return simulation.Personelle_sub_report{}, errors.New("invalid employee type")
+}
+
+func (a *App) Get_production_report(company int, step int) (simulation.Production_report, error) {
+	err := check_request(company, step)
+	if err != nil {
+		return simulation.Production_report{}, err
+	}
+
+	return game_state.state.Companies[company].Reports[step].Production_report, nil
 }
 
 func (a *App) Trigger_simulation() (int, error) {

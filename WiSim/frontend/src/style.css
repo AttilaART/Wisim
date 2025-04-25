@@ -1,111 +1,117 @@
 html {
-    background-color: rgba(27, 38, 54, 1);
-    text-align: center;
-    color: white;
+  background-color: rgba(27, 38, 54, 1);
+  text-align: center;
+  color: white;
 }
 
 body {
-    margin: 0;
-    color: white;
-    font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
-    "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
+  margin: 0;
+  color: white;
+  font-family: "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+  "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
+  sans-serif;
+  /* Prevent text selection */
+  -webkit-user-select: none; /* Safari */
+  -ms-user-select: none; /* IE 10 and IE 11 */
+  user-select: none; /* Standard syntax */
 }
 
 @font-face {
-    font-family: "Nunito";
-    font-style: normal;
-    font-weight: 400;
-    src: local(""),
-    url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
+  font-family: "Nunito";
+  font-style: normal;
+  font-weight: 400;
+  src: local(""),
+  url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
 }
 
 #app {
-    height: 100vh;
-    text-align: center;
+  height: 100vh;
+  text-align: center;
+}
+
+h2 {
+  font-size: 25px
+}
+
+.loader {
+  margin: auto auto;
+  width: fit-content;
+  font-weight: bold;
+  font-family: monospace;
+  font-size: 30px;
+  clip-path: inset(0 3ch 0 0);
+  animation: l4 1s steps(4) infinite;
+}
+.loader:before {
+  content: "Loading...";
+}
+@keyframes l4 {
+  to {
+    clip-path: inset(0 -1ch 0 0);
+  }
+}
+
+.tab_selector {
+  display: flex;
+  margin: 10px;
+  background-color: rgba(0, 0, 0, 0.5);
+  overflow: hidden;
+  border-radius: 10px;
+  height: fit-content;
 }
 
 
-
-  .loader {
-    margin: auto auto;
-    width: fit-content;
-    font-weight: bold;
-    font-family: monospace;
-    font-size: 30px;
-    clip-path: inset(0 3ch 0 0);
-    animation: l4 1s steps(4) infinite;
-  }
-  .loader:before {
-    content: "Loading...";
-  }
-  @keyframes l4 {
-    to {
-      clip-path: inset(0 -1ch 0 0);
-    }
-  }
-
-  .tab_selector {
-    display: flex;
-    margin: 10px;
-    background-color: rgba(0, 0, 0, 0.5);
-    overflow: hidden;
-    border-radius: 10px;
-    height: fit-content;
-  }
+.tab_button.button {
+  text-align: center;
+  height: fit-content;
+  padding: 10px;
+  margin: 0px 0px 0px 0px;
+  border-radius: 0;
+  flex: 1 1 fit-content;
+}
 
 
-  .tab_button.button {
-    text-align: center;
-    height: fit-content;
-    padding: 10px;
-    margin: 0px 0px 0px 0px;
-    border-radius: 0;
-    flex: 1 1 fit-content;
-  }
-  
+button {
+  background-color: rgba(0, 0, 0, 0);
+  text-align: left;
+  color: rgba(255, 255, 255, 1);
+  width: 120px;
+  height: 30px;
+  border-radius: 3px;
+  border: none;
+  padding: 0 10px;
+  cursor: pointer;
+  font-size: 17px;
+}
 
-  button {
-    background-color: rgba(0, 0, 0, 0);
-    text-align: left;
-    color: rgba(255, 255, 255, 1);
-    width: 120px;
-    height: 30px;
-    border-radius: 3px;
-    border: none;
-    padding: 0 10px;
-    cursor: pointer;
-    font-size: 17px;
-  }
+button:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
 
-  button:hover {
-    background-color: rgba(255, 255, 255, 0.5);
-  }
-
-  button:active {
-    background-color: rgba(255, 255, 255, 1);
-    color: #000;
-  }
+button:active {
+  background-color: rgba(255, 255, 255, 1);
+  color: #000;
+}
 
 
-  .value_field {
-    font-family: "JetBrains mono", "Courier New", Courier, monospace;
-    text-align: right;
-  }
-  .grid_item {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    margin: 10px;
-    padding: 10px;
-    display: flex;
-    flex-direction: column;
-  }
+.value_field {
+  font-family: "JetBrains mono", "Courier New", Courier, monospace;
+  text-align: right;
+}
+.grid_item {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 10px;
+  margin: 10px;
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+}
 
-  .grid_container {
-    display: grid;
-  }
+.grid_container {
+  display: grid;
+}
 
-  .report_div {
-    overflow-y: scroll;
-    max-height: calc(100vh - 20px - 50px);
-  }
+.report_div {
+  overflow-y: scroll;
+  max-height: calc(100vh - 20px - 50px);
+}

@@ -53,9 +53,9 @@ export namespace simulation {
 	    Cash_costs: number;
 	    Total_expenses_before_tax: number;
 	    Total_expenses_after_tax: number;
-	    EBIT: number;
+	    Operating_profit: number;
 	    Taxes: number;
-	    Profit: number;
+	    Net_Profit: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Financial_Report(source);
@@ -71,12 +71,12 @@ export namespace simulation {
 	        this.Cash_costs = source["Cash_costs"];
 	        this.Total_expenses_before_tax = source["Total_expenses_before_tax"];
 	        this.Total_expenses_after_tax = source["Total_expenses_after_tax"];
-	        this.EBIT = source["EBIT"];
+	        this.Operating_profit = source["Operating_profit"];
 	        this.Taxes = source["Taxes"];
-	        this.Profit = source["Profit"];
+	        this.Net_Profit = source["Net_Profit"];
 	    }
 	}
-	export class Personelle_report {
+	export class Personelle_sub_report {
 	    Number_of_employees: number;
 	    Number_of_hires: number;
 	    Avg_pay: number;
@@ -87,32 +87,9 @@ export namespace simulation {
 	    Maximum_skill: number;
 	    Avg_skill: number;
 	    Standard_dev_skill: number;
-	    Marketing_Number_of_employees: number;
-	    Marketing_Number_of_hires: number;
-	    Marketing_Avg_pay: number;
-	    Marketing_Minimum_pay: number;
-	    Marketing_Maximum_pay: number;
-	    Marketing_Standard_dev_pay: number;
-	    Marketing_Minimum_skill: number;
-	    Marketing_Maximum_skill: number;
-	    Marketing_Avg_skill: number;
-	    Marketing_Standard_dev_skill: number;
-	    Production_Number_of_employees: number;
-	    Production_Number_of_hires: number;
-	    Production_Avg_pay: number;
-	    Production_Minimum_pay: number;
-	    Production_Maximum_pay: number;
-	    Production_Standard_dev_pay: number;
-	    Production_Minimum_skill: number;
-	    Production_Maximum_skill: number;
-	    Production_Avg_skill: number;
-	    Production_Standard_dev_skill: number;
-	    Production_avg_productivity: number;
-	    Production_minimum_productivity: number;
-	    Prouduction_maximum_productivity: number;
 	
 	    static createFrom(source: any = {}) {
-	        return new Personelle_report(source);
+	        return new Personelle_sub_report(source);
 	    }
 	
 	    constructor(source: any = {}) {
@@ -127,29 +104,36 @@ export namespace simulation {
 	        this.Maximum_skill = source["Maximum_skill"];
 	        this.Avg_skill = source["Avg_skill"];
 	        this.Standard_dev_skill = source["Standard_dev_skill"];
-	        this.Marketing_Number_of_employees = source["Marketing_Number_of_employees"];
-	        this.Marketing_Number_of_hires = source["Marketing_Number_of_hires"];
-	        this.Marketing_Avg_pay = source["Marketing_Avg_pay"];
-	        this.Marketing_Minimum_pay = source["Marketing_Minimum_pay"];
-	        this.Marketing_Maximum_pay = source["Marketing_Maximum_pay"];
-	        this.Marketing_Standard_dev_pay = source["Marketing_Standard_dev_pay"];
-	        this.Marketing_Minimum_skill = source["Marketing_Minimum_skill"];
-	        this.Marketing_Maximum_skill = source["Marketing_Maximum_skill"];
-	        this.Marketing_Avg_skill = source["Marketing_Avg_skill"];
-	        this.Marketing_Standard_dev_skill = source["Marketing_Standard_dev_skill"];
-	        this.Production_Number_of_employees = source["Production_Number_of_employees"];
-	        this.Production_Number_of_hires = source["Production_Number_of_hires"];
-	        this.Production_Avg_pay = source["Production_Avg_pay"];
-	        this.Production_Minimum_pay = source["Production_Minimum_pay"];
-	        this.Production_Maximum_pay = source["Production_Maximum_pay"];
-	        this.Production_Standard_dev_pay = source["Production_Standard_dev_pay"];
-	        this.Production_Minimum_skill = source["Production_Minimum_skill"];
-	        this.Production_Maximum_skill = source["Production_Maximum_skill"];
-	        this.Production_Avg_skill = source["Production_Avg_skill"];
-	        this.Production_Standard_dev_skill = source["Production_Standard_dev_skill"];
-	        this.Production_avg_productivity = source["Production_avg_productivity"];
-	        this.Production_minimum_productivity = source["Production_minimum_productivity"];
-	        this.Prouduction_maximum_productivity = source["Prouduction_maximum_productivity"];
+	    }
+	}
+	export class Production_report {
+	    Machines_purchased: number;
+	    Machines_sold: number;
+	    Worker_surplus: number;
+	    Avg_machine_productivity: number;
+	    Products_produced: number;
+	    Base_production: number;
+	    Bonus_production: number;
+	    Material_used: number;
+	    Energy_used: number;
+	    Warehouses_bought: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Production_report(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Machines_purchased = source["Machines_purchased"];
+	        this.Machines_sold = source["Machines_sold"];
+	        this.Worker_surplus = source["Worker_surplus"];
+	        this.Avg_machine_productivity = source["Avg_machine_productivity"];
+	        this.Products_produced = source["Products_produced"];
+	        this.Base_production = source["Base_production"];
+	        this.Bonus_production = source["Bonus_production"];
+	        this.Material_used = source["Material_used"];
+	        this.Energy_used = source["Energy_used"];
+	        this.Warehouses_bought = source["Warehouses_bought"];
 	    }
 	}
 	export class Sales_report {

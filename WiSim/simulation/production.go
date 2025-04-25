@@ -118,8 +118,8 @@ func calculate_machines(
 	production_report Production_report,
 	external_factors External_factors,
 ) ([]Machine, Production_report, []FinanceReportEntry, []FinanceReportEntry, error) {
-	production_report.Machines_purchased = []Machine{}
-	production_report.Machines_sold = []Machine{}
+	production_report.Machines_purchased = 0
+	production_report.Machines_sold = 0
 	var Income_entries []FinanceReportEntry
 	var Assets_entries []FinanceReportEntry
 
@@ -130,7 +130,7 @@ func calculate_machines(
 
 	if machines_to_sell > 0 {
 		for range machines_to_sell {
-			production_report.Machines_purchased = append(production_report.Machines_purchased, machines[0])
+			production_report.Machines_purchased += 1
 			Income_entries = append(Income_entries, FinanceReportEntry{"Selling of machine", production, "", true, float64(machines[0].Value)})
 			machines = machines[1:]
 		}
@@ -141,7 +141,7 @@ func calculate_machines(
 
 	if machines_to_purchase > 0 {
 		for range machines_to_purchase {
-			production_report.Machines_purchased = append(production_report.Machines_purchased, machines_for_sale)
+			production_report.Machines_purchased += 1
 			Income_entries = append(Income_entries, FinanceReportEntry{"Purchase of machine", production, "", true, float64(-machines_for_sale.Value)})
 			machines = append(machines, machines_for_sale)
 		}
