@@ -11,6 +11,7 @@ import (
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
 	"github.com/wailsapp/wails/v2/pkg/options/assetserver"
+	"github.com/wailsapp/wails/v2/pkg/options/mac"
 )
 
 //go:embed all:frontend/dist
@@ -68,6 +69,7 @@ func main() {
 		Height:    900,
 		MinWidth:  1000,
 		MinHeight: 400,
+		Mac:       &mac.Options{Preferences: &mac.Preferences{FullscreenEnabled: mac.Enabled}},
 		AssetServer: &assetserver.Options{
 			Assets: assets,
 		},
