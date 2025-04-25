@@ -6,6 +6,7 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
+	"os"
 )
 
 // App struct
@@ -93,12 +94,6 @@ func (a *App) Get_financial_report(company int, step int) (simulation.Financial_
 		return simulation.Financial_Report{}, err
 	}
 
-	s, err := json.MarshalIndent(game_state.state.Companies[company].Reports[step].Financial_Report, "-->", "    ")
-	if err != nil {
-		return simulation.Financial_Report{}, err
-	}
-	println(string(s))
-
 	return game_state.state.Companies[company].Reports[step].Financial_Report, nil
 }
 
@@ -182,6 +177,20 @@ func (a *App) New_simulation() (int, error) {
 	}
 
 	return game_state.state.Step, nil
+}
+
+func (a *App) Initial_app_load() error {
+	sim_config_file, err := os.ReadFile("simulation/Config/sim_config.json")
+	if err != nil {
+		return errors.New("error loading sim_config.json")
+	}
+
+	err = json.Unmarshal(sim_config_file, &game_state.config)
+	if err != nil {
+		return errors.New("error in sim_config.json")
+	}
+
+	return nil
 }
 
 //  let option = {

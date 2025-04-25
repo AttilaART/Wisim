@@ -3,6 +3,8 @@
   import PersonelleReport from "./PersonelleReport.svelte";
   import ProductionReport from "./ProductionReport.svelte";
   import SalesReport from "./Sales_report.svelte";
+  import Sidebar from "./Sidebar.svelte";
+  import { fade, fly } from "svelte/transition";
 
   import { month_counter } from "./store";
 
@@ -56,28 +58,67 @@
 
 <svelte:window bind:outerWidth={page_width} />
 
-{#key page_width}
-  {#if $month_counter >= 0}
-    <div class="report_div">
-      <div class="tab_selector">
-        <button class="button tab_button" onclick={load_reports_overview}
-          >Overview</button
-        >
-        <button class="button tab_button" onclick={load_reports_finances}
-          >Finances</button
-        >
-        <button class="button tab_button" onclick={load_reports_sales}
-          >Sales</button
-        >
-        <button class="button tab_button" onclick={load_reports_personelle}
-          >personelle</button
-        >
-        <button class="button tab_button" onclick={load_reports_production}
-          >Production</button
-        >
-      </div>
+{#if $month_counter >= 0}
+  <div
+    class="report_div"
+    out:fade={{ duration: 300 }}
+    in:fly={{ duration: 300, delay: 300, y: -40 }}
+  >
+    <Sidebar
+      expand={true}
+      keep_pressed={true}
+      horisontal={true}
+      buttons={[
+        {
+          Text: "Overview",
+          Style: "",
+          Show: 1,
+          Onclick_function: () => {
+            load_reports_overview();
+          },
+        },
+        {
+          Text: "Finances",
+          Style: "",
+          Show: 1,
+          Onclick_function: () => {
+            load_reports_finances();
+          },
+        },
+        {
+          Text: "Sales",
+          Style: "",
+          Show: 1,
+          Onclick_function: () => {
+            load_reports_sales();
+          },
+        },
+        {
+          Text: "Personelle",
+          Style: "",
+          Show: 1,
+          Onclick_function: () => {
+            load_reports_personelle();
+          },
+        },
+        {
+          Text: "Production",
+          Style: "",
+          Show: 1,
+          Onclick_function: () => {
+            load_reports_production();
+          },
+        },
+      ]}
+    ></Sidebar>
+    {#key page_width}
       {#if reports_tabs_state.overview}
-        <div>Overview is under construction</div>
+        <div
+          out:fade={{ duration: 300 }}
+          in:fly={{ duration: 300, delay: 300, y: -40 }}
+        >
+          Overview is under construction
+        </div>
       {:else if reports_tabs_state.finances}
         <Financial_report></Financial_report>
       {:else if reports_tabs_state.sales}
@@ -89,8 +130,10 @@
           <ProductionReport></ProductionReport>
         </div>
       {/if}
-    </div>
-  {:else}
+    {/key}
+  </div>
+{:else}
+  <div class="report_div">
     <div
       class="grid_container"
       style="grid-template-columns: auto; grid-template-rows: auto;"
@@ -103,8 +146,8 @@
         </p>
       </div>
     </div>
-  {/if}
-{/key}
+  </div>
+{/if}
 
 <style>
 </style>

@@ -2,6 +2,7 @@
   import { format_number, red, green } from "./helper";
   import { get } from "svelte/store";
   import { month_counter } from "./store";
+  import { fade } from "svelte/transition";
 
   interface properties {
     get_report: (month: number) => object;
@@ -84,14 +85,14 @@
       data.error = error;
     }
 
-    if (month >= 2) {
+    if (month >= 1) {
       last_month = Object.values(await get_values(month - 1));
     } else {
       for (let _ in keys) {
         last_month.push(0);
       }
     }
-    if (month >= 3) {
+    if (month >= 2) {
       two_months_ago = Object.values(await get_values(month - 2));
     } else {
       for (let _ in keys) {
@@ -112,56 +113,58 @@
     data.loading = false;
   }
 
-  sep_key_values(get_report, get(month_counter));
+  sep_key_values(get_report, $month_counter);
 </script>
 
-{#if data.loading}
-  loading...
-{:else if data.error === null}
-  <table>
-    <thead>
-      <tr>
-        <th style="width: auto; text-align: left;">Month / Year</th>
-        <th style="width: auto; text-align: left;"></th>
-        <th style="width: 20%; text-align: right;"
-          >{($month_counter - 1) % 13} / {Math.floor(
-            ($month_counter - 2) / 12,
-          )}</th
-        >
-        <th style="width: 20%; text-align: right;"
-          >{$month_counter % 13} / {Math.floor(($month_counter - 1) / 12)}</th
-        >
-        <th style="width: 20%; text-align: right;"
-          >{($month_counter + 1) % 13} / {Math.floor($month_counter / 12)}
-        </th>
-      </tr>
-    </thead>
-    <tbody>
-      {#each data.data as pair}
-        {#if custom_rows_names.includes(pair.key)}
-          {@render row(
-            pair.key,
-            pair.two_months_ago_value,
-            pair.last_month_value,
-            pair.current_value,
-            custom_rows[custom_rows_names.indexOf(pair.key)].properties,
-          )}
-        {:else}
-          {@render row(
-            pair.key,
-            pair.two_months_ago_value,
-            pair.last_month_value,
-            pair.current_value,
-            null,
-          )}
-        {/if}
-      {/each}
-    </tbody>
-  </table>
-{:else}
-  failed to load data: <br />
-  {data.error}
-{/if}
+<div in:fade={{ duration: 300 }}>
+  {#if data.loading}
+    loading...
+  {:else if data.error === null}
+    <table style="width: 100%">
+      <thead>
+        <tr>
+          <th style="width: auto; text-align: left;">Month / Year</th>
+          <th style="width: auto; text-align: left;"></th>
+          <th style="width: 20%; text-align: right;"
+            >{($month_counter - 1) % 13} / {Math.floor(
+              ($month_counter - 2) / 12,
+            )}</th
+          >
+          <th style="width: 20%; text-align: right;"
+            >{$month_counter % 13} / {Math.floor(($month_counter - 1) / 12)}</th
+          >
+          <th style="width: 20%; text-align: right;"
+            >{($month_counter + 1) % 13} / {Math.floor($month_counter / 12)}
+          </th>
+        </tr>
+      </thead>
+      <tbody>
+        {#each data.data as pair}
+          {#if custom_rows_names.includes(pair.key)}
+            {@render row(
+              pair.key,
+              pair.two_months_ago_value,
+              pair.last_month_value,
+              pair.current_value,
+              custom_rows[custom_rows_names.indexOf(pair.key)].properties,
+            )}
+          {:else}
+            {@render row(
+              pair.key,
+              pair.two_months_ago_value,
+              pair.last_month_value,
+              pair.current_value,
+              null,
+            )}
+          {/if}
+        {/each}
+      </tbody>
+    </table>
+  {:else}
+    failed to load data: <br />
+    {data.error}
+  {/if}
+</div>
 
 {#snippet row(
   key: string,

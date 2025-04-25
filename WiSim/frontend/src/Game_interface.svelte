@@ -11,6 +11,7 @@
     Revert_simulation,
     New_simulation,
   } from "../wailsjs/go/main/App";
+  import { fade, fly, slide } from "svelte/transition";
 
   import { month_counter } from "./store";
 
@@ -91,7 +92,6 @@
 
     setTimeout(() => {
       is_simulating = false;
-      console.log(try_cancel_sim);
 
       if (try_cancel_sim) {
         let month_promise = Revert_simulation();
@@ -165,6 +165,8 @@
 <div
   class="game_interface"
   style="grid-template-rows: auto {bottom_data_height + 22}px;"
+  in:fade={{ duration: 300, delay: 300 }}
+  out:fade={{ duration: 300 }}
 >
   <div
     style="display: flex; flex-direction: column; grid-column: 1; grid-row: 1 / span 2;"
@@ -185,6 +187,7 @@
 
     <Sidebar
       expand={true}
+      keep_pressed={true}
       buttons={[
         {
           Text: "Dashboard",
@@ -219,19 +222,38 @@
           Onclick_function: () => {
             trigger_simulation();
           },
+          dont_keep_pressed: true,
         },
       ]}
     ></Sidebar>
   </div>
   <div style="grid-column: 2; grid-row: 1; width: 100%;">
     {#if menu_state.Dashboard}
-      <div>Dashboard is under construction</div>
+      <div
+        class="report_div"
+        out:fade={{ duration: 300 }}
+        in:fly={{ duration: 300, delay: 300, y: -40 }}
+      >
+        <div>Dashboard is under construction</div>
+      </div>
     {/if}
     {#if menu_state.Decisions}
-      <div>Decisions is under construction</div>
+      <div
+        class="report_div"
+        out:fade={{ duration: 300 }}
+        in:fly={{ duration: 300, delay: 300, y: -40 }}
+      >
+        <div>Decisions is under construction</div>
+      </div>
     {/if}
     {#if menu_state.Reports}
-      <Reports></Reports>
+      <div
+        class="report_div"
+        out:fade={{ duration: 300 }}
+        in:fly={{ duration: 300, delay: 300, y: -40 }}
+      >
+        <Reports></Reports>
+      </div>
     {/if}
   </div>
   <div
@@ -259,11 +281,6 @@
     width: calc(100% - 20px);
     max-height: calc(100% - 20px);
     padding: 10px;
-    background-image: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.5),
-      rgba(0, 0, 0, 0)
-    );
     display: grid;
     grid-template-columns: calc(200px + 20px) auto;
     grid-template-rows: auto 55px;

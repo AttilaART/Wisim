@@ -3,11 +3,12 @@
   import GameInterface from "./Game_interface.svelte";
   import Sidebar from "./Sidebar.svelte";
   import Popup from "./Popup.svelte";
-  import { New_simulation } from "../wailsjs/go/main/App";
+  import { New_simulation, Initial_app_load } from "../wailsjs/go/main/App";
+  import { fade } from "svelte/transition";
 
   import { month_counter } from "./store";
 
-  let background_image_blur = $state(0);
+  let background_image_blurred = $state("");
   let is_loading = $state(false);
 
   let mode = $state({
@@ -15,10 +16,12 @@
     game_interface: false,
   });
 
+  let Initial_app_load_promise = Initial_app_load();
+
   function load_singleplayer() {
     is_loading = true;
     start_new_game().then(() => {
-      background_image_blur = 4;
+      background_image_blurred = " blurred";
       mode.main_menu = false;
       mode.game_interface = true;
       is_loading = false;
@@ -26,7 +29,7 @@
   }
 
   function load_main_menu() {
-    background_image_blur = 0;
+    background_image_blurred = "";
     mode.main_menu = true;
     mode.game_interface = false;
   }
@@ -46,49 +49,70 @@
     style="position: absolute; height: 100vh; width: 100%; z-index: 0; overflow: hidden;"
   >
     <div
-      style="background-image: url({background_image}); filter: blur({background_image_blur}px); position: absolute; width: 110%; height: 110%; left: -10px; top: -10px"
+      class="background_image{background_image_blurred}"
+      style="background-image: url({background_image});"
+    ></div>
+
+    <div
+      style="position:absolute; width: 110%; height: 110%; left: -10px; top: -10px;
+    background-image: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0)
+    );"
     ></div>
   </div>
-  <div class="main_div" style="">
-    {#if mode.main_menu}
-      <div class="main_menu">
-        <h1 style="padding: 0 8px;">WiSim</h1>
 
-        <Sidebar
-          expand={true}
-          buttons={[
-            {
-              Text: "Singleplayer",
-              Style: "",
-              Show: 1,
-              Onclick_function: load_singleplayer,
-            },
-            {
-              Text: "Host game",
-              Style: "",
-              Show: 1,
-              Onclick_function: () => {},
-            },
-            {
-              Text: "Join game",
-              Style: "",
-              Show: 1,
-              Onclick_function: () => {},
-            },
-            {
-              Text: "Settings",
-              Style: "margin-top: auto",
-              Show: 1,
-              Onclick_function: () => {},
-            },
-          ]}
-        ></Sidebar>
-      </div>
-    {/if}
-    {#if mode.game_interface}
-      <GameInterface return_function={load_main_menu}></GameInterface>
-    {/if}
-  </div>
+  {#await Initial_app_load_promise then}
+    <div class="main_div" style="">
+      {#if mode.main_menu}
+        <div
+          class="main_menu"
+          out:fade={{ duration: 300 }}
+          in:fade={{ duration: 300, delay: 300 }}
+        >
+          <h1 style="padding: 0 8px;">WiSim</h1>
+
+          <Sidebar
+            expand={true}
+            buttons={[
+              {
+                Text: "Singleplayer",
+                Style: "",
+                Show: 1,
+                Onclick_function: load_singleplayer,
+              },
+              {
+                Text: "Host game",
+                Style: "",
+                Show: 1,
+                Onclick_function: () => {},
+              },
+              {
+                Text: "Join game",
+                Style: "",
+                Show: 1,
+                Onclick_function: () => {},
+              },
+              {
+                Text: "Settings",
+                Style: "margin-top: auto",
+                Show: 1,
+                Onclick_function: () => {},
+              },
+            ]}
+          ></Sidebar>
+        </div>
+      {:else if mode.game_interface}
+        <GameInterface return_function={load_main_menu}></GameInterface>
+      {/if}
+    </div>
+  {:catch error}
+    <div>
+      <Popup button_data={{ text: "OK" }} content={`<div>${error}</div>`}
+      ></Popup>
+    </div>
+  {/await}
 </main>
 
 <style>
@@ -115,11 +139,6 @@
   .main_menu {
     display: flex;
     flex-direction: column;
-    background-image: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.5),
-      rgba(0, 0, 0, 0)
-    );
     height: 100%;
     width: 50%;
     text-align: left;
@@ -132,5 +151,19 @@
     padding: 10px;
     margin: 0px 0px 0px 0px;
     border-radius: 3;
+  }
+
+  .background_image {
+    filter: blur(0);
+    position: absolute;
+    width: 110%;
+    height: 110%;
+    left: -10px;
+    top: -10px;
+    transition: filter 300ms;
+  }
+
+  .background_image.blurred {
+    filter: blur(5px);
   }
 </style>

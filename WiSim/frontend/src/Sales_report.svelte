@@ -5,6 +5,7 @@
 
   import { month_counter } from "./store";
   import Chart from "./Chart.svelte";
+  import { fade, fly } from "svelte/transition";
 
   let month = $state(0);
 
@@ -21,6 +22,8 @@
 <div
   class="grid_container"
   style="grid-template-columns: auto auto; grid-template-rows: auto auto;"
+  out:fade={{ duration: 300 }}
+  in:fly={{ duration: 300, delay: 300, y: -40 }}
 >
   <div
     style="grid-row: 1; grid-column: 1 / span 2; display: flex; flex-direction: row"

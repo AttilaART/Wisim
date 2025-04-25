@@ -51,24 +51,6 @@ h2 {
   }
 }
 
-.tab_selector {
-  display: flex;
-  margin: 10px;
-  background-color: rgba(0, 0, 0, 0.5);
-  overflow: hidden;
-  border-radius: 10px;
-  height: fit-content;
-}
-
-
-.tab_button.button {
-  text-align: center;
-  height: fit-content;
-  padding: 10px;
-  margin: 0px 0px 0px 0px;
-  border-radius: 0;
-  flex: 1 1 fit-content;
-}
 
 
 button {
@@ -85,7 +67,7 @@ button {
 }
 
 button:hover {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: rgba(255, 255, 255, 0.3);
 }
 
 button:active {
@@ -112,6 +94,8 @@ button:active {
 }
 
 .report_div {
+  position: absolute;
   overflow-y: scroll;
-  max-height: calc(100vh - 20px - 50px);
+  height: calc(100vh - 20px - 50px);
+  width: calc(100% - 120px)
 }

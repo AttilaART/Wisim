@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { fade } from "svelte/transition";
+
   type Button_data = {
     Text: String;
     Custom_style: String;
@@ -10,7 +12,7 @@
   //
 </script>
 
-<div class="popup">
+<div class="popup" out:fade>
   <div class="popup_content">
     {@html content}
     {#if button_data != null}

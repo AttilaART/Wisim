@@ -3,10 +3,6 @@ package main
 import (
 	"WiSim/simulation"
 	"embed"
-	"encoding/json"
-	"fmt"
-	"log"
-	"os"
 
 	"github.com/wailsapp/wails/v2"
 	"github.com/wailsapp/wails/v2/pkg/options"
@@ -38,32 +34,11 @@ var old_game_state struct {
 }{false, simulation.Game_state{}, simulation.Sim_config{}}
 
 func main() {
-	sim_config_file, err := os.ReadFile("simulation/Config/sim_config.json")
-	if err != nil {
-		println("Error loading sim_config.json")
-		os.Exit(1)
-	}
-
-	err = json.Unmarshal(sim_config_file, &game_state.config)
-	if err != nil {
-		println("Error in sim_config.json")
-		os.Exit(2)
-	}
-
-	game_state.state.Current_decisions, err = simulation.Get_decisions(
-		fmt.Sprintf("Saves/%s-%d/Decisions", game_state.state.Game_name, game_state.state.Step),
-		len(game_state.state.Companies),
-	)
-	if err != nil {
-		println(err.Error())
-		log.Fatal("Failed to get current decisions")
-	}
-
 	// Create an instance of the app structure
 	app := NewApp()
 
 	// Create application with options
-	err = wails.Run(&options.App{
+	err := wails.Run(&options.App{
 		Title:     "WiSim",
 		Width:     1440,
 		Height:    900,

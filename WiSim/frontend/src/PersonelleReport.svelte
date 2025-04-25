@@ -5,6 +5,7 @@
 
   import { month_counter } from "./store";
   import Chart from "./Chart.svelte";
+  import { fade, fly } from "svelte/transition";
 
   let month = $state(0);
   let selected = $state("General");
@@ -33,6 +34,8 @@
 <div
   class="grid_container"
   style="grid-template-columns: auto auto; grid-template-rows: auto auto;"
+  out:fade={{ duration: 300 }}
+  in:fly={{ duration: 300, delay: 300, y: -40 }}
 >
   <div
     style="grid-row: 1; grid-column: 1 / span 2; display: flex; flex-direction: row"
@@ -51,8 +54,8 @@
   <div class="grid_item" style="grid-column: 1 / span 2; grid-row: 2;">
     <h2>
       <div class="custom-select">
-        <!--<span class="custom-arrow" style="transform: translateX({select_width})"
-        ></span>-->
+        <span class="custom-arrow" style="transform: translateX({select_width})"
+        ></span>
         <select id="Select" bind:value={selected}>
           <option value="General">General</option>
           <option value="Marketing">Marketing</option>
@@ -136,7 +139,7 @@
       url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
 
     text-align-last: right;
-    padding-left: 10px;
+    padding-left: 15px;
   }
 
   select:hover {

@@ -38,6 +38,10 @@ export function Greet(arg1) {
   return window['go']['main']['App']['Greet'](arg1);
 }
 
+export function Initial_app_load() {
+  return window['go']['main']['App']['Initial_app_load']();
+}
+
 export function New_simulation() {
   return window['go']['main']['App']['New_simulation']();
 }

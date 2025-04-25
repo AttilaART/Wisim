@@ -4,8 +4,63 @@
     Style: string;
     Show: number; // -1 == hide, 0==grey out, 1==show
     Onclick_function: () => void;
+    dont_keep_pressed?: boolean;
   };
-  const { buttons, expand }: { buttons: Button[]; expand: boolean } = $props();
+  const {
+    buttons,
+    expand,
+    keep_pressed,
+    horisontal,
+  }: {
+    buttons: Button[];
+    expand: boolean;
+    keep_pressed?: boolean;
+    horisontal?: boolean;
+  } = $props();
+
+  let button_selection = $state(
+    (() => {
+      let button_selection = [];
+      for (let _ in buttons) {
+        button_selection.push(false);
+      }
+      return button_selection;
+    })(),
+  );
+
+  function select_button(index: number) {
+    if (typeof index === "undefined") {
+      console.warn("index has type undefined");
+    }
+    for (let i in button_selection) {
+      button_selection[i] = false;
+    }
+    button_selection[index] = true;
+  }
+
+  function set_class(index: number) {
+    if (horisontal) {
+      if (
+        button_selection[index] &&
+        keep_pressed &&
+        !buttons[index].dont_keep_pressed
+      ) {
+        return "sidebar_button horizontal selected";
+      } else {
+        return "sidebar_button horizontal";
+      }
+    } else {
+      if (
+        button_selection[index] &&
+        keep_pressed &&
+        !buttons[index].dont_keep_pressed
+      ) {
+        return "sidebar_button selected";
+      } else {
+        return "sidebar_button";
+      }
+    }
+  }
 
   let style = $state("");
   if (!expand) {
@@ -13,24 +68,38 @@
   }
 </script>
 
-<div class="sidebar" {style}>
-  {#each buttons as button}
-    {@render sidebar_button(button)}
-  {/each}
-</div>
+{#if !horisontal}
+  <div class="sidebar" {style}>
+    {#each buttons as button, index}
+      {@render sidebar_button(button, index)}
+    {/each}
+  </div>
+{:else}
+  <div class="sidebar horizontal" {style}>
+    {#each buttons as button, index}
+      {@render sidebar_button(button, index)}
+    {/each}
+  </div>
+{/if}
 
-{#snippet sidebar_button(button_data: Button)}
+{#snippet sidebar_button(button_data: Button, index: number)}
   {#if button_data.Show == 1}
     <button
-      class="sidebar_button"
+      class={set_class(index)}
       style={button_data.Style}
-      onclick={button_data.Onclick_function}>{@html button_data.Text}</button
+      onclick={() => {
+        select_button(index);
+        button_data.Onclick_function();
+      }}>{@html button_data.Text}</button
     >
-  {:else if button_data.Show == 0}
+  {:else}
     <button
-      class="sidebar_button"
-      style="{button_data.Style} opacity: 60%"
-      onclick={button_data.Onclick_function}>{@html button_data.Text}</button
+      class={set_class(index)}
+      style="opacity: 60%; {button_data.Style}"
+      onclick={() => {
+        select_button(index);
+        button_data.Onclick_function();
+      }}>{@html button_data.Text}</button
     >
   {/if}
 {/snippet}
@@ -48,11 +117,41 @@
     overflow: hidden;
   }
 
+  .sidebar.horizontal {
+    height: fit-content;
+    width: calc(100% - 20px);
+    flex-direction: row;
+  }
+
   .sidebar_button {
     width: 200px;
     height: fit-content;
     padding: 10px;
     margin: 0px 0px 0px 0px;
     border-radius: 0;
+  }
+
+  .sidebar_button:hover {
+    background-color: rgba(255, 255, 255, 0.3);
+  }
+
+  .sidebar_button:active {
+    background-color: rgba(255, 255, 255, 1);
+    color: #000;
+  }
+
+  .sidebar_button.selected {
+    background-color: rgba(255, 255, 255, 0.5);
+    font-weight: bold;
+  }
+
+  .sidebar_button.horizontal {
+    text-align: center;
+    flex: 1 1 fit-content;
+  }
+
+  .sidebar_button.horizontal.selected {
+    background-color: rgba(255, 255, 255, 0.5);
+    font-weight: bold;
   }
 </style>
