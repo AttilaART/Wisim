@@ -20,10 +20,11 @@ type Game_state struct {
 	Step_simulated bool
 	Game_name      string
 
-	Population        Population
-	Companies         []Company
-	Current_decisions []Decisions
-	External_factors  External_factors
+	Population              Population
+	Companies               []Company
+	Current_decisions       []Decisions
+	Market_sales_statistics []Sales_statistics
+	External_factors        External_factors
 }
 
 type Sim_config struct {
@@ -90,9 +91,9 @@ type Decisions struct {
 	// Quality_of_stores int
 	Marketing float32 // Increases probabilty that a potential customer hears of your product
 
-	Investment_in_quality_development    float32 // Increases Quality
-	Investment_in_ecological_production  float32 // Decreases material use
-	Investment_in_durability_development float32 // increases durabilty
+	Quality_development_investment    float32 // Increases Quality
+	Ecological_production_investment  float32 // Decreases material use
+	Durability_development_investment float32 // increases durabilty
 	// Investment_in_coolness_development  float32 // Increases coolness
 
 	Production_target    int
@@ -335,8 +336,67 @@ type Production_report struct {
 }
 
 type Sales_report struct {
+	Product_statistics       Product_statistics
+	Company_sales_statistics Sales_statistics
+	Marketing_statistics     Marketing_statistics
+}
+
+type Purchasing_statistics struct {
+	Product_number               int
 	Products_sold                int
 	Difference_to_previous_month int
+	Product_demand               int
+
+	Avr_decision_factor      float32
+	Avr_purchasing_threshold float32
+
+	Avr_quality_factor       float32
+	Avr_durability_factor    float32
+	Avr_ecology_factor       float32
+	Avr_price_factor         float32
+	Avr_coolness_factor      float32
+	Avr_bang_for_buck_factor float32
+}
+
+type Research_statistics struct {
+	Quality_development_investment                  float64
+	Quality_development_investment_effectiveness    float64
+	Durability_development_investment               float64
+	Durability_development_investment_effectiveness float64
+	Ecological_production_investment                float32 // Decreases material use
+	Ecological_production_investment_effectiveness  float32 // Decreases material use
+}
+
+type Sales_statistics struct {
+	Products_sold                int
+	Difference_to_previous_month int
+	Product_demand               int
+	Market_share                 float32
+
+	Avr_decision_factor      float32
+	Avr_purchasing_threshold float32
+
+	Avr_quality_factor       float32
+	Avr_durability_factor    float32
+	Avr_ecology_factor       float32
+	Avr_price_factor         float32
+	Avr_coolness_factor      float32
+	Avr_bang_for_buck_factor float32
+}
+
+type Marketing_statistics struct {
+	Product       Product_statistics
+	Price         float64
+	Bang_for_buck float64
+	Promotion     float64
+	// Place
+}
+
+type Product_statistics struct {
+	Quality   float32
+	Durabilty int
+	Coolness  float32
+	Ecology   float32
 }
 
 type Customer struct {
@@ -395,29 +455,6 @@ type External_factors struct {
 	Machine_depreciation_rate float32 // in decimal
 }
 
-type Purchasing_statistics struct {
-	Products_sold  int
-	Product_number int
-
-	Avr_decision_factor      float32
-	Avr_purchasing_threshold float32
-
-	Product_quality       float32
-	Product_durabilty     int
-	Product_ecology       float32
-	Product_price_factor  float32
-	Product_price         float32
-	Product_coolness      float32
-	Product_bang_for_buck float32
-
-	Avr_quality_factor       float32
-	Avr_durability_factor    float32
-	Avr_ecology_factor       float32
-	Avr_price_factor         float32
-	Avr_coolness_factor      float32
-	Avr_bang_for_buck_factor float32
-}
-
 // #####################################################################################################
 // ##########     _         _              __                      _    _                     ##########
 // ##########    | |       | |            / _|                    | |  (_)                    ##########
@@ -429,7 +466,7 @@ type Purchasing_statistics struct {
 
 func (c Company) Mock_simulate_step(decisions Decisions, external_factors External_factors) Report {
 	results := FinanceReportEntry{"Predicted sales", predictions, "The amount of you predict you'll make", true, float64(decisions.Sales_projection) * float64(decisions.Selling_price)}
-	c.compile_reports(decisions, results, Purchasing_statistics{Products_sold: decisions.Sales_projection}, external_factors)
+	c.compile_reports(decisions, results, Purchasing_statistics{Products_sold: decisions.Sales_projection}, &Sales_statistics{}, external_factors)
 	return c.Reports[len(c.Reports)-1]
 }
 
@@ -455,16 +492,43 @@ func (game_state *Game_state) Simulate_step() error {
 	println("Simulating companies done!")
 
 	println("---------------- Simulatig economy ----------------")
-	Results, purchasing_statistcs, err := game_state.Population.simulate_economy(&game_state.Companies, game_state.External_factors)
+	Results, purchasing_statistics, err := game_state.Population.simulate_economy(&game_state.Companies, game_state.External_factors)
 	if err != nil {
 		return err
 	}
 	println("Simulatig economy done!")
 
 	println("================ Compiling reports =============== ")
+
+	game_state.Market_sales_statistics = append(game_state.Market_sales_statistics, Sales_statistics{})
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Products_sold = purchasing_statistics[len(purchasing_statistics)-1].Products_sold
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Product_demand = purchasing_statistics[len(purchasing_statistics)-1].Product_demand
+	if len(game_state.Market_sales_statistics) >= 2 {
+		game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Difference_to_previous_month = purchasing_statistics[len(purchasing_statistics)-1].Products_sold - game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-2].Products_sold
+	} else {
+		game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Difference_to_previous_month = purchasing_statistics[len(purchasing_statistics)-1].Products_sold
+	}
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Market_share = 100
+
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_decision_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_purchasing_threshold = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_threshold
+
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_quality_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_quality_factor
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_durability_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_durability_factor
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ecology_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_ecology_factor
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_price_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_coolness_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_bang_for_buck_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_bang_for_buck_factor
+
 	for i := range game_state.Companies {
 		fmt.Printf("Compiling reports for company %d\n", i)
-		game_state.Companies[i].compile_reports(game_state.Current_decisions[i], Results[i], purchasing_statistcs[i], game_state.External_factors)
+		game_state.Companies[i].compile_reports(
+			game_state.Current_decisions[i],
+			Results[i],
+			purchasing_statistics[i],
+			&game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1],
+			game_state.External_factors,
+		)
 
 	}
 
@@ -475,18 +539,16 @@ func (game_state *Game_state) Simulate_step() error {
 	println("Month: ", game_state.Step)
 	for i, c := range game_state.Companies {
 		fmt.Printf("Company %d: %s:\n", i, c.Name)
-		fmt.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Products_sold)
+		fmt.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
 		println("")
 	}
 
 	total_products_sold := 0
 	for _, c := range game_state.Companies {
-		total_products_sold += c.Reports[len(c.Reports)-1].Sales_report.Products_sold
+		total_products_sold += c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold
 	}
 
 	println("Total products sold: ", total_products_sold)
-
-	purchasing_statistcs[len(purchasing_statistcs)-1].Avr_bang_for_buck_factor += 1
 
 	missing_products := 0.0
 	for _, p := range game_state.Population.Population {
@@ -507,15 +569,19 @@ func (game_state *Game_state) Simulate_step() error {
 	return nil
 }
 
-func (company *Company) compile_reports(decisions Decisions, results FinanceReportEntry, purchasing_statistcs Purchasing_statistics, external_factors External_factors) error {
-	products_sold := purchasing_statistcs.Products_sold
+func (company *Company) compile_reports(
+	decisions Decisions,
+	results FinanceReportEntry,
+	company_purchasing_statistcs Purchasing_statistics,
+	market_purchasing_statistics *Sales_statistics,
+	external_factors External_factors,
+) error {
+	products_sold := company_purchasing_statistcs.Products_sold
 
-	company.Reports[len(company.Reports)-1].Sales_report.Products_sold = products_sold
-	if external_factors.Month > 0 {
-		company.Reports[len(company.Reports)-1].Sales_report.Difference_to_previous_month = products_sold - company.Reports[len(company.Reports)-2].Sales_report.Products_sold
-	} else {
-		company.Reports[len(company.Reports)-1].Sales_report.Difference_to_previous_month = products_sold
-	}
+	company.Reports[len(company.Reports)-1].Sales_report = company.compile_sales_report(
+		company_purchasing_statistcs,
+		market_purchasing_statistics.Products_sold,
+	)
 
 	company.Items_in_storage -= products_sold
 	company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement = append(company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement, results)
@@ -524,6 +590,48 @@ func (company *Company) compile_reports(decisions Decisions, results FinanceRepo
 	company.Reports[len(company.Reports)-1].Financial_Report = company.calculate_budget(decisions, external_factors)
 
 	return nil
+}
+
+func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics, Market_products_sold int) Sales_report {
+	report := Sales_report{}
+
+	report.Product_statistics.Quality = c.Offer.Product.Quality_factor
+	report.Product_statistics.Durabilty = c.Offer.Product.Durabilty
+	report.Product_statistics.Ecology = c.Offer.Product.Ecology_factor
+	report.Product_statistics.Coolness = c.Offer.Product.Coolness_factor
+
+	// ----------------
+
+	report.Company_sales_statistics.Products_sold = purchasing_statiscs.Products_sold
+	if len(c.Reports) >= 2 {
+		report.Company_sales_statistics.Difference_to_previous_month = purchasing_statiscs.Products_sold - c.Reports[len(c.Reports)-2].Sales_report.Company_sales_statistics.Products_sold
+	} else {
+		report.Company_sales_statistics.Difference_to_previous_month = purchasing_statiscs.Products_sold
+	}
+	report.Company_sales_statistics.Product_demand = purchasing_statiscs.Product_demand
+	report.Company_sales_statistics.Market_share = (float32(purchasing_statiscs.Products_sold) / float32(Market_products_sold)) * 100
+
+	report.Company_sales_statistics.Avr_decision_factor = purchasing_statiscs.Avr_decision_factor
+	report.Company_sales_statistics.Avr_purchasing_threshold = purchasing_statiscs.Avr_purchasing_threshold
+
+	report.Company_sales_statistics.Avr_quality_factor = purchasing_statiscs.Avr_quality_factor
+	report.Company_sales_statistics.Avr_durability_factor = purchasing_statiscs.Avr_durability_factor
+	report.Company_sales_statistics.Avr_ecology_factor = purchasing_statiscs.Avr_ecology_factor
+	report.Company_sales_statistics.Avr_price_factor = purchasing_statiscs.Avr_price_factor
+	report.Company_sales_statistics.Avr_coolness_factor = purchasing_statiscs.Avr_coolness_factor
+	report.Company_sales_statistics.Avr_bang_for_buck_factor = purchasing_statiscs.Avr_bang_for_buck_factor
+
+	// ----------------
+
+	report.Marketing_statistics.Product.Quality = c.Offer.Product.Quality_factor
+	report.Marketing_statistics.Product.Durabilty = c.Offer.Product.Durabilty
+	report.Marketing_statistics.Product.Coolness = c.Offer.Product.Coolness_factor
+	report.Marketing_statistics.Product.Ecology = c.Offer.Product.Ecology_factor
+
+	report.Marketing_statistics.Price = float64(c.Offer.Price)
+	report.Marketing_statistics.Promotion = float64(c.Decision_history[len(c.Decision_history)-1].Marketing)
+
+	return report
 }
 
 // ##################################################

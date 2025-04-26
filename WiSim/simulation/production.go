@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"encoding/json"
 	"errors"
 	"fmt"
 	"log"
@@ -32,9 +31,9 @@ func (company *Company) simulate_company(decisions Decisions, external_factors E
 	)
 	// Offer: Product
 
-	company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Quality development investment", product_development, "", true, float64(-decisions.Investment_in_quality_development))
-	company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Ecology development investment", product_development, "", true, float64(-decisions.Investment_in_ecological_production))
-	company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Durability development investment", product_development, "", true, float64(-decisions.Investment_in_durability_development))
+	company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Quality development investment", product_development, "", true, float64(-decisions.Quality_development_investment))
+	company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Ecology development investment", product_development, "", true, float64(-decisions.Ecological_production_investment))
+	company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Durability development investment", product_development, "", true, float64(-decisions.Durability_development_investment))
 
 	// calculate avg skill of production personelle -> influences Quality_factor
 	var total_production_skill float32 = 0
@@ -44,7 +43,7 @@ func (company *Company) simulate_company(decisions Decisions, external_factors E
 	avg_production_skill := total_production_skill / float32(len(company.Production_personelle))
 
 	company.Offer.Product.calculate_quality(
-		decisions.Investment_in_quality_development,
+		decisions.Quality_development_investment,
 		avg_production_skill,
 		decisions.Material_quality,
 	)
@@ -229,9 +228,6 @@ func produce(machines []Machine, product Product, production_report Production_r
 		energy_use += float64(m.Energy_use)
 	}
 
-	fmt.Printf("base_production: %d\n", base_production)
-	fmt.Printf("bonus_production: %d\n", bonus_production)
-
 	production_report.Products_produced = base_production + bonus_production
 	production_report.Base_production = base_production
 	production_report.Bonus_production = bonus_production
@@ -275,14 +271,6 @@ func calculate_machine_production(machine Machine, employees *[]Employee) (int, 
 		motivation += e.Motivation
 		working_hours += e.Working_hours
 
-		println("<----------------------->")
-		println("Employee: ", id)
-		s, err := json.MarshalIndent(e, "", "    ")
-		if err != nil {
-			log.Fatal(err.Error())
-		}
-		println(string(s))
-		println("<----------------------->")
 	}
 
 	num_assigned_workers := len(machine.Assigned_workers_ids)

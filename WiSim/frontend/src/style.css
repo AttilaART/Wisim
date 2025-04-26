@@ -97,5 +97,5 @@ button:active {
   position: absolute;
   overflow-y: scroll;
   height: calc(100vh - 20px - 50px);
-  width: calc(100% - 120px)
+  width: calc(100% - 240px)
 }

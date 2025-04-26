@@ -139,7 +139,7 @@
       url("assets/fonts/nunito-v16-latin-regular.woff2") format("woff2");
 
     text-align-last: right;
-    padding-left: 15px;
+    padding-right: 15px;
   }
 
   select:hover {
@@ -160,7 +160,7 @@
     -webkit-appearance: unset;
     position: absolute;
     top: 0;
-    left: 0;
+    right: 10px;
     display: block;
     height: 100%;
     pointer-events: none;

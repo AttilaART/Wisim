@@ -97,13 +97,39 @@ func (a *App) Get_financial_report(company int, step int) (simulation.Financial_
 	return game_state.state.Companies[company].Reports[step].Financial_Report, nil
 }
 
-func (a *App) Get_sales_report(company int, step int) (simulation.Sales_report, error) {
+func (a *App) Get_sales_statistics(company int, step int) (simulation.Sales_statistics, error) {
 	err := check_request(company, step)
 	if err != nil {
-		return simulation.Sales_report{}, err
+		if err.Error() != "invalid company" {
+			return simulation.Sales_statistics{}, err
+		}
 	}
 
-	return game_state.state.Companies[company].Reports[step].Sales_report, nil
+	if company == -1 {
+		return game_state.state.Market_sales_statistics[step], nil
+	} else if company < -1 || company > len(game_state.state.Companies)-1 {
+		return simulation.Sales_statistics{}, errors.New("invalid company")
+	}
+
+	return game_state.state.Companies[company].Reports[step].Sales_report.Company_sales_statistics, nil
+}
+
+func (a *App) Get_marketing_statistics(company int, step int) (simulation.Marketing_statistics, error) {
+	err := check_request(company, step)
+	if err != nil {
+		return simulation.Marketing_statistics{}, err
+	}
+
+	return game_state.state.Companies[company].Reports[step].Sales_report.Marketing_statistics, nil
+}
+
+func (a *App) Get_product_statistics(company int, step int) (simulation.Product_statistics, error) {
+	err := check_request(company, step)
+	if err != nil {
+		return simulation.Product_statistics{}, err
+	}
+
+	return game_state.state.Companies[company].Reports[step].Sales_report.Product_statistics, nil
 }
 
 func (a *App) Get_personelle_report(company int, step int, employee_type string) (simulation.Personelle_sub_report, error) {

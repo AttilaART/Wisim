@@ -60,7 +60,6 @@
 
 {#if $month_counter >= 0}
   <div
-    class="report_div"
     out:fade={{ duration: 300 }}
     in:fly={{ duration: 300, delay: 300, y: -40 }}
   >
@@ -133,7 +132,7 @@
     {/key}
   </div>
 {:else}
-  <div class="report_div">
+  <div>
     <div
       class="grid_container"
       style="grid-template-columns: auto; grid-template-rows: auto;"

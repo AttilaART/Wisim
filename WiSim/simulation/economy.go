@@ -3,7 +3,6 @@ package simulation
 import (
 	"errors"
 	"fmt"
-	"log"
 	"math/rand"
 )
 
@@ -38,24 +37,16 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 
 		for i, s := range individual_purchasing_statistics {
 			purchasing_statistics[i].Products_sold += s.Products_sold
+			purchasing_statistics[i].Product_demand += s.Product_demand
 			purchasing_statistics[i].Product_number = s.Product_number
 			purchasing_statistics[i].Avr_decision_factor += s.Avr_decision_factor
 			purchasing_statistics[i].Avr_purchasing_threshold += s.Avr_purchasing_threshold
-
-			purchasing_statistics[i].Product_quality = s.Product_quality
-			purchasing_statistics[i].Product_durabilty = s.Product_durabilty
-			purchasing_statistics[i].Product_ecology = s.Product_ecology
-			purchasing_statistics[i].Product_price_factor = s.Product_price_factor
-			purchasing_statistics[i].Product_price = s.Product_price
-			purchasing_statistics[i].Product_coolness = s.Product_coolness
-			purchasing_statistics[i].Avr_bang_for_buck_factor = s.Avr_bang_for_buck_factor
 
 			purchasing_statistics[i].Avr_quality_factor += s.Avr_quality_factor
 			purchasing_statistics[i].Avr_durability_factor += s.Avr_durability_factor
 			purchasing_statistics[i].Avr_ecology_factor += s.Avr_ecology_factor
 			purchasing_statistics[i].Avr_price_factor += s.Avr_price_factor
 			purchasing_statistics[i].Avr_coolness_factor += s.Avr_coolness_factor
-			purchasing_statistics[i].Avr_bang_for_buck_factor += s.Avr_bang_for_buck_factor
 		}
 	}
 
@@ -68,42 +59,28 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		purchasing_statistics[i].Avr_ecology_factor /= float32(len(population.Population))
 		purchasing_statistics[i].Avr_price_factor /= float32(len(population.Population))
 		purchasing_statistics[i].Avr_coolness_factor /= float32(len(population.Population))
-		purchasing_statistics[i].Avr_bang_for_buck_factor /= float32(len(population.Population))
 
 		purchasing_statistics[len(purchasing_statistics)-1].Products_sold += purchasing_statistics[i].Products_sold
+		purchasing_statistics[len(purchasing_statistics)-1].Product_demand += purchasing_statistics[i].Product_demand
 
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor += purchasing_statistics[i].Avr_decision_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_threshold += purchasing_statistics[i].Avr_purchasing_threshold
-		purchasing_statistics[len(purchasing_statistics)-1].Product_quality += purchasing_statistics[i].Product_quality
-		purchasing_statistics[len(purchasing_statistics)-1].Product_durabilty += purchasing_statistics[i].Product_durabilty
-		purchasing_statistics[len(purchasing_statistics)-1].Product_ecology += purchasing_statistics[i].Product_ecology
-		purchasing_statistics[len(purchasing_statistics)-1].Product_price_factor += purchasing_statistics[i].Product_price_factor
-		purchasing_statistics[len(purchasing_statistics)-1].Product_price += purchasing_statistics[i].Product_price
-		purchasing_statistics[len(purchasing_statistics)-1].Product_coolness += purchasing_statistics[i].Product_coolness
 
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_quality_factor += purchasing_statistics[i].Avr_quality_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_durability_factor += purchasing_statistics[i].Avr_durability_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_ecology_factor += purchasing_statistics[i].Avr_ecology_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor += purchasing_statistics[i].Avr_price_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor += purchasing_statistics[i].Avr_coolness_factor
-		purchasing_statistics[len(purchasing_statistics)-1].Avr_bang_for_buck_factor += purchasing_statistics[i].Avr_bang_for_buck_factor
 	}
 
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor /= float32(len(purchasing_statistics) - 1)
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_threshold /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Product_quality /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Product_durabilty /= len(purchasing_statistics)
-	purchasing_statistics[len(purchasing_statistics)-1].Product_ecology /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Product_price_factor /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Product_price /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Product_coolness /= float32(len(purchasing_statistics) - 1)
 
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_quality_factor /= float32(len(purchasing_statistics) - 1)
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_durability_factor /= float32(len(purchasing_statistics) - 1)
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_ecology_factor /= float32(len(purchasing_statistics) - 1)
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor /= float32(len(purchasing_statistics) - 1)
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Avr_bang_for_buck_factor += float32(len(purchasing_statistics) - 1)
 
 	results := make([]FinanceReportEntry, len(*companies))
 	for i := range results {
@@ -141,36 +118,27 @@ func calculate_purchase(customer Customer, offers []Offer, avg_price float32, ex
 		purchasing_statistics[i] = Purchasing_statistics{
 			Products_sold:  0,
 			Product_number: i,
+			Product_demand: 0,
 
 			Avr_decision_factor:      decision_factors[i],
 			Avr_purchasing_threshold: customer.Purchashing_threshold,
-
-			Product_quality:       offers[i].Product.Quality_factor,
-			Product_durabilty:     offers[i].Product.Durabilty,
-			Product_ecology:       offers[i].Product.Ecology_factor,
-			Product_price_factor:  is_cheap(offers[i], avg_price),
-			Product_price:         offers[i].Price,
-			Product_coolness:      offers[i].Product.Coolness_factor,
-			Product_bang_for_buck: offers[i].Product.Quality_factor / offers[i].Price,
 
 			Avr_quality_factor:       customer.Quality_preference * offers[i].Product.Quality_factor,
 			Avr_durability_factor:    customer.Durabilty_preference * float32(offers[i].Product.Durabilty),
 			Avr_ecology_factor:       customer.Ecology_preference * offers[i].Product.Ecology_factor,
 			Avr_price_factor:         customer.Price_preference * is_cheap(offers[i], avg_price),
 			Avr_coolness_factor:      customer.Coolness_preference * offers[i].Product.Coolness_factor,
-			Avr_bang_for_buck_factor: customer.Bang_for_buck_preference * (offers[i].Product.Quality_factor / offers[i].Price),
+			Avr_bang_for_buck_factor: customer.Bang_for_buck_preference * (o.Product.Quality_factor / o.Price),
 		}
 	}
 
 	// Select product using weighted die
-	choice, err := choose_product(decision_factors, customer.Purchashing_threshold)
-	if err != nil {
-		log.Fatalf("%s at customer %+v with offer", err.Error(), customer)
-	}
+	choice := choose_product(decision_factors, customer.Purchashing_threshold)
 
 	if choice != -1 {
+		purchasing_statistics[choice].Product_demand = customer.Base_need - len(customer.Owned_products)
 		number_of_products_purchased := 0
-		for range customer.Base_need - len(customer.Owned_products) {
+		for range purchasing_statistics[choice].Product_demand {
 			if product_availability[choice] > 0 {
 				customer.Owned_products = append(customer.Owned_products, Owned_product{choice, offers[choice].Product.Durabilty})
 				product_availability[choice] -= 1
@@ -191,55 +159,33 @@ func is_cheap(offer Offer, avr_price float32) float32 {
 	return difference_from_avg
 }
 
-func choose_product(decision_factors []float32, purchasing_threshold float32) (int, error) {
-	og_decision_factors := make([]float32, len(decision_factors))
-	copy(og_decision_factors, decision_factors)
+func choose_product(decision_factors []float32, purchasing_threshold float32) int {
+	top_products_index := []int{0}
 
-	// make all sections have a sum of 1
-	var len_of_weights float32 // get max
-	for _, s := range decision_factors {
-		len_of_weights += s
+	// Round decision_factors
+	for i, f := range decision_factors {
+		decision_factors[i] = float32(round(float64(f), 1))
 	}
 
-	for i := range decision_factors {
-		decision_factors[i] /= len_of_weights
-	}
-
-	sections := make([]float32, len(decision_factors))
-
-	var len_of_sections float32 = 0
-	for i, w := range decision_factors {
-		sections[i] = len_of_sections + w
-		len_of_sections += w
-	}
-	sections[len(sections)-1] = 1
-
-	// check the total of sections
-	//len_of_sections = 0
-	//for _, s := range sections {
-	//	if s > len_of_sections {
-	//		len_of_sections = s
-	//	}
-	//}
-	// println(len_of_sections)
-
-	random_number := rand.Float32()
-
-	choice := -2
-	for i := range sections {
-		if i == 0 {
-			if random_number <= sections[i] {
-				choice = i
-			}
-		} else if random_number > sections[i-1] && random_number <= sections[i] {
-			choice = i
+	for i, p := range decision_factors {
+		if p > decision_factors[top_products_index[0]] {
+			top_products_index = []int{i}
+		} else if p == decision_factors[top_products_index[0]] {
+			top_products_index = append(top_products_index, i)
 		}
 	}
-	if og_decision_factors[choice] >= purchasing_threshold {
-		return choice, nil
-	} else if decision_factors[choice] < purchasing_threshold {
-		return -1, nil
+
+	// If only one product is best, choose that one
+	var choice int
+	if len(top_products_index) == 1 {
+		choice = top_products_index[0]
+	} else {
+		// else choose randomly between best product
+		choice = rand.Intn(len(top_products_index) - 1)
 	}
 
-	return -2, errors.New("failed to select element")
+	if decision_factors[choice] > purchasing_threshold {
+		return choice
+	}
+	return -1
 }

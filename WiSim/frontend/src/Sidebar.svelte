@@ -32,10 +32,12 @@
     if (typeof index === "undefined") {
       console.warn("index has type undefined");
     }
-    for (let i in button_selection) {
-      button_selection[i] = false;
+    if (!buttons[index].dont_keep_pressed) {
+      for (let i in button_selection) {
+        button_selection[i] = false;
+      }
+      button_selection[index] = true;
     }
-    button_selection[index] = true;
   }
 
   function set_class(index: number) {

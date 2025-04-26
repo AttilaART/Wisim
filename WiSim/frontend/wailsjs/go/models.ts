@@ -76,6 +76,60 @@ export namespace simulation {
 	        this.Net_Profit = source["Net_Profit"];
 	    }
 	}
+	export class Product_statistics {
+	    Quality: number;
+	    Durabilty: number;
+	    Coolness: number;
+	    Ecology: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Product_statistics(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Quality = source["Quality"];
+	        this.Durabilty = source["Durabilty"];
+	        this.Coolness = source["Coolness"];
+	        this.Ecology = source["Ecology"];
+	    }
+	}
+	export class Marketing_statistics {
+	    Product: Product_statistics;
+	    Price: number;
+	    Bang_for_buck: number;
+	    Promotion: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Marketing_statistics(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Product = this.convertValues(source["Product"], Product_statistics);
+	        this.Price = source["Price"];
+	        this.Bang_for_buck = source["Bang_for_buck"];
+	        this.Promotion = source["Promotion"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class Personelle_sub_report {
 	    Number_of_employees: number;
 	    Number_of_hires: number;
@@ -106,6 +160,7 @@ export namespace simulation {
 	        this.Standard_dev_skill = source["Standard_dev_skill"];
 	    }
 	}
+	
 	export class Production_report {
 	    Machines_purchased: number;
 	    Machines_sold: number;
@@ -136,18 +191,38 @@ export namespace simulation {
 	        this.Warehouses_bought = source["Warehouses_bought"];
 	    }
 	}
-	export class Sales_report {
+	export class Sales_statistics {
 	    Products_sold: number;
 	    Difference_to_previous_month: number;
+	    Product_demand: number;
+	    Market_share: number;
+	    Avr_decision_factor: number;
+	    Avr_purchasing_threshold: number;
+	    Avr_quality_factor: number;
+	    Avr_durability_factor: number;
+	    Avr_ecology_factor: number;
+	    Avr_price_factor: number;
+	    Avr_coolness_factor: number;
+	    Avr_bang_for_buck_factor: number;
 	
 	    static createFrom(source: any = {}) {
-	        return new Sales_report(source);
+	        return new Sales_statistics(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Products_sold = source["Products_sold"];
 	        this.Difference_to_previous_month = source["Difference_to_previous_month"];
+	        this.Product_demand = source["Product_demand"];
+	        this.Market_share = source["Market_share"];
+	        this.Avr_decision_factor = source["Avr_decision_factor"];
+	        this.Avr_purchasing_threshold = source["Avr_purchasing_threshold"];
+	        this.Avr_quality_factor = source["Avr_quality_factor"];
+	        this.Avr_durability_factor = source["Avr_durability_factor"];
+	        this.Avr_ecology_factor = source["Avr_ecology_factor"];
+	        this.Avr_price_factor = source["Avr_price_factor"];
+	        this.Avr_coolness_factor = source["Avr_coolness_factor"];
+	        this.Avr_bang_for_buck_factor = source["Avr_bang_for_buck_factor"];
 	    }
 	}
 

@@ -63,7 +63,9 @@
     ></div>
   </div>
 
-  {#await Initial_app_load_promise then}
+  {#await Initial_app_load_promise}
+    <Popup content={"<div class='loader'></div>"} button_data={null}></Popup>
+  {:then}
     <div class="main_div" style="">
       {#if mode.main_menu}
         <div

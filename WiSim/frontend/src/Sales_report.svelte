@@ -1,7 +1,11 @@
 <script lang="ts">
   import Report from "./Report.svelte";
 
-  import { Get_sales_report } from "../wailsjs/go/main/App";
+  import {
+    Get_product_statistics,
+    Get_sales_statistics,
+    Get_marketing_statistics,
+  } from "../wailsjs/go/main/App";
 
   import { month_counter } from "./store";
   import Chart from "./Chart.svelte";
@@ -13,8 +17,18 @@
     month = value;
   });
 
-  async function get_sales_data(month: number) {
-    let data = await Get_sales_report(0, month);
+  async function get_marketing_data(month: number) {
+    let data = await Get_marketing_statistics(0, month);
+    delete data.Product;
+    return data;
+  }
+
+  async function get_company_sales_statistics(month: number) {
+    let data = await Get_sales_statistics(0, month);
+    return data;
+  }
+  async function get_market_sales_statistics(month: number) {
+    let data = await Get_sales_statistics(-1, month);
     return data;
   }
 </script>
@@ -28,21 +42,28 @@
   <div
     style="grid-row: 1; grid-column: 1 / span 2; display: flex; flex-direction: row"
   >
-    <div class="grid_item" style="flex: 1 1 100%;;">
+    <div class="grid_item" style="flex: 1 2 100%;;">
       <h3>Profit</h3>
       <Chart height={300}></Chart>
     </div>
     <div class="grid_item" style="flex: 1 1 100%;">
-      A second graph will go here
-    </div>
-    <div class="grid_item" style="flex: 1 1 100%;">
-      Another graph will go here
+      product statistics will go here
     </div>
   </div>
   <div class="grid_item" style="grid-column: 1 / span 2; grid-row: 2;">
-    <h2>Sales report</h2>
+    <h2>Marketing statistics</h2>
     <Report
-      get_report={get_sales_data}
+      get_report={get_marketing_data}
+      show_plus={false}
+      colour_values={false}
+      decimal_places={0}
+      custom_rows={[]}
+    ></Report>
+  </div>
+  <div class="grid_item" style="grid-column: 1 / span 2; grid-row: 3;">
+    <h2>Company_sales_statistics</h2>
+    <Report
+      get_report={get_company_sales_statistics}
       show_plus={false}
       colour_values={false}
       decimal_places={0}
@@ -56,6 +77,16 @@
           },
         },
       ]}
+    ></Report>
+  </div>
+  <div class="grid_item" style="grid-column: 1 / span 2; grid-row: 4;">
+    <h2>Market_sales_statistics</h2>
+    <Report
+      get_report={get_market_sales_statistics}
+      show_plus={false}
+      colour_values={false}
+      decimal_places={0}
+      custom_rows={[]}
     ></Report>
   </div>
 </div>
