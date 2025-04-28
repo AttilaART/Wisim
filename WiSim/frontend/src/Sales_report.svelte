@@ -7,7 +7,7 @@
     Get_marketing_statistics,
   } from "../wailsjs/go/main/App";
 
-  import { month_counter } from "./store";
+  import { month_counter, company } from "./store";
   import Chart from "./Chart.svelte";
   import { fade, fly } from "svelte/transition";
 
@@ -18,17 +18,22 @@
   });
 
   async function get_marketing_data(month: number) {
-    let data = await Get_marketing_statistics(0, month);
+    let data = await Get_marketing_statistics($company, month);
     delete data.Product;
     return data;
   }
 
   async function get_company_sales_statistics(month: number) {
-    let data = await Get_sales_statistics(0, month);
+    let data = await Get_sales_statistics($company, month);
     return data;
   }
   async function get_market_sales_statistics(month: number) {
     let data = await Get_sales_statistics(-1, month);
+    return data;
+  }
+
+  async function get_product_statistics(month: number) {
+    let data = await Get_product_statistics($company, month);
     return data;
   }
 </script>

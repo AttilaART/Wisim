@@ -1,7 +1,7 @@
 <script lang="ts">
   import triangle from "./assets/images/Triangle(right)(white).png";
   import { int } from "../wailsjs/go/models";
-  import { format_number, red, green } from "./helper";
+  import { format_number, capitalise_first_letter, red, green } from "./helper";
 
   let currency = "CHF";
 
@@ -40,10 +40,6 @@
         entry: { Name: "", Group: g, Info: "", Cash_cost: -1, Value: 0 },
         sub_entries: [],
       });
-    }
-
-    function capitalise_first_letter(val: string): string {
-      return String(val).charAt(0).toUpperCase() + String(val).slice(1);
     }
 
     for (let r of data) {

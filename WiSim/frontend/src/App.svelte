@@ -69,7 +69,7 @@
     <div class="main_div" style="">
       {#if mode.main_menu}
         <div
-          class="main_menu"
+          class="title_menu"
           out:fade={{ duration: 300 }}
           in:fade={{ duration: 300, delay: 300 }}
         >
@@ -138,7 +138,7 @@
     margin: 0px;
   }
 
-  .main_menu {
+  .title_menu {
     display: flex;
     flex-direction: column;
     height: 100%;

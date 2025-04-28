@@ -159,9 +159,54 @@ func (a *App) Get_production_report(company int, step int) (simulation.Productio
 	return game_state.state.Companies[company].Reports[step].Production_report, nil
 }
 
-func (a *App) Trigger_simulation() (int, error) {
+func (a *App) Get_availible_decisions(step int) (simulation.Decisions, error) {
+	err := check_request(0, step)
+	if err != nil {
+		if err.Error() != "this step hasn't been simulated yet" {
+			return simulation.Decisions{}, err
+		}
+	}
+
+	if step > (game_state.state.Step + 1) {
+		return simulation.Decisions{}, errors.New("this step hasn't been simulated yet")
+	}
+
+	return simulation.Decisions{}, nil
+}
+
+func (a *App) Get_past_decisions(company int, step int) (simulation.Decisions, error) {
+	err := check_request(company, step)
+	if err != nil {
+		return simulation.Decisions{}, err
+	}
+
+	return game_state.state.Companies[company].Decision_history[step], nil
+}
+
+func (a *App) Submit_decisions(company int, decisions simulation.Decisions) error {
+	err := check_request(company, 0)
+	if err != nil {
+		if err.Error() != "this step hasn't been simulated yet" {
+			return err
+		}
+	}
+	game_state.state.Current_decisions[company] = decisions
+	game_state.state.Decisions_submitted[company] = true
+
+	return nil
+}
+
+func (a *App) Trigger_simulation(force bool) (int, error) {
 	if !game_state.is_loaded {
 		return 0, errors.New("game hasn't loaded yet")
+	}
+
+	for _, d := range game_state.state.Decisions_submitted {
+		if !d {
+			return 0, errors.New("not all companies' decisions have been submitted")
+		}
+
+		fmt.Printf("decisions_loaded: %t", d)
 	}
 
 	old_game_state.state = (game_state.state)
@@ -193,14 +238,13 @@ func (a *App) Revert_simulation() (int, error) {
 }
 
 func (a *App) New_simulation() (int, error) {
-	var err error
-	game_state.state = simulation.New_game(game_state.config, 4, "Test_ui")
+	game_state.state = simulation.New_game(game_state.config, 1, "Test_ui")
 	game_state.is_loaded = true
 
-	game_state.state.Current_decisions, err = simulation.Get_decisions("simulation/Saves/Test_game-0/Decisions", 4)
-	if err != nil {
-		return 0, err
-	}
+	//game_state.state.Current_decisions, err = simulation.Get_decisions("simulation/Saves/Test_game-0/Decisions", 4)
+	//if err != nil {
+	//	return 0, err
+	//}
 
 	return game_state.state.Step, nil
 }

@@ -24,6 +24,68 @@ export namespace int {
 
 export namespace simulation {
 	
+	export class Decisions {
+	    Sales_projection: number;
+	    Selling_price: number;
+	    Marketing: number;
+	    Quality_development_investment: number;
+	    Ecological_production_investment: number;
+	    Durability_development_investment: number;
+	    Production_target: number;
+	    Purchase_of_machines: number;
+	    Selling_of_machines: number;
+	    Material_quality: number;
+	    Percentage_of_ecological_energy: number;
+	    Purchase_of_warehouses: number;
+	    New_hires_in_production: number;
+	    New_hires_in_marketing: number;
+	    Base_pay_for_production: number;
+	    Base_pay_for_marketing: number;
+	    Raise_for_production_personelle: number;
+	    Raise_for_marketing_personelle: number;
+	    Severance_for_production_personelle: number;
+	    Severance_for_marketing_personelle: number;
+	    Working_hours_for_production: number;
+	    Working_hours_for_marketing: number;
+	    Investment_in_production_training: number;
+	    Investment_in_marketing_training: number;
+	    Increase_of_loans: number;
+	    Dividends: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Decisions(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Sales_projection = source["Sales_projection"];
+	        this.Selling_price = source["Selling_price"];
+	        this.Marketing = source["Marketing"];
+	        this.Quality_development_investment = source["Quality_development_investment"];
+	        this.Ecological_production_investment = source["Ecological_production_investment"];
+	        this.Durability_development_investment = source["Durability_development_investment"];
+	        this.Production_target = source["Production_target"];
+	        this.Purchase_of_machines = source["Purchase_of_machines"];
+	        this.Selling_of_machines = source["Selling_of_machines"];
+	        this.Material_quality = source["Material_quality"];
+	        this.Percentage_of_ecological_energy = source["Percentage_of_ecological_energy"];
+	        this.Purchase_of_warehouses = source["Purchase_of_warehouses"];
+	        this.New_hires_in_production = source["New_hires_in_production"];
+	        this.New_hires_in_marketing = source["New_hires_in_marketing"];
+	        this.Base_pay_for_production = source["Base_pay_for_production"];
+	        this.Base_pay_for_marketing = source["Base_pay_for_marketing"];
+	        this.Raise_for_production_personelle = source["Raise_for_production_personelle"];
+	        this.Raise_for_marketing_personelle = source["Raise_for_marketing_personelle"];
+	        this.Severance_for_production_personelle = source["Severance_for_production_personelle"];
+	        this.Severance_for_marketing_personelle = source["Severance_for_marketing_personelle"];
+	        this.Working_hours_for_production = source["Working_hours_for_production"];
+	        this.Working_hours_for_marketing = source["Working_hours_for_marketing"];
+	        this.Investment_in_production_training = source["Investment_in_production_training"];
+	        this.Investment_in_marketing_training = source["Investment_in_marketing_training"];
+	        this.Increase_of_loans = source["Increase_of_loans"];
+	        this.Dividends = source["Dividends"];
+	    }
+	}
 	export class FinanceReportEntry {
 	    Name: string;
 	    Group: number;

@@ -2,18 +2,20 @@
   import Popup from "./Popup.svelte";
   import Reports from "./Reports.svelte";
   import Sidebar from "./Sidebar.svelte";
-  import { format_number } from "./helper";
+  import { format_number, capitalise_first_letter } from "./helper";
   import {
     Get_simulation_step,
     Get_bank_balance,
     Get_current_stock,
     Trigger_simulation,
     Revert_simulation,
-    New_simulation,
+    Submit_decisions,
   } from "../wailsjs/go/main/App";
   import { fade, fly, slide } from "svelte/transition";
 
-  import { month_counter } from "./store";
+  import { month_counter, company, decisions } from "./store";
+  import Decisions from "./Decisions.svelte";
+  import { simulation } from "../wailsjs/go/models";
 
   let { return_function } = $props();
   let is_error: boolean = $state(false);
@@ -21,6 +23,8 @@
   let try_cancel_sim: boolean = false;
   let reports_tab__greyed_out: number = $state(0);
   let bottom_data_height: number = $state();
+  $decisions = new simulation.Decisions();
+  $company = 0;
 
   type Menu_state = {
     Dashboard: boolean;
@@ -78,8 +82,9 @@
   }
 
   async function trigger_simulation() {
+    await Submit_decisions(0, $decisions);
     is_simulating = true;
-    let month_promise: Promise<number> = Trigger_simulation();
+    let month_promise: Promise<number> = Trigger_simulation(false);
     month_promise.then(
       (value) => {
         month_counter.set(value);
@@ -159,7 +164,7 @@
         error = null;
       },
     }}
-    content={`<div> <h2>An Error has occured</h2> <br> ${error}</div>`}
+    content={`<div> <h2>An Error has occured</h2> <br> ${capitalise_first_letter(error.toString())}</div>`}
   ></Popup>
 {/if}
 <div
@@ -243,7 +248,7 @@
         out:fade={{ duration: 300 }}
         in:fly={{ duration: 300, delay: 300, y: -40 }}
       >
-        <div>Decisions is under construction</div>
+        <Decisions></Decisions>
       </div>
     {/if}
     {#if menu_state.Reports}

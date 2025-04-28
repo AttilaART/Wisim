@@ -3,7 +3,7 @@
 
   import { Get_production_report } from "../wailsjs/go/main/App";
 
-  import { month_counter } from "./store";
+  import { month_counter, company } from "./store";
   import Chart from "./Chart.svelte";
   import { fade, fly } from "svelte/transition";
 
@@ -14,7 +14,7 @@
   });
 
   async function get_production_data() {
-    let data = await Get_production_report(0, month);
+    let data = await Get_production_report($company, month);
     return data;
   }
 </script>

@@ -8,7 +8,7 @@
     Get_financial_report,
   } from "../wailsjs/go/main/App";
 
-  import { month_counter } from "./store";
+  import { month_counter, company } from "./store";
   import Chart from "./Chart.svelte";
 
   let month = $state(0);
@@ -47,7 +47,7 @@
   get_assets_data();
 
   async function get_financial_data(month: number) {
-    let data = await Get_financial_report(0, month);
+    let data = await Get_financial_report($company, month);
     return data;
   }
 
@@ -70,7 +70,7 @@
     assets.loading = true;
     assets.error = null;
     try {
-      assets.data = await Get_accounting_data(0, month, "Assets");
+      assets.data = await Get_accounting_data($company, month, "Assets");
     } catch (exception) {
       assets.error = exception;
     }
@@ -80,7 +80,11 @@
     liabilities.loading = true;
     liabilities.error = null;
     try {
-      liabilities.data = await Get_accounting_data(0, month, "Liabilities");
+      liabilities.data = await Get_accounting_data(
+        $company,
+        month,
+        "Liabilities",
+      );
     } catch (exception) {
       liabilities.error = exception;
     }

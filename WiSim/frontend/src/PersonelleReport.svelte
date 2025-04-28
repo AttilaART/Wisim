@@ -3,7 +3,7 @@
 
   import { Get_personelle_report } from "../wailsjs/go/main/App";
 
-  import { month_counter } from "./store";
+  import { month_counter, company } from "./store";
   import Chart from "./Chart.svelte";
   import { fade, fly } from "svelte/transition";
 
@@ -16,17 +16,17 @@
   });
 
   async function get_general_personelle_data() {
-    let data = await Get_personelle_report(0, month, "General");
+    let data = await Get_personelle_report($company, month, "General");
     return data;
   }
 
   async function get_production_personelle_data() {
-    let data = await Get_personelle_report(0, month, "Production");
+    let data = await Get_personelle_report($company, month, "Production");
     return data;
   }
 
   async function get_marketing_personelle_data() {
-    let data = await Get_personelle_report(0, month, "Marketing");
+    let data = await Get_personelle_report($company, month, "Marketing");
     return data;
   }
 </script>

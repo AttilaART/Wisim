@@ -6,6 +6,10 @@ export function Get_accounting_data(arg1, arg2, arg3) {
   return window['go']['main']['App']['Get_accounting_data'](arg1, arg2, arg3);
 }
 
+export function Get_availible_decisions(arg1) {
+  return window['go']['main']['App']['Get_availible_decisions'](arg1);
+}
+
 export function Get_bank_balance(arg1) {
   return window['go']['main']['App']['Get_bank_balance'](arg1);
 }
@@ -20,6 +24,10 @@ export function Get_financial_report(arg1, arg2) {
 
 export function Get_marketing_statistics(arg1, arg2) {
   return window['go']['main']['App']['Get_marketing_statistics'](arg1, arg2);
+}
+
+export function Get_past_decisions(arg1, arg2) {
+  return window['go']['main']['App']['Get_past_decisions'](arg1, arg2);
 }
 
 export function Get_personelle_report(arg1, arg2, arg3) {
@@ -58,6 +66,10 @@ export function Revert_simulation() {
   return window['go']['main']['App']['Revert_simulation']();
 }
 
-export function Trigger_simulation() {
-  return window['go']['main']['App']['Trigger_simulation']();
+export function Submit_decisions(arg1, arg2) {
+  return window['go']['main']['App']['Submit_decisions'](arg1, arg2);
+}
+
+export function Trigger_simulation(arg1) {
+  return window['go']['main']['App']['Trigger_simulation'](arg1);
 }

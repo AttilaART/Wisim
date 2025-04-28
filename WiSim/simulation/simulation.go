@@ -23,6 +23,7 @@ type Game_state struct {
 	Population              Population
 	Companies               []Company
 	Current_decisions       []Decisions
+	Decisions_submitted     []bool
 	Market_sales_statistics []Sales_statistics
 	External_factors        External_factors
 }
@@ -533,6 +534,10 @@ func (game_state *Game_state) Simulate_step() error {
 	}
 
 	game_state.Step_simulated = true
+
+	for i := range game_state.Decisions_submitted {
+		game_state.Decisions_submitted[i] = false
+	}
 	println("=================================================== ")
 	println("               Simulation step done!\n")
 	println("===================== RESULTS ===================== ")
