@@ -6,10 +6,6 @@ export function Get_accounting_data(arg1, arg2, arg3) {
   return window['go']['main']['App']['Get_accounting_data'](arg1, arg2, arg3);
 }
 
-export function Get_availible_decisions(arg1) {
-  return window['go']['main']['App']['Get_availible_decisions'](arg1);
-}
-
 export function Get_bank_balance(arg1) {
   return window['go']['main']['App']['Get_bank_balance'](arg1);
 }

@@ -5,6 +5,7 @@
     Show: number; // -1 == hide, 0==grey out, 1==show
     Onclick_function: () => void;
     dont_keep_pressed?: boolean;
+    selected_by_default?: boolean;
   };
   const {
     buttons,
@@ -18,11 +19,20 @@
     horisontal?: boolean;
   } = $props();
 
-  let button_selection = $state(
+  let button_selection: boolean[] = $state(
     (() => {
+      let button_selected_by_default: boolean = false;
       let button_selection = [];
-      for (let _ in buttons) {
-        button_selection.push(false);
+      for (let i in buttons) {
+        if (!buttons[i].selected_by_default) {
+          if (button_selected_by_default) {
+            console.warn("multiple buttons selected by default");
+          }
+          button_selected_by_default = true;
+          button_selection.push(false);
+        } else {
+          button_selection.push(true);
+        }
       }
       return button_selection;
     })(),
@@ -41,15 +51,16 @@
   }
 
   function set_class(index: number) {
+    let styling: string;
     if (horisontal) {
       if (
         button_selection[index] &&
         keep_pressed &&
         !buttons[index].dont_keep_pressed
       ) {
-        return "sidebar_button horizontal selected";
+        styling = "sidebar_button horizontal selected";
       } else {
-        return "sidebar_button horizontal";
+        styling = "sidebar_button horizontal";
       }
     } else {
       if (
@@ -57,11 +68,12 @@
         keep_pressed &&
         !buttons[index].dont_keep_pressed
       ) {
-        return "sidebar_button selected";
+        styling = "sidebar_button selected";
       } else {
-        return "sidebar_button";
+        styling = "sidebar_button";
       }
     }
+    return styling;
   }
 
   let style = $state("");
@@ -108,52 +120,53 @@
 
 <style>
   .sidebar {
-    width: fit-content;
+    --width: 200px;
+    flex: 1 1 var(--width);
+    width: var(--width);
+    height: 100%;
     display: flex;
     flex-direction: column;
-    flex: 1 1 100%;
     flex-wrap: wrap;
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    margin: 10px 10px 10px 10px;
     overflow: hidden;
   }
 
   .sidebar.horizontal {
     height: fit-content;
-    width: calc(100% - 20px);
+    width: 100%;
     flex-direction: row;
+    border-bottom: 3px solid black;
   }
 
   .sidebar_button {
-    width: 200px;
+    width: 100%;
     height: fit-content;
     padding: 10px;
-    margin: 0px 0px 0px 0px;
-    border-radius: 0;
+    margin: 10px 0px 10px 0px;
+    text-align: left;
+    border: none;
   }
 
   .sidebar_button:hover {
-    background-color: rgba(255, 255, 255, 0.3);
+    background-color: rgba(0, 0, 0, 0.2);
   }
 
   .sidebar_button:active {
-    background-color: rgba(255, 255, 255, 1);
-    color: #000;
+    background-color: rgba(0, 0, 0, 1);
+    color: white;
   }
 
-  .sidebar_button.selected {
-    background-color: rgba(255, 255, 255, 0.5);
+  .selected,
+  .selected:hover {
+    background-color: rgba(0, 0, 0, 1);
+    color: white;
     font-weight: bold;
   }
 
   .sidebar_button.horizontal {
+    margin: 0 0 0 0;
     text-align: center;
     flex: 1 1 fit-content;
-  }
-
-  .sidebar_button.horizontal.selected {
-    background-color: rgba(255, 255, 255, 0.5);
-    font-weight: bold;
+    font-size: 1rem;
+    padding: 5px;
   }
 </style>

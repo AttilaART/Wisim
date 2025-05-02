@@ -4,8 +4,6 @@ import {simulation} from '../models';
 
 export function Get_accounting_data(arg1:number,arg2:number,arg3:string):Promise<Array<simulation.FinanceReportEntry>>;
 
-export function Get_availible_decisions(arg1:number):Promise<simulation.Decisions>;
-
 export function Get_bank_balance(arg1:number):Promise<number>;
 
 export function Get_current_stock(arg1:number):Promise<number>;

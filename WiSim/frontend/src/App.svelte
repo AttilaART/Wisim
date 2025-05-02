@@ -1,12 +1,11 @@
 <script lang="ts">
-  import background_image from "./assets/images/Temp_background_image.png";
   import GameInterface from "./Game_interface.svelte";
   import Sidebar from "./Sidebar.svelte";
   import Popup from "./Popup.svelte";
   import { New_simulation, Initial_app_load } from "../wailsjs/go/main/App";
   import { fade } from "svelte/transition";
 
-  import { month_counter } from "./store";
+  import { month_counter } from "./store.svelte";
 
   let background_image_blurred = $state("");
   let is_loading = $state(false);
@@ -50,14 +49,14 @@
   >
     <div
       class="background_image{background_image_blurred}"
-      style="background-image: url({background_image});"
+      style="background-color: white;"
     ></div>
 
     <div
       style="position:absolute; width: 110%; height: 110%; left: -10px; top: -10px;
     background-image: linear-gradient(
       to right,
-      rgba(0, 0, 0, 0.5),
+      rgba(0, 0, 0, 0.0),
       rgba(0, 0, 0, 0)
     );"
     ></div>
@@ -106,7 +105,7 @@
           ></Sidebar>
         </div>
       {:else if mode.game_interface}
-        <GameInterface return_function={load_main_menu}></GameInterface>
+        <GameInterface></GameInterface>
       {/if}
     </div>
   {:catch error}
