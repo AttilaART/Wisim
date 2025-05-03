@@ -187,6 +187,7 @@ https://toughengineer.github.io/demo/slider-styler*/
     transition: background 0.1s;
   }
 
+  input[type="range"].styled-slider:active::-webkit-slider-thumb,
   input[type="range"].styled-slider:hover::-webkit-slider-thumb {
     background: var(--red);
   }
@@ -240,6 +241,7 @@ https://toughengineer.github.io/demo/slider-styler*/
     transition: background 0.1s;
   }
 
+  input[type="range"].styled-slider:active::-moz-range-thumb,
   input[type="range"].styled-slider:hover::-moz-range-thumb {
     background: var(--red);
   }

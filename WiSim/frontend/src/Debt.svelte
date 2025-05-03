@@ -46,6 +46,7 @@
             show_max_value: true,
             unit: " CHF",
             snap: 10000,
+            step: 1000,
           }}
           bind:Value={slider_value}
         ></Slider></span

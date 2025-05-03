@@ -8,6 +8,7 @@
     Get_invoices,
   } from "./getters.svelte";
   import Debt from "./Debt.svelte";
+  import BalanceSheet from "./BalanceSheet.svelte";
 
   let page = $state("budget");
 </script>
@@ -73,7 +74,7 @@
 {:else if page == "debt"}
   <Debt></Debt>
 {:else if page == "balance sheet"}
-  Balance Sheet
+  <BalanceSheet></BalanceSheet>
 {:else if page == "graphs"}
-  Graphs
+  <h2>Coming Soon</h2>
 {/if}
