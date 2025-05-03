@@ -1,10 +1,34 @@
 <script>
+  import BarChart from "./BarChart.svelte";
   import { format_number } from "./helper";
   import Slider from "./slider.svelte";
-  let balance_without_loans = 100;
+  import info_icon from "./assets/images/Info.svg";
+
   let slider_value = $state();
-  let real_balance = $state(110);
-  let calculated_balance = $derived(balance_without_loans + slider_value);
+  let balance_without_loans = $state(100000 - 70000);
+  let bridge_loans = $state(30000);
+  let existing_loans = $state(40000);
+  let credit_limit = $state(150000);
+
+  let new_loans = $derived(slider_value - existing_loans);
+
+  let balance_before = $derived(
+    balance_without_loans + bridge_loans + existing_loans,
+  );
+  let balance_after = $derived(balance_before + new_loans);
+  slider_value = existing_loans;
+
+  let interest_rate = 0.0015;
+  let bridge_loan_interest_rate = 0.003;
+  let interest_before = $derived(
+    interest_rate * existing_loans + bridge_loan_interest_rate * bridge_loans,
+  );
+  let interest_after = $derived(
+    interest_rate * (existing_loans + new_loans) +
+      bridge_loan_interest_rate * bridge_loans,
+  );
+
+  let hover_over_balance = $state(false);
 </script>
 
 <div style="display: flex; flex-direction: column; height: calc(100% - 60px);">
@@ -14,13 +38,14 @@
       <span style="padding: 5px; flex: 1 1 60%; ">
         <Slider
           min={0}
-          max={100}
+          max={credit_limit - bridge_loans}
           options={{
-            default_value: 50,
+            default_value: existing_loans,
             show_min_value: true,
             show_current_value: true,
             show_max_value: true,
             unit: " CHF",
+            snap: 10000,
           }}
           bind:Value={slider_value}
         ></Slider></span
@@ -30,27 +55,89 @@
       <button style="flex 0 0 20%">Confirm</button>
     </div>
   </div>
-  <span style="height: 3px; width: 100%; background-color: black;"></span>
+  <span class="sep_horisontal"></span>
   <div style="padding: 10px 20px 10px 20px; text-align: left;">
-    Est. Balance: {calculated_balance} CHF
-    <span
-      style="color: {calculated_balance > real_balance
-        ? '#2f9e44'
-        : calculated_balance < real_balance
-          ? '#e03131'
-          : 'grey'}">({format_number(calculated_balance - real_balance)})</span
+    <span class="balance"
+      >Est. Balance: {format_number(balance_after, false, 0)} CHF
+      <span
+        style="color: {balance_after > balance_before
+          ? 'var(--green)'
+          : balance_after < balance_before
+            ? 'var(--red)'
+            : 'var(--grey)'}"
+        >({format_number(balance_after - balance_before, true)})</span
+      >
+      <img
+        src={info_icon}
+        alt="info icon"
+        style="height: 15px; transform: translateY(3px);"
+      />
+      <div class="details">
+        Balance without loans: {format_number(balance_without_loans, false, 0)}
+        <br />
+        Bridge Loans: {format_number(bridge_loans, false, 0)} <br />
+        Bank Loans: {format_number(existing_loans + new_loans, false, 0)}
+      </div></span
     >
-    <br />
-    Est. Monthly Interest: {calculated_balance} CHF
-    <span
-      style="color: {calculated_balance > real_balance
-        ? '#2f9e44'
-        : calculated_balance < real_balance
-          ? '#e03131'
-          : 'grey'}">({format_number(calculated_balance - real_balance)})</span
-    >
+
+    <span class="balance">
+      Est. Monthly Interest: {format_number(interest_after, false, 0)} CHF
+      <span
+        style="color: {interest_after < interest_before
+          ? 'var(--green)'
+          : interest_after > interest_before
+            ? 'var(--red)'
+            : 'var(--grey)'}"
+        >({format_number(interest_after - interest_before, true, 0)})</span
+      >
+      <img
+        src={info_icon}
+        alt="info icon"
+        style="height: 15px; transform: translateY(3px);"
+      />
+      <div class="details">
+        From Bridge Loans: {format_number(
+          bridge_loan_interest_rate * bridge_loans,
+          false,
+          0,
+        )} <br />
+        From Bank Loans: {format_number(
+          interest_rate * (existing_loans + new_loans),
+          false,
+          0,
+        )}
+      </div>
+    </span>
+    <BarChart
+      Data={[
+        [
+          { Name: "Bridge Loan", Value: bridge_loans, Color: "var(--red)" },
+          {
+            Name: "Current Bank Loan",
+            Value: new_loans >= 0 ? existing_loans : existing_loans + new_loans,
+            Color: "var(--red2)",
+          },
+          { Name: "New Bank Loan", Value: new_loans, Color: "var(--red3)" },
+        ],
+      ]}
+      opts={{
+        MaxLine: { Show: true, Value: credit_limit, Label: "Credit Limit" },
+      }}
+    ></BarChart>
   </div>
 </div>
 
 <style>
+  .details {
+    margin-left: 2em;
+    color: var(--grey);
+    overflow: hidden;
+    height: 0;
+    padding: 0;
+    transition: height 1s;
+  }
+
+  .balance:hover .details {
+    height: 4em;
+  }
 </style>

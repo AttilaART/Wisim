@@ -12,7 +12,7 @@
   out:fade={{ duration: 300 }}
 >
   <div
-    style="width: fit-content; height: 100%; border-right: 3px solid black; display: flex; flex-direction: column;"
+    style="width: fit-content; height: 100%; border-right: var(--border-width) solid var(--border-color); display: flex; flex-direction: column;"
   >
     <div style="flex: 0 0 100px;"></div>
     <Sidebar
@@ -80,9 +80,6 @@
         <button>Ready</button>
       </div>
       <div style="flex: 0 0 fit-content; height: 100%;">
-        <span
-          style="height: 100%; border-left: 3px solid black; margin-right: 10px;"
-        ></span>
         <button style=" height: 100%; border: none;">Messages</button>
       </div>
     </div>
@@ -98,14 +95,15 @@
     width: calc(100%);
     display: grid;
     overflow: unset;
+    background-color: var(--second-color);
   }
   .top-bar {
     padding: 5px 10px 5px 10px;
-    width: 100%;
+    width: calc(100% - 20px);
     display: flex;
     flex-direction: row;
     align-items: center;
-    border-bottom: 3px solid black;
+    border-bottom: var(--border);
   }
 
   .desktop {

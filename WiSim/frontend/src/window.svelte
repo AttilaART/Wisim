@@ -77,10 +77,10 @@
     position: absolute;
     width: 650px;
     height: 450px;
-    border: 3px solid black;
+    border: var(--border);
     overflow: hidden;
     padding: 0px;
-    background-color: white;
+    background-color: var(--second-color);
     pointer-events: all;
   }
 
@@ -89,7 +89,7 @@
     height: 25px;
     font-size: 1rem;
     text-align: center;
-    border-bottom: 3px solid black;
+    border-bottom: var(--border);
     position: relative;
   }
 

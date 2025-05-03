@@ -56,9 +56,7 @@
 </script>
 
 <div style="display: flex; height: calc(100% - 60px);">
-  <div
-    style="padding: 10px; overflow: scroll; height: auto; border-right: 3px solid black; flex: 1 1 60%;"
-  >
+  <div style="padding: 10px; overflow-y: scroll; height: auto; flex: 1 1 60%;">
     {#if income === undefined}
       Loading report...
     {:else if income === null}
@@ -78,14 +76,17 @@
       </table>
     {/if}
   </div>
-  <div style="padding: 0; overflow: scroll; flex: 1 1 40%;">
+  <span class="sep_vertical" style="flex: 0 0 var(--border-width);"></span>
+  <div
+    style="padding: 0; overflow-y: scroll; flex: 1 1 calc(40% - var(border-width);"
+  >
     {#if invoice_log === undefined}
       Loading...
     {:else if invoice_log === null}
       Therer was a problem
     {:else}
       <h2>Invoice Log</h2>
-      <div style="width: 100%; height: 3px; background-color: black;"></div>
+      <div class="sep_horisontal"></div>
       {#each invoice_log as i}
         {@render invoice(i)}
       {/each}
@@ -104,16 +105,17 @@
       <td style="width: 20px;"></td>
       <td
         style="text-align: left;{l.line_above
-          ? 'border-top: 2px solid black;'
+          ? 'border-top: var(--border-thin);'
           : ''}">{l.Name}</td
       >
       <td
         style="text-align: right; font-weight: 550; color: {l.Value > 0
-          ? '#2f9e44'
+          ? 'var(--green)'
           : l.Value < 0
-            ? '#e03131'
-            : 'white'};{l.line_above ? 'border-top: 2px solid black;' : ''}"
-        >{format_number(l.Value, true, 0)}</td
+            ? 'var(--red)'
+            : 'var(--main-color)'};{l.line_above
+          ? 'border-top: var(--border-thin);'
+          : ''}">{format_number(l.Value, true, 0)}</td
       >
     </tr>
   {/each}
@@ -121,7 +123,7 @@
 
 {#snippet invoice(i: Invoice)}
   <div
-    style="width: calc(100% - 20px); border-bottom: 3px solid black; padding: 0 10px 0 10px;"
+    style="width: calc(100% - 20px); border-bottom: var(--border); padding: 0 10px 0 10px;"
   >
     <table style="width: 100%;">
       <thead>
@@ -129,10 +131,11 @@
           <th style="text-align: left;"><h4>{i.Name}</h4></th>
           <th
             style="text-align: right; color: {i.Value > 0
-              ? '#2f9e44'
+              ? 'var(--green)'
               : i.Value < 0
-                ? '#e03131'
-                : 'white'}"><h4>{format_number(i.Value, true, 0)}</h4></th
+                ? 'var(--red)'
+                : 'var(--main-color)'}"
+            ><h4>{format_number(i.Value, true, 0)}</h4></th
           >
         </tr>
       </thead>
@@ -153,17 +156,6 @@
 {/snippet}
 
 <style>
-  h2,
-  h3,
-  h4 {
-    margin: 5px;
-  }
-
-  h4 {
-    margin-left: 0px;
-    margin-bottom: 0px;
-  }
-
   .invoice {
     font-size: 0.9em;
   }

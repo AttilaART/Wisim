@@ -134,32 +134,32 @@
     height: fit-content;
     width: 100%;
     flex-direction: row;
-    border-bottom: 3px solid black;
+    border-bottom: var(--border);
   }
 
   .sidebar_button {
     width: 100%;
     height: fit-content;
     padding: 10px;
+    padding-left: 20px;
     margin: 10px 0px 10px 0px;
     text-align: left;
     border: none;
   }
 
   .sidebar_button:hover {
-    background-color: rgba(0, 0, 0, 0.2);
+    background-color: var(--accent-color2);
   }
 
   .sidebar_button:active {
-    background-color: rgba(0, 0, 0, 1);
-    color: white;
+    background-color: var(--accent-color);
+    color: var(--second-color);
   }
 
   .selected,
   .selected:hover {
     background-color: rgba(0, 0, 0, 1);
-    color: white;
-    font-weight: bold;
+    color: var(--second-color);
   }
 
   .sidebar_button.horizontal {

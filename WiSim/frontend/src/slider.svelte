@@ -1,12 +1,15 @@
 <script lang="ts">
   import { tick } from "svelte";
   import { format_number } from "./helper";
+  import { number } from "echarts";
   interface Options {
     default_value?: number;
     show_min_value?: boolean;
     show_max_value?: boolean;
     show_current_value?: boolean;
     unit?: string;
+    step?: number;
+    snap?: number;
   }
 
   let {
@@ -85,6 +88,16 @@
 
     return false;
   }
+
+  function range(step: number, min: number, max: number): number[] {
+    let value: number = min;
+    let stops: number[] = [];
+    while (value <= max) {
+      stops.push(value);
+      value += step;
+    }
+    return stops;
+  }
 </script>
 
 <span style="position: relative; text-align: left;">
@@ -95,6 +108,8 @@
     defaultValue={options.default_value ? options.default_value : 0}
     {min}
     {max}
+    list="snap"
+    step={options.step ? options.step : 1}
     bind:value={Value}
     bind:this={slider_element}
     oninput={() => {
@@ -103,6 +118,12 @@
       slider_width = get_slider_width();
     }}
   />
+  <datalist id="snap">
+    {#if options.snap}
+      {#each range(options.snap, min, max) as snap}
+        <option value={snap}></option>{/each}
+    {/if}
+  </datalist>
   {#if options.show_min_value}
     <div style="position: absolute; top: 10px;" bind:this={min_value_element}>
       {min}{options.unit}
@@ -120,11 +141,10 @@
     {#key Value}
       <div
         bind:this={current_value_element}
-        style="font-size: 1.2em; text-align: center; position: relative; transform: translate(calc({slider_width
+        class="slider_value_label{collision ? ' collision' : ''}"
+        style="font-size: 1.2em; text-align: center; position: relative; --translate-x: calc({slider_width
           ? slider_width
-          : 0}px * {(Value - min) / (max - min)} - 25%), {collision
-          ? 40
-          : -20}%);"
+          : 0}px * {(Value - min) / (max - min)} - 25%);"
       >
         {format_number(Value ? Value : 0)}{options.unit}
       </div>
@@ -143,6 +163,7 @@ https://toughengineer.github.io/demo/slider-styler*/
   input[type="range"].styled-slider {
     height: 2.2em;
     -webkit-appearance: none;
+    background: transparent;
   }
 
   /*progress support*/
@@ -159,57 +180,52 @@ https://toughengineer.github.io/demo/slider-styler*/
     width: 25px;
     height: 25px;
     border-radius: 25px;
-    background: #ffffff;
-    border: 3px solid #000000;
+    background: var(--second-color);
+    border: var(--border);
     box-shadow: none;
     margin-top: calc(max((13px - 3px - 3px) * 0.5, 0px) - max(25px * 0.5, 3px));
+    transition: background 0.1s;
+  }
+
+  input[type="range"].styled-slider:hover::-webkit-slider-thumb {
+    background: var(--red);
   }
 
   input[type="range"].styled-slider::-webkit-slider-runnable-track {
     height: 13px;
-    border: 3px solid #000000;
+    border: var(--border);
     border-radius: 10px;
-    background: #ffffff;
+    background: var(--second-color);
     box-shadow: none;
-  }
-
-  input[type="range"].styled-slider:hover::-webkit-slider-runnable-track {
-    background: #e5e5e5;
-    border-color: #4e4e4e;
-  }
-
-  input[type="range"].styled-slider:active::-webkit-slider-runnable-track {
-    background: #f5f5f5;
-    border-color: #4e4e4e;
   }
 
   input[type="range"].styled-slider.slider-progress::-webkit-slider-runnable-track {
     background-image: linear-gradient(
       to right,
-      #ff8787 0%,
-      #ff8787 var(--ratio),
-      white var(--ratio),
-      white 100%
+      var(--red) 0%,
+      var(--red) var(--ratio),
+      var(--second-color) var(--ratio),
+      var(--second-color) 100%
     );
   }
 
   input[type="range"].styled-slider.slider-progress:hover::-webkit-slider-runnable-track {
     background-image: linear-gradient(
       to right,
-      #ff7070 0%,
-      #ff7070 var(--ratio),
-      white var(--ratio),
-      white 100%
+      var(--red) 0%,
+      var(--red) var(--ratio),
+      var(--second-color) var(--ratio),
+      var(--second-color) 100%
     );
   }
 
   input[type="range"].styled-slider.slider-progress:active::-webkit-slider-runnable-track {
     background-image: linear-gradient(
       to right,
-      #ff5454 0%,
-      #ff5454 var(--ratio),
-      white var(--ratio),
-      white 100%
+      var(--red) 0%,
+      var(--red) var(--ratio),
+      var(--second-color) var(--ratio),
+      var(--second-color) 100%
     );
   }
 
@@ -218,56 +234,51 @@ https://toughengineer.github.io/demo/slider-styler*/
     width: max(calc(25px - 3px - 3px), 0px);
     height: max(calc(25px - 3px - 3px), 0px);
     border-radius: 25px;
-    background: #ffffff;
-    border: 3px solid #000000;
+    background: var(--second-color);
+    border: var(--border);
     box-shadow: none;
+    transition: background 0.1s;
+  }
+
+  input[type="range"].styled-slider:hover::-moz-range-thumb {
+    background: var(--red);
   }
 
   input[type="range"].styled-slider::-moz-range-track {
     height: max(calc(13px - 3px - 3px), 0px);
-    border: 3px solid #000000;
+    border: var(--border);
     border-radius: 10px;
-    background: #ffffff;
+    background: var(--second-color);
     box-shadow: none;
-  }
-
-  input[type="range"].styled-slider:hover::-moz-range-track {
-    background: #e5e5e5;
-    border-color: #4e4e4e;
-  }
-
-  input[type="range"].styled-slider:active::-moz-range-track {
-    background: #f5f5f5;
-    border-color: #4e4e4e;
   }
 
   input[type="range"].styled-slider.slider-progress::-moz-range-track {
     background-image: linear-gradient(
       to right,
-      #ff8787 0%,
-      #ff8787 var(--ratio),
-      white var(--ratio),
-      white 100%
+      var(--red) 0%,
+      var(--red) var(--ratio),
+      var(--second-color) var(--ratio),
+      var(--second-color) 100%
     );
   }
 
   input[type="range"].styled-slider.slider-progress:hover::-moz-range-track {
     background-image: linear-gradient(
       to right,
-      #ff7070 0%,
-      #ff7070 var(--ratio),
-      white var(--ratio),
-      white 100%
+      var(--red) 0%,
+      var(--red) var(--ratio),
+      var(--second-color) var(--ratio),
+      var(--second-color) 100%
     );
   }
 
   input[type="range"].styled-slider.slider-progress:active::-moz-range-track {
     background-image: linear-gradient(
       to right,
-      #ff5454 0%,
-      #ff5454 var(--ratio),
-      white var(--ratio),
-      white 100%
+      var(--red) 0%,
+      var(--red) var(--ratio),
+      var(--second-color) var(--ratio),
+      var(--second-color) 100%
     );
   }
 
@@ -297,14 +308,14 @@ https://toughengineer.github.io/demo/slider-styler*/
     height: 13px;
     border-radius: 10px;
     background: #ffffff;
-    border: 3px solid #000000;
+    border: var(--border);
     box-shadow: none;
     box-sizing: border-box;
   }
 
   input[type="range"].styled-slider:hover::-ms-track {
     background: #e5e5e5;
-    border-color: #4e4e4e;
+    border-color: rgba(var(--border-color), 0.9);
   }
 
   input[type="range"].styled-slider:active::-ms-track {
@@ -317,17 +328,29 @@ https://toughengineer.github.io/demo/slider-styler*/
     border-radius: 10px 0 0 10px;
     margin: -3px 0 -3px -3px;
     background: #ff8787;
-    border: 3px solid #000000;
+    border: var(--border);
     border-right-width: 0;
   }
 
   input[type="range"].styled-slider.slider-progress:hover::-ms-fill-lower {
     background: #ff7070;
-    border-color: #4e4e4e;
+    border-color: rgba(var(--border-color), 0.9);
   }
 
   input[type="range"].styled-slider.slider-progress:active::-ms-fill-lower {
     background: #ff5454;
     border-color: #4e4e4e;
+  }
+
+  .slider_value_label {
+    --translate-y: -20%;
+    translate: var(--translate-x) var(--translate-y);
+    transition: translate 0.5s;
+  }
+
+  .slider_value_label.collision {
+    --translate-y: 40%;
+    translate: var(--translate-x) var(--translate-y);
+    transition: translate 0.5s;
   }
 </style>
