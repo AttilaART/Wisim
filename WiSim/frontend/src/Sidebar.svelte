@@ -148,17 +148,17 @@
   }
 
   .sidebar_button:hover {
-    background-color: var(--accent-color2);
+    background-color: var(--accent-color);
   }
 
   .sidebar_button:active {
-    background-color: var(--accent-color);
+    background-color: var(--accent-color2);
     color: var(--second-color);
   }
 
   .selected,
   .selected:hover {
-    background-color: rgba(0, 0, 0, 1);
+    background-color: var(--main-color);
     color: var(--second-color);
   }
 

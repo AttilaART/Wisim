@@ -6,9 +6,20 @@
   import fullscreen from "./assets/images/fullscreen.svg";
   import close from "./assets/images/close.svg";
 
-  let window_id = new_window();
-  let { title, content }: { title: string; content: any; content_args: any[] } =
-    $props();
+  let {
+    title,
+    content,
+    window_id = $bindable(),
+    loaded = $bindable(),
+  }: {
+    title: string;
+    content: any;
+    content_args: any[];
+    window_id?: number;
+    loaded?: boolean;
+  } = $props();
+  window_id = new_window(title);
+
   let position = $state({ x: 0, y: 0 });
 
   let window_div: HTMLDivElement = $state();
@@ -24,7 +35,11 @@
   role="none"
   class="window"
   style="z-index: {windows[window_id]
-    .z_index}; transform: translate({position.x}px, {position.y}px);"
+    .z_index}; transform: translate({position.x}px, {position.y}px); display: {windows[
+    window_id
+  ].hidden
+    ? 'none'
+    : 'unset'}"
   use:draggable={{
     bounds: "parent",
     handle: titlebar,
@@ -43,7 +58,9 @@
   <div class="window-titlebar" bind:this={titlebar}>
     {title}
     <div style="position: absolute; right: 0; top: 0;">
-      <button class="window_button"
+      <button
+        class="window_button"
+        onclick={() => (windows[window_id].hidden = true)}
         ><img
           aria-label="minimise"
           alt="minimise"
@@ -59,7 +76,12 @@
           src={fullscreen}
         /></button
       >
-      <button class="window_button"
+      <button
+        class="window_button"
+        onclick={() => {
+          windows.splice(window_id, 1);
+          loaded = false;
+        }}
         ><img
           aria-label="close window"
           alt="close window"

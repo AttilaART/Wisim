@@ -9,12 +9,14 @@ const error: Writable<null> | Writable<Error> = writable(null)
 
 type window = {
   id: number,
+  name: string,
   z_index: number,
+  hidden: boolean,
 }
 const windows: window[] = $state([])
 
-function new_window(): number {
-  windows.push({ id: windows.length, z_index: windows.length, })
+function new_window(name: string): number {
+  windows.push({ id: windows.length, name, z_index: windows.length, hidden: false })
   return windows[windows.length - 1].id
 }
 function move_window_to_top(window_id: number) {

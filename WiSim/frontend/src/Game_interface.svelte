@@ -3,6 +3,17 @@
   import { fade, fly, slide } from "svelte/transition";
   import Window from "./window.svelte";
   import Finances from "./Finances.svelte";
+  import { windows } from "./store.svelte";
+
+  type window = {
+    Id: number;
+    Loaded: boolean;
+  };
+
+  let finance_window: window = $state({
+    Id: undefined,
+    Loaded: false,
+  });
 </script>
 
 <div
@@ -44,7 +55,10 @@
           Text: "Finances",
           Style: "",
           Show: 1,
-          Onclick_function: () => {},
+          Onclick_function: () => {
+            finance_window.Loaded = true;
+            windows[finance_window.Id].hidden = false;
+          },
           dont_keep_pressed: true,
         },
         {
@@ -84,8 +98,28 @@
       </div>
     </div>
     <div class="desktop">
-      <Window title="Finances" content={Finances} content_args={[]}></Window>
+      {#if finance_window.Loaded}
+        <Window
+          title="Finances"
+          content={Finances}
+          content_args={[]}
+          bind:window_id={finance_window.Id}
+          bind:loaded={finance_window.Loaded}
+        ></Window>
+      {/if}
     </div>
+    <span class="bottom-bar">
+      <span class="app_button">Windows:</span>
+      {#each windows as w}
+        <button
+          transition:slide={{ axis: "x" }}
+          onclick={() => {
+            w.hidden = false;
+          }}
+          class="app_button {w.hidden ? '' : 'shown'}">{w.name}</button
+        >
+      {/each}
+    </span>
   </div>
 </div>
 
@@ -104,6 +138,27 @@
     flex-direction: row;
     align-items: center;
     border-bottom: var(--border);
+  }
+
+  .bottom-bar {
+    display: flex;
+    width: fit-content;
+    height: 36px;
+    min-width: 10px;
+    flex-direction: row;
+    border-right: var(--border);
+    border-top: var(--border);
+  }
+
+  .app_button {
+    border: none;
+    padding: 5px 10px 6px 10px;
+    transition: all 0.25s;
+  }
+
+  .app_button.shown {
+    color: var(--second-color);
+    background-color: var(--main-color);
   }
 
   .desktop {

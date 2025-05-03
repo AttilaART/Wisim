@@ -2,17 +2,17 @@ html {
   text-align: center;
   color: var(--main-color);
   background-color: var(--second-color);
-  --main-color: black;
-  --second-color: white;
-  --accent-color: #000000;
+  --main-color: white;
+  --second-color: #121212;
+  --accent-color: #6b6b6b;
   --accent-color2: rgba(0, 0, 0, 0.2);
-  --grey: rgba(0, 0, 0, 0.5);
+  --grey: var(--accent-color);
   --green: #2f9e44;
   --red: #e03131;
   --red2: #ff8787;
   --red3: #ffc9c9;
 
-  --border-color: black;
+  --border-color: var(--main-color);
   --border-width: 2px;
   --border: var(--border-width) solid var(--border-color);
 
@@ -94,7 +94,7 @@ h4 {
 
 
 button {
-  background-color: rgba(0, 0, 0, 0);
+  background-color: var(--second-color);
   text-align: center;
   color: var(--main-color);
   width: 120px;
@@ -103,14 +103,15 @@ button {
   padding: 0 10px;
   cursor: pointer;
   font-size: 17px;
+  transition: all 0.25s;
 }
 
 button:hover {
-  background-color: rgba(0, 0, 0, 0.2);
+  background-color: var(--accent-color);
 }
 
 button:active {
-  background-color: rgba(0, 0, 0, 1);
+  background-color: var(--main-color);
   color: var(--second-color);
 }
 
