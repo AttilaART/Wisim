@@ -5,6 +5,7 @@
   import Finances from "./Finances.svelte";
   import { canvas, windows } from "./store.svelte";
   import Close from "./assets/images/Close.svelte";
+  import Marketing from "./Marketing.svelte";
 
   type window = {
     Id: number;
@@ -12,6 +13,10 @@
   };
 
   let finance_window: window = $state({
+    Id: undefined,
+    Loaded: false,
+  });
+  let marketing_window: window = $state({
     Id: undefined,
     Loaded: false,
   });
@@ -51,7 +56,14 @@
           Text: "Marketing",
           Style: "",
           Show: 1,
-          Onclick_function: () => {},
+          Onclick_function: () => {
+            marketing_window.Loaded = true;
+            try {
+              windows[marketing_window.Id].hidden = false;
+            } catch (exception) {
+              console.warn(exception);
+            }
+          },
           dont_keep_pressed: true,
         },
         {
@@ -118,6 +130,19 @@
           bind:window_id={finance_window.Id}
         ></Window>
       {/if}
+      {#if marketing_window.Loaded}
+        <Window
+          title="Marketing"
+          content={Marketing}
+          content_args={[]}
+          canvas_size={{
+            x: desktop_canvas_size[0].inlineSize,
+            y: desktop_canvas_size[0].blockSize,
+          }}
+          close_window={() => (marketing_window.Loaded = false)}
+          bind:window_id={marketing_window.Id}
+        ></Window>
+      {/if}
     </div>
     <span class="bottom-bar">
       {#each windows as w}
@@ -169,7 +194,6 @@
     width: 100%;
     height: 30px;
     flex-direction: row;
-    border-right: var(--border);
     border-top: var(--border);
     overflow-x: scroll;
   }

@@ -1,0 +1,168 @@
+<script>
+  import Slider from "./slider.svelte";
+
+  let materials = $state({
+    Quality: 0.5,
+    Ecology: 0.5,
+    Ethical_sourcing: 0.5,
+  });
+
+  let manufacturing = $state({
+    Quality: 0.5,
+    Durability: 0.5,
+    Ecological_energy_sourcing: 0.5,
+    Material_efficiency: 0.5,
+  });
+
+  let product_stats = $state({
+    Quality: 0.5,
+    Ecology: 0.5,
+    Ethics: 0.5,
+    Durability: 0.5,
+  });
+
+  let manufacturing_stats = $state({
+    Speed: 0.5,
+    Cost: 0.5,
+    Weight: 0.5,
+  });
+</script>
+
+<div
+  class="grid_container"
+  style="grid-template-columns: 33.3% auto 33.33%; height: calc(100% - 58px);"
+>
+  <div class="grid_item" style="grid-row: 1; grid-column: 1; text-align: left;">
+    <h2>Materials</h2>
+    <p>Quality</p>
+    <Slider
+      bind:Value={materials.Quality}
+      min={0}
+      max={5}
+      options={{ step: 0.1 }}
+    ></Slider>
+    <p>Ecology</p>
+    <Slider
+      bind:Value={materials.Ecology}
+      min={0}
+      max={5}
+      options={{ step: 0.1 }}
+    ></Slider>
+    <p>Ethical Sourcing</p>
+    <Slider
+      bind:Value={materials.Ethical_sourcing}
+      min={0}
+      max={5}
+      options={{ step: 0.1 }}
+    ></Slider>
+  </div>
+  <div class="grid_item" style="grid-row: 1; grid-column: 2;">test1</div>
+
+  <div
+    class="grid_item"
+    style="grid-row: 2; grid-column: 1 /span 2; border-right: var(--border); border-top: var(--border); display: flex; flex-direction: row;"
+  >
+    <div style="flex: 1 1 40%;">
+      <h3>Product Stats</h3>
+      <table style="width: 100%;">
+        <tbody>
+          <tr>
+            <td>Quality:</td>
+            <td style="text-align: right;">{product_stats.Quality}</td>
+          </tr>
+          <tr>
+            <td>Ecology:</td>
+            <td style="text-align: right;">{product_stats.Ecology}</td>
+          </tr>
+          <tr>
+            <td>Ethics:</td>
+            <td style="text-align: right;">{product_stats.Ethics}</td>
+          </tr>
+          <tr>
+            <td>Durability:</td>
+            <td style="text-align: right;">{product_stats.Durability}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+    <div style="flex: 1 1 60%;">
+      <h3>Manufacturing Stats</h3>
+      <table>
+        <tbody>
+          <tr>
+            <td>Manufacturing Speed:</td>
+            <td style="text-align: right;">{manufacturing_stats.Speed}x</td>
+          </tr>
+          <tr>
+            <td>Material Cost:</td>
+            <td style="text-align: right;">{manufacturing_stats.Cost}</td>
+          </tr>
+          <tr>
+            <td>Weight:</td>
+            <td style="text-align: right;">{manufacturing_stats.Weight}</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div
+    class="grid_item"
+    style="grid-row: 1 /span 2; grid-column: 3; text-align: right;"
+  >
+    <h2>Manufacturing</h2>
+    <p>Quality</p>
+    <Slider
+      bind:Value={manufacturing.Quality}
+      min={0}
+      max={5}
+      options={{ step: 0.1 }}
+    ></Slider>
+    <p>Durability</p>
+    <Slider
+      bind:Value={manufacturing.Durability}
+      min={0}
+      max={5}
+      options={{ step: 0.1 }}
+    ></Slider>
+    <p>Ethical Energy Sourcing</p>
+    <Slider
+      bind:Value={manufacturing.Ecological_energy_sourcing}
+      min={0}
+      max={5}
+      options={{ step: 0.1 }}
+    ></Slider>
+    <p>Material Efficiency</p>
+    <Slider
+      bind:Value={manufacturing.Material_efficiency}
+      min={0}
+      max={5}
+      options={{ step: 0.1 }}
+    ></Slider>
+    <div style="display: flex; margin-top: auto;">
+      <button>Cancle</button>
+      <button>Confirm</button>
+    </div>
+  </div>
+</div>
+
+<style>
+  p {
+    margin: 0;
+    margin-left: 5px;
+  }
+
+  button {
+    padding: 10px;
+    margin: 10px;
+  }
+
+  h3 {
+    text-align: left;
+  }
+
+  table {
+    text-align: left;
+    padding: 5px;
+    padding-left: 10px;
+  }
+</style>
