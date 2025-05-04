@@ -3,7 +3,8 @@
   import { fade, fly, slide } from "svelte/transition";
   import Window from "./window.svelte";
   import Finances from "./Finances.svelte";
-  import { windows } from "./store.svelte";
+  import { canvas, windows } from "./store.svelte";
+  import Close from "./assets/images/Close.svelte";
 
   type window = {
     Id: number;
@@ -14,6 +15,8 @@
     Id: undefined,
     Loaded: false,
   });
+
+  let desktop_canvas_size: ResizeObserverSize[] = $state();
 </script>
 
 <div
@@ -57,7 +60,11 @@
           Show: 1,
           Onclick_function: () => {
             finance_window.Loaded = true;
-            windows[finance_window.Id].hidden = false;
+            try {
+              windows[finance_window.Id].hidden = false;
+            } catch (exception) {
+              console.warn(exception);
+            }
           },
           dont_keep_pressed: true,
         },
@@ -97,27 +104,44 @@
         <button style=" height: 100%; border: none;">Messages</button>
       </div>
     </div>
-    <div class="desktop">
+    <div class="desktop" bind:contentBoxSize={desktop_canvas_size}>
       {#if finance_window.Loaded}
         <Window
           title="Finances"
           content={Finances}
           content_args={[]}
+          canvas_size={{
+            x: desktop_canvas_size[0].inlineSize,
+            y: desktop_canvas_size[0].blockSize,
+          }}
+          close_window={() => (finance_window.Loaded = false)}
           bind:window_id={finance_window.Id}
-          bind:loaded={finance_window.Loaded}
         ></Window>
       {/if}
     </div>
     <span class="bottom-bar">
-      <span class="app_button">Windows:</span>
       {#each windows as w}
-        <button
+        <span
+          style="height: 100%; width: 200px;"
           transition:slide={{ axis: "x" }}
-          onclick={() => {
-            w.hidden = false;
-          }}
-          class="app_button {w.hidden ? '' : 'shown'}">{w.name}</button
+          class="app_button {w.hidden ? '' : 'shown'}"
         >
+          <button
+            onclick={() => {
+              w.hidden = false;
+            }}
+            style="
+    padding: 5px 10px 5px 10px; border: none; background-color: inherit; color: inherit; transition: none; display: inline;"
+            >{w.name}
+          </button>
+          <button
+            style="width: fit-content; height: 100%; border: none; mix-blend-mode: difference; background-color: transparent; display: inline;"
+            onclick={() => {
+              windows.splice(w.id, 1);
+              w.close_window();
+            }}><Close></Close></button
+          >
+        </span>
       {/each}
     </span>
   </div>
@@ -142,17 +166,16 @@
 
   .bottom-bar {
     display: flex;
-    width: fit-content;
-    height: 36px;
-    min-width: 10px;
+    width: 100%;
+    height: 30px;
     flex-direction: row;
     border-right: var(--border);
     border-top: var(--border);
+    overflow-x: scroll;
   }
 
   .app_button {
     border: none;
-    padding: 5px 10px 6px 10px;
     transition: all 0.25s;
   }
 

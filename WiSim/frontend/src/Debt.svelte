@@ -2,7 +2,7 @@
   import BarChart from "./BarChart.svelte";
   import { format_number } from "./helper";
   import Slider from "./slider.svelte";
-  import info_icon from "./assets/images/Info.svg";
+  import Info from "./assets/images/Info.svelte";
 
   let slider_value = $state();
   let balance_without_loans = $state(100000 - 70000);
@@ -68,11 +68,7 @@
             : 'var(--grey)'}"
         >({format_number(balance_after - balance_before, true)})</span
       >
-      <img
-        src={info_icon}
-        alt="info icon"
-        style="height: 15px; transform: translateY(3px);"
-      />
+      <Info></Info>
       <div class="details">
         Balance without loans: {format_number(balance_without_loans, false, 0)}
         <br />
@@ -91,11 +87,7 @@
             : 'var(--grey)'}"
         >({format_number(interest_after - interest_before, true, 0)})</span
       >
-      <img
-        src={info_icon}
-        alt="info icon"
-        style="height: 15px; transform: translateY(3px);"
-      />
+      <Info></Info>
       <div class="details">
         From Bridge Loans: {format_number(
           bridge_loan_interest_rate * bridge_loans,

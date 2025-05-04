@@ -11,6 +11,7 @@
   type Section = {
     Name: string;
     Lines: StatementLine[];
+    Period?: string;
   };
 
   export type Invoice = {
@@ -70,8 +71,8 @@
             <th></th>
           </tr>
         </thead>
-        {#each income as s}
-          {@render section(s)}
+        {#each income as s, i}
+          {@render section(s, i)}
         {/each}
       </table>
     {/if}
@@ -94,10 +95,17 @@
   </div>
 </div>
 
-{#snippet section(s: Section)}
+{#snippet section(s: Section, index: number)}
   <tr>
     <td style="text-align: left;" colspan="3">
-      <h3>{s.Name}</h3>
+      <div style="position: relative;">
+        <h3 style="display: inline;">{s.Name}</h3>
+        {#if index == 0}
+          <span style="position: absolute; right: 0; color: var(--grey);">
+            {s.Period}</span
+          >
+        {/if}
+      </div>
     </td>
   </tr>
   {#each s.Lines as l}

@@ -3,6 +3,7 @@ export async function Get_budget(month: number, company: number): Promise<Statem
   let budget = [
     {
       Name: "Est. Income",
+      Period: "Budget 03/0001",
       Lines: [
         { Name: "Gross Sales", Value: 123 },
         { Name: "Cost of Goods Sold", Value: -123 },
@@ -59,6 +60,7 @@ export async function Get_income_statement(month: number, company: number): Prom
   let income = [
     {
       Name: "Income",
+      Period: "Income & Loss statement 02/0001",
       Lines: [
         { Name: "Gross Sales", Value: 123 },
         { Name: "Cost of Goods Sold", Value: -123 },

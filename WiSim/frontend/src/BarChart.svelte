@@ -105,14 +105,14 @@
     --bar-spacing: 10px;
     --bar-width: 20px;
     --number-of-bars: 1;
-    --maxline-offset: 500px;
+    --maxline-offset: 100px;
   }
 
   .data_canvas {
     position: relative;
     padding: 10px;
     padding-left: 0px;
-    width: calc(var(--maxline-offset));
+    width: 100%;
   }
 
   .bar {
@@ -125,7 +125,7 @@
   }
 
   .bar.after {
-    width: 100%;
+    width: calc(100% - var(--maxline-offset));
   }
 
   .baseline,
@@ -141,12 +141,13 @@
 
   .maxline {
     border-right-style: dotted;
-    transform: translateX(var(--maxline-offset));
+    right: calc(var(--maxline-offset) + 10px);
   }
 
   .maxline_label {
     position: absolute;
     padding: 10px;
-    transform: translateX(var(--maxline-offset));
+    right: var(--maxline-offset);
+    transform: translateX(100%);
   }
 </style>

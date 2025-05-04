@@ -7,16 +7,22 @@ const loading = writable(false)
 const decisions = writable(new simulation.Decisions)
 const error: Writable<null> | Writable<Error> = writable(null)
 
+const canvas = writable({
+  x: 0,
+  y: 0,
+})
+
 type window = {
   id: number,
   name: string,
   z_index: number,
   hidden: boolean,
+  close_window: () => void
 }
 const windows: window[] = $state([])
 
-function new_window(name: string): number {
-  windows.push({ id: windows.length, name, z_index: windows.length, hidden: false })
+function new_window(name: string, close: () => void): number {
+  windows.push({ id: windows.length, name, z_index: windows.length, hidden: false, close_window: close })
   return windows[windows.length - 1].id
 }
 function move_window_to_top(window_id: number) {
@@ -29,4 +35,4 @@ function move_window_to_top(window_id: number) {
   windows[window_id].z_index = windows.length
 }
 
-export { month as month_counter, loading, company, decisions, windows, new_window, move_window_to_top, error }
+export { month as month_counter, loading, company, decisions, windows, new_window, move_window_to_top, error, canvas }

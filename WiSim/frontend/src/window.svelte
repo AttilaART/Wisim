@@ -2,25 +2,28 @@
   // import { Component } from "svelte";
   import { draggable } from "@neodrag/svelte";
   import { windows, new_window, move_window_to_top } from "./store.svelte";
-  import min from "./assets/images/min.svg";
-  import fullscreen from "./assets/images/fullscreen.svg";
-  import close from "./assets/images/close.svg";
+  import Close from "./assets/images/Close.svelte";
+  import Min from "./assets/images/Min.svelte";
+  import Fullscreen from "./assets/images/Fullscreen.svelte";
 
   let {
     title,
     content,
+    close_window,
     window_id = $bindable(),
-    loaded = $bindable(),
+    canvas_size,
   }: {
     title: string;
     content: any;
     content_args: any[];
+    close_window: () => void;
     window_id?: number;
-    loaded?: boolean;
+    canvas_size?: { x: number; y: number };
   } = $props();
-  window_id = new_window(title);
+  window_id = new_window(title, close_window);
 
-  let position = $state({ x: 0, y: 0 });
+  let fullscreen: boolean = $state(false);
+  let position = $state({ x: -canvas_size.x / 4, y: 0 });
 
   let window_div: HTMLDivElement = $state();
   let titlebar: HTMLDivElement = $state();
@@ -39,7 +42,10 @@
     window_id
   ].hidden
     ? 'none'
-    : 'unset'}"
+    : 'unset'};
+  {fullscreen
+    ? `--width: ${canvas_size.x - 5}px; --height: ${canvas_size.y - 5}px;`
+    : ''}"
   use:draggable={{
     bounds: "parent",
     handle: titlebar,
@@ -60,35 +66,25 @@
     <div style="position: absolute; right: 0; top: 0;">
       <button
         class="window_button"
-        onclick={() => (windows[window_id].hidden = true)}
-        ><img
-          aria-label="minimise"
-          alt="minimise"
-          style="display: block;margin: auto; width: 50%;"
-          src={min}
-        /></button
+        onclick={() => (windows[window_id].hidden = true)}><Min></Min></button
       >
-      <button class="window_button"
-        ><img
-          aria-label="fullscreen"
-          alt="fullscreen"
-          style="display: block;margin: auto; width: 50%;"
-          src={fullscreen}
-        /></button
+      <button
+        class="window_button"
+        onclick={() => {
+          fullscreen = !fullscreen;
+          position.x = -canvas_size.x / 2;
+          position.y = 0;
+        }}><Fullscreen></Fullscreen></button
       >
       <button
         class="window_button"
         onclick={() => {
           windows.splice(window_id, 1);
-          loaded = false;
+          close_window();
         }}
-        ><img
-          aria-label="close window"
-          alt="close window"
-          style="display: block;margin: auto; width: 50%;"
-          src={close}
-        /></button
       >
+        <Close></Close>
+      </button>
     </div>
   </div>
   {@render content?.()}
@@ -97,8 +93,10 @@
 <style>
   .window {
     position: absolute;
-    width: 650px;
-    height: 450px;
+    --height: 450px;
+    --width: 650px;
+    width: var(--width);
+    height: var(--height);
     border: var(--border);
     overflow: hidden;
     padding: 0px;
