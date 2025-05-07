@@ -12,6 +12,11 @@ html {
   --red2: #ff8787;
   --red3: #ffc9c9;
 
+  --chart-color1: #1971c2;
+  --chart-color2: #f08c00;
+  --chart-color3: #2f9e44;
+  --chart-color4: #e03131;
+
   --border-color: var(--main-color);
   --border-width: 2px;
   --border: var(--border-width) solid var(--border-color);
@@ -103,6 +108,7 @@ button {
   padding: 0 10px;
   cursor: pointer;
   font-size: 17px;
+  font-family: inherit;
   transition: all 0.25s;
 }
 

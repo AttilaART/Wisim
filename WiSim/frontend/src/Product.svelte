@@ -87,7 +87,7 @@
     </div>
     <div style="flex: 1 1 60%;">
       <h3>Manufacturing Stats</h3>
-      <table>
+      <table style="width: 100%;">
         <tbody>
           <tr>
             <td>Manufacturing Speed:</td>
@@ -138,9 +138,9 @@
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
-    <div style="display: flex; margin-top: auto;">
-      <button>Cancle</button>
-      <button>Confirm</button>
+    <div style="display: flex; margin-top: auto; width: 100%;">
+      <button style="flex: 1 1 50%;">Cancle</button>
+      <button style="flex: 1 1 50%;">Confirm</button>
     </div>
   </div>
 </div>

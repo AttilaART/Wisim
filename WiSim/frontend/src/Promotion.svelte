@@ -1,6 +1,9 @@
 <script>
+  import Donut from "./Donut.svelte";
   import { format_number } from "./helper";
   import Slider from "./slider.svelte";
+  import Info from "./assets/images/Info.svelte";
+  import Tooltip from "./Tooltip.svelte";
 
   let promotion_quantity_input = $state("150'000 CHF");
   let promotion_quantity = $state(150000);
@@ -71,7 +74,36 @@
     </div>
   </div>
   <div style="flex: 1 1 50%; padding: 10px;">
-    <h2>Your Typical Customers</h2>
+    <h2>
+      Your Typical Customers
+      <Tooltip text="The averages of the preferences of your customers"
+      ></Tooltip>
+    </h2>
+
+    <Donut
+      data={[
+        {
+          Name: "Avg. Quality Preference",
+          Color: "var(--chart-color1)",
+          Value: 1.34,
+        },
+        {
+          Name: "Avg. Durability Preference",
+          Color: "var(--chart-color2)",
+          Value: 0.34,
+        },
+        {
+          Name: "Avg. Ecology Preference",
+          Color: "var(--chart-color3)",
+          Value: 4.62,
+        },
+        {
+          Name: "Avg. Ethical Preference",
+          Color: "var(--chart-color4)",
+          Value: 2.34,
+        },
+      ]}
+    ></Donut>
   </div>
 </div>
 

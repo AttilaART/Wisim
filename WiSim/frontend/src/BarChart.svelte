@@ -1,11 +1,6 @@
 <script lang="ts">
-  import { number } from "echarts";
-
-  type Series = {
-    Name: string;
-    Value: number;
-    Color: string;
-  };
+  import { generateGradient } from "./helper";
+  import type { Series } from "./helper";
 
   type Bar = Series[];
 
@@ -58,20 +53,6 @@
     return bar_total;
   }
 
-  function generateGradient(bar: Bar): string {
-    let gradient: string = "linear-gradient(to right";
-
-    let current_percentage = 0;
-    for (let i in bar) {
-      gradient += `, ${bar[i].Color} ${current_percentage}%, ${bar[i].Color} ${current_percentage + (bar[i].Value / maximum) * 100}%`;
-      current_percentage += (bar[i].Value / maximum) * 100;
-    }
-    gradient += `, rgba(0, 0, 0, 0) ${current_percentage}%, rgba(0, 0, 0, 0) 100%`;
-
-    gradient += ")";
-    return gradient;
-  }
-
   setTimeout(() => (loaded = true));
 </script>
 
@@ -96,7 +77,12 @@
 {#snippet bar(b: Bar)}
   <div
     class="bar{loaded ? ' after' : ''}"
-    style="background: {generateGradient(b)}"
+    style="background: {generateGradient(
+      b,
+      'linear-gradient',
+      'to right',
+      maximum,
+    )}"
   ></div>
 {/snippet}
 
