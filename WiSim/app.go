@@ -174,16 +174,16 @@ func (a *App) Get_production_report(company int, step int) (simulation.Productio
 //return simulation.Decisions{}, nil
 //}
 
-func (a *App) Get_past_decisions(company int, step int) (simulation.Decisions, error) {
+func (a *App) Get_past_decisions(company int, step int) (simulation.Decisionsold, error) {
 	err := check_request(company, step)
 	if err != nil {
-		return simulation.Decisions{}, err
+		return simulation.Decisionsold{}, err
 	}
 
 	return game_state.state.Companies[company].Decision_history[step], nil
 }
 
-func (a *App) Submit_decisions(company int, decisions simulation.Decisions) error {
+func (a *App) Submit_decisions(company int, decisions simulation.Decisionsold) error {
 	err := check_request(company, 0)
 	if err != nil {
 		if err.Error() != "this step hasn't been simulated yet" {

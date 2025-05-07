@@ -48,5 +48,5 @@ func get_income_statement_data(company int, step int) ([]simulation.FinanceRepor
 		return nil, err
 	}
 
-	return game_state.state.Companies[company].Reports[step].Balance_sheet.Income_statement, nil
+	return game_state.state.Companies[company].Reports[step].Balance_sheet.Invoice_log, nil
 }

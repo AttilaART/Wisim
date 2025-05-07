@@ -7,7 +7,7 @@ import (
 	"slices"
 )
 
-func (company *Company) simulate_company(decisions Decisions, external_factors External_factors) error {
+func (company *Company) simulate_company(decisions Decisionsold, external_factors External_factors) error {
 	company.Reports = append(company.Reports, Report{Month: external_factors.Month})
 
 	// Personelle
@@ -67,7 +67,7 @@ func (company *Company) simulate_company(decisions Decisions, external_factors E
 		return err
 	}
 
-	company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement = append(company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement, Balance_entries...)
+	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = append(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log, Balance_entries...)
 	company.Reports[len(company.Reports)-1].Balance_sheet.Assets = append(company.Reports[len(company.Reports)-1].Balance_sheet.Assets, Assets_entries...)
 	// Finances
 
@@ -77,7 +77,7 @@ func (company *Company) simulate_company(decisions Decisions, external_factors E
 }
 
 // Production functions
-func (company *Company) calculate_production(decisions Decisions, external_factors External_factors, finance_report *Balance_sheet) {
+func (company *Company) calculate_production(decisions Decisionsold, external_factors External_factors, finance_report *Balance_sheet) {
 	var production_report Production_report
 	// Purchase Machines
 	println("Purchasing machines")
@@ -94,7 +94,7 @@ func (company *Company) calculate_production(decisions Decisions, external_facto
 		log.Fatal("purchase_machines has errored, fix this properly, Attila!")
 	}
 
-	finance_report.Income_statement = append(finance_report.Income_statement, Balance_entries...)
+	finance_report.Invoice_log = append(finance_report.Invoice_log, Balance_entries...)
 	finance_report.Assets = append(finance_report.Assets, Assets_entries...)
 	company.Machines = Machines // doing this to avoid compiler error
 
@@ -104,7 +104,7 @@ func (company *Company) calculate_production(decisions Decisions, external_facto
 
 	println("Producing products")
 	production_report, Income_entries := produce(company.Machines, company.Offer.Product, production_report, external_factors, company.Production_personelle)
-	company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement = append(company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement, Income_entries...)
+	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = append(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log, Income_entries...)
 
 	company.Reports[len(company.Reports)-1].Production_report = production_report
 }

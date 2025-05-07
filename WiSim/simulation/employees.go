@@ -8,7 +8,7 @@ import (
 
 // Employee functions
 
-func (company *Company) simulate_employees(decisions Decisions, external_factors External_factors) error {
+func (company *Company) simulate_employees(decisions Decisionsold, external_factors External_factors) error {
 	// Calcualte Turnover
 	company.Production_personelle, _ = turnover(company.Production_personelle, external_factors.Turnover)
 	company.Marketing_personelle, _ = turnover(company.Marketing_personelle, external_factors.Turnover)
@@ -37,8 +37,8 @@ func (company *Company) simulate_employees(decisions Decisions, external_factors
 	company.Production_personelle, production_payroll = calculate_payroll(company.Production_personelle, decisions.Raise_for_production_personelle)
 	company.Marketing_personelle, marketing_payroll = calculate_payroll(company.Marketing_personelle, decisions.Raise_for_marketing_personelle)
 
-	company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement = append(company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement, production_payroll...)
-	company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement = append(company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement, marketing_payroll...)
+	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = append(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log, production_payroll...)
+	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = append(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log, marketing_payroll...)
 
 	// copy employees for calculate_motivation function
 	old_production_personelle := make([]Employee, len(company.Production_personelle))

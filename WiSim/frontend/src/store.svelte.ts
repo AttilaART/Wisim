@@ -1,38 +1,16 @@
 import { writable, Writable } from 'svelte/store';
 import { simulation } from '../wailsjs/go/models';
 
-const month = writable(1)
-const company = writable(0)
-const loading = writable(false)
-const decisions = writable(new simulation.Decisions)
-const error: Writable<null> | Writable<Error> = writable(null)
+export const loading = writable(false)
+export const error: Writable<null> | Writable<Error> = writable(null)
 
-const canvas = writable({
+export const month = writable(1)
+
+export const company_id = writable(0)
+export const decisionsold = writable(new simulation.Decisionsold)
+
+
+export const canvas = writable({
   x: 0,
   y: 0,
 })
-
-type window = {
-  id: number,
-  name: string,
-  z_index: number,
-  hidden: boolean,
-  close_window: () => void
-}
-const windows: window[] = $state([])
-
-function new_window(name: string, close: () => void): number {
-  windows.push({ id: windows.length, name, z_index: windows.length, hidden: false, close_window: close })
-  return windows[windows.length - 1].id
-}
-function move_window_to_top(window_id: number) {
-  let current_z_index = windows[window_id].z_index
-  for (let i in windows) {
-    if (windows[i].z_index > current_z_index) {
-      windows[i].z_index -= 1
-    }
-  }
-  windows[window_id].z_index = windows.length
-}
-
-export { month as month_counter, loading, company, decisions, windows, new_window, move_window_to_top, error, canvas }

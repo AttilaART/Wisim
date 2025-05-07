@@ -236,7 +236,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		5,
 	)
 
-	game_state.Current_decisions = make([]Decisions, number_of_companies)
+	game_state.Current_decisions = make([]Decisionsold, number_of_companies)
 	game_state.Decisions_submitted = make([]bool, number_of_companies)
 
 	return game_state

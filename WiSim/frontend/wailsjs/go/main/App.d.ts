@@ -12,7 +12,7 @@ export function Get_financial_report(arg1:number,arg2:number):Promise<simulation
 
 export function Get_marketing_statistics(arg1:number,arg2:number):Promise<simulation.Marketing_statistics>;
 
-export function Get_past_decisions(arg1:number,arg2:number):Promise<simulation.Decisions>;
+export function Get_past_decisions(arg1:number,arg2:number):Promise<simulation.Decisionsold>;
 
 export function Get_personelle_report(arg1:number,arg2:number,arg3:string):Promise<simulation.Personelle_sub_report>;
 
@@ -32,6 +32,6 @@ export function New_simulation():Promise<number>;
 
 export function Revert_simulation():Promise<number>;
 
-export function Submit_decisions(arg1:number,arg2:simulation.Decisions):Promise<void>;
+export function Submit_decisions(arg1:number,arg2:simulation.Decisionsold):Promise<void>;
 
 export function Trigger_simulation(arg1:boolean):Promise<number>;

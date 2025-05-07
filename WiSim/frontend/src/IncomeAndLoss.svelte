@@ -1,6 +1,6 @@
 <script lang="ts">
   import { format_number } from "./helper";
-  import { month_counter, company, error } from "./store.svelte";
+  import { month, company_id, error } from "./store.svelte";
 
   export type Statement = Section[] | undefined | null;
   type StatementLine = {
@@ -36,7 +36,7 @@
 
   async function s() {
     try {
-      income = await get_income_statement($month_counter, $company);
+      income = await get_income_statement($month, $company_id);
     } catch (exeption) {
       invoice_log = null;
       $error = exeption;
@@ -45,7 +45,7 @@
 
   async function i() {
     try {
-      invoice_log = await get_invoice_log($month_counter, $company);
+      invoice_log = await get_invoice_log($month, $company_id);
     } catch (exeption) {
       invoice_log = null;
       $error = exeption;

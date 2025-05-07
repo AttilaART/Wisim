@@ -8,8 +8,26 @@
   if (position == undefined) {
     position = "bottom";
   }
+
+  let offset_from: string;
+
+  switch (position) {
+    case "top":
+      offset_from = "bottom";
+      break;
+    case "bottom":
+      offset_from = "top";
+      break;
+    case "left":
+      offset_from = "right";
+      break;
+    case "right":
+      offset_from = "left";
+      break;
+  }
 </script>
 
+<!-- svelte-ignore a11y_mouse_events_have_key_events-->
 <span
   style="position: relative; display: inline;"
   onmouseover={() => {
@@ -18,42 +36,17 @@
   onmouseleave={() => {
     show_text = false;
   }}
+  role="tooltip"
 >
   <Info></Info>
   {#if show_text}
-    {#if position == "top"}
-      <div
-        class="tooltip-text"
-        transition:fade={{ duration: 250 }}
-        style="bottom: var(--offset); transform:  translateX(50%);"
-      >
-        {text}
-      </div>
-    {:else if position == "left"}
-      <div
-        class="tooltip-text"
-        transition:fade={{ duration: 250 }}
-        style="right: var(--offset); transform:  translateX(50%);"
-      >
-        {text}
-      </div>
-    {:else if position == "right"}
-      <div
-        class="tooltip-text"
-        transition:fade={{ duration: 250 }}
-        style="left: var(--offset); transform:  translateX(50%);"
-      >
-        {text}
-      </div>
-    {:else if position == "bottom"}
-      <div
-        class="tooltip-text"
-        transition:fade={{ duration: 250 }}
-        style="top: var(--offset); transform:  translateX(50%);"
-      >
-        {text}
-      </div>
-    {/if}
+    <div
+      class="tooltip-text"
+      transition:fade={{ duration: 250 }}
+      style="{offset_from}: var(--offset); transform:  translateX(50%);"
+    >
+      {text}
+    </div>
   {/if}
 </span>
 

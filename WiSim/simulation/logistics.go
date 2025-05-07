@@ -3,7 +3,7 @@ package simulation
 import "errors"
 
 // Logistics
-func (company *Company) calculate_logistics(decisions Decisions) ([]FinanceReportEntry, []FinanceReportEntry, error) {
+func (company *Company) calculate_logistics(decisions Decisionsold) ([]FinanceReportEntry, []FinanceReportEntry, error) {
 	var Income_entries []FinanceReportEntry
 	var Assets_entries []FinanceReportEntry
 

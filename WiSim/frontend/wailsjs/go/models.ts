@@ -24,7 +24,7 @@ export namespace int {
 
 export namespace simulation {
 	
-	export class Decisions {
+	export class Decisionsold {
 	    Sales_projection: number;
 	    Selling_price: number;
 	    Marketing: number;
@@ -53,7 +53,7 @@ export namespace simulation {
 	    Dividends: number;
 	
 	    static createFrom(source: any = {}) {
-	        return new Decisions(source);
+	        return new Decisionsold(source);
 	    }
 	
 	    constructor(source: any = {}) {

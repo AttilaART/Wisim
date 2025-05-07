@@ -6,7 +6,7 @@ import (
 )
 
 // Finances
-func (company *Company) calculate_budget(decisions Decisions, external_factors External_factors) Financial_Report {
+func (company *Company) calculate_budget(decisions Decisionsold, external_factors External_factors) Financial_Report {
 	var financial_report Financial_Report
 
 	local_storage_capacity := 0
@@ -111,7 +111,7 @@ func (company *Company) calculate_budget(decisions Decisions, external_factors E
 	financial_report.Total_expenses_after_tax = 0
 	financial_report.Net_Profit = financial_report.Total_expenses_after_tax + financial_report.Total_income
 
-	for _, e := range company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement {
+	for _, e := range company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log {
 		financial_report.Net_Profit += e.Value
 		if e.Value > 0 && (e.Group != loans || e.Group != bridge_loans) {
 			financial_report.Total_income += e.Value

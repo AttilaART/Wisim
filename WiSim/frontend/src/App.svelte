@@ -5,7 +5,7 @@
   import { New_simulation, Initial_app_load } from "../wailsjs/go/main/App";
   import { fade } from "svelte/transition";
 
-  import { month_counter } from "./store.svelte";
+  import { month } from "./store.svelte";
 
   let background_image_blurred = $state("");
   let is_loading = $state(false);
@@ -34,7 +34,7 @@
   }
 
   async function start_new_game() {
-    $month_counter = await New_simulation();
+    $month = await New_simulation();
   }
 </script>
 

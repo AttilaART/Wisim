@@ -22,7 +22,7 @@ type Game_state struct {
 
 	Population              Population
 	Companies               []Company
-	Current_decisions       []Decisions
+	Current_decisions       []Decisionsold
 	Decisions_submitted     []bool
 	Market_sales_statistics []Sales_statistics
 	External_factors        External_factors
@@ -67,9 +67,12 @@ type Company struct {
 	Balance float64
 
 	// Global_effects   []Effect
-	Decision_history []Decisions
+	Decision_history []Decisionsold
 
 	Reports []Report
+	// Research and development
+	Global_quality_factor float32
+
 	// Product
 	Offer                Offer
 	Orders               int
@@ -84,7 +87,7 @@ type Company struct {
 	Production_personelle []Employee
 }
 
-type Decisions struct {
+type Decisionsold struct {
 	// Planing for budget reports
 	Sales_projection int
 	Selling_price    float32
@@ -123,6 +126,70 @@ type Decisions struct {
 
 	Increase_of_loans float32
 	Dividends         float32
+}
+
+type Decisions struct {
+	Predictions struct {
+		Sales_prediction int
+	}
+
+	Finances struct {
+		set_bank_loan float64
+	}
+
+	Marketing struct {
+		Price float32
+
+		Product struct {
+			Materials struct {
+				Quality          float32
+				Ecology          float32
+				Ethical_sourcing float32
+			}
+
+			Manufacturing struct {
+				Quality             float32
+				Durability          float32
+				Ecologica_energy    float32
+				Material_efficiency float32
+			}
+		}
+
+		Promotion struct {
+			Quantity         float64
+			Style_quality    float32
+			Style_ecology    float32
+			Style_ethics     float32
+			Style_durability float32
+		}
+	}
+
+	Employees struct {
+		Production_actions []Employee_action
+		Marketing_actions  []Employee_action
+	}
+
+	Production struct {
+		Production_goal int
+		Machines        []Machine
+		Logistics       []Warehouse
+	}
+}
+
+const (
+	existing_employee = iota
+	new_hire
+	fired
+)
+
+type Employee_action struct {
+	Employee Employee
+
+	Extra_training int
+	Pay            float32
+	Bonus          float32
+
+	status int
 }
 
 type Offer struct {
@@ -220,8 +287,34 @@ type Financial_Report struct {
 	Net_Profit float64
 }
 
+type Financial_Reportnew struct {
+	// Income
+	Income struct {
+		Gross_sales   float64
+		Cost_of_sales float64
+		Gross_profit  float64
+	}
+	Operating_expenses struct {
+		Advertising              float64
+		Facilities_and_logistics float64
+		Research_and_development float64
+		Total_operating_expenses float64
+	}
+	Non_operating_expenses struct {
+		Write_offs                   float64
+		Loan_interest                float64
+		Loan_repayment               float64
+		bridge_loan_intrest          float64
+		bridge_loan_repayment        float64
+		Total_non_operating_expenses float64
+		Taxes                        float64
+		Net_income                   float64
+		cashflow                     float64
+	}
+}
+
 func (f *Balance_sheet) add_to_income_statement(name string, group int, info string, cash_cost bool, value float64) {
-	f.Income_statement = append(f.Income_statement, FinanceReportEntry{name, group, info, cash_cost, value})
+	f.Invoice_log = append(f.Invoice_log, FinanceReportEntry{name, group, info, cash_cost, value})
 }
 
 func (f *Balance_sheet) add_to_equity(name string, group int, info string, cash_cost bool, value float64) {
@@ -235,7 +328,7 @@ func (f *Balance_sheet) add_to_liabilities(name string, group int, info string, 
 type Balance_sheet struct {
 	Bank_balance float64
 
-	Income_statement []FinanceReportEntry
+	Invoice_log []FinanceReportEntry
 
 	Assets      []FinanceReportEntry
 	Liabilities []FinanceReportEntry
@@ -465,7 +558,7 @@ type External_factors struct {
 // ########## \__,_| \__,_| \__|\__,_|   |_|   \__,_||_| |_| \___| \__||_| \___/ |_| |_||___/ ##########
 // #####################################################################################################
 
-func (c Company) Mock_simulate_step(decisions Decisions, external_factors External_factors) Report {
+func (c Company) Mock_simulate_step(decisions Decisionsold, external_factors External_factors) Report {
 	results := FinanceReportEntry{"Predicted sales", predictions, "The amount of you predict you'll make", true, float64(decisions.Sales_projection) * float64(decisions.Selling_price)}
 	c.compile_reports(decisions, results, Purchasing_statistics{Products_sold: decisions.Sales_projection}, &Sales_statistics{}, external_factors)
 	return c.Reports[len(c.Reports)-1]
@@ -575,7 +668,7 @@ func (game_state *Game_state) Simulate_step() error {
 }
 
 func (company *Company) compile_reports(
-	decisions Decisions,
+	decisions Decisionsold,
 	results FinanceReportEntry,
 	company_purchasing_statistcs Purchasing_statistics,
 	market_purchasing_statistics *Sales_statistics,
@@ -589,7 +682,7 @@ func (company *Company) compile_reports(
 	)
 
 	company.Items_in_storage -= products_sold
-	company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement = append(company.Reports[len(company.Reports)-1].Balance_sheet.Income_statement, results)
+	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = append(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log, results)
 
 	// Finance
 	company.Reports[len(company.Reports)-1].Financial_Report = company.calculate_budget(decisions, external_factors)
@@ -648,8 +741,8 @@ func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics
 // ########## |_| |_| |_| \__,_||_||_| |_| ##########
 // ##################################################
 
-func Get_decisions(save_location string, number_of_companies int) ([]Decisions, error) {
-	decisions := make([]Decisions, number_of_companies)
+func Get_decisions(save_location string, number_of_companies int) ([]Decisionsold, error) {
+	decisions := make([]Decisionsold, number_of_companies)
 	for i := range decisions {
 		decisions_json, err := os.ReadFile(fmt.Sprintf("%s/decisions_company_%d.json", save_location, i))
 		// println(string(decisions_json))

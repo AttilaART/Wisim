@@ -3,7 +3,7 @@
   import { fade, fly, slide } from "svelte/transition";
   import Window from "./window.svelte";
   import Finances from "./Finances.svelte";
-  import { canvas, windows } from "./store.svelte";
+  import { delete_window, windows } from "./window_manager.svelte";
   import Close from "./assets/images/Close.svelte";
   import Marketing from "./Marketing.svelte";
 
@@ -145,28 +145,26 @@
       {/if}
     </div>
     <span class="bottom-bar">
-      {#each windows as w}
-        <span
-          style="height: 100%; width: 200px;"
+      {#each windows as w, w_id}
+        <div
+          style="height: calc(var(--height) - var(--border-width); width: 200px; position: relative;"
           transition:slide={{ axis: "x" }}
           class="app_button {w.hidden ? '' : 'shown'}"
         >
           <button
+            style="width: fit-content; border: none; mix-blend-mode: difference; background-color: transparent; position: absolute; right: 0; margin-top: 2px;"
+            onclick={() => {
+              delete_window(w_id);
+            }}><Close></Close></button
+          >
+          <button
             onclick={() => {
               w.hidden = false;
             }}
-            style="
-    padding: 5px 10px 5px 10px; border: none; background-color: inherit; color: inherit; transition: none; display: inline;"
+            style="padding: auto 10px auto 10px; border: none; background-color: inherit; color: inherit; margin-right: 10px; margin-top: 2px;"
             >{w.name}
           </button>
-          <button
-            style="width: fit-content; height: 100%; border: none; mix-blend-mode: difference; background-color: transparent; display: inline;"
-            onclick={() => {
-              windows.splice(w.id, 1);
-              w.close_window();
-            }}><Close></Close></button
-          >
-        </span>
+        </div>
       {/each}
     </span>
   </div>
@@ -192,13 +190,15 @@
   .bottom-bar {
     display: flex;
     width: 100%;
-    height: 30px;
+    --height: 35px;
+    height: var(--height);
     flex-direction: row;
     border-top: var(--border);
     overflow-x: scroll;
   }
 
   .app_button {
+    position: relative;
     border: none;
     transition: all 0.25s;
   }
