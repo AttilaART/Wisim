@@ -3,7 +3,11 @@
   import { fade, fly, slide } from "svelte/transition";
   import Window from "./window.svelte";
   import Finances from "./Finances.svelte";
-  import { delete_window, windows } from "./window_manager.svelte";
+  import {
+    delete_window,
+    get_window_by_id,
+    windows,
+  } from "./window_manager.svelte";
   import Close from "./assets/images/Close.svelte";
   import Marketing from "./Marketing.svelte";
 
@@ -42,24 +46,25 @@
           Text: "Employees",
           Style: "",
           Show: 1,
-          Onclick_function: () => {},
+          onClick: () => {},
           dont_keep_pressed: true,
         },
         {
           Text: "Production",
           Style: "",
           Show: 1,
-          Onclick_function: () => {},
+          onClick: () => {},
           dont_keep_pressed: true,
         },
         {
           Text: "Marketing",
           Style: "",
           Show: 1,
-          Onclick_function: () => {
+          onClick: () => {
             marketing_window.Loaded = true;
             try {
-              windows[marketing_window.Id].hidden = false;
+              windows[get_window_by_id(marketing_window.Id).index].hidden =
+                false;
             } catch (exception) {
               console.warn(exception);
             }
@@ -70,10 +75,10 @@
           Text: "Finances",
           Style: "",
           Show: 1,
-          Onclick_function: () => {
+          onClick: () => {
             finance_window.Loaded = true;
             try {
-              windows[finance_window.Id].hidden = false;
+              windows[get_window_by_id(finance_window.Id).index].hidden = false;
             } catch (exception) {
               console.warn(exception);
             }
@@ -84,21 +89,21 @@
           Text: "Research",
           Style: "",
           Show: 1,
-          Onclick_function: () => {},
+          onClick: () => {},
           dont_keep_pressed: true,
         },
         {
           Text: "Companies",
           Style: "",
           Show: 1,
-          Onclick_function: () => {},
+          onClick: () => {},
           dont_keep_pressed: true,
         },
         {
           Text: "Main Menu",
           Style: "margin-top: auto",
           Show: 1,
-          Onclick_function: () => {},
+          onClick: () => {},
           dont_keep_pressed: true,
         },
       ]}
@@ -126,7 +131,7 @@
             x: desktop_canvas_size[0].inlineSize,
             y: desktop_canvas_size[0].blockSize,
           }}
-          close_window={() => (finance_window.Loaded = false)}
+          onClose={() => (finance_window.Loaded = false)}
           bind:window_id={finance_window.Id}
         ></Window>
       {/if}
@@ -139,13 +144,13 @@
             x: desktop_canvas_size[0].inlineSize,
             y: desktop_canvas_size[0].blockSize,
           }}
-          close_window={() => (marketing_window.Loaded = false)}
+          onClose={() => (marketing_window.Loaded = false)}
           bind:window_id={marketing_window.Id}
         ></Window>
       {/if}
     </div>
     <span class="bottom-bar">
-      {#each windows as w, w_id}
+      {#each windows as w}
         <div
           style="height: calc(var(--height) - var(--border-width); width: 200px; position: relative;"
           transition:slide={{ axis: "x" }}
@@ -154,7 +159,7 @@
           <button
             style="width: fit-content; border: none; mix-blend-mode: difference; background-color: transparent; position: absolute; right: 0; margin-top: 2px;"
             onclick={() => {
-              delete_window(w_id);
+              delete_window(w.id);
             }}><Close></Close></button
           >
           <button

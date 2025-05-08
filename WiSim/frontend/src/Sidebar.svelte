@@ -3,7 +3,7 @@
     Text: string;
     Style: string;
     Show: number; // -1 == hide, 0==grey out, 1==show
-    Onclick_function: () => void;
+    onClick: () => void;
     dont_keep_pressed?: boolean;
     selected_by_default?: boolean;
   };
@@ -103,7 +103,7 @@
       style={button_data.Style}
       onclick={() => {
         select_button(index);
-        button_data.Onclick_function();
+        button_data.onClick();
       }}>{@html button_data.Text}</button
     >
   {:else}
@@ -112,7 +112,7 @@
       style="opacity: 60%; {button_data.Style}"
       onclick={() => {
         select_button(index);
-        button_data.Onclick_function();
+        button_data.onClick();
       }}>{@html button_data.Text}</button
     >
   {/if}

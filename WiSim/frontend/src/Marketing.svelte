@@ -13,7 +13,7 @@
       Text: "Product",
       Style: "",
       Show: 1,
-      Onclick_function: () => {
+      onClick: () => {
         page = "product";
       },
       selected_by_default: true,
@@ -22,7 +22,7 @@
       Text: "Price",
       Style: "",
       Show: 1,
-      Onclick_function: () => {
+      onClick: () => {
         page = "price";
       },
     },
@@ -30,7 +30,7 @@
       Text: "Place",
       Style: "",
       Show: 0,
-      Onclick_function: () => {
+      onClick: () => {
         page = "place";
       },
     },
@@ -38,7 +38,7 @@
       Text: "Promotion",
       Style: "",
       Show: 1,
-      Onclick_function: () => {
+      onClick: () => {
         page = "promotion";
       },
     },

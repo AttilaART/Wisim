@@ -19,7 +19,7 @@
       Text: "Budget",
       Style: "",
       Show: 1,
-      Onclick_function: () => {
+      onClick: () => {
         page = "budget";
       },
       selected_by_default: true,
@@ -28,7 +28,7 @@
       Text: "Income & Loss",
       Style: "",
       Show: 1,
-      Onclick_function: () => {
+      onClick: () => {
         page = "income and loss";
       },
     },
@@ -36,7 +36,7 @@
       Text: "Debt",
       Style: "",
       Show: 1,
-      Onclick_function: () => {
+      onClick: () => {
         page = "debt";
       },
     },
@@ -44,7 +44,7 @@
       Text: "Balance Sheet",
       Style: "",
       Show: 1,
-      Onclick_function: () => {
+      onClick: () => {
         page = "balance sheet";
       },
     },
@@ -52,7 +52,7 @@
       Text: "Graphs",
       Style: "",
       Show: 1,
-      Onclick_function: () => {
+      onClick: () => {
         page = "graphs";
       },
     },

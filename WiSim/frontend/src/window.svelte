@@ -6,23 +6,25 @@
     new_window,
     move_window_to_top,
     delete_window,
+    get_window_by_id,
   } from "./window_manager.svelte";
   import Close from "./assets/images/Close.svelte";
   import Min from "./assets/images/Min.svelte";
   import Fullscreen from "./assets/images/Fullscreen.svelte";
   import { tick } from "svelte";
+  import { fade } from "svelte/transition";
 
   let {
     title,
     content,
-    close_window,
+    onClose: close_window,
     window_id = $bindable(),
     canvas_size,
   }: {
     title: string;
     content: any;
     content_args: any[];
-    close_window: () => void;
+    onClose: () => void;
     window_id?: number;
     canvas_size?: { x: number; y: number };
   } = $props();
@@ -42,27 +44,21 @@
 
   (async () => {
     await tick();
-    update_position(-canvas_size.x / 4, 0);
+    update_position(canvas_size.x / 4, 0);
   })();
-
-  $effect(() => {
-    console.log(windows[window_id].z_index);
-  });
 </script>
 
-{#if windows[window_id]}
+{#if windows[get_window_by_id(window_id).index]}
   <div
     role="none"
-    class="window"
-    style="z-index: {windows[window_id].z_index};
-    transform: translate({position.x}px, {position.y}px); display: {windows[
-      window_id
-    ].hidden
-      ? 'none'
-      : 'unset'};
+    class="window{windows[get_window_by_id(window_id).index].hidden
+      ? ' hidden'
+      : ''}"
+    style="z-index: {windows[get_window_by_id(window_id).index].z_index};
+    transform: translate({position.x}px, {position.y}px); 
   {fullscreen
       ? `--width: ${canvas_size.x - 5}px; --height: ${canvas_size.y - 5}px;`
-      : `--width: ${canvas_size.x / 2 - 5}px; --height: ${canvas_size.y / 2 - 5}px`}"
+      : `--width: ${canvas_size.x / 2 - 5}px; --height: ${canvas_size.y - 5}px`}"
     use:draggable={{
       bounds: "parent",
       handle: titlebar,
@@ -83,7 +79,9 @@
       <div style="position: absolute; right: 0; top: 0;">
         <button
           class="window_button"
-          onclick={() => (windows[window_id].hidden = true)}><Min></Min></button
+          onclick={() =>
+            (windows[get_window_by_id(window_id).index].hidden = true)}
+          ><Min></Min></button
         >
         <button
           class="window_button"
@@ -120,6 +118,11 @@
     padding: 0px;
     background-color: var(--second-color);
     pointer-events: all;
+    transition: opacity 1s;
+  }
+
+  .window.hidden {
+    opacity: 0;
   }
 
   .window-titlebar {

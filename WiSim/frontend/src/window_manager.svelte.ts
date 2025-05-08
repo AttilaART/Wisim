@@ -1,33 +1,56 @@
-export type window = {
+export type Window = {
   id: number,
   name: string,
   z_index: number,
   hidden: boolean,
-  close_window: () => void
+  onClose: () => void
 }
-export const windows: window[] = $state([])
+export const windows: Window[] = $state([])
+
+export function get_window_by_id(window_id: number): { index: number, window: Window } {
+  for (let i in windows) {
+    if (windows[i].id == window_id) {
+      return { index: Number(i), window: windows[i] }
+    }
+  }
+}
 
 export function new_window(name: string, close: () => void): number {
-  windows.push({ id: windows.length, name, z_index: windows.length + 1, hidden: false, close_window: close })
-  return windows[windows.length - 1].id
+  let id: number = 0
+  for (let i = 0; i <= windows.length; i++) {
+    let index_taken: boolean = false
+    for (let k in windows) {
+      if (index_taken) break
+      if (Number(i) == windows[k].id) {
+        index_taken = true
+      }
+    }
+
+    if (!index_taken) {
+      id = Number(i)
+      break
+    }
+  }
+  windows.push({ id: id, name, z_index: windows.length + 1, hidden: false, onClose: close })
+  return id
 }
 export function move_window_to_top(window_id: number) {
-  let current_z_index = windows[window_id].z_index
-  for (let i in windows) {
-    if (windows[i].z_index > current_z_index) {
-      windows[i].z_index -= 1
+  let current_z_index = windows[get_window_by_id(window_id).index].z_index
+  for (let id in windows.keys()) {
+    if (windows[id].z_index > current_z_index) {
+      windows[id].z_index -= 1
     }
   }
   windows[window_id].z_index = windows.length
 }
 
 export function delete_window(window_id: number) {
-  let deleted_window_z_index: number = windows[window_id].z_index
-  windows[window_id].close_window()
+  let deleted_window_z_index: number = windows[get_window_by_id(window_id).index].z_index
+  windows[get_window_by_id(window_id).index].onClose()
 
-  windows.splice(window_id, 1);
+  windows.splice(get_window_by_id(window_id).index, 1);
 
-  for (let i in windows) {
+  for (let i in windows.keys()) {
     if (windows[i].z_index > deleted_window_z_index) {
       windows[i].z_index -= 1
     }

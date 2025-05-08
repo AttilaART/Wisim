@@ -81,25 +81,25 @@
                 Text: "Singleplayer",
                 Style: "",
                 Show: 1,
-                Onclick_function: load_singleplayer,
+                onClick: load_singleplayer,
               },
               {
                 Text: "Host game",
                 Style: "",
                 Show: 1,
-                Onclick_function: () => {},
+                onClick: () => {},
               },
               {
                 Text: "Join game",
                 Style: "",
                 Show: 1,
-                Onclick_function: () => {},
+                onClick: () => {},
               },
               {
                 Text: "Settings",
                 Style: "margin-top: auto",
                 Show: 1,
-                Onclick_function: () => {},
+                onClick: () => {},
               },
             ]}
           ></Sidebar>
