@@ -1,7 +1,6 @@
 <script lang="ts">
   import { tick } from "svelte";
   import { format_number } from "./helper";
-  import { number } from "echarts";
   interface Options {
     default_value?: number;
     show_min_value?: boolean;
@@ -98,6 +97,10 @@
     }
     return stops;
   }
+
+  $effect(() => {
+    adjust_background();
+  });
 </script>
 
 <span style="position: relative; text-align: left;">
@@ -113,7 +116,6 @@
     bind:value={Value}
     bind:this={slider_element}
     oninput={() => {
-      adjust_background();
       collision = check_collision();
       slider_width = get_slider_width();
     }}

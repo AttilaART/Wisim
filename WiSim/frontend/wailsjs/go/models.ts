@@ -24,6 +24,49 @@ export namespace int {
 
 export namespace simulation {
 	
+	export class Decisions {
+	    // Go type: struct { Sales_prediction int }
+	    Predictions: any;
+	    // Go type: struct { set_bank_loan float64 }
+	    Finances: any;
+	    // Go type: struct { Price float32; Product struct { Materials struct { Quality float32; Ecology float32; Ethical_sourcing float32 }; Manufacturing struct { Quality float32; Durability float32; Ecological_energy float32; Material_efficiency float32 } }; Promotion struct { Quantity float64; Style_quality float32; Style_ecology float32; Style_ethics float32; Style_durability float32 } }
+	    Marketing: any;
+	    // Go type: struct { Production_actions []simulation
+	    Employees: any;
+	    // Go type: struct { Production_goal int; Machines []simulation
+	    Production: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new Decisions(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Predictions = this.convertValues(source["Predictions"], Object);
+	        this.Finances = this.convertValues(source["Finances"], Object);
+	        this.Marketing = this.convertValues(source["Marketing"], Object);
+	        this.Employees = this.convertValues(source["Employees"], Object);
+	        this.Production = this.convertValues(source["Production"], Object);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class Decisionsold {
 	    Sales_projection: number;
 	    Selling_price: number;
@@ -86,6 +129,102 @@ export namespace simulation {
 	        this.Dividends = source["Dividends"];
 	    }
 	}
+	export class Effect {
+	    Id: number;
+	    Name: string;
+	    Description: string;
+	
+	    static createFrom(source: any = {}) {
+	        return new Effect(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Id = source["Id"];
+	        this.Name = source["Name"];
+	        this.Description = source["Description"];
+	    }
+	}
+	export class Employee {
+	    Id: number;
+	    Employee_type: number;
+	    Motivation: number;
+	    Skill: number;
+	    Global_effect?: Effect;
+	    Salary: number;
+	    Bonus: number;
+	    Working_hours: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Employee(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Id = source["Id"];
+	        this.Employee_type = source["Employee_type"];
+	        this.Motivation = source["Motivation"];
+	        this.Skill = source["Skill"];
+	        this.Global_effect = this.convertValues(source["Global_effect"], Effect);
+	        this.Salary = source["Salary"];
+	        this.Bonus = source["Bonus"];
+	        this.Working_hours = source["Working_hours"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class Employee_action {
+	    Employee: Employee;
+	    Extra_training: number;
+	    Pay: number;
+	    Bonus: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Employee_action(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Employee = this.convertValues(source["Employee"], Employee);
+	        this.Extra_training = source["Extra_training"];
+	        this.Pay = source["Pay"];
+	        this.Bonus = source["Bonus"];
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
 	export class FinanceReportEntry {
 	    Name: string;
 	    Group: number;
@@ -136,6 +275,28 @@ export namespace simulation {
 	        this.Operating_profit = source["Operating_profit"];
 	        this.Taxes = source["Taxes"];
 	        this.Net_Profit = source["Net_Profit"];
+	    }
+	}
+	export class Machine {
+	    Production_capacity: number;
+	    Required_workers: number;
+	    Minimum_workers: number;
+	    Assigned_workers_ids: number[];
+	    Energy_use: number;
+	    Value: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Machine(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Production_capacity = source["Production_capacity"];
+	        this.Required_workers = source["Required_workers"];
+	        this.Minimum_workers = source["Minimum_workers"];
+	        this.Assigned_workers_ids = source["Assigned_workers_ids"];
+	        this.Energy_use = source["Energy_use"];
+	        this.Value = source["Value"];
 	    }
 	}
 	export class Product_statistics {
@@ -285,6 +446,24 @@ export namespace simulation {
 	        this.Avr_price_factor = source["Avr_price_factor"];
 	        this.Avr_coolness_factor = source["Avr_coolness_factor"];
 	        this.Avr_bang_for_buck_factor = source["Avr_bang_for_buck_factor"];
+	    }
+	}
+	export class Warehouse {
+	    Id: number;
+	    Capacity: number;
+	    Operating_costs: number;
+	    Value: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Warehouse(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Id = source["Id"];
+	        this.Capacity = source["Capacity"];
+	        this.Operating_costs = source["Operating_costs"];
+	        this.Value = source["Value"];
 	    }
 	}
 

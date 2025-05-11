@@ -121,6 +121,18 @@ button:active {
   color: var(--second-color);
 }
 
+.greyed_out {
+  opacity: 50%;
+  pointer-events: none;
+  cursor: not-allowed;
+}
+
+.greyed_out:hover,
+.greyed_out:active {
+  background-color: var(--second-color);
+  color: var(--main-color);
+}
+
 
 .value_field {
   font-family: "JetBrains mono", "Courier New", Courier, monospace;

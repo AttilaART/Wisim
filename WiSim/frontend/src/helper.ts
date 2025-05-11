@@ -1,3 +1,6 @@
+export function isEqual(a: unknown, b: unknown): boolean {
+  return JSON.stringify(a) == JSON.stringify(b)
+}
 
 export function format_number(num: number | any, add_plus?: boolean, decimal_places?: number): string {
   if (decimal_places == undefined) {
@@ -16,6 +19,14 @@ export function format_number(num: number | any, add_plus?: boolean, decimal_pla
   }
 
   return `+${num.toLocaleString("de-CH", { maximumFractionDigits: decimal_places, minimumFractionDigits: decimal_places })}`
+}
+
+export function format_currency(num: number, decimal_places?: number) {
+  if (decimal_places == undefined) {
+    decimal_places == 0
+  }
+
+  return `${format_number(num, false, decimal_places)} CHF`
 }
 
 export type Series = {

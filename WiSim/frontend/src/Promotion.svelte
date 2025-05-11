@@ -1,18 +1,36 @@
-<script>
+<script lang="ts">
   import Donut from "./Donut.svelte";
-  import { format_number } from "./helper";
+  import { format_currency, format_number } from "./helper";
   import Slider from "./slider.svelte";
-  import Info from "./assets/images/Info.svelte";
   import Tooltip from "./Tooltip.svelte";
+  import { decisions } from "./store.svelte";
+  import { isEqual } from "./helper";
 
-  let promotion_quantity_input = $state("150'000 CHF");
-  let promotion_quantity = $state(150000);
+  let unsapplied_changes: boolean = $state(false);
 
-  let promotion_style = $state({
-    Quality: 0.5,
-    Ecology: 0.5,
-    Ethics: 0.5,
-    Durability: 0.5,
+  let promotion: {
+    Quantity: number;
+    Style_quality: number;
+    Style_ecology: number;
+    Style_ethics: number;
+    Style_durability: number;
+  } = $state({ ...decisions.Marketing.Promotion });
+
+  let promotion_quantity_input = $state(format_currency(promotion.Quantity));
+
+  function apply() {
+    decisions.Marketing.Promotion = { ...promotion };
+  }
+  function cancel() {
+    promotion = { ...decisions.Marketing.Promotion };
+  }
+
+  $effect(() => {
+    if (isEqual(promotion, decisions.Marketing.Promotion)) {
+      unsapplied_changes = false;
+    } else {
+      unsapplied_changes = true;
+    }
   });
 </script>
 
@@ -27,50 +45,57 @@
           type="text"
           bind:value={promotion_quantity_input}
           onfocus={() =>
-            (promotion_quantity_input = String(promotion_quantity))}
+            (promotion_quantity_input = String(promotion.Quantity))}
           onfocusout={() => {
             if (!isNaN(parseFloat(promotion_quantity_input))) {
-              promotion_quantity = parseFloat(promotion_quantity_input);
+              promotion.Quantity = parseFloat(promotion_quantity_input);
             }
-            promotion_quantity_input = `${format_number(promotion_quantity, false)} CHF`;
+            promotion_quantity_input = format_currency(promotion.Quantity);
           }}
         />
       </h2>
-      <div style="flex: 1 1 100%;"></div>
-      <button style="flex: 0 0 fit-content;">Confirm</button>
     </div>
     <br />
     <h2>Promotion Style</h2>
     <p>Quality</p>
     <Slider
-      bind:Value={promotion_style.Quality}
+      bind:Value={promotion.Style_quality}
       min={0}
       max={1}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Ecology</p>
     <Slider
-      bind:Value={promotion_style.Ecology}
+      bind:Value={promotion.Style_ecology}
       min={0}
       max={1}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Ethics</p>
     <Slider
-      bind:Value={promotion_style.Ethics}
+      bind:Value={promotion.Style_ethics}
       min={0}
       max={1}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Durability</p>
     <Slider
-      bind:Value={promotion_style.Durability}
+      bind:Value={promotion.Style_durability}
       min={0}
       max={1}
       options={{ step: 0.1 }}
     ></Slider>
-    <div style="text-align: right; margin-top: 10px;">
-      <button style="padding: 10px;">Confirm Style</button>
+    <div style="display: flex; flex-direction: row;">
+      <button
+        class={unsapplied_changes ? "" : "greyed_out"}
+        style="padding: 10px; margin: 10px; flex: 1 1"
+        onclick={cancel}>Cancel</button
+      >
+      <button
+        class={unsapplied_changes ? "" : "greyed_out"}
+        style="padding: 10px; margin: 10px;  flex: 1 1;"
+        onclick={apply}>Apply</button
+      >
     </div>
   </div>
   <div style="flex: 1 1 50%; padding: 10px;">

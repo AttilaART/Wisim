@@ -10,6 +10,7 @@
   } from "./window_manager.svelte";
   import Close from "./assets/images/Close.svelte";
   import Marketing from "./Marketing.svelte";
+  import { decisions } from "./store.svelte";
 
   type window = {
     Id: number;
@@ -26,6 +27,11 @@
   });
 
   let desktop_canvas_size: ResizeObserverSize[] = $state();
+
+  $effect(() => {
+    console.log("decisions have been updated");
+    console.log($state.snapshot(decisions));
+  });
 </script>
 
 <div

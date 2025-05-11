@@ -1,7 +1,8 @@
 <script>
-  import { format_number } from "./helper";
-  let global_price_input = $state("100 CHF");
-  let global_price = $state(100);
+  import { format_currency, format_number } from "./helper";
+  import { decisions } from "./store.svelte";
+  let global_price = $state(decisions.Marketing.Price);
+  let global_price_input = $state(format_currency(global_price, 2));
 </script>
 
 <div style="text-align: left; padding: 10px;">
@@ -17,7 +18,7 @@
           if (!isNaN(parseFloat(global_price_input))) {
             global_price = parseFloat(global_price_input);
           }
-          global_price_input = `${format_number(global_price, false, 2)} CHF`;
+          global_price_input = format_currency(global_price, 2);
         }}
       />
     </h2>

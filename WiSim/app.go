@@ -38,6 +38,17 @@ func (a *App) Get_simulation_step() int {
 	return game_state.state.Step
 }
 
+func (a *App) Get_Decisions(company, step int) (simulation.Decisions, error) {
+	//err := check_request(company, step)
+	//if err != nil {
+	//	if err.Error() == "game hasn't loaded yet" {
+	//		return simulation.Decisions{}, nil
+	//	}
+	//	return simulation.Decisions{}, err
+	//}
+	return simulation.Decisions{}, nil
+}
+
 func (a *App) Get_bank_balance(company int) (float64, error) {
 	if !game_state.is_loaded {
 		return 0, errors.New("game hasn't loaded yet")

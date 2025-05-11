@@ -1,18 +1,32 @@
-<script>
+<script lang="ts">
   import Slider from "./slider.svelte";
+  import { decisions } from "./store.svelte";
+  import { isEqual } from "./helper";
 
-  let materials = $state({
-    Quality: 0.5,
-    Ecology: 0.5,
-    Ethical_sourcing: 0.5,
-  });
+  let unapplied_changes: boolean = $state(false);
 
-  let manufacturing = $state({
-    Quality: 0.5,
-    Durability: 0.5,
-    Ecological_energy_sourcing: 0.5,
-    Material_efficiency: 0.5,
-  });
+  let materials: {
+    Quality: number;
+    Ecology: number;
+    Ethical_sourcing: number;
+  } = $state({ ...decisions.Marketing.Product.Materials });
+
+  let manufacturing: {
+    Quality: number;
+    Durability: number;
+    Ecological_energy: number;
+    Material_efficiency: number;
+  } = $state({ ...decisions.Marketing.Product.Manufacturing });
+
+  function cancel() {
+    materials = { ...decisions.Marketing.Product.Materials };
+    manufacturing = { ...decisions.Marketing.Product.Manufacturing };
+  }
+
+  function apply() {
+    decisions.Marketing.Product.Materials = { ...materials };
+    decisions.Marketing.Product.Manufacturing = { ...manufacturing };
+  }
 
   let product_stats = $state({
     Quality: 0.5,
@@ -25,6 +39,17 @@
     Speed: 0.5,
     Cost: 0.5,
     Weight: 0.5,
+  });
+
+  $effect(() => {
+    if (
+      isEqual(manufacturing, decisions.Marketing.Product.Manufacturing) &&
+      isEqual(materials, decisions.Marketing.Product.Materials)
+    ) {
+      unapplied_changes = false;
+    } else {
+      unapplied_changes = true;
+    }
   });
 </script>
 
@@ -126,7 +151,7 @@
     ></Slider>
     <p>Ethical Energy Sourcing</p>
     <Slider
-      bind:Value={manufacturing.Ecological_energy_sourcing}
+      bind:Value={manufacturing.Ecological_energy}
       min={0}
       max={5}
       options={{ step: 0.1 }}
@@ -139,8 +164,16 @@
       options={{ step: 0.1 }}
     ></Slider>
     <div style="display: flex; margin-top: auto; width: 100%;">
-      <button style="flex: 1 1 50%;">Cancle</button>
-      <button style="flex: 1 1 50%;">Confirm</button>
+      <button
+        class={unapplied_changes ? "" : "greyed_out"}
+        style="flex: 1 1 50%;"
+        onclick={cancel}>Cancel</button
+      >
+      <button
+        class={unapplied_changes ? "" : "greyed_out"}
+        style="flex: 1 1 50%;"
+        onclick={apply}>Apply</button
+      >
     </div>
   </div>
 </div>

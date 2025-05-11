@@ -150,7 +150,7 @@ type Decisions struct {
 			Manufacturing struct {
 				Quality             float32
 				Durability          float32
-				Ecologica_energy    float32
+				Ecological_energy   float32
 				Material_efficiency float32
 			}
 		}
