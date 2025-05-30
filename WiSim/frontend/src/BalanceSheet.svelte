@@ -140,13 +140,13 @@
     {#each table as row, i}
       <tr
         style={i + 1 == table.length
-          ? "border-top: var(--border); border-bottom: var(--border);"
+          ? "border-top: var(--border-thin); border-bottom: var(--border-thin);"
           : ""}
       >
         <td style="padding-left: {row.isAssetsHeader ? 10 : 15}px;"
           >{@html row.data[0]}</td
         >
-        <td style="text-align: right; border-right: var(--border);"
+        <td style="text-align: right; border-right: var(--border-thin);"
           >{@html row.data[1]}</td
         >
         <td style="padding-left: {row.isLiabilitesHeader ? 10 : 15}px;"

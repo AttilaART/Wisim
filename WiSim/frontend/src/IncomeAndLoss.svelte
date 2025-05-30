@@ -77,7 +77,10 @@
       </table>
     {/if}
   </div>
-  <span class="sep_vertical" style="flex: 0 0 var(--border-width);"></span>
+  <span
+    class="sep_vertical"
+    style="flex: 0 0 var(--window-border-width); background-color: var(--window-border-color);"
+  ></span>
   <div
     style="padding: 0; overflow-y: scroll; flex: 1 1 calc(40% - var(border-width);"
   >
@@ -131,7 +134,7 @@
 
 {#snippet invoice(i: Invoice)}
   <div
-    style="width: calc(100% - 20px); border-bottom: var(--border); padding: 0 10px 0 10px;"
+    style="width: calc(100% - 20px); border-bottom: var(--window-border); padding: 0 10px 0 10px;"
   >
     <table style="width: 100%;">
       <thead>

@@ -1,4 +1,6 @@
 <script lang="ts">
+  import { preferences } from "./store.svelte";
+
   type Button = {
     Text: string;
     Style: string;
@@ -18,6 +20,13 @@
     keep_pressed?: boolean;
     horisontal?: boolean;
   } = $props();
+
+  let force_show_expanded_tabs: boolean = $state(
+    (() => {
+      if (preferences.hide_tabs != "always") return true;
+      else return false;
+    })(),
+  );
 
   let button_selection: boolean[] = $state(
     (() => {
@@ -84,15 +93,30 @@
 
 {#if !horisontal}
   <div class="sidebar" {style}>
+    <hr />
     {#each buttons as button, index}
       {@render sidebar_button(button, index)}
     {/each}
   </div>
 {:else}
-  <div class="sidebar horizontal" {style}>
-    {#each buttons as button, index}
-      {@render sidebar_button(button, index)}
-    {/each}
+  <div
+    class="sidebar_horisontal_container {force_show_expanded_tabs
+      ? 'initial'
+      : ''}"
+    onmouseleave={() => {
+      if (
+        preferences.hide_tabs == "after_hover" ||
+        preferences.hide_tabs == "always"
+      )
+        force_show_expanded_tabs = false;
+    }}
+  >
+    <div class="sidebar horizontal" {style}>
+      {#each buttons as button, index}
+        {@render sidebar_button(button, index)}
+      {/each}
+    </div>
+    <div id="hover_thing">⌄</div>
   </div>
 {/if}
 
@@ -119,6 +143,8 @@
 {/snippet}
 
 <style>
+  /* Generig styling */
+
   .sidebar {
     --width: 200px;
     flex: 1 1 var(--width);
@@ -128,13 +154,6 @@
     flex-direction: column;
     flex-wrap: wrap;
     overflow: hidden;
-  }
-
-  .sidebar.horizontal {
-    height: fit-content;
-    width: 100%;
-    flex-direction: row;
-    border-bottom: var(--border);
   }
 
   .sidebar_button {
@@ -162,11 +181,65 @@
     color: var(--second-color);
   }
 
+  /* horizontal sidebar */
+
+  .sidebar_horisontal_container.initial #hover_thing,
+  .sidebar_horisontal_container:hover #hover_thing {
+    opacity: 0%;
+    height: 0px;
+  }
+
+  .sidebar_horisontal_container {
+    height: 25px;
+    width: 100%;
+    transition: 0.5s;
+    position: relative;
+    border-bottom: var(--window-border);
+    overflow: hidden;
+  }
+
+  .sidebar_horisontal_container.initial,
+  .sidebar_horisontal_container:hover {
+    width: 100%;
+    transition: 0.5s;
+    height: 60px;
+  }
+
+  #hover_thing {
+    position: absolute;
+    transition: 0.5s;
+    height: 10px;
+    bottom: 0px;
+    right: 50%;
+    transform: translate(50%, -20px);
+    font-size: 20px;
+    text-align: center;
+  }
+
+  .sidebar.horizontal {
+    width: calc(100% - 20px);
+    flex-direction: row;
+    /*border-bottom: var(--window-border);*/
+    padding: 10px;
+    background-color: none;
+    opacity: 0%;
+    transition: 1s;
+  }
+
+  .sidebar_horisontal_container.initial .sidebar.horizontal,
+  .sidebar_horisontal_container:hover .sidebar.horizontal {
+    opacity: 100%;
+    transition: 0.5s;
+  }
+
   .sidebar_button.horizontal {
-    margin: 0 0 0 0;
+    margin: 5px;
     text-align: center;
     flex: 1 1 fit-content;
     font-size: 1rem;
     padding: 5px;
+    transition:
+      background 0.25s,
+      opacity 0.8s;
   }
 </style>

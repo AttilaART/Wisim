@@ -17,17 +17,28 @@ html {
   --chart-color3: #2f9e44;
   --chart-color4: #e03131;
 
-  --border-color: var(--main-color);
+  --border-color: white;
   --border-width: 2px;
   --border: var(--border-width) solid var(--border-color);
+  --border-radius: 8px;
 
-  --border-thin-width: 2px;
-  --border-thin: var(--border-thin-width) solid var(--border-color);
+  /*--border-thin-width: 2px;
+  --border-thin-color: white;
+  --border-thin: var(--border-thin-width) solid var(--border-thin-color);*/
+  --border-thin-width: 1px;
+  --border-thin-color: gray;
+  --border-thin: var(--border-thin-width) solid var(--border-thin-color);
+
+  --window-border-color: gray;
+  --window-border-radius: var(--border-radius);
+  --window-border-width: 1px;
+  --window-border: var(--window-border-width) solid var(--window-border-color);
+
 }
 
 body {
   margin: 0;
-  font-family: "Segoe UI", "Nunito", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+  font-family: "Segoe UI", "Verdana", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
   /* Prevent text selection */
@@ -58,7 +69,7 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Georgia";
+  font-family: "Verdana" /*,Georgia"*/;
 }
 
 h2 {
@@ -110,6 +121,7 @@ button {
   font-size: 17px;
   font-family: inherit;
   transition: all 0.25s;
+  border-radius: var(--border-radius)
 }
 
 button:hover {
@@ -157,21 +169,21 @@ button:active {
 }
 
 .separator {
-  background-color: var(--border-color);
-  --separator-margin: 10px
+  background-color: var(--window-border-color);
+  --separator-margin: 10px;
 }
 
 .sep_horisontal {
-  background-color: var(--border-color);
-  height: var(--border-width);
+  background-color: var(--window-border-color);
+  height: var(--window-border-width);
   width: 100%;
   margin: var(--separator-margin) 0 var(--separator-margin) 0;
 }
 
 .sep_vertical {
-  background-color: var(--border-color);
-  width: var(--border-width);
-  flex: 1 0 var(--border-width);
+  background-color: var(--window-border-color);
+  width: var(--window-border-width);
+  flex: 1 0 var(--window-border-width);
   height: 100%;
   margin: 0 var(--separator-margin) 0 var(--separator-margin);
 }

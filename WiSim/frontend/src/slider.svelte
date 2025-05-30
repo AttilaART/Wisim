@@ -1,14 +1,15 @@
 <script lang="ts">
   import { tick } from "svelte";
   import { format_number } from "./helper";
+  import { number } from "echarts";
   interface Options {
     default_value?: number;
     show_min_value?: boolean;
     show_max_value?: boolean;
     show_current_value?: boolean;
-    unit?: string;
     step?: number;
     snap?: number;
+    format?: (arg0: number) => string;
   }
 
   let {
@@ -29,6 +30,10 @@
   let max_value_element: HTMLDivElement = $state();
   let collision: boolean = $state(false);
   let slider_width: number = $state();
+
+  if (options.format === undefined) {
+    options.format = (number: number) => number.toString();
+  }
 
   async function adjust_background_when_loaded() {
     await tick();
@@ -128,7 +133,7 @@
   </datalist>
   {#if options.show_min_value}
     <div style="position: absolute; top: 10px;" bind:this={min_value_element}>
-      {min}{options.unit}
+      {options.format(min)}
     </div>
   {/if}
   {#if options.show_max_value}
@@ -136,7 +141,7 @@
       style="position: absolute; right: 0; top: 10px;"
       bind:this={max_value_element}
     >
-      {max}{options.unit}
+      {max}
     </div>
   {/if}
   {#if options.show_current_value}
@@ -148,7 +153,7 @@
           ? slider_width
           : 0}px * {(Value - min) / (max - min)} - 25%);"
       >
-        {format_number(Value ? Value : 0)}{options.unit}
+        {options.format(Value ? Value : 0)}
       </div>
     {/key}
   {/if}

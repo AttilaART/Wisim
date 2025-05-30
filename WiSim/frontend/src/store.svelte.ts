@@ -2,6 +2,9 @@ import { writable, Writable, get } from 'svelte/store';
 import { simulation } from '../wailsjs/go/models';
 import { Get_Decisions } from '../wailsjs/go/main/App';
 
+// hide_tabs: "after_hover || always || never"
+export const preferences = $state({ hide_tabs: "after_hover" })
+
 export const loading = writable(false)
 export const error: Writable<null> | Writable<Error> = writable(null)
 

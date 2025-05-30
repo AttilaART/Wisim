@@ -11,19 +11,29 @@
   import Close from "./assets/images/Close.svelte";
   import Marketing from "./Marketing.svelte";
   import { decisions } from "./store.svelte";
+  import lttwalpaper from "./assets/images/lttwalpaper.jpeg";
+  import Production from "./Production.svelte";
 
   type window = {
     Id: number;
     Loaded: boolean;
+    open_window: () => void;
   };
 
   let finance_window: window = $state({
     Id: undefined,
     Loaded: false,
+    open_window: open_window,
   });
   let marketing_window: window = $state({
     Id: undefined,
     Loaded: false,
+    open_window: open_window,
+  });
+  let production_window: window = $state({
+    Id: undefined,
+    Loaded: false,
+    open_window: open_window,
   });
 
   let desktop_canvas_size: ResizeObserverSize[] = $state();
@@ -32,6 +42,15 @@
     console.log("decisions have been updated");
     console.log($state.snapshot(decisions));
   });
+
+  function open_window() {
+    this.Loaded = true;
+    try {
+      windows[get_window_by_id(marketing_window.Id).index].hidden = false;
+    } catch (exception) {
+      console.warn(exception);
+    }
+  }
 </script>
 
 <div
@@ -40,9 +59,7 @@
   in:fade={{ duration: 300, delay: 300 }}
   out:fade={{ duration: 300 }}
 >
-  <div
-    style="width: fit-content; height: 100%; border-right: var(--border-width) solid var(--border-color); display: flex; flex-direction: column;"
-  >
+  <div class="sidebar">
     <div style="flex: 0 0 100px;"></div>
     <Sidebar
       expand={true}
@@ -59,7 +76,9 @@
           Text: "Production",
           Style: "",
           Show: 1,
-          onClick: () => {},
+          onClick: () => {
+            production_window.open_window();
+          },
           dont_keep_pressed: true,
         },
         {
@@ -67,13 +86,7 @@
           Style: "",
           Show: 1,
           onClick: () => {
-            marketing_window.Loaded = true;
-            try {
-              windows[get_window_by_id(marketing_window.Id).index].hidden =
-                false;
-            } catch (exception) {
-              console.warn(exception);
-            }
+            marketing_window.open_window();
           },
           dont_keep_pressed: true,
         },
@@ -82,12 +95,7 @@
           Style: "",
           Show: 1,
           onClick: () => {
-            finance_window.Loaded = true;
-            try {
-              windows[get_window_by_id(finance_window.Id).index].hidden = false;
-            } catch (exception) {
-              console.warn(exception);
-            }
+            finance_window.open_window();
           },
           dont_keep_pressed: true,
         },
@@ -127,7 +135,11 @@
         <button style=" height: 100%; border: none;">Messages</button>
       </div>
     </div>
-    <div class="desktop" bind:contentBoxSize={desktop_canvas_size}>
+    <div
+      class="desktop"
+      style="background: no-repeat url({lttwalpaper}); background-size: cover;"
+      bind:contentBoxSize={desktop_canvas_size}
+    >
       {#if finance_window.Loaded}
         <Window
           title="Finances"
@@ -152,6 +164,19 @@
           }}
           onClose={() => (marketing_window.Loaded = false)}
           bind:window_id={marketing_window.Id}
+        ></Window>
+      {/if}
+      {#if production_window.Loaded}
+        <Window
+          title="Production"
+          content={Production}
+          content_args={[]}
+          canvas_size={{
+            x: desktop_canvas_size[0].inlineSize,
+            y: desktop_canvas_size[0].blockSize,
+          }}
+          onClose={() => (production_window.Loaded = false)}
+          bind:window_id={production_window.Id}
         ></Window>
       {/if}
     </div>
@@ -223,5 +248,19 @@
     height: 100%;
     width: 100%;
     padding: 0;
+  }
+
+  .sidebar {
+    position: absolute;
+    width: fit-content;
+    height: 100%;
+    border-right: var(--border-width) solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    --button-width: 20px;
+  }
+
+  .sidebar:hover {
+    --button-width: 200px;
   }
 </style>

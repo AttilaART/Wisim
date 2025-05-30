@@ -33,6 +33,7 @@
   let fullscreen: boolean = $state(false);
   // let position = $state({ x: -canvas_size.x / 4, y: 0 });
   let position = $state({ x: 0, y: 0 });
+  let last_non_fullscreen_position = { ...position };
 
   let window_div: HTMLDivElement = $state();
   let titlebar: HTMLDivElement = $state();
@@ -58,7 +59,7 @@
     transform: translate({position.x}px, {position.y}px); 
   {fullscreen
       ? `--width: ${canvas_size.x - 5}px; --height: ${canvas_size.y - 5}px;`
-      : `--width: ${canvas_size.x / 2 - 5}px; --height: ${canvas_size.y - 5}px`}"
+      : `--width: ${750}px; --height: ${650}px`}"
     use:draggable={{
       bounds: "parent",
       handle: titlebar,
@@ -79,16 +80,20 @@
       <div style="position: absolute; right: 0; top: 0;">
         <button
           class="window_button"
-          onclick={() =>
-            (windows[get_window_by_id(window_id).index].hidden = true)}
-          ><Min></Min></button
+          onclick={() => {
+            windows[get_window_by_id(window_id).index].hidden = true;
+          }}><Min></Min></button
         >
         <button
           class="window_button"
           onclick={() => {
+            if (fullscreen) {
+              position = { ...last_non_fullscreen_position };
+            } else {
+              last_non_fullscreen_position = { ...position };
+              update_position(0, 0);
+            }
             fullscreen = !fullscreen;
-            position.x = -canvas_size.x / 2;
-            position.y = 0;
           }}
           ><Fullscreen></Fullscreen>
         </button>
@@ -113,12 +118,13 @@
     --width: 650px;
     width: var(--width);
     height: var(--height);
-    border: var(--border);
+    border: var(--window-border);
     overflow: hidden;
     padding: 0px;
     background-color: var(--second-color);
     pointer-events: all;
     transition: opacity 1s;
+    border-radius: var(--window-border-radius);
   }
 
   .window.hidden {
@@ -130,8 +136,9 @@
     height: 25px;
     font-size: 1rem;
     text-align: center;
-    border-bottom: var(--border);
+    /*border-bottom: var(--border);*/
     position: relative;
+    background-color: var(--accent-color);
   }
 
   .window_button {
@@ -140,5 +147,6 @@
     width: 25px;
     height: 25px;
     border: none;
+    background-color: transparent;
   }
 </style>

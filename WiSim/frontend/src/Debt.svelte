@@ -1,8 +1,9 @@
 <script>
   import BarChart from "./BarChart.svelte";
-  import { format_number } from "./helper";
+  import { format_currency, format_number } from "./helper";
   import Slider from "./slider.svelte";
   import Info from "./assets/images/Info.svelte";
+  import { number } from "echarts";
 
   let slider_value = $state();
   let balance_without_loans = $state(100000 - 70000);
@@ -44,9 +45,11 @@
             show_min_value: true,
             show_current_value: true,
             show_max_value: true,
-            unit: " CHF",
             snap: 10000,
             step: 1000,
+            format: (val) => {
+              return format_currency(val);
+            },
           }}
           bind:Value={slider_value}
         ></Slider></span

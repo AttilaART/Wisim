@@ -5,6 +5,7 @@
   import Tooltip from "./Tooltip.svelte";
   import { decisions } from "./store.svelte";
   import { isEqual } from "./helper";
+  import NumberInput from "./number_input.svelte";
 
   let unsapplied_changes: boolean = $state(false);
 
@@ -23,6 +24,7 @@
   }
   function cancel() {
     promotion = { ...decisions.Marketing.Promotion };
+    promotion_quantity_input = format_currency(promotion.Quantity);
   }
 
   $effect(() => {
@@ -41,18 +43,12 @@
     <h2>Promotion Quantity</h2>
     <div style="display: flex;">
       <h2 style="flex 1 0 100%;">
-        <input
-          type="text"
-          bind:value={promotion_quantity_input}
-          onfocus={() =>
-            (promotion_quantity_input = String(promotion.Quantity))}
-          onfocusout={() => {
-            if (!isNaN(parseFloat(promotion_quantity_input))) {
-              promotion.Quantity = parseFloat(promotion_quantity_input);
-            }
-            promotion_quantity_input = format_currency(promotion.Quantity);
+        <NumberInput
+          formatter={(value) => {
+            return format_currency(value);
           }}
-        />
+          bind:value={promotion.Quantity}
+        ></NumberInput>
       </h2>
     </div>
     <br />

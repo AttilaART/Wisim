@@ -55,7 +55,7 @@
 
 <div
   class="grid_container"
-  style="grid-template-columns: 33.3% auto 33.33%; height: calc(100% - 58px);"
+  style="grid-template-columns: 40% auto 40%; height: calc(100% - 50px);"
 >
   <div class="grid_item" style="grid-row: 1; grid-column: 1; text-align: left;">
     <h2>Materials</h2>
@@ -81,11 +81,13 @@
       options={{ step: 0.1 }}
     ></Slider>
   </div>
-  <div class="grid_item" style="grid-row: 1; grid-column: 2;">test1</div>
+  <div class="grid_item" style="grid-row: 1; grid-column: 2;">
+    Product Image
+  </div>
 
   <div
     class="grid_item"
-    style="grid-row: 2; grid-column: 1 /span 2; border-right: var(--border); border-top: var(--border); display: flex; flex-direction: row;"
+    style="grid-row: 2; grid-column: 1 /span 2; border-right: var(--border-thin); border-top: var(--border-thin); display: flex; flex-direction: row; border-top-right-radius: var(--window-border-radius);"
   >
     <div style="flex: 1 1 40%;">
       <h3>Product Stats</h3>
