@@ -6,6 +6,7 @@
   import {
     delete_window,
     get_window_by_id,
+    new_window,
     windows,
   } from "./window_manager.svelte";
   import Close from "./assets/images/Close.svelte";
@@ -46,7 +47,7 @@
   function open_window() {
     this.Loaded = true;
     try {
-      windows[get_window_by_id(marketing_window.Id).index].hidden = false;
+      windows[get_window_by_id(this.Id).index].hidden = false;
     } catch (exception) {
       console.warn(exception);
     }

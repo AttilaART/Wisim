@@ -13,6 +13,17 @@ export function get_window_by_id(window_id: number): { index: number, window: Wi
       return { index: Number(i), window: windows[i] }
     }
   }
+
+  throw new Error(`no window with id==${window_id} found.`)
+}
+
+export function window_exists(window_id: number): boolean {
+  try {
+    get_window_by_id(window_id)
+    return true
+  } catch {
+    return false
+  }
 }
 
 export function new_window(name: string, close: () => void): number {

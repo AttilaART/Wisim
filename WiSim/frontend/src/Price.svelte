@@ -46,11 +46,6 @@
 </div>
 
 <style>
-  p {
-    padding-left: 5px;
-    margin: 0px;
-  }
-
   button {
     padding: 10px;
     margin: 10px;

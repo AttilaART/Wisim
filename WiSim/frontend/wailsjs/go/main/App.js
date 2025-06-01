@@ -6,6 +6,10 @@ export function Get_Decisions(arg1, arg2) {
   return window['go']['main']['App']['Get_Decisions'](arg1, arg2);
 }
 
+export function Get_External_Factors(arg1, arg2) {
+  return window['go']['main']['App']['Get_External_Factors'](arg1, arg2);
+}
+
 export function Get_accounting_data(arg1, arg2, arg3) {
   return window['go']['main']['App']['Get_accounting_data'](arg1, arg2, arg3);
 }

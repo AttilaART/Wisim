@@ -129,9 +129,9 @@
 
 <table style="width: 100%;">
   <thead>
-    <tr style="border-bottom: var(--border);">
+    <tr style="border-bottom: var(--border-thin);">
       <th style="width: 35%;"><h2>Assets</h2></th>
-      <th style="border-right: var(--border); width: 15%;"></th>
+      <th style="border-right: var(--border-thin); width: 15%;"></th>
       <th></th>
       <th style="text-align: right;"><h2>Liabilities</h2></th>
     </tr>

@@ -49,6 +49,10 @@ func (a *App) Get_Decisions(company, step int) (simulation.Decisions, error) {
 	return simulation.Decisions{}, nil
 }
 
+func (a *App) Get_External_Factors(company, step int) (simulation.External_factors, error) {
+	return game_state.state.External_factors, nil
+}
+
 func (a *App) Get_bank_balance(company int) (float64, error) {
 	if !game_state.is_loaded {
 		return 0, errors.New("game hasn't loaded yet")

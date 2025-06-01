@@ -69,7 +69,9 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Verdana" /*,Georgia"*/;
+  font-family: "Verdana"
+    /*,Georgia"*/
+  ;
 }
 
 h2 {
@@ -85,6 +87,11 @@ h4 {
 h4 {
   margin-left: 0px;
   margin-bottom: 0px;
+}
+
+p {
+  padding-left: 5px;
+  margin: 0px;
 }
 
 .loader {
@@ -199,4 +206,17 @@ input[type="text"] {
   font-family: inherit;
   width: 200px;
   padding-top: 0;
+}
+
+article {
+  padding-bottom: 20px;
+}
+
+dialog {
+  background-color: var(--second-color);
+  color: var(--main-color);
+  border: var(--window-border);
+  border-radius: var(--window-border-radius);
+  padding: 20px;
+
 }

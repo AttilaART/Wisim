@@ -36,25 +36,22 @@
   <div style="padding: 10px 20px 10px 20px;">
     <h1 style="text-align: left;">Increase / Decrease Bank Loan</h1>
     <div style="display: flex; flex-direction: row; margin-bottom: 10px;">
-      <span style="padding: 5px; flex: 1 1 60%; ">
-        <Slider
-          min={0}
-          max={credit_limit - bridge_loans}
-          options={{
-            default_value: existing_loans,
-            show_min_value: true,
-            show_current_value: true,
-            show_max_value: true,
-            snap: 10000,
-            step: 1000,
-            format: (val) => {
-              return format_currency(val);
-            },
-          }}
-          bind:Value={slider_value}
-        ></Slider></span
-      >
-
+      <Slider
+        min={0}
+        max={credit_limit - bridge_loans}
+        options={{
+          default_value: existing_loans,
+          show_min_value: true,
+          show_current_value: true,
+          show_max_value: true,
+          snap: 10000,
+          step: 1000,
+          format: (val) => {
+            return format_currency(val);
+          },
+        }}
+        bind:Value={slider_value}
+      ></Slider>
       <span style="width: 10%;"></span>
       <button style="flex 0 0 20%">Confirm</button>
     </div>

@@ -108,7 +108,7 @@
   });
 </script>
 
-<span style="position: relative; text-align: left;">
+<span style="position: relative; width: 100%;">
   <input
     style="width: 100%;"
     class="styled-slider slider-progress"
@@ -132,13 +132,16 @@
     {/if}
   </datalist>
   {#if options.show_min_value}
-    <div style="position: absolute; top: 10px;" bind:this={min_value_element}>
+    <div
+      style="position: absolute; left: 0;top: 1.5rem;"
+      bind:this={min_value_element}
+    >
       {options.format(min)}
     </div>
   {/if}
   {#if options.show_max_value}
     <div
-      style="position: absolute; right: 0; top: 10px;"
+      style="position: absolute; right: 0; top: 1.5rem;"
       bind:this={max_value_element}
     >
       {max}
@@ -352,13 +355,13 @@ https://toughengineer.github.io/demo/slider-styler*/
   }
 
   .slider_value_label {
-    --translate-y: -20%;
+    --translate-y: -0.4rem;
     translate: var(--translate-x) var(--translate-y);
     transition: translate 0.5s;
   }
 
   .slider_value_label.collision {
-    --translate-y: 40%;
+    --translate-y: 0.4rem;
     translate: var(--translate-x) var(--translate-y);
     transition: translate 0.5s;
   }

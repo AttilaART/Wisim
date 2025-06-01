@@ -7,6 +7,7 @@
     move_window_to_top,
     delete_window,
     get_window_by_id,
+    window_exists,
   } from "./window_manager.svelte";
   import Close from "./assets/images/Close.svelte";
   import Min from "./assets/images/Min.svelte";
@@ -49,13 +50,11 @@
   })();
 </script>
 
-{#if windows[get_window_by_id(window_id).index]}
+{#if window_exists(window_id)}
   <div
     role="none"
-    class="window{windows[get_window_by_id(window_id).index].hidden
-      ? ' hidden'
-      : ''}"
-    style="z-index: {windows[get_window_by_id(window_id).index].z_index};
+    class="window{get_window_by_id(window_id).window.hidden ? ' hidden' : ''}"
+    style="z-index: {get_window_by_id(window_id).window.z_index};
     transform: translate({position.x}px, {position.y}px); 
   {fullscreen
       ? `--width: ${canvas_size.x - 5}px; --height: ${canvas_size.y - 5}px;`
