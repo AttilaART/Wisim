@@ -161,7 +161,7 @@
     style="grid-template-columns: 70% 30%; height: calc(100% - 50px); grid-template-rows: auto 100%; overflow-y: scroll;"
   >
     <div
-      style="text-align: left; grid-column: 1; padding: 10px; border-bottom: var(--border-thin); border-right: var(--border-thin);"
+      style="text-align: left; grid-column: 1; padding: 10px; border-bottom: var(--border-thin); border-right: var(--border-thin); height: fit-content;"
     >
       Production Goal:
 
@@ -184,7 +184,7 @@
     </div>
     <div style="grid-row: 1 / span 2; grid-column: 2;"></div>
     <div
-      style="grid-row: 2; grid-column: 1; display: flex; flex-direction: column; border-right: var(--border-thin); height: fit-content;"
+      style="grid-row: 2; grid-column: 1; display: flex; flex-direction: column; border-right: var(--border-thin); height: fit-content; min-height: 100%;"
     >
       <p>
         <input id="manually_assign_workers" type="checkbox" />
