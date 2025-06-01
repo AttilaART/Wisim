@@ -65,11 +65,13 @@
   <IncomeAndLoss
     get_income_statement={Get_budget}
     get_invoice_log={Get_budget_invoices}
+    is_budget={true}
   ></IncomeAndLoss>
 {:else if page == "income and loss"}
   <IncomeAndLoss
     get_income_statement={Get_income_statement}
     get_invoice_log={Get_invoices}
+    is_budget={false}
   ></IncomeAndLoss>
 {:else if page == "debt"}
   <Debt></Debt>

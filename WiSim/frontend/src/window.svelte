@@ -39,6 +39,9 @@
   let window_div: HTMLDivElement = $state();
   let titlebar: HTMLDivElement = $state();
   function update_position(x: number, y: number) {
+    if (y < 0) {
+      y = 0;
+    }
     position.x = x;
     position.y = y;
     console.log($state.snapshot(position));
@@ -60,7 +63,7 @@
       ? `--width: ${canvas_size.x - 5}px; --height: ${canvas_size.y - 5}px;`
       : `--width: ${750}px; --height: ${650}px`}"
     use:draggable={{
-      bounds: "parent",
+      //bounds: "parent",
       handle: titlebar,
       position,
       onDragEnd: ({ offsetX, offsetY }) => update_position(offsetX, offsetY),

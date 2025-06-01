@@ -21,12 +21,15 @@ export function format_number(num: number | any, add_plus?: boolean, decimal_pla
   return `+${num.toLocaleString("de-CH", { maximumFractionDigits: decimal_places, minimumFractionDigits: decimal_places })}`
 }
 
-export function format_currency(num: number, decimal_places?: number) {
+export function format_currency(num: number, decimal_places?: number, add_plus?: boolean): string {
   if (decimal_places == undefined) {
     decimal_places == 0
   }
+  if (add_plus === undefined) {
+    add_plus = false
+  }
 
-  return `${format_number(num, false, decimal_places)} CHF`
+  return `${format_number(num, add_plus, decimal_places)} CHF`
 }
 
 export type Series = {

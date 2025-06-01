@@ -212,7 +212,6 @@
     height: 100%;
     width: calc(100%);
     display: grid;
-    overflow: unset;
     background-color: var(--second-color);
   }
   .top-bar {
@@ -221,7 +220,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    border-bottom: var(--border);
+    border-bottom: var(--border-thin);
   }
 
   .bottom-bar {
@@ -230,13 +229,16 @@
     --height: 35px;
     height: var(--height);
     flex-direction: row;
-    border-top: var(--border);
     overflow-x: scroll;
+    background-color: var(--second-color);
+    border-top: var(--border-thin);
+    z-index: 9999;
   }
 
   .app_button {
     position: relative;
     border: none;
+    padding: 0 20px;
     transition: all 0.25s;
   }
 
@@ -252,16 +254,18 @@
   }
 
   .sidebar {
-    position: absolute;
-    width: fit-content;
-    height: 100%;
-    border-right: var(--border-width) solid var(--border-color);
     display: flex;
     flex-direction: column;
-    --button-width: 20px;
+    position: absolute;
+    height: 100%;
+    border-right: var(--border-thin);
+    transform: translateX(-190px);
+    background-color: var(--second-color);
+    z-index: 10000;
+    transition: 1s;
   }
 
   .sidebar:hover {
-    --button-width: 200px;
+    transform: translateX(0px);
   }
 </style>

@@ -184,7 +184,7 @@
     </div>
     <div style="grid-row: 1 / span 2; grid-column: 2;"></div>
     <div
-      style="grid-row: 2; grid-column: 1; display: flex; flex-direction: column; border-right: var(--border-thin);"
+      style="grid-row: 2; grid-column: 1; display: flex; flex-direction: column; border-right: var(--border-thin); height: fit-content;"
     >
       <p>
         <input id="manually_assign_workers" type="checkbox" />

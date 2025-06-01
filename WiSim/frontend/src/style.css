@@ -41,6 +41,8 @@ body {
   font-family: "Segoe UI", "Verdana", -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
     "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
     sans-serif;
+
+  color: var(--main-color);
   /* Prevent text selection */
   -webkit-user-select: none;
   /* Safari */

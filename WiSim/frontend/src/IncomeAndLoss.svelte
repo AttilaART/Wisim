@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { format_number } from "./helper";
+  import { format_currency, format_number } from "./helper";
   import { month, company_id, error } from "./store.svelte";
 
   export type Statement = Section[] | undefined | null;
@@ -24,12 +24,14 @@
   let {
     get_income_statement,
     get_invoice_log,
+    is_budget,
   }: {
     get_income_statement: (
       month: number,
       company: number,
     ) => Promise<Statement>;
     get_invoice_log: (month: number, company: number) => Promise<Invoice[]>;
+    is_budget: boolean;
   } = $props();
   let income: Statement = $state(undefined);
   let invoice_log: undefined | null | Invoice[] = $state(undefined);
@@ -56,7 +58,7 @@
   i();
 </script>
 
-<div style="display: flex; height: calc(100% - 60px);">
+<div class="content" style="display: flex; height: calc(100% - 60px);">
   <div style="padding: 10px; overflow-y: scroll; height: auto; flex: 1 1 60%;">
     {#if income === undefined}
       Loading report...
@@ -126,7 +128,7 @@
             ? 'var(--red)'
             : 'var(--main-color)'};{l.line_above
           ? 'border-top: var(--border-thin);'
-          : ''}">{format_number(l.Value, true, 0)}</td
+          : ''}">{format_currency(l.Value, 0, true)}</td
       >
     </tr>
   {/each}
@@ -146,7 +148,7 @@
               : i.Value < 0
                 ? 'var(--red)'
                 : 'var(--main-color)'}"
-            ><h4>{format_number(i.Value, true, 0)}</h4></th
+            ><h4>{format_currency(i.Value, 0, true)}</h4></th
           >
         </tr>
       </thead>
@@ -165,6 +167,15 @@
     </table>
   </div>
 {/snippet}
+
+{#if is_budget}
+  <style>
+    .content {
+      --main-color: #ffecc7;
+      color: var(--main-color);
+    }
+  </style>
+{/if}
 
 <style>
   .invoice {

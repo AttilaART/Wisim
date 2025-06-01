@@ -47,12 +47,14 @@ export function new_window(name: string, close: () => void): number {
 }
 export function move_window_to_top(window_id: number) {
   let current_z_index = windows[get_window_by_id(window_id).index].z_index
-  for (let id in windows.keys()) {
-    if (windows[id].z_index > current_z_index) {
-      windows[id].z_index -= 1
+  let current_index = get_window_by_id(window_id).index
+  for (let i in windows) {
+    if (windows[i].z_index >= current_z_index && Number(i) != current_index) {
+      windows[i].z_index -= 1
     }
   }
-  windows[window_id].z_index = windows.length
+  windows[current_index].z_index = windows.length
+  console.log($state.snapshot(windows))
 }
 
 export function delete_window(window_id: number) {
