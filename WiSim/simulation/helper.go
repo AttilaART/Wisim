@@ -7,6 +7,32 @@ import (
 	"math/rand"
 )
 
+type Interval struct {
+	Start       int
+	Stop_before int
+}
+
+func split_load(thread_count int, array_len int) []Interval {
+	thread_people_range := make([]Interval, thread_count)
+
+	count_per_thread := array_len / thread_count
+	remainder := array_len % thread_count
+	offset := 0
+
+	for i := range thread_people_range {
+		thread_people_range[i].Start = offset
+		thread_people_range[i].Stop_before = offset + count_per_thread
+		offset += count_per_thread
+
+		if remainder > 0 {
+			thread_people_range[i].Stop_before += 1
+			remainder -= 1
+			offset += 1
+		}
+	}
+	return thread_people_range
+}
+
 func round(num float64, decimal_place int) float64 {
 	num = num * math.Pow(10, (float64(decimal_place)))
 	num = math.Round(num)

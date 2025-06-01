@@ -3,7 +3,11 @@ package simulation
 import (
 	"errors"
 	"fmt"
+	"log"
 	"math/rand"
+	"runtime"
+	"sync"
+	"time"
 )
 
 // Economy functions
@@ -29,26 +33,71 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	avg_price = avg_price / float32(len(offers))
 
 	purchasing_statistics := make([]Purchasing_statistics, len(offers)+1)
-	for i, c := range population.Population {
-		customer := calcualte_durability(c)
-		product_purchased, quanity, customer, individual_purchasing_statistics := calculate_purchase(customer, offers, avg_price, external_factors, product_availability)
-		population.Population[i] = customer
-		purchases[product_purchased] += quanity
+	t_before := time.Now()
 
-		for i, s := range individual_purchasing_statistics {
-			purchasing_statistics[i].Products_sold += s.Products_sold
-			purchasing_statistics[i].Product_demand += s.Product_demand
-			purchasing_statistics[i].Product_number = s.Product_number
-			purchasing_statistics[i].Avr_decision_factor += s.Avr_decision_factor
-			purchasing_statistics[i].Avr_purchasing_threshold += s.Avr_purchasing_threshold
+	// Multithreading boilerplate
+	var wg sync.WaitGroup
+	num_threads := runtime.NumCPU()
 
-			purchasing_statistics[i].Avr_quality_factor += s.Avr_quality_factor
-			purchasing_statistics[i].Avr_durability_factor += s.Avr_durability_factor
-			purchasing_statistics[i].Avr_ecology_factor += s.Avr_ecology_factor
-			purchasing_statistics[i].Avr_price_factor += s.Avr_price_factor
-			purchasing_statistics[i].Avr_coolness_factor += s.Avr_coolness_factor
-		}
+	wg.Add(num_threads)
+	for id, interval := range split_load(num_threads, len(population.Population)) {
+		go func(wg *sync.WaitGroup, population_range Interval, id int,
+		) {
+			for current_customer_index := population_range.Start; current_customer_index < population_range.Stop_before; current_customer_index++ {
+
+				if current_customer_index >= len(population.Population) {
+					log.Panic("current_customer_index higher than len")
+					break
+				}
+				current_customer := population.Population[current_customer_index]
+
+				current_customer = calcualte_durability(current_customer)
+				product_purchased, quanity, customer, individual_purchasing_statistics := calculate_purchase(current_customer, offers, avg_price, external_factors, product_availability)
+				population.Population[current_customer_index] = customer
+				purchases[product_purchased] += quanity
+
+				for i, s := range individual_purchasing_statistics {
+					purchasing_statistics[i].Products_sold += s.Products_sold
+					purchasing_statistics[i].Product_demand += s.Product_demand
+					purchasing_statistics[i].Product_number = s.Product_number
+					purchasing_statistics[i].Avr_decision_factor += s.Avr_decision_factor
+					purchasing_statistics[i].Avr_purchasing_threshold += s.Avr_purchasing_threshold
+
+					purchasing_statistics[i].Avr_quality_factor += s.Avr_quality_factor
+					purchasing_statistics[i].Avr_durability_factor += s.Avr_durability_factor
+					purchasing_statistics[i].Avr_ecology_factor += s.Avr_ecology_factor
+					purchasing_statistics[i].Avr_price_factor += s.Avr_price_factor
+					purchasing_statistics[i].Avr_coolness_factor += s.Avr_coolness_factor
+				}
+			}
+			wg.Done()
+		}(&wg, interval, id)
 	}
+
+	wg.Wait()
+
+	//for i, c := range population.Population {
+	//	customer := calcualte_durability(c)
+	//	product_purchased, quanity, customer, individual_purchasing_statistics := calculate_purchase(customer, offers, avg_price, external_factors, product_availability)
+	//	population.Population[i] = customer
+	//	purchases[product_purchased] += quanity
+	//
+	//	for i, s := range individual_purchasing_statistics {
+	//		purchasing_statistics[i].Products_sold += s.Products_sold
+	//		purchasing_statistics[i].Product_demand += s.Product_demand
+	//		purchasing_statistics[i].Product_number = s.Product_number
+	//		purchasing_statistics[i].Avr_decision_factor += s.Avr_decision_factor
+	//		purchasing_statistics[i].Avr_purchasing_threshold += s.Avr_purchasing_threshold
+	//
+	//		purchasing_statistics[i].Avr_quality_factor += s.Avr_quality_factor
+	//		purchasing_statistics[i].Avr_durability_factor += s.Avr_durability_factor
+	//		purchasing_statistics[i].Avr_ecology_factor += s.Avr_ecology_factor
+	//		purchasing_statistics[i].Avr_price_factor += s.Avr_price_factor
+	//		purchasing_statistics[i].Avr_coolness_factor += s.Avr_coolness_factor
+	//	}
+	//}
+	delta_time := time.Since(t_before)
+	println("#### Time to calculate: ", delta_time.String())
 
 	for i := range len(purchasing_statistics) - 1 {
 		purchasing_statistics[i].Avr_decision_factor /= float32(len(population.Population))

@@ -10,7 +10,9 @@ import (
 	"log"
 	"math/rand"
 	"os"
+	"runtime"
 	"slices"
+	"sync"
 )
 
 // Game setup functions
@@ -48,22 +50,30 @@ func generate_population(
 		return nil, errors.New("max_base_need must be >= min_base_need")
 	}
 
-	for i := range population_size {
-		customer := Customer{
-			Base_need: rand.Intn(max_base_need-min_base_need) + min_base_need,
+	var wg sync.WaitGroup
+	for _, interval := range split_load(runtime.NumCPU(), population_size) {
+		wg.Add(1)
+		go func(wg *sync.WaitGroup, interval Interval) {
+			for i := interval.Start; i < interval.Stop_before; i++ {
+				customer := Customer{
+					Base_need: rand.Intn(max_base_need-min_base_need) + min_base_need,
 
-			Quality_preference:       float32(PosNormFloat64())*quality_spread + quality_bias,
-			Ecology_preference:       float32(PosNormFloat64())*ecology_spread + ecology_bias,
-			Coolness_preference:      float32(PosNormFloat64())*coolness_spread + coolness_bias,
-			Price_preference:         float32(PosNormFloat64())*price_spread + price_bias,
-			Bang_for_buck_preference: float32(PosNormFloat64())*bang_for_buck_spread + bang_for_buck_bias,
-			Durabilty_preference:     float32(PosNormFloat64())*durability_spread + durabilty_bias,
-			Purchashing_threshold:    float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
-			Loyalties:                make([]float32, number_of_companies),
-		}
-		population[i] = customer
-		// fmt.Printf("|%6d|%6d|\n", i, customer.income)
+					Quality_preference:       float32(PosNormFloat64())*quality_spread + quality_bias,
+					Ecology_preference:       float32(PosNormFloat64())*ecology_spread + ecology_bias,
+					Coolness_preference:      float32(PosNormFloat64())*coolness_spread + coolness_bias,
+					Price_preference:         float32(PosNormFloat64())*price_spread + price_bias,
+					Bang_for_buck_preference: float32(PosNormFloat64())*bang_for_buck_spread + bang_for_buck_bias,
+					Durabilty_preference:     float32(PosNormFloat64())*durability_spread + durabilty_bias,
+					Purchashing_threshold:    float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
+					Loyalties:                make([]float32, number_of_companies),
+				}
+				population[i] = customer
+				// fmt.Printf("|%6d|%6d|\n", i, customer.income)
+			}
+			wg.Done()
+		}(&wg, interval)
 	}
+	wg.Wait()
 
 	return population, nil
 }
