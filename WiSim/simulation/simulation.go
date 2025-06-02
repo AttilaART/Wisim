@@ -648,12 +648,12 @@ func (game_state *Game_state) Simulate_step() error {
 
 	println("Total products sold: ", total_products_sold)
 
-	missing_products := 0.0
+	missing_products := 0
 	for _, p := range game_state.Population.Population {
-		missing_products += float64(p.Base_need - len(p.Owned_products))
+		missing_products += p.Base_need - len(p.Owned_products)
 	}
-	missing_products /= float64(len(game_state.Population.Population))
-	fmt.Printf("avr missing products: %f\n", missing_products)
+	avr_missing_products := float64(missing_products) / float64(len(game_state.Population.Population))
+	fmt.Printf("avr missing products: %f\n", avr_missing_products)
 
 	// println("============== Purchasing statistics ============== ")
 	//

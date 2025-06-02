@@ -55,7 +55,7 @@ func generate_population(
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, interval Interval) {
 			for i := interval.Start; i < interval.Stop_before; i++ {
-				customer := Customer{
+				population[i] = Customer{
 					Base_need: rand.Intn(max_base_need-min_base_need) + min_base_need,
 
 					Quality_preference:       float32(PosNormFloat64())*quality_spread + quality_bias,
@@ -67,7 +67,6 @@ func generate_population(
 					Purchashing_threshold:    float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
 					Loyalties:                make([]float32, number_of_companies),
 				}
-				population[i] = customer
 				// fmt.Printf("|%6d|%6d|\n", i, customer.income)
 			}
 			wg.Done()

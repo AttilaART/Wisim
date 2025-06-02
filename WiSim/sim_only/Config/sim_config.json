@@ -17,7 +17,7 @@
         "Operating_costs": 20000
       }
     ],
-    "Items_in_storage": 10000,
+    "Items_in_storage": 1000000000,
     "Machines": [
       {
         "Production_capacity": 15000,
@@ -57,7 +57,7 @@
     ],
     "Balance": 1000000
   },
-  "Population_size": 50000000,
+  "Population_size": 5000000,
   "Min_base_need": 1,
   "Max_base_need": 4,
   "Quality_bias": 1,

@@ -50,7 +50,7 @@ func main() {
 
 	// fmt.Printf("%+#v\n", game_state.Current_decisions[0])
 
-	for range 1 {
+	for range 100 {
 		err = game_state.Simulate_step()
 		if err != nil {
 			println(err.Error())
