@@ -232,6 +232,7 @@ type Warehouse struct {
 
 type Employee struct {
 	Id            int
+	Name          string
 	Employee_type int
 	Motivation    float32
 	Skill         float32

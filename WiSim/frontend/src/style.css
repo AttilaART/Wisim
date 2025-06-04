@@ -82,7 +82,8 @@ h2 {
 
 h2,
 h3,
-h4 {
+h4, 
+h5 {
   margin: 5px;
 }
 
@@ -146,6 +147,7 @@ button:active {
   opacity: 50%;
   pointer-events: none;
   cursor: not-allowed;
+  transition: all 0.25s;
 }
 
 .greyed_out:hover,

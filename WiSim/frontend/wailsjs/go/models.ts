@@ -147,6 +147,7 @@ export namespace simulation {
 	}
 	export class Employee {
 	    Id: number;
+	    Name: string;
 	    Employee_type: number;
 	    Motivation: number;
 	    Skill: number;
@@ -162,6 +163,7 @@ export namespace simulation {
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Id = source["Id"];
+	        this.Name = source["Name"];
 	        this.Employee_type = source["Employee_type"];
 	        this.Motivation = source["Motivation"];
 	        this.Skill = source["Skill"];

@@ -5,6 +5,8 @@
   import Info from "./assets/images/Info.svelte";
   import { number } from "echarts";
 
+  // TODO: Make loans affect balance
+
   let slider_value = $state();
   let balance_without_loans = $state(100000 - 70000);
   let bridge_loans = $state(30000);
@@ -30,6 +32,13 @@
   );
 
   let hover_over_balance = $state(false);
+
+  let unaplied_changes = $state(false);
+
+  $effect(() => {
+    if (slider_value != existing_loans) unaplied_changes = true;
+    else unaplied_changes = false;
+  });
 </script>
 
 <div style="display: flex; flex-direction: column; height: calc(100% - 60px);">
@@ -52,8 +61,24 @@
         }}
         bind:Value={slider_value}
       ></Slider>
-      <span style="width: 10%;"></span>
-      <button style="flex 0 0 20%">Confirm</button>
+      <div
+        style="display: flex; gap: 10px; padding: 0 10px; padding-left: 2rem;"
+      >
+        <button
+          class={unaplied_changes ? "" : "greyed_out"}
+          style="flex 0 0 20%"
+          onclick={() => {
+            slider_value = existing_loans;
+          }}>Cancel</button
+        >
+        <button
+          class={unaplied_changes ? "" : "greyed_out"}
+          style="flex 0 0 20%"
+          onclick={() => {
+            existing_loans = slider_value;
+          }}>Apply</button
+        >
+      </div>
     </div>
   </div>
   <span class="sep_horisontal"></span>

@@ -7,9 +7,10 @@
   import NumberInput from "./number_input.svelte";
   import Sidebar from "./Sidebar.svelte";
   import { company_id, decisions, external_factors } from "./store.svelte";
+  import EmployeeCard from "./EmployeeCard.svelte";
 
   let page: string = $state("machines");
-  let production_goal: number = $state(decisions.Production.Production_goal);
+  let production_goal: number = $derived(decisions.Production.Production_goal);
   let current_stock = $state(0);
   let total_local_storage_capacity = $derived(get_local_storage_capacity());
   let available_storage_capacity = $derived(
@@ -269,7 +270,14 @@
               >
             </div>
 
-            <div style="display: flex">
+            <div style="display: flex; gap: 10px; margin: 10px;">
+              <EmployeeCard
+                employee_data={new simulation.Employee({
+                  Name: "Tim",
+                  Skill: 10,
+                  Motivation: 1.1,
+                })}
+              ></EmployeeCard>
               {#each m.Assigned_workers_ids as w_id}
                 <div>
                   <h4>{find_employee_by_id(w_id).Id}</h4>

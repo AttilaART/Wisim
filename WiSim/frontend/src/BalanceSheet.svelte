@@ -39,7 +39,7 @@
   };
   liabilities = {
     Liabilities: [
-      { Name: "Test1", Group: 1, Info: "", Value: 100, Cash_cost: true },
+      { Name: "Test1", Group: 1, Info: "", Value: 220, Cash_cost: true },
       { Name: "Test1", Group: 1, Info: "", Value: 100, Cash_cost: true },
     ],
     Private_equity: [
@@ -70,12 +70,12 @@
       </tr>
     </thead>
     <tbody>
-      {#each Object.keys(liabilities) as section}
-        <tr class="bottom {on_right ? '' : 'right'}">
+      {#each Object.keys(data) as section}
+        <tr class={on_right ? "" : "right"}>
           <td><h3>{section}</h3></td>
           <td></td>
         </tr>
-        {#each liabilities[section] as entry}
+        {#each data[section] as entry}
           <tr class={on_right ? "" : "right"}>
             <td> <p>{entry.Name}</p></td>
             <td style="text-align: right;"
