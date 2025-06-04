@@ -265,9 +265,9 @@ func (a *App) New_simulation() (int, error) {
 }
 
 func (a *App) Initial_app_load() error {
-	sim_config_file, err := os.ReadFile(program_info.Data_dir + "Config/sim_config.json")
+	sim_config_file, err := os.ReadFile(program_info.Data_dir + "config/sim_config.json")
 	if err != nil {
-		return errors.New("error loading sim_config.json at '" + program_info.Data_dir + "Config/sim_config.json'")
+		return errors.New("error loading sim_config.json at '" + program_info.Data_dir + "config/sim_config.json'")
 	}
 
 	err = json.Unmarshal(sim_config_file, &game_state.config)

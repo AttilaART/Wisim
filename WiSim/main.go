@@ -55,7 +55,7 @@ func main() {
 	program_info.Working_dir = string(([]byte)(working_dir_temp)[0 : len(working_dir_temp)-len(exec_name)])
 
 	// make config_folder if not present
-	_, err = os.ReadDir(program_info.Working_dir + "simulation/Config")
+	_, err = os.ReadDir(program_info.Working_dir + "simulation/config")
 	if !os.IsExist(err) {
 		os.CopyFS(program_info.Working_dir, default_config)
 	} else if err != nil {
