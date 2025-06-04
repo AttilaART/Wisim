@@ -2,10 +2,15 @@
   import GameInterface from "./Game_interface.svelte";
   import Sidebar from "./Sidebar.svelte";
   import Popup from "./Popup.svelte";
-  import { New_simulation, Initial_app_load } from "../wailsjs/go/main/App";
+  import {
+    New_simulation,
+    Initial_app_load,
+    Get_External_Factors,
+  } from "../wailsjs/go/main/App";
   import { fade } from "svelte/transition";
 
   import { month } from "./store.svelte";
+  import { update_external_factors } from "./helper";
 
   let background_image_blurred = $state("");
   let is_loading = $state(false);
@@ -17,14 +22,14 @@
 
   let Initial_app_load_promise = Initial_app_load();
 
-  function load_singleplayer() {
+  async function load_singleplayer() {
     is_loading = true;
-    start_new_game().then(() => {
-      background_image_blurred = " blurred";
-      mode.main_menu = false;
-      mode.game_interface = true;
-      is_loading = false;
-    });
+    let month = await start_new_game();
+    update_external_factors(await Get_External_Factors());
+    background_image_blurred = " blurred";
+    mode.main_menu = false;
+    mode.game_interface = true;
+    is_loading = false;
   }
 
   function load_main_menu() {
@@ -33,8 +38,9 @@
     mode.game_interface = false;
   }
 
-  async function start_new_game() {
+  async function start_new_game(): Promise<number> {
     $month = await New_simulation();
+    return $month;
   }
 </script>
 

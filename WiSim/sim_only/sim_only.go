@@ -10,7 +10,7 @@ import (
 
 func main() {
 	// Load settings
-	sim_config_file, err := os.ReadFile("Config/sim_config.json")
+	sim_config_file, err := os.ReadFile("config/sim_config.json")
 	if err != nil {
 		println("Error loading sim_config.json")
 		os.Exit(1)

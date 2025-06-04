@@ -1,5 +1,14 @@
+import { simulation } from "../wailsjs/go/models";
+import { external_factors } from "./store.svelte";
+
 export function isEqual(a: unknown, b: unknown): boolean {
   return JSON.stringify(a) == JSON.stringify(b)
+}
+
+export function update_external_factors(new_value: simulation.External_factors) {
+  for (let field of Object.keys(external_factors)) {
+    external_factors[field] = new_value[field]
+  }
 }
 
 export function format_number(num: number | any, add_plus?: boolean, decimal_places?: number): string {

@@ -13,8 +13,8 @@ export const month = writable(1)
 export const company_id = writable(0)
 export const decisionsold = writable(new simulation.Decisionsold)
 
-export const decisions: simulation.Decisions = $state(await Get_Decisions(0, 0))
-export const external_factors: simulation.External_factors = $state(await Get_External_Factors(0, 0))
+export const decisions: simulation.Decisions = $state(await Get_Decisions())
+export let external_factors: simulation.External_factors = $state(new simulation.External_factors)
 
 console.log($state.snapshot(external_factors))
 console.log($state.snapshot(decisions))

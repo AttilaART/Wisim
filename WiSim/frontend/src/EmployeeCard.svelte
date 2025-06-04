@@ -6,7 +6,7 @@
 </script>
 
 <div
-  style="border-radius: var(--border-radius); border: var(--border-thin); overflow: hidden;; display: flex; flex-direction: rows; width: 200px; height: 75px;"
+  style="border-radius: var(--border-radius); border: var(--border-thin); overflow: hidden; display: flex; flex-direction: rows; min-width: 200px; height: 75px; flex: 1 0 200px;"
 >
   {#if employee_data}
     <div style="flex: 0 0 50px;">img</div>
@@ -15,13 +15,14 @@
       <table style="width: 100%;">
         <tbody>
           <tr>
-            <td> <small>Skill</small></td>
-            <td> <small>Motivation</small></td>
-          </tr>
-
-          <tr>
-            <td>{employee_data.Skill}</td>
-            <td>{employee_data.Motivation}</td>
+            <td>
+              <small>Skill</small> <br />
+              <strong> {employee_data.Skill}</strong>
+            </td>
+            <td>
+              <small>Motivation</small> <br />
+              <strong>{employee_data.Motivation}</strong>
+            </td>
           </tr>
         </tbody>
       </table>
@@ -33,3 +34,13 @@
     </div>
   {/if}
 </div>
+
+<style>
+  h5 {
+    margin-bottom: 2px;
+  }
+
+  small {
+    font-size: 0.2 rem;
+  }
+</style>

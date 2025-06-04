@@ -40,16 +40,20 @@
 
   function buy_machine() {
     // TODO: make machines cost money
-    console.log("Machine Bought");
+
+    let bought_machine = external_factors.Machine_on_offer;
+    bought_machine.Assigned_workers_ids = [];
+
     try {
-      decisions.Production.Machines.push(external_factors.Machine_on_offer);
+      decisions.Production.Machines.push(bought_machine);
     } catch (exception) {
       if (exception instanceof TypeError) {
-        decisions.Production.Machines = [external_factors.Machine_on_offer];
+        decisions.Production.Machines = [bought_machine];
       } else {
         throw exception;
       }
     }
+    console.log("Machine Bought");
   }
   function buy_warehouse() {
     // TODO: make warehouse cost money
@@ -270,20 +274,18 @@
               >
             </div>
 
-            <div style="display: flex; gap: 10px; margin: 10px;">
-              <EmployeeCard
-                employee_data={new simulation.Employee({
-                  Name: "Tim",
-                  Skill: 10,
-                  Motivation: 1.1,
-                })}
-              ></EmployeeCard>
+            <!--<div
+              style="display: flex; flex-wrap: wrap; gap: 10px; margin: 10px; overflow-y: scroll; max-height: 100%;"
+            >
               {#each m.Assigned_workers_ids as w_id}
                 <div>
                   <h4>{find_employee_by_id(w_id).Id}</h4>
                 </div>
               {/each}
-            </div>
+              {#each Array(m.Required_workers - m.Assigned_workers_ids.length).keys() as _}
+                <EmployeeCard employee_data={undefined}></EmployeeCard>
+              {/each}
+            </div>-->
           </div>
 
           <dialog id="sell_machine_{m_idnex}">
