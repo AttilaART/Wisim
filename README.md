@@ -43,10 +43,11 @@ Before running the program, make sure to have the following programs installed
 - Go
 - Wails CLI
 
-1. Clone the Git repository onto your computer
+1. Clone the Git repository onto your computer and switch to "windows" branch
 
 ```zsh
 git clone https://github.com/AttilaART/Wisim.git
+git switch windows
 ```
 
 2.
@@ -66,3 +67,8 @@ Make sure to run the correct one for your device.
 MacOS: `WiSim.app`
 Windows: `WiSim.exe`
 Linux: `WiSim`
+
+### Troubleshooting
+
+Navigate into "WiSim/frontend"
+and run `npm i`
