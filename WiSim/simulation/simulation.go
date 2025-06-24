@@ -21,8 +21,9 @@ type Game_state struct {
 	Game_name      string
 
 	Population              Population
+	Employees               Employee_pool
 	Companies               []Company
-	Current_decisions       []Decisionsold
+	Current_decisions       []Decisions
 	Decisions_submitted     []bool
 	Market_sales_statistics []Sales_statistics
 	External_factors        External_factors
@@ -62,21 +63,22 @@ type Sim_config struct {
 
 type Company struct {
 	// General
-	Id      int
-	Name    string
-	Balance float64
-
+	Id            int
+	Name          string
+	Balance       float64
+	employee_pool *Employee_pool
 	// Global_effects   []Effect
-	Decision_history []Decisionsold
+	Decision_history []Decisions
 
 	Reports []Report
 	// Research and development
-	Global_quality_factor float32
+	Global_quality_factor   float32
+	Base_marketing_strength float32
 
 	// Product
 	Offer                Offer
 	Orders               int
-	Marketing_personelle []Employee
+	Marketing_personelle []*Employee
 
 	// Fulfillment
 	Warehouses       []Warehouse
@@ -84,7 +86,7 @@ type Company struct {
 
 	// Production
 	Machines              []Machine
-	Production_personelle []Employee
+	Production_personelle []*Employee
 }
 
 type Decisionsold struct {
@@ -134,7 +136,7 @@ type Decisions struct {
 	}
 
 	Finances struct {
-		set_bank_loan float64
+		Set_bank_loan float64
 	}
 
 	Marketing struct {
@@ -149,9 +151,10 @@ type Decisions struct {
 
 			Manufacturing struct {
 				Quality             float32
-				Durability          float32
 				Ecological_energy   float32
 				Material_efficiency float32
+				Durability          float32
+				Max_durability      int
 			}
 		}
 
@@ -167,6 +170,8 @@ type Decisions struct {
 	Employees struct {
 		Production_actions []Employee_action
 		Marketing_actions  []Employee_action
+
+		Severance_pay float32
 	}
 
 	Production struct {
@@ -174,42 +179,66 @@ type Decisions struct {
 		Machines        []Machine
 		Logistics       []Warehouse
 	}
+
+	Research struct {
+		Quality    float32
+		Durability float32
+		Ecology    float32
+		Promotion  float32
+		Speed      float32
+	}
 }
 
 const (
-	existing_employee = iota
-	new_hire
-	fired
+	Existing = iota
+	New
+	Fired
+	Quit
+	Layed_off
+	Sold
+	Available
 )
 
 type Employee_action struct {
-	Employee Employee
+	Employee_id int
+	employee    *Employee
 
 	Extra_training int
 	Pay            float32
 	Bonus          float32
 
-	status int
+	Working_hours float32
+
+	Status int
 }
 
 type Offer struct {
-	Product            Product
-	Price              float32
-	Marketing_quantity float32
-	Marketing_strength float32
+	Product           Product
+	Price             float32
+	Promotion_quality float32
+	Promotion_goal    struct {
+		Quantity         float64
+		Style_quality    float32
+		Style_ecology    float32
+		Style_ethics     float32
+		Style_durability float32
+	}
 }
 
 type Product struct {
-	Id                         int
-	Name                       string
-	Weight                     float32
-	Material_use               float32
-	Material_quality           float32
-	Skill_factor               float32
-	Quality_development_factor float32
-	Quality_factor             float32
-	Ecology_factor             float32
-	Coolness_factor            float32
+	Id           int
+	Name         string
+	Weight       float32
+	Material_use float32
+
+	Base_quality          float32
+	Base_ecology          float32
+	Base_durability       float32
+	Base_production_speed float32
+
+	Quality_factor  float32
+	Ecology_factor  float32
+	Coolness_factor float32
 
 	Durabilty int
 }
@@ -218,9 +247,10 @@ type Machine struct {
 	Production_capacity  int
 	Required_workers     int
 	Minimum_workers      int
-	Assigned_workers_ids []int
+	Assigned_workers_ptr []*Employee
 	Energy_use           float32
 	Value                float32
+	Status               int
 }
 
 type Warehouse struct {
@@ -228,6 +258,7 @@ type Warehouse struct {
 	Capacity        int
 	Operating_costs float32
 	Value           float32
+	Status          int
 }
 
 type Employee struct {
@@ -237,19 +268,26 @@ type Employee struct {
 	Motivation    float32
 	Skill         float32
 	Global_effect *Effect
-	Salary        float32
+	Pay           float32
 	Bonus         float32
 	Working_hours float32
 }
 
 const (
-	production_employee = iota
-	marketing_employee
-	executive_employee
+	Production_employee = iota
+	Marketing_employee
+	Executive_employee
 )
 
 func (e Employee) get_type() string {
-	return []string{"production", "marketing", "executive"}[e.Employee_type]
+	employee_types := []string{"production", "marketing", "executive"}
+
+	if e.Employee_type > len(employee_types)-1 {
+		return "unknown"
+	} else if e.Employee_type < 0 {
+		return "unknown"
+	}
+	return employee_types[e.Employee_type]
 }
 
 type Effect struct {
@@ -480,10 +518,11 @@ type Sales_statistics struct {
 }
 
 type Marketing_statistics struct {
-	Product       Product_statistics
-	Price         float64
-	Bang_for_buck float64
-	Promotion     float64
+	Product            Product_statistics
+	Price              float64
+	Bang_for_buck      float64
+	Promotion_quantity float64
+	Promotion_quality  float64
 	// Place
 }
 
@@ -559,9 +598,15 @@ type External_factors struct {
 // ########## \__,_| \__,_| \__|\__,_|   |_|   \__,_||_| |_| \___| \__||_| \___/ |_| |_||___/ ##########
 // #####################################################################################################
 
-func (c Company) Mock_simulate_step(decisions Decisionsold, external_factors External_factors) Report {
-	results := FinanceReportEntry{"Predicted sales", predictions, "The amount of you predict you'll make", true, float64(decisions.Sales_projection) * float64(decisions.Selling_price)}
-	c.compile_reports(decisions, results, Purchasing_statistics{Products_sold: decisions.Sales_projection}, &Sales_statistics{}, external_factors)
+func (c Company) Mock_simulate_step(decisions Decisions, external_factors External_factors) Report {
+	results := FinanceReportEntry{"Predicted sales", predictions, "The amount of you predict you'll make", true, float64(decisions.Predictions.Sales_prediction) * float64(decisions.Marketing.Price)}
+	c.compile_reports(
+		decisions,
+		results,
+		Purchasing_statistics{Products_sold: decisions.Predictions.Sales_prediction},
+		&Sales_statistics{},
+		external_factors,
+	)
 	return c.Reports[len(c.Reports)-1]
 }
 
@@ -587,7 +632,10 @@ func (game_state *Game_state) Simulate_step() error {
 	println("Simulating companies done!")
 
 	println("---------------- Simulatig economy ----------------")
-	Results, purchasing_statistics, err := game_state.Population.simulate_economy(&game_state.Companies, game_state.External_factors)
+	Results, purchasing_statistics, err := game_state.Population.simulate_economy(
+		&game_state.Companies,
+		game_state.External_factors,
+	)
 	if err != nil {
 		return err
 	}
@@ -669,7 +717,7 @@ func (game_state *Game_state) Simulate_step() error {
 }
 
 func (company *Company) compile_reports(
-	decisions Decisionsold,
+	decisions Decisions,
 	results FinanceReportEntry,
 	company_purchasing_statistcs Purchasing_statistics,
 	market_purchasing_statistics *Sales_statistics,
@@ -686,7 +734,7 @@ func (company *Company) compile_reports(
 	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = append(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log, results)
 
 	// Finance
-	company.Reports[len(company.Reports)-1].Financial_Report = company.calculate_budget(decisions, external_factors)
+	company.calculate_budget(decisions, external_factors)
 
 	return nil
 }
@@ -728,7 +776,8 @@ func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics
 	report.Marketing_statistics.Product.Ecology = c.Offer.Product.Ecology_factor
 
 	report.Marketing_statistics.Price = float64(c.Offer.Price)
-	report.Marketing_statistics.Promotion = float64(c.Decision_history[len(c.Decision_history)-1].Marketing)
+	report.Marketing_statistics.Promotion_quantity = c.Offer.Promotion_goal.Quantity
+	report.Marketing_statistics.Promotion_quality = float64(c.Offer.Promotion_quality)
 
 	return report
 }
@@ -742,8 +791,8 @@ func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics
 // ########## |_| |_| |_| \__,_||_||_| |_| ##########
 // ##################################################
 
-func Get_decisions(save_location string, number_of_companies int) ([]Decisionsold, error) {
-	decisions := make([]Decisionsold, number_of_companies)
+func Get_decisions_from_file(save_location string, number_of_companies int) ([]Decisions, error) {
+	decisions := make([]Decisions, number_of_companies)
 	for i := range decisions {
 		decisions_json, err := os.ReadFile(fmt.Sprintf("%s/decisions_company_%d.json", save_location, i))
 		// println(string(decisions_json))

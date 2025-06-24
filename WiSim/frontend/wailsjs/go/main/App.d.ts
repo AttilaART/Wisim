@@ -38,4 +38,6 @@ export function Revert_simulation():Promise<number>;
 
 export function Submit_decisions(arg1:number,arg2:simulation.Decisionsold):Promise<void>;
 
+export function Temp_generate_new_emloyee(arg1:number,arg2:number,arg3:number):Promise<simulation.Employee>;
+
 export function Trigger_simulation(arg1:boolean):Promise<number>;

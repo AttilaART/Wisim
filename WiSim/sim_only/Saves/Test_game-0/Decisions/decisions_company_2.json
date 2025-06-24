@@ -1,26 +1,345 @@
 {
-  "Sales_projection": 100000,
-  "Selling_price": 100,
-  "Marketing": 1000000,
-  "Investment_in_quality_development": 1000000,
-  "Investment_in_ecological_production": 1000000,
-  "Investment_in_durability_development": 1000000,
-  "Production_target": 100000,
-  "Purchase_of_machines": 2,
-  "Selling_of_machines": 2,
-  "Material_quality": 1,
-  "Percentage_of_ecological_energy": 100,
-  "Purchase_of_warehouses": 0,
-  "New_hires_in_production": 0,
-  "New_hires_in_marketing": 0,
-  "Base_pay_for_production": 70000,
-  "Base_pay_for_marketing": 90000,
-  "Raise_for_production_personelle": 0.01,
-  "Raise_for_marketing_personelle": 0.01,
-  "Working_hours_for_production": 8.1,
-  "Working_hours_for_marketing": 8.1,
-  "Investment_in_production_training": 1000,
-  "Investment_in_marketing_training": 100,
-  "Increase_of_loans": 0,
-  "Dividends": 0
+   "Predictions": {
+      "Sales_prediction": 100000
+   },
+   "Finances": {
+      "Set_bank_loan": 10000
+   },
+   "Marketing": {
+      "Price": 100,
+      "Product": {
+         "Materials": {
+            "Quality": 1,
+            "Ecology": 1,
+            "Ethical_sourcing": 1
+         },
+         "Manufacturing": {
+            "Quality": 1,
+            "Ecological_energy": 1,
+            "Material_efficiency": 1,
+            "Durability": 1,
+            "Max_durability": 1
+         }
+      },
+      "Promotion": {
+         "Quantity": 1,
+         "Style_quality": 1,
+         "Style_ecology": 1,
+         "Style_ethics": 1,
+         "Style_durability": 1
+      }
+   },
+   "Employees": {
+      "Production_actions": [
+         {
+            "Employee_id": 60,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 61,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 62,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 63,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 64,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 65,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 66,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 67,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 68,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 69,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 70,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 71,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 72,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 73,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 74,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 75,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 76,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 77,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 78,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 79,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 80,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 81,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 82,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 83,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 84,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         }
+      ],
+      "Marketing_actions": [
+         {
+            "Employee_id": 85,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 86,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 87,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 88,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         },
+         {
+            "Employee_id": 89,
+            "Extra_training": 0,
+            "Pay": 60000,
+            "Bonus": 0,
+            "Working_hours": 8,
+            "Status": 0
+         }
+      ],
+      "Severance_pay": 10000
+   },
+   "Production": {
+      "Production_goal": 0,
+      "Machines": [
+         {
+            "Production_capacity": 15000,
+            "Required_workers": 5,
+            "Minimum_workers": 3,
+            "Assigned_workers_ptr": null,
+            "Energy_use": 0.5,
+            "Value": 90000,
+            "Status": 0
+         },
+         {
+            "Production_capacity": 15000,
+            "Required_workers": 5,
+            "Minimum_workers": 3,
+            "Assigned_workers_ptr": null,
+            "Energy_use": 0.5,
+            "Value": 90000,
+            "Status": 0
+         },
+         {
+            "Production_capacity": 15000,
+            "Required_workers": 5,
+            "Minimum_workers": 3,
+            "Assigned_workers_ptr": null,
+            "Energy_use": 0.5,
+            "Value": 90000,
+            "Status": 0
+         },
+         {
+            "Production_capacity": 15000,
+            "Required_workers": 5,
+            "Minimum_workers": 3,
+            "Assigned_workers_ptr": null,
+            "Energy_use": 0.5,
+            "Value": 90000,
+            "Status": 0
+         },
+         {
+            "Production_capacity": 15000,
+            "Required_workers": 5,
+            "Minimum_workers": 3,
+            "Assigned_workers_ptr": null,
+            "Energy_use": 0.5,
+            "Value": 90000,
+            "Status": 0
+         }
+      ],
+      "Logistics": [
+         {
+            "Id": 0,
+            "Capacity": 20000,
+            "Operating_costs": 20000,
+            "Value": 0,
+            "Status": 0
+         }
+      ]
+   },
+   "Research": {
+      "Quality": 0,
+      "Durability": 0,
+      "Ecology": 0,
+      "Promotion": 0,
+      "Speed": 0
+   }
 }

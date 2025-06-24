@@ -74,6 +74,10 @@ export function Submit_decisions(arg1, arg2) {
   return window['go']['main']['App']['Submit_decisions'](arg1, arg2);
 }
 
+export function Temp_generate_new_emloyee(arg1, arg2, arg3) {
+  return window['go']['main']['App']['Temp_generate_new_emloyee'](arg1, arg2, arg3);
+}
+
 export function Trigger_simulation(arg1) {
   return window['go']['main']['App']['Trigger_simulation'](arg1);
 }

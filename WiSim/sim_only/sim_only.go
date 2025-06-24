@@ -32,8 +32,24 @@ func main() {
 	//	println(err.Error())
 	//	log.Fatal("Failed to load save")
 	//}
+	for i := range game_state.Companies {
+		decisions := game_state.Companies[i].Get_decisions()
 
-	game_state.Current_decisions, err = simulation.Get_decisions(
+		data, err := json.MarshalIndent(decisions, "", "   ")
+		if err != nil {
+			panic(err)
+		}
+		err = os.WriteFile(fmt.Sprintf("Saves/%s-0/Decisions/decisions_company_%d.json", game_state.Game_name, game_state.Companies[i].Id), data, 0644)
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	println("press enter to continue")
+	var tmp string
+	fmt.Scanln(&tmp)
+
+	game_state.Current_decisions, err = simulation.Get_decisions_from_file(
 		fmt.Sprintf("Saves/%s-0/Decisions", game_state.Game_name),
 		len(game_state.Companies),
 	)
@@ -50,7 +66,7 @@ func main() {
 
 	// fmt.Printf("%+#v\n", game_state.Current_decisions[0])
 
-	for range 100 {
+	for range 1 {
 		err = game_state.Simulate_step()
 		if err != nil {
 			println(err.Error())

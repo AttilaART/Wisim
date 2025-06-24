@@ -152,7 +152,7 @@ export namespace simulation {
 	    Motivation: number;
 	    Skill: number;
 	    Global_effect?: Effect;
-	    Salary: number;
+	    Pay: number;
 	    Bonus: number;
 	    Working_hours: number;
 	
@@ -168,7 +168,7 @@ export namespace simulation {
 	        this.Motivation = source["Motivation"];
 	        this.Skill = source["Skill"];
 	        this.Global_effect = this.convertValues(source["Global_effect"], Effect);
-	        this.Salary = source["Salary"];
+	        this.Pay = source["Pay"];
 	        this.Bonus = source["Bonus"];
 	        this.Working_hours = source["Working_hours"];
 	    }
@@ -196,6 +196,7 @@ export namespace simulation {
 	    Extra_training: number;
 	    Pay: number;
 	    Bonus: number;
+	    Status: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Employee_action(source);
@@ -207,6 +208,7 @@ export namespace simulation {
 	        this.Extra_training = source["Extra_training"];
 	        this.Pay = source["Pay"];
 	        this.Bonus = source["Bonus"];
+	        this.Status = source["Status"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {

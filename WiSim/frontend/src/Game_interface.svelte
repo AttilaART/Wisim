@@ -14,6 +14,8 @@
   import { decisions } from "./store.svelte";
   import lttwalpaper from "./assets/images/lttwalpaper.jpeg";
   import Production from "./Production.svelte";
+  import Employees from "./Employees.svelte";
+  import { Trigger_simulation } from "../wailsjs/go/main/App";
 
   type window = {
     Id: number;
@@ -32,6 +34,11 @@
     open_window: open_window,
   });
   let production_window: window = $state({
+    Id: undefined,
+    Loaded: false,
+    open_window: open_window,
+  });
+  let employees_window: window = $state({
     Id: undefined,
     Loaded: false,
     open_window: open_window,
@@ -70,7 +77,9 @@
           Text: "Employees",
           Style: "",
           Show: 1,
-          onClick: () => {},
+          onClick: () => {
+            employees_window.open_window();
+          },
           dont_keep_pressed: true,
         },
         {
@@ -130,7 +139,11 @@
       <div style="flex: 1 1 ">01/02/0001</div>
       <div style="flex: 1 0 ">
         Time until next step: <span style="color: red;">5 min</span>
-        <button>Ready</button>
+        <button
+          onclick={() => {
+            Trigger_simulation(true);
+          }}>Ready</button
+        >
       </div>
       <div style="flex: 0 0 fit-content; height: 100%;">
         <button style=" height: 100%; border: none;">Messages</button>
@@ -178,6 +191,19 @@
           }}
           onClose={() => (production_window.Loaded = false)}
           bind:window_id={production_window.Id}
+        ></Window>
+      {/if}
+      {#if employees_window.Loaded}
+        <Window
+          title="Employees"
+          content={Employees}
+          content_args={[]}
+          canvas_size={{
+            x: desktop_canvas_size[0].inlineSize,
+            y: desktop_canvas_size[0].blockSize,
+          }}
+          onClose={() => (employees_window.Loaded = false)}
+          bind:window_id={employees_window.Id}
         ></Window>
       {/if}
     </div>

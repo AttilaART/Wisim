@@ -77,7 +77,7 @@ func Test_assign_workers(t *testing.T) {
 		test.workers = func(number_of_workers int) []Employee {
 			workers := make([]Employee, number_of_workers)
 			for i := range workers {
-				workers[i] = generate_employee(0, 8, production_employee, rand.Float32())
+				workers[i] = Generate_employee(0, 8, Production_employee, rand.Float32())
 			}
 			return workers
 		}(20)

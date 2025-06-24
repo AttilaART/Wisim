@@ -189,22 +189,38 @@ func (a *App) Get_production_report(company int, step int) (simulation.Productio
 //return simulation.Decisions{}, nil
 //}
 
-func (a *App) Get_past_decisions(company int, step int) (simulation.Decisionsold, error) {
+func (a *App) Temp_generate_new_emloyee(company, step int, employee_type int) (simulation.Employee, error) {
 	err := check_request(company, step)
 	if err != nil {
-		return simulation.Decisionsold{}, err
+		return simulation.Employee{}, err
+	}
+
+	return *game_state.state.Generate_employee(10000, 8, employee_type, 1), nil
+}
+
+func (a *App) Get_past_decisions(company int, step int) (simulation.Decisions, error) {
+	err := check_request(company, step)
+	if err != nil {
+		return simulation.Decisions{}, err
 	}
 
 	return game_state.state.Companies[company].Decision_history[step], nil
 }
 
-func (a *App) Submit_decisions(company int, decisions simulation.Decisionsold) error {
+func (a *App) Submit_decisions(company int, decisions simulation.Decisions) error {
 	err := check_request(company, 0)
 	if err != nil {
 		if err.Error() != "this step hasn't been simulated yet" {
 			return err
 		}
 	}
+	for i := range decisions.Employees.Marketing_actions {
+		decisions.Employees.Marketing_actions[i], err = game_state.state.Link_employees_to_action(decisions.Employees.Marketing_actions[i])
+		if err != nil {
+			return err
+		}
+	}
+
 	game_state.state.Current_decisions[company] = decisions
 	game_state.state.Decisions_submitted[company] = true
 
@@ -217,7 +233,7 @@ func (a *App) Trigger_simulation(force bool) (int, error) {
 	}
 
 	for _, d := range game_state.state.Decisions_submitted {
-		if !d {
+		if !d && !force {
 			return 0, errors.New("not all companies' decisions have been submitted")
 		}
 

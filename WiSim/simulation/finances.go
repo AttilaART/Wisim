@@ -6,8 +6,9 @@ import (
 )
 
 // Finances
-func (company *Company) calculate_budget(decisions Decisionsold, external_factors External_factors) Financial_Report {
-	var financial_report Financial_Report
+func (company *Company) calculate_budget(decisions Decisions, external_factors External_factors) {
+	// using a pointer to avoid refactiong :)
+	financial_report := &company.Reports[len(company.Reports)-1].Financial_Report
 
 	local_storage_capacity := 0
 	local_storage_costs := 0.0
@@ -16,7 +17,7 @@ func (company *Company) calculate_budget(decisions Decisionsold, external_factor
 		local_storage_capacity += w.Capacity
 	}
 	company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement(
-		"Internal storage costs",
+		"Local storage costs",
 		logistics,
 		"The operating costs of our own warehouses",
 		true,
@@ -34,9 +35,11 @@ func (company *Company) calculate_budget(decisions Decisionsold, external_factor
 	// Loans
 
 	// Get loans from last year
-	for _, e := range company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities {
-		if e.Group == loans || e.Group == bridge_loans {
-			company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities = append(company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities, e)
+	if len(company.Reports) >= 2 {
+		for _, e := range company.Reports[len(company.Reports)-2].Balance_sheet.Liabilities {
+			if e.Group == loans || e.Group == bridge_loans {
+				company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities = append(company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities, e)
+			}
 		}
 	}
 
@@ -51,7 +54,7 @@ func (company *Company) calculate_budget(decisions Decisionsold, external_factor
 	if intrest > 0 {
 		company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Intrest payments", loan_intrest, "", true, -intrest)
 	}
-	// Calculate bride loan intrest
+	// Calculate bridge loan intrest
 	bl_intrest := 0.0
 	for _, e := range company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities {
 		if e.Group == bridge_loans {
@@ -64,11 +67,12 @@ func (company *Company) calculate_budget(decisions Decisionsold, external_factor
 	}
 
 	// Increase or decrease loans
-	if decisions.Increase_of_loans > 0 {
-		company.Reports[len(company.Reports)-1].Balance_sheet.add_to_liabilities("Bank loan", loans, "", true, float64(decisions.Increase_of_loans))
-		company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Income from bank loan", loans, "", true, float64(decisions.Increase_of_loans))
-	} else if decisions.Increase_of_loans < 0 {
-		money_remaining := float64(-decisions.Increase_of_loans)
+	increase_of_loans := decisions.Finances.Set_bank_loan - company.loan_quantity()
+	if increase_of_loans > 0 {
+		company.Reports[len(company.Reports)-1].Balance_sheet.add_to_liabilities("Bank loan", loans, "", true, -float64(increase_of_loans))
+		company.Reports[len(company.Reports)-1].Balance_sheet.add_to_income_statement("Income from bank loan", loans, "", true, float64(increase_of_loans))
+	} else if increase_of_loans < 0 {
+		money_remaining := float64(-increase_of_loans)
 		var loans_to_delete []int
 		for i, e := range company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities {
 			if e.Group == 1 {
@@ -231,8 +235,6 @@ func (company *Company) calculate_budget(decisions Decisionsold, external_factor
 		"The amount of money that is owned exclusively by the company",
 		false,
 		equity)
-
-	return financial_report
 }
 
 func profit_taxes(EBIT float64, external_factors External_factors) float64 {
@@ -240,4 +242,14 @@ func profit_taxes(EBIT float64, external_factors External_factors) float64 {
 		return -round(EBIT*float64(external_factors.Tax_rate), 2)
 	}
 	return 0
+}
+
+func (c *Company) loan_quantity() (loan_value float64) {
+	for _, e := range c.Reports[len(c.Reports)-1].Balance_sheet.Liabilities {
+		if e.Group == loans {
+			loan_value -= e.Value
+		}
+	}
+
+	return loan_value
 }
