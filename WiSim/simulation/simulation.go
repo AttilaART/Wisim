@@ -50,6 +50,7 @@ type Sim_config struct {
 	Durability_spread           float32
 	Purchasing_threshold_bias   float32
 	Purchasing_threshold_spread float32
+	Base_market_price           float32
 }
 
 // ##########################################################################################
@@ -545,6 +546,7 @@ type Customer struct {
 	Durabilty_preference     float32
 
 	Purchashing_threshold float32
+	Max_price             float32
 	Satisfaction          []Satisfaction
 
 	Brand_loyalty_factor float32
@@ -687,6 +689,7 @@ func (game_state *Game_state) Simulate_step() error {
 	for i, c := range game_state.Companies {
 		fmt.Printf("Company %d: %s:\n", i, c.Name)
 		fmt.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
+		fmt.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_Report.Net_Profit)
 		println("")
 	}
 

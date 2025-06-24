@@ -23,6 +23,7 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 
 	// Offer
 	println("Calculating product stats")
+	c.Offer.Price = decisions.Marketing.Price
 
 	c.Base_marketing_strength += decisions.Research.Promotion / 1000 * c.Base_marketing_strength
 	c.Offer.Promotion_quality = promotion_quality(c.Base_marketing_strength, c.Marketing_personelle)

@@ -130,5 +130,6 @@
   "Durabilty_bias": 1,
   "Durability_spread": 1,
   "Purchasing_threshold_bias": 1,
-  "Purchasing_threshold_spread": 1
+  "Purchasing_threshold_spread": 1,
+  "Base_market_price": 100
 }

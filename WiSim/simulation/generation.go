@@ -6,6 +6,7 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io"
 	"log"
 	"math/rand"
@@ -37,6 +38,7 @@ func generate_population(
 	durability_spread float32,
 	purchasing_threshold_bias float32,
 	purchasing_threshold_spread float32,
+	base_market_price float32,
 
 	number_of_companies int,
 ) ([]Customer, error) {
@@ -49,6 +51,8 @@ func generate_population(
 	if max_base_need < min_base_need {
 		return nil, errors.New("max_base_need must be >= min_base_need")
 	}
+
+	avr_max_price := 0.0
 
 	var wg sync.WaitGroup
 	for _, interval := range split_load(runtime.NumCPU(), population_size) {
@@ -67,6 +71,10 @@ func generate_population(
 					Purchashing_threshold:    float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
 					Loyalties:                make([]float32, number_of_companies),
 				}
+
+				population[i].Max_price = ((base_market_price * 1.1) / population[i].Price_preference) * float32(PosNormFloat64()*100)
+				avr_max_price += float64(population[i].Max_price)
+
 				// fmt.Printf("|%6d|%6d|\n", i, customer.income)
 			}
 			wg.Done()
@@ -74,17 +82,17 @@ func generate_population(
 	}
 	wg.Wait()
 
+	fmt.Printf("avrg max price: %.2f\n", avr_max_price/float64(len(population)))
 	return population, nil
 }
 
 func PosNormFloat64() float64 {
 	var num float64
-	for {
-		num = rand.NormFloat64()
-		if num >= 0 {
-			return num
-		}
+	num = rand.NormFloat64()
+	if num < 0 {
+		return -num
 	}
+	return num
 }
 
 func (g *Game_state) Generate_new_employee_id() int {
@@ -231,6 +239,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		sim_config.Durability_spread,
 		sim_config.Purchasing_threshold_bias,
 		sim_config.Purchasing_threshold_spread,
+		sim_config.Base_market_price,
 
 		number_of_companies,
 	)

@@ -6,7 +6,7 @@
       "Set_bank_loan": 10000
    },
    "Marketing": {
-      "Price": 100,
+      "Price": 1000,
       "Product": {
          "Materials": {
             "Quality": 1,

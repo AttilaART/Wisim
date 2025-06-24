@@ -64,6 +64,11 @@ func main() {
 		log.Fatal("Failed to get current decisions")
 	}
 
+	//for _, c := range game_state.Companies {
+	//
+	//fmt.Printf("v++", c.Decision_history[len(c.Decision_history)-1])
+	//}
+
 	// fmt.Printf("%+#v\n", game_state.Current_decisions[0])
 
 	for range 1 {

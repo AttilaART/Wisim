@@ -55,6 +55,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 					&product_availability,
 					&purchasing_statistics)
 
+				population.Population[current_customer_index].Max_price *= 1 + external_factors.Inflation
 			}
 
 			wg.Done()
@@ -146,6 +147,10 @@ func calculate_purchase(customer Customer, offers []Offer, avg_price float32, ex
 			continue
 		} // idk if this is good but it saves 2s of processing
 
+		if o.Price > customer.Max_price {
+			continue
+		}
+
 		decision_factors[i] = (customer.Quality_preference*o.Product.Quality_factor +
 			customer.Ecology_preference*o.Product.Ecology_factor +
 			customer.Coolness_preference*o.Product.Coolness_factor +
@@ -211,12 +216,12 @@ func choose_product(decision_factors []float32, purchasing_threshold float32) in
 	}
 
 	// If only one product is best, choose that one
-	if len(top_products_index) == 1 {
+	switch len(top_products_index) {
+	case 1:
 		return top_products_index[0]
-	} else if len(top_products_index) == 0 {
+	case 0:
 		return -1
-	} else {
-		// else choose randomly between best product
-		return rand.Intn(len(top_products_index) - 1)
+	default:
+		return top_products_index[rand.Intn(len(top_products_index)-1)]
 	}
 }
