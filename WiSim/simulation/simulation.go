@@ -313,7 +313,7 @@ type Report struct {
 	Sales_report      Sales_report
 }
 
-type Financial_Report struct {
+type Financial_Reportold struct {
 	Total_income float64
 
 	Loan_repayments        float64
@@ -330,10 +330,11 @@ type Financial_Report struct {
 	Net_Profit float64
 }
 
-type Financial_Reportnew struct {
+type Financial_Report struct {
 	// Income
 	Income struct {
 		Gross_sales   float64
+		Other_income  float64
 		Cost_of_sales float64
 		Gross_profit  float64
 	}
@@ -347,25 +348,33 @@ type Financial_Reportnew struct {
 		Write_offs                   float64
 		Loan_interest                float64
 		Loan_repayment               float64
-		bridge_loan_intrest          float64
-		bridge_loan_repayment        float64
+		Bridge_loan_intrest          float64
+		Bridge_loan_repayment        float64
+		Other                        float64
 		Total_non_operating_expenses float64
+		Income_before_tax            float64
 		Taxes                        float64
 		Net_income                   float64
 		cashflow                     float64
 	}
 }
 
-func (f *Balance_sheet) add_to_income_statement(name string, group int, info string, cash_cost bool, value float64) {
-	f.Invoice_log = append(f.Invoice_log, FinanceReportEntry{name, group, info, cash_cost, value})
+func (f *Balance_sheet) add_to_income_statement(name string, group int, info string, cash_cost bool, value float64) *FinanceReportEntry {
+	entry := FinanceReportEntry{name, group, info, cash_cost, value}
+	f.Invoice_log = append(f.Invoice_log, entry)
+	return &f.Invoice_log[len(f.Invoice_log)-1]
 }
 
-func (f *Balance_sheet) add_to_equity(name string, group int, info string, cash_cost bool, value float64) {
-	f.Assets = append(f.Assets, FinanceReportEntry{name, group, info, cash_cost, value})
+func (f *Balance_sheet) add_to_equity(name string, group int, info string, cash_cost bool, value float64) *FinanceReportEntry {
+	entry := FinanceReportEntry{name, group, info, cash_cost, value}
+	f.Assets = append(f.Assets, entry)
+	return &f.Assets[len(f.Assets)-1]
 }
 
-func (f *Balance_sheet) add_to_liabilities(name string, group int, info string, cash_cost bool, value float64) {
-	f.Liabilities = append(f.Liabilities, FinanceReportEntry{name, group, info, cash_cost, value})
+func (f *Balance_sheet) add_to_liabilities(name string, group int, info string, cash_cost bool, value float64) *FinanceReportEntry {
+	entry := FinanceReportEntry{name, group, info, cash_cost, value}
+	f.Liabilities = append(f.Liabilities, entry)
+	return &f.Liabilities[len(f.Liabilities)-1]
 }
 
 type Balance_sheet struct {
@@ -389,11 +398,14 @@ type FinanceReportEntry struct {
 const (
 	production = iota
 	marketing
-	personelle
+	production_personelle
+	marketing_personelle
+	other_personelle
+	facilities
 	logistics
 	materials
 	energy
-	product_development
+	research
 	employee_training
 	loans
 	loan_intrest
@@ -403,6 +415,7 @@ const (
 	sales
 	severance
 	predictions
+	write_off
 	other
 )
 
@@ -412,11 +425,14 @@ var AllGroups = []struct {
 }{
 	{production, "production"},
 	{marketing, "marketing"},
-	{personelle, "personelle"},
+	{production_personelle, "prodcution_personelle"},
+	{marketing_personelle, "marketing_personelle"},
+	{other_personelle, "other_personelle"},
+	{facilities, "facilities"},
 	{logistics, "logistics"},
 	{materials, "materials"},
 	{energy, "energy"},
-	{product_development, "product_development"},
+	{research, "product_development"},
 	{employee_training, "employee_training"},
 	{loans, "loans"},
 	{loan_intrest, "loan_intrest"},
@@ -426,6 +442,7 @@ var AllGroups = []struct {
 	{sales, "sales"},
 	{severance, "severance"},
 	{predictions, "predictions"},
+	{write_off, "write_off"},
 	{other, "other"},
 }
 
@@ -694,7 +711,7 @@ func (game_state *Game_state) Simulate_step() error {
 	for i, c := range game_state.Companies {
 		printer.Printf("Company %d: %s:\n", i, c.Name)
 		printer.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
-		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_Report.Net_Profit)
+		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_Report.Non_operating_expenses.Net_income)
 		println("")
 	}
 

@@ -6,11 +6,13 @@
     New_simulation,
     Initial_app_load,
     Get_External_Factors,
+    Get_Decisions,
   } from "../wailsjs/go/main/App";
   import { fade } from "svelte/transition";
 
-  import { month } from "./store.svelte";
-  import { update_external_factors } from "./helper";
+  import { company_id, decisions, month } from "./store.svelte";
+  import { update_decisions, update_external_factors } from "./helper.svelte";
+  import { get } from "svelte/store";
 
   let background_image_blurred = $state("");
   let is_loading = $state(false);
@@ -24,8 +26,9 @@
 
   async function load_singleplayer() {
     is_loading = true;
-    let month = await start_new_game();
+    $month = await start_new_game();
     update_external_factors(await Get_External_Factors());
+    update_decisions(await Get_Decisions(get(company_id), get(month)));
     background_image_blurred = " blurred";
     mode.main_menu = false;
     mode.game_interface = true;
@@ -39,16 +42,14 @@
   }
 
   async function start_new_game(): Promise<number> {
-    $month = await New_simulation();
+    $month = await New_simulation(1);
     return $month;
   }
 </script>
 
 <main>
   {#if is_loading}
-    <div>
-      <Popup button_data={null} content={'<div class="loader"></div>'}></Popup>
-    </div>
+    <dialog open><div class="loader"></div></dialog>
   {/if}
   <div
     style="position: absolute; height: 100vh; width: 100%; z-index: 0; overflow: hidden;"
@@ -69,7 +70,7 @@
   </div>
 
   {#await Initial_app_load_promise}
-    <Popup content={"<div class='loader'></div>"} button_data={null}></Popup>
+    <dialog open>loading</dialog>
   {:then}
     <div class="main_div" style="">
       {#if mode.main_menu}

@@ -1,7 +1,8 @@
 <script lang="ts">
   import Slider from "./slider.svelte";
   import { decisions } from "./store.svelte";
-  import { isEqual } from "./helper";
+  import { format_number, isEqual } from "./helper.svelte";
+  import NumberInput from "./number_input.svelte";
 
   let unapplied_changes: boolean = $state(false);
 
@@ -13,10 +14,12 @@
 
   let manufacturing: {
     Quality: number;
-    Durability: number;
     Ecological_energy: number;
     Material_efficiency: number;
+    Durability: number;
+    Max_durability: number;
   } = $state({ ...decisions.Marketing.Product.Manufacturing });
+  console.log(decisions.Marketing.Product.Manufacturing);
 
   function cancel() {
     materials = { ...decisions.Marketing.Product.Materials };
@@ -62,21 +65,21 @@
     <p>Quality</p>
     <Slider
       bind:Value={materials.Quality}
-      min={0}
+      min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Ecology</p>
     <Slider
       bind:Value={materials.Ecology}
-      min={0}
+      min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Ethical Sourcing</p>
     <Slider
       bind:Value={materials.Ethical_sourcing}
-      min={0}
+      min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
@@ -140,31 +143,37 @@
     <p>Quality</p>
     <Slider
       bind:Value={manufacturing.Quality}
-      min={0}
+      min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Durability</p>
     <Slider
       bind:Value={manufacturing.Durability}
-      min={0}
+      min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
-    <p>Ethical Energy Sourcing</p>
+    <p>Ecological Energy usage</p>
     <Slider
       bind:Value={manufacturing.Ecological_energy}
-      min={0}
+      min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Material Efficiency</p>
     <Slider
       bind:Value={manufacturing.Material_efficiency}
-      min={0}
+      min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
+    <NumberInput
+      value={manufacturing.Max_durability}
+      formatter={(value) => {
+        return format_number(value, false, 0);
+      }}
+    ></NumberInput>
     <div style="display: flex; margin-top: auto; width: 100%;">
       <button
         class={unapplied_changes ? "" : "greyed_out"}

@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { format_currency, format_number } from "./helper";
+  import { format_currency, format_number } from "./helper.svelte";
   import { month, company_id, error } from "./store.svelte";
 
   export type Statement = Section[] | undefined | null;
@@ -63,7 +63,7 @@
     {#if income === undefined}
       Loading report...
     {:else if income === null}
-      There was a problem
+      No report available
     {:else}
       <table style="border-collapse: collapse; width: calc(100% - 10px);">
         <thead>

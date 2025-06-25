@@ -39,14 +39,14 @@ func (a *App) Get_simulation_step() int {
 }
 
 func (a *App) Get_Decisions(company, step int) (simulation.Decisions, error) {
-	//err := check_request(company, step)
-	//if err != nil {
-	//	if err.Error() == "game hasn't loaded yet" {
-	//		return simulation.Decisions{}, nil
-	//	}
-	//	return simulation.Decisions{}, err
-	//}
-	return simulation.Decisions{}, nil
+	err := check_request(company, step)
+	if err != nil {
+		if err.Error() == "game hasn't loaded yet" {
+			return game_state.state.Companies[company].Get_decisions(), nil
+		}
+		return simulation.Decisions{}, err
+	}
+	return game_state.state.Companies[company].Get_decisions(), nil
 }
 
 func (a *App) Get_External_Factors() simulation.External_factors {
@@ -103,75 +103,13 @@ func (a *App) Get_accounting_data(company int, step int, data string) ([]simulat
 	return financial_data, nil
 }
 
-func (a *App) Get_financial_report(company int, step int) (simulation.Financial_Report, error) {
+func (a *App) Get_reports(company, step int) (simulation.Report, error) {
 	err := check_request(company, step)
 	if err != nil {
-		return simulation.Financial_Report{}, err
+		return simulation.Report{}, nil
 	}
 
-	return game_state.state.Companies[company].Reports[step].Financial_Report, nil
-}
-
-func (a *App) Get_sales_statistics(company int, step int) (simulation.Sales_statistics, error) {
-	err := check_request(company, step)
-	if err != nil {
-		if err.Error() != "invalid company" {
-			return simulation.Sales_statistics{}, err
-		}
-	}
-
-	if company == -1 {
-		return game_state.state.Market_sales_statistics[step], nil
-	} else if company < -1 || company > len(game_state.state.Companies)-1 {
-		return simulation.Sales_statistics{}, errors.New("invalid company")
-	}
-
-	return game_state.state.Companies[company].Reports[step].Sales_report.Company_sales_statistics, nil
-}
-
-func (a *App) Get_marketing_statistics(company int, step int) (simulation.Marketing_statistics, error) {
-	err := check_request(company, step)
-	if err != nil {
-		return simulation.Marketing_statistics{}, err
-	}
-
-	return game_state.state.Companies[company].Reports[step].Sales_report.Marketing_statistics, nil
-}
-
-func (a *App) Get_product_statistics(company int, step int) (simulation.Product_statistics, error) {
-	err := check_request(company, step)
-	if err != nil {
-		return simulation.Product_statistics{}, err
-	}
-
-	return game_state.state.Companies[company].Reports[step].Sales_report.Product_statistics, nil
-}
-
-func (a *App) Get_personelle_report(company int, step int, employee_type string) (simulation.Personelle_sub_report, error) {
-	err := check_request(company, step)
-	if err != nil {
-		return simulation.Personelle_sub_report{}, err
-	}
-
-	switch employee_type {
-	case "General":
-		return game_state.state.Companies[company].Reports[step].Personelle_report.General, nil
-	case "Production":
-		return game_state.state.Companies[company].Reports[step].Personelle_report.Production, nil
-	case "Marketing":
-		return game_state.state.Companies[company].Reports[step].Personelle_report.Marketing, nil
-	}
-
-	return simulation.Personelle_sub_report{}, errors.New("invalid employee type")
-}
-
-func (a *App) Get_production_report(company int, step int) (simulation.Production_report, error) {
-	err := check_request(company, step)
-	if err != nil {
-		return simulation.Production_report{}, err
-	}
-
-	return game_state.state.Companies[company].Reports[step].Production_report, nil
+	return game_state.state.Companies[company].Reports[step], nil
 }
 
 //func (a *App) Get_availible_decisions(step int) (simulation.Decisions, error) {
@@ -189,13 +127,13 @@ func (a *App) Get_production_report(company int, step int) (simulation.Productio
 //return simulation.Decisions{}, nil
 //}
 
-func (a *App) Temp_generate_new_emloyee(company, step int, employee_type int) (simulation.Employee, error) {
+func (a *App) Temp_generate_new_emloyee(company, step int, employee_type int) (int, error) {
 	err := check_request(company, step)
 	if err != nil {
-		return simulation.Employee{}, err
+		return -1, err
 	}
 
-	return *game_state.state.Generate_employee(10000, 8, employee_type, 1), nil
+	return game_state.state.Generate_employee(10000, 8, employee_type, 1).Id, nil
 }
 
 func (a *App) Get_past_decisions(company int, step int) (simulation.Decisions, error) {
@@ -214,6 +152,8 @@ func (a *App) Submit_decisions(company int, decisions simulation.Decisions) erro
 			return err
 		}
 	}
+
+	// Link employee id to corresponding pointer
 	for i := range decisions.Employees.Marketing_actions {
 		decisions.Employees.Marketing_actions[i], err = game_state.state.Link_employees_to_action(decisions.Employees.Marketing_actions[i])
 		if err != nil {
@@ -221,29 +161,41 @@ func (a *App) Submit_decisions(company int, decisions simulation.Decisions) erro
 		}
 	}
 
+	// TODO: Link employees assigned to machines to their pointers
+
 	game_state.state.Current_decisions[company] = decisions
 	game_state.state.Decisions_submitted[company] = true
 
 	return nil
 }
 
-func (a *App) Trigger_simulation(force bool) (int, error) {
+func (a *App) Get_action_employee(action simulation.Employee_action) (simulation.Employee, error) {
+	e, err := game_state.state.Employees.Find_employee_by_id(action.Employee_id)
+
+	return *e, err
+}
+
+func (a *App) Trigger_simulation(force bool) (new_step int, err error) {
 	if !game_state.is_loaded {
 		return 0, errors.New("game hasn't loaded yet")
 	}
 
-	for _, d := range game_state.state.Decisions_submitted {
-		if !d && !force {
+	for i := range game_state.state.Decisions_submitted {
+		if force {
+			game_state.state.Decisions_submitted[i] = true
+		}
+
+		if !game_state.state.Decisions_submitted[i] {
 			return 0, errors.New("not all companies' decisions have been submitted")
 		}
 
-		fmt.Printf("decisions_loaded: %t", d)
+		fmt.Printf("decisions_loaded: %t\n", game_state.state.Decisions_submitted[i])
 	}
 
-	old_game_state.state = (game_state.state)
+	old_game_state.state = game_state.state
 	old_game_state.is_loaded = true
 
-	err := (game_state.state).Simulate_step()
+	err = game_state.state.Simulate_step()
 	if err != nil {
 		(game_state.state) = old_game_state.state
 		return 0, err
@@ -268,8 +220,9 @@ func (a *App) Revert_simulation() (int, error) {
 	return game_state.state.Step, nil
 }
 
-func (a *App) New_simulation() (int, error) {
-	game_state.state = simulation.New_game(game_state.config, 1, "Test_ui")
+func (a *App) New_simulation(num_companies int) (int, error) {
+	game_state.state = simulation.New_game(game_state.config, num_companies, "Test_ui")
+
 	game_state.is_loaded = true
 
 	//game_state.state.Current_decisions, err = simulation.Get_decisions("simulation/Saves/Test_game-0/Decisions", 4)
@@ -290,6 +243,8 @@ func (a *App) Initial_app_load() error {
 	if err != nil {
 		return errors.New("error in sim_config.json")
 	}
+
+	println("app loaded successfully")
 
 	return nil
 }

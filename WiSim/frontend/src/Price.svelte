@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { format_currency, format_number } from "./helper";
+  import { format_currency, format_number } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
   import { decisions } from "./store.svelte";
   let global_price = $state(decisions.Marketing.Price);

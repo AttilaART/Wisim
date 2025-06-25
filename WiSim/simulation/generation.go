@@ -179,7 +179,7 @@ func (g *Game_state) generate_companies(
 func New_game(sim_config Sim_config, number_of_companies int, game_name string) Game_state {
 	var game_state Game_state
 
-	game_state.Step = -1
+	game_state.Step = 0
 	game_state.Step_simulated = false
 	game_state.Game_name = game_name
 
@@ -322,7 +322,7 @@ func Load_game(path string) (Game_state, error) {
 
 		for ii, e := range game_state.Companies[i].Production_personelle {
 			var err error
-			game_state.Companies[i].Production_personelle[ii], err = game_state.Employees.find_employee_by_id(e.Id)
+			game_state.Companies[i].Production_personelle[ii], err = game_state.Employees.Find_employee_by_id(e.Id)
 			if err != nil {
 				panic(err)
 			}
@@ -330,7 +330,7 @@ func Load_game(path string) (Game_state, error) {
 
 		for ii, e := range game_state.Companies[i].Marketing_personelle {
 			var err error
-			game_state.Companies[i].Marketing_personelle[ii], err = game_state.Employees.find_employee_by_id(e.Id)
+			game_state.Companies[i].Marketing_personelle[ii], err = game_state.Employees.Find_employee_by_id(e.Id)
 			if err != nil {
 				panic(err)
 			}
@@ -339,7 +339,7 @@ func Load_game(path string) (Game_state, error) {
 		for ii := range game_state.Companies[i].Machines {
 			for iii, e := range game_state.Companies[i].Machines[ii].Assigned_workers_ptr {
 				var err error
-				game_state.Companies[i].Machines[ii].Assigned_workers_ptr[iii], err = game_state.Employees.find_employee_by_id(e.Id)
+				game_state.Companies[i].Machines[ii].Assigned_workers_ptr[iii], err = game_state.Employees.Find_employee_by_id(e.Id)
 				if err != nil {
 					panic(err)
 				}
@@ -350,14 +350,14 @@ func Load_game(path string) (Game_state, error) {
 			for ii := range game_state.Companies[i].Decision_history {
 				for iii := range game_state.Companies[i].Decision_history[ii].Employees.Marketing_actions {
 
-					game_state.Companies[i].Decision_history[ii].Employees.Marketing_actions[iii].employee, err = game_state.Employees.find_employee_by_id(game_state.Companies[i].Decision_history[ii].Employees.Marketing_actions[iii].Employee_id)
+					game_state.Companies[i].Decision_history[ii].Employees.Marketing_actions[iii].employee, err = game_state.Employees.Find_employee_by_id(game_state.Companies[i].Decision_history[ii].Employees.Marketing_actions[iii].Employee_id)
 					if err != nil {
 						panic(err)
 					}
 				}
 				for iii := range game_state.Companies[i].Decision_history[ii].Employees.Production_actions {
 
-					game_state.Companies[i].Decision_history[ii].Employees.Production_actions[iii].employee, err = game_state.Employees.find_employee_by_id(game_state.Companies[i].Decision_history[ii].Employees.Production_actions[iii].Employee_id)
+					game_state.Companies[i].Decision_history[ii].Employees.Production_actions[iii].employee, err = game_state.Employees.Find_employee_by_id(game_state.Companies[i].Decision_history[ii].Employees.Production_actions[iii].Employee_id)
 					if err != nil {
 						panic(err)
 					}

@@ -9,10 +9,15 @@ import (
 // Employee functions
 
 func (c *Company) simulate_employees(employee_actions []Employee_action, external_factors External_factors, severance_pay float32) error {
+	if len(employee_actions) <= 0 {
+		fmt.Printf("Warning: Company %d has 0 employee actions\n", c.Id)
+		return nil
+	}
+
 	// fix pointer stuff (cus json)
 	for i := range employee_actions {
 		var err error
-		employee_actions[i].employee, err = c.employee_pool.find_employee_by_id(employee_actions[i].Employee_id)
+		employee_actions[i], err = c.Link_employees_to_action(employee_actions[i])
 		if err != nil {
 			panic(err)
 		}
@@ -30,6 +35,7 @@ func (c *Company) simulate_employees(employee_actions []Employee_action, externa
 	}
 
 	// calculate severance pay
+
 	for range employees_layed_off {
 		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Severance pay for employee", severance, "When you layoff an employee, you have to pay them severance. Sometimes it's more expensive to fire someone, than just letting them be idle.", true, -float64(severance))
 	}
@@ -65,6 +71,8 @@ func (c *Company) simulate_employees(employee_actions []Employee_action, externa
 	}
 
 	// finalise
+
+	// Update existing employee arrays
 	// (Add employee pointer to array)
 	var p_employees []*Employee
 	for i := range employee_actions {
@@ -156,9 +164,19 @@ func (c *Company) train_employees(employee_actions []Employee_action, passive_tr
 
 func (c *Company) calculate_payroll(employees_actions []Employee_action) {
 	for i := range employees_actions {
+		var group int
+		switch employees_actions[i].employee.Employee_type {
+		case Production_employee:
+			group = production_personelle
+		case Marketing_employee:
+			group = marketing_personelle
+		default:
+			group = other_personelle
+		}
+
 		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(
 			fmt.Sprintf("Pay for %s employee %d", employees_actions[i].employee.get_type(), employees_actions[i].employee.Id),
-			personelle,
+			group,
 			"",
 			true,
 			round(float64(-employees_actions[i].Pay)/12, 2),
@@ -166,7 +184,7 @@ func (c *Company) calculate_payroll(employees_actions []Employee_action) {
 
 		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(
 			fmt.Sprintf("Bonus for %s employee %d", employees_actions[i].employee.get_type(), employees_actions[i].employee.Id),
-			personelle,
+			group,
 			"",
 			true,
 			round(float64(-employees_actions[i].Bonus)/12, 2),

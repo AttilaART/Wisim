@@ -37,9 +37,9 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 	)
 	// Offer: Product
 
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Quality research", product_development, "", true, float64(-decisions.Research.Quality))
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Ecology research", product_development, "", true, float64(-decisions.Research.Ecology))
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Durability research", product_development, "", true, float64(-decisions.Research.Durability))
+	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Quality research", research, "", true, float64(-decisions.Research.Quality))
+	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Ecology research", research, "", true, float64(-decisions.Research.Ecology))
+	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Durability research", research, "", true, float64(-decisions.Research.Durability))
 
 	// calculate avg skill of production personelle -> influences Quality_factor
 	var total_production_skill float32 = 0
@@ -92,6 +92,10 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 
 // Production functions
 func (c *Company) calculate_production(decisions Decisions, external_factors External_factors, production_speed float32) {
+	if len(c.Production_personelle) == 0 {
+		println("Warning: no production employees!")
+	}
+
 	production_report := &c.Reports[len(c.Reports)-1].Production_report
 
 	for i := range c.Machines {
@@ -103,8 +107,10 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 	var machines_to_delete_index []int
 	for i, m := range decisions.Production.Machines {
 		if m.Status == New {
+			production_report.Machines_purchased += 1
 			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Purchase of machine", production, "", true, -float64(m.Value))
 		} else if m.Status == Sold {
+			production_report.Machines_sold += 1
 			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Selling of machine", production, "", true, float64(m.Value))
 			machines_to_delete_index = append(machines_to_delete_index, i)
 		}
@@ -117,7 +123,7 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 		for ii, e := range c.Machines[i].Assigned_workers_ptr {
 
 			var err error
-			c.Machines[i].Assigned_workers_ptr[ii], err = c.employee_pool.find_employee_by_id(e.Id)
+			c.Machines[i].Assigned_workers_ptr[ii], err = c.employee_pool.Find_employee_by_id(e.Id)
 			if err != nil {
 				panic(err)
 			}
@@ -153,17 +159,14 @@ func calculate_machines_value(
 	balance_sheet *Balance_sheet,
 	external_factors External_factors,
 ) {
-	production_report.Machines_purchased = 0
-	production_report.Machines_sold = 0
-
 	for i, m := range *machines {
 		(*machines)[i].Value = float32(round(float64(m.Value*(1-external_factors.Machine_depreciation_rate)), 2))
 		balance_sheet.add_to_income_statement(
 			"Machine depreciation",
-			production,
+			write_off,
 			"",
 			false,
-			round(-float64((*machines)[i].Value-m.Value), 2),
+			round(float64((*machines)[i].Value-m.Value), 2),
 		)
 	}
 
@@ -296,6 +299,11 @@ func calculate_machine_production(machine Machine, production_speed float32, emp
 	}
 
 	num_assigned_workers := len(machine.Assigned_workers_ptr)
+
+	if num_assigned_workers > 0 {
+		return 0, 0
+	}
+
 	skill = skill / float32(num_assigned_workers)
 	motivation = motivation / float32(num_assigned_workers)
 	working_hours = working_hours / float32(num_assigned_workers)

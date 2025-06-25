@@ -2,6 +2,10 @@ package simulation
 
 // Logistics
 func (c *Company) calculate_logistics(decisions Decisions) {
+	if len(c.Warehouses) == 0 && len(decisions.Production.Logistics) == 0 {
+		return
+	}
+
 	for i := range c.Warehouses {
 		c.Machines[i].Status = Existing
 	}

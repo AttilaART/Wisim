@@ -9,27 +9,28 @@
   } from "./getters.svelte";
   import Debt from "./Debt.svelte";
   import BalanceSheet from "./BalanceSheet.svelte";
+  import { latest_reports } from "./store.svelte";
 
-  let page = $state("budget");
+  let page = $state("income and loss");
 </script>
 
 <Sidebar
   buttons={[
-    {
-      Text: "Budget",
-      Style: "",
-      Show: 1,
-      onClick: () => {
-        page = "budget";
-      },
-      selected_by_default: true,
-    },
     {
       Text: "Income & Loss",
       Style: "",
       Show: 1,
       onClick: () => {
         page = "income and loss";
+      },
+      selected_by_default: true,
+    },
+    {
+      Text: "Budget",
+      Style: "",
+      Show: 1,
+      onClick: () => {
+        page = "budget";
       },
     },
     {
@@ -68,11 +69,13 @@
     is_budget={true}
   ></IncomeAndLoss>
 {:else if page == "income and loss"}
-  <IncomeAndLoss
-    get_income_statement={Get_income_statement}
-    get_invoice_log={Get_invoices}
-    is_budget={false}
-  ></IncomeAndLoss>
+  {#key latest_reports}
+    <IncomeAndLoss
+      get_income_statement={Get_income_statement}
+      get_invoice_log={Get_invoices}
+      is_budget={false}
+    ></IncomeAndLoss>
+  {/key}
 {:else if page == "debt"}
   <Debt></Debt>
 {:else if page == "balance sheet"}

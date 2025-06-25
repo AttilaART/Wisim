@@ -1,13 +1,36 @@
+import { Get_Decisions, Get_External_Factors, Get_reports, Submit_decisions, Trigger_simulation } from "../wailsjs/go/main/App";
 import { simulation } from "../wailsjs/go/models";
-import { external_factors } from "./store.svelte";
+import { company_id, latest_reports, decisions, external_factors, month } from "./store.svelte";
+import { get } from "svelte/store"
+
+export async function trigger_simulation(force?: boolean) {
+  await Submit_decisions(get(company_id), decisions)
+  month.set(await Trigger_simulation(Boolean(force)))
+  update_external_factors(await Get_External_Factors());
+  update_decisions(await Get_Decisions(get(company_id), get(month)));
+  update_reports(await Get_reports(get(company_id), get(month) - 1))
+}
 
 export function isEqual(a: unknown, b: unknown): boolean {
   return JSON.stringify(a) == JSON.stringify(b)
 }
 
 export function update_external_factors(new_value: simulation.External_factors) {
-  for (let field of Object.keys(external_factors)) {
+  for (let field of Object.keys(new_value)) {
     external_factors[field] = new_value[field]
+  }
+}
+
+export function update_decisions(new_value: simulation.Decisions) {
+  for (let field of Object.keys(new_value)) {
+    console.log(field)
+    decisions[field] = new_value[field]
+  }
+}
+
+export function update_reports(new_value: simulation.Report) {
+  for (let field of Object.keys(new_value)) {
+    latest_reports[field] = new_value[field]
   }
 }
 

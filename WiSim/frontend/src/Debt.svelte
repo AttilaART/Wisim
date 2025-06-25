@@ -1,6 +1,6 @@
 <script>
   import BarChart from "./BarChart.svelte";
-  import { format_currency, format_number } from "./helper";
+  import { format_currency, format_number } from "./helper.svelte";
   import Slider from "./slider.svelte";
   import Info from "./assets/images/Info.svelte";
   import { number } from "echarts";

@@ -54,7 +54,7 @@ export function move_window_to_top(window_id: number) {
     }
   }
   windows[current_index].z_index = windows.length
-  console.log($state.snapshot(windows))
+  // console.log($state.snapshot(windows))
 }
 
 export function delete_window(window_id: number) {

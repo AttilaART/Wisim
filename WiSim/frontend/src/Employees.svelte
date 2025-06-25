@@ -1,7 +1,10 @@
 <script lang="ts">
-  import { Temp_generate_new_emloyee } from "../wailsjs/go/main/App";
+  import {
+    Get_action_employee,
+    Temp_generate_new_emloyee,
+  } from "../wailsjs/go/main/App";
   import { simulation } from "../wailsjs/go/models";
-  import { format_number } from "./helper";
+  import { format_number } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
   import { decisions } from "./store.svelte";
   import { company_id, month } from "./store.svelte";
@@ -43,23 +46,25 @@
 
     let delta: number = new_num_employees - employee_actions.length;
 
-    for (let i in employee_actions) {
-      employee_actions[i].Status = stati.existing_employee;
-    }
-
     if (delta > 0) {
       // hire employees
       while (delta != 0) {
         let employee_action: simulation.Employee_action =
           new simulation.Employee_action();
-        employee_action.Employee = await Temp_generate_new_emloyee(
+        employee_action.Employee_id = await Temp_generate_new_emloyee(
           $company_id,
           $month,
           type,
         );
 
-        employee_action.Pay = employee_action.Employee.Pay;
+        let employee: simulation.Employee =
+          await Get_action_employee(employee_action);
+
+        employee_action.Pay = employee.Pay;
+        employee_action.Bonus = employee.Bonus;
+
         employee_action.Status = stati.new_hire;
+        employee_actions.push(employee_action);
 
         delta -= 1;
       }
@@ -85,6 +90,9 @@
       num_marketing_employees,
       1,
     );
+
+    console.log(decisions.Employees.Production_actions);
+    console.log(decisions.Employees.Marketing_actions);
   }
 
   $effect(() => {

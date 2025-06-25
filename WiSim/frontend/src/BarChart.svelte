@@ -1,6 +1,6 @@
 <script lang="ts">
-  import { generateGradient } from "./helper";
-  import type { Series } from "./helper";
+  import { generateGradient } from "./helper.svelte";
+  import type { Series } from "./helper.svelte";
 
   type Bar = Series[];
 

@@ -61,7 +61,7 @@ func rand_income(mean_income int, standard_dev int) int {
 
 type Employee_pool []Employee
 
-func (employees Employee_pool) find_employee_by_id(id int) (*Employee, error) {
+func (employees Employee_pool) Find_employee_by_id(id int) (*Employee, error) {
 	for i := range employees {
 		if employees[i].Id == id {
 			return &employees[i], nil
@@ -72,7 +72,13 @@ func (employees Employee_pool) find_employee_by_id(id int) (*Employee, error) {
 
 func (s *Game_state) Link_employees_to_action(a Employee_action) (Employee_action, error) {
 	var err error
-	a.employee, err = s.Employees.find_employee_by_id(a.Employee_id)
+	a.employee, err = s.Employees.Find_employee_by_id(a.Employee_id)
+	return a, err
+}
+
+func (c *Company) Link_employees_to_action(a Employee_action) (Employee_action, error) {
+	var err error
+	a.employee, err = c.employee_pool.Find_employee_by_id(a.Employee_id)
 	return a, err
 }
 
@@ -122,11 +128,42 @@ func (c *Company) Get_decisions() Decisions {
 		fmt.Println("No decision history!")
 	}
 
+	//  make sure these are more than 0.1 (otherwise simulation breaks)
+	more_than_0 := []float32{
+		decisions.Marketing.Product.Materials.Quality,
+		decisions.Marketing.Product.Materials.Ecology,
+		decisions.Marketing.Product.Materials.Ethical_sourcing,
+
+		decisions.Marketing.Product.Manufacturing.Quality,
+		decisions.Marketing.Product.Manufacturing.Durability,
+		decisions.Marketing.Product.Manufacturing.Ecological_energy,
+		decisions.Marketing.Product.Manufacturing.Material_efficiency,
+	}
+
+	for i := range more_than_0 {
+		if more_than_0[i] < 0.1 {
+			more_than_0[i] = 0.1
+		}
+	}
+
+	decisions.Marketing.Product.Materials.Quality = more_than_0[0]
+	decisions.Marketing.Product.Materials.Ecology = more_than_0[1]
+	decisions.Marketing.Product.Materials.Ethical_sourcing = more_than_0[2]
+
+	decisions.Marketing.Product.Manufacturing.Quality = more_than_0[3]
+	decisions.Marketing.Product.Manufacturing.Durability = more_than_0[4]
+	decisions.Marketing.Product.Manufacturing.Ecological_energy = more_than_0[5]
+	decisions.Marketing.Product.Manufacturing.Material_efficiency = more_than_0[6]
+
+	if decisions.Marketing.Product.Manufacturing.Max_durability < 1 {
+		decisions.Marketing.Product.Manufacturing.Max_durability = 1
+	}
+
 	return decisions
 }
 
 func (c *Company) get_previous_employee_action_by_id(id int) Employee_action {
-	e, err := c.employee_pool.find_employee_by_id(id)
+	e, err := c.employee_pool.Find_employee_by_id(id)
 	if err != nil {
 		panic(err)
 	}

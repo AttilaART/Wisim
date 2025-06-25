@@ -1,7 +1,7 @@
 <script lang="ts">
   import { tick } from "svelte";
-  import { format_number } from "./helper";
-  import { number } from "echarts";
+  //import { format_number } from "./helper.svelte";
+
   interface Options {
     default_value?: number;
     show_min_value?: boolean;

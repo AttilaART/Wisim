@@ -14,6 +14,10 @@ export function Get_accounting_data(arg1, arg2, arg3) {
   return window['go']['main']['App']['Get_accounting_data'](arg1, arg2, arg3);
 }
 
+export function Get_action_employee(arg1) {
+  return window['go']['main']['App']['Get_action_employee'](arg1);
+}
+
 export function Get_bank_balance(arg1) {
   return window['go']['main']['App']['Get_bank_balance'](arg1);
 }
@@ -22,32 +26,12 @@ export function Get_current_stock(arg1) {
   return window['go']['main']['App']['Get_current_stock'](arg1);
 }
 
-export function Get_financial_report(arg1, arg2) {
-  return window['go']['main']['App']['Get_financial_report'](arg1, arg2);
-}
-
-export function Get_marketing_statistics(arg1, arg2) {
-  return window['go']['main']['App']['Get_marketing_statistics'](arg1, arg2);
-}
-
 export function Get_past_decisions(arg1, arg2) {
   return window['go']['main']['App']['Get_past_decisions'](arg1, arg2);
 }
 
-export function Get_personelle_report(arg1, arg2, arg3) {
-  return window['go']['main']['App']['Get_personelle_report'](arg1, arg2, arg3);
-}
-
-export function Get_product_statistics(arg1, arg2) {
-  return window['go']['main']['App']['Get_product_statistics'](arg1, arg2);
-}
-
-export function Get_production_report(arg1, arg2) {
-  return window['go']['main']['App']['Get_production_report'](arg1, arg2);
-}
-
-export function Get_sales_statistics(arg1, arg2) {
-  return window['go']['main']['App']['Get_sales_statistics'](arg1, arg2);
+export function Get_reports(arg1, arg2) {
+  return window['go']['main']['App']['Get_reports'](arg1, arg2);
 }
 
 export function Get_simulation_step() {
@@ -62,8 +46,8 @@ export function Initial_app_load() {
   return window['go']['main']['App']['Initial_app_load']();
 }
 
-export function New_simulation() {
-  return window['go']['main']['App']['New_simulation']();
+export function New_simulation(arg1) {
+  return window['go']['main']['App']['New_simulation'](arg1);
 }
 
 export function Revert_simulation() {

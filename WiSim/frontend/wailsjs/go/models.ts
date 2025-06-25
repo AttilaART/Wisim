@@ -3,50 +3,67 @@ export namespace int {
 	export enum int {
 	    production = 0,
 	    marketing = 1,
-	    personelle = 2,
-	    logistics = 3,
-	    materials = 4,
-	    energy = 5,
-	    product_development = 6,
-	    employee_training = 7,
-	    loans = 8,
-	    loan_intrest = 9,
-	    bridge_loans = 10,
-	    bridge_loan_intrest = 11,
-	    taxes = 12,
-	    sales = 13,
-	    severance = 14,
-	    predictions = 15,
-	    other = 16,
+	    prodcution_personelle = 2,
+	    marketing_personelle = 3,
+	    other_personelle = 4,
+	    facilities = 5,
+	    logistics = 6,
+	    materials = 7,
+	    energy = 8,
+	    product_development = 9,
+	    employee_training = 10,
+	    loans = 11,
+	    loan_intrest = 12,
+	    bridge_loans = 13,
+	    bridge_loan_intrest = 14,
+	    taxes = 15,
+	    sales = 16,
+	    severance = 17,
+	    predictions = 18,
+	    write_off = 19,
+	    other = 20,
 	}
 
 }
 
 export namespace simulation {
 	
-	export class Decisions {
-	    // Go type: struct { Sales_prediction int }
-	    Predictions: any;
-	    // Go type: struct { set_bank_loan float64 }
-	    Finances: any;
-	    // Go type: struct { Price float32; Product struct { Materials struct { Quality float32; Ecology float32; Ethical_sourcing float32 }; Manufacturing struct { Quality float32; Durability float32; Ecological_energy float32; Material_efficiency float32 } }; Promotion struct { Quantity float64; Style_quality float32; Style_ecology float32; Style_ethics float32; Style_durability float32 } }
-	    Marketing: any;
-	    // Go type: struct { Production_actions []simulation
-	    Employees: any;
-	    // Go type: struct { Production_goal int; Machines []simulation
-	    Production: any;
+	export class FinanceReportEntry {
+	    Name: string;
+	    Group: number;
+	    Info: string;
+	    Cash_cost: boolean;
+	    Value: number;
 	
 	    static createFrom(source: any = {}) {
-	        return new Decisions(source);
+	        return new FinanceReportEntry(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Predictions = this.convertValues(source["Predictions"], Object);
-	        this.Finances = this.convertValues(source["Finances"], Object);
-	        this.Marketing = this.convertValues(source["Marketing"], Object);
-	        this.Employees = this.convertValues(source["Employees"], Object);
-	        this.Production = this.convertValues(source["Production"], Object);
+	        this.Name = source["Name"];
+	        this.Group = source["Group"];
+	        this.Info = source["Info"];
+	        this.Cash_cost = source["Cash_cost"];
+	        this.Value = source["Value"];
+	    }
+	}
+	export class Balance_sheet {
+	    Bank_balance: number;
+	    Invoice_log: FinanceReportEntry[];
+	    Assets: FinanceReportEntry[];
+	    Liabilities: FinanceReportEntry[];
+	
+	    static createFrom(source: any = {}) {
+	        return new Balance_sheet(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Bank_balance = source["Bank_balance"];
+	        this.Invoice_log = this.convertValues(source["Invoice_log"], FinanceReportEntry);
+	        this.Assets = this.convertValues(source["Assets"], FinanceReportEntry);
+	        this.Liabilities = this.convertValues(source["Liabilities"], FinanceReportEntry);
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -67,67 +84,51 @@ export namespace simulation {
 		    return a;
 		}
 	}
-	export class Decisionsold {
-	    Sales_projection: number;
-	    Selling_price: number;
-	    Marketing: number;
-	    Quality_development_investment: number;
-	    Ecological_production_investment: number;
-	    Durability_development_investment: number;
-	    Production_target: number;
-	    Purchase_of_machines: number;
-	    Selling_of_machines: number;
-	    Material_quality: number;
-	    Percentage_of_ecological_energy: number;
-	    Purchase_of_warehouses: number;
-	    New_hires_in_production: number;
-	    New_hires_in_marketing: number;
-	    Base_pay_for_production: number;
-	    Base_pay_for_marketing: number;
-	    Raise_for_production_personelle: number;
-	    Raise_for_marketing_personelle: number;
-	    Severance_for_production_personelle: number;
-	    Severance_for_marketing_personelle: number;
-	    Working_hours_for_production: number;
-	    Working_hours_for_marketing: number;
-	    Investment_in_production_training: number;
-	    Investment_in_marketing_training: number;
-	    Increase_of_loans: number;
-	    Dividends: number;
+	export class Decisions {
+	    // Go type: struct { Sales_prediction int }
+	    Predictions: any;
+	    // Go type: struct { Set_bank_loan float64 }
+	    Finances: any;
+	    // Go type: struct { Price float32; Product struct { Materials struct { Quality float32; Ecology float32; Ethical_sourcing float32 }; Manufacturing struct { Quality float32; Ecological_energy float32; Material_efficiency float32; Durability float32; Max_durability int } }; Promotion struct { Quantity float64; Style_quality float32; Style_ecology float32; Style_ethics float32; Style_durability float32 } }
+	    Marketing: any;
+	    // Go type: struct { Production_actions []simulation
+	    Employees: any;
+	    // Go type: struct { Production_goal int; Machines []simulation
+	    Production: any;
+	    // Go type: struct { Quality float32; Durability float32; Ecology float32; Promotion float32; Speed float32 }
+	    Research: any;
 	
 	    static createFrom(source: any = {}) {
-	        return new Decisionsold(source);
+	        return new Decisions(source);
 	    }
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Sales_projection = source["Sales_projection"];
-	        this.Selling_price = source["Selling_price"];
-	        this.Marketing = source["Marketing"];
-	        this.Quality_development_investment = source["Quality_development_investment"];
-	        this.Ecological_production_investment = source["Ecological_production_investment"];
-	        this.Durability_development_investment = source["Durability_development_investment"];
-	        this.Production_target = source["Production_target"];
-	        this.Purchase_of_machines = source["Purchase_of_machines"];
-	        this.Selling_of_machines = source["Selling_of_machines"];
-	        this.Material_quality = source["Material_quality"];
-	        this.Percentage_of_ecological_energy = source["Percentage_of_ecological_energy"];
-	        this.Purchase_of_warehouses = source["Purchase_of_warehouses"];
-	        this.New_hires_in_production = source["New_hires_in_production"];
-	        this.New_hires_in_marketing = source["New_hires_in_marketing"];
-	        this.Base_pay_for_production = source["Base_pay_for_production"];
-	        this.Base_pay_for_marketing = source["Base_pay_for_marketing"];
-	        this.Raise_for_production_personelle = source["Raise_for_production_personelle"];
-	        this.Raise_for_marketing_personelle = source["Raise_for_marketing_personelle"];
-	        this.Severance_for_production_personelle = source["Severance_for_production_personelle"];
-	        this.Severance_for_marketing_personelle = source["Severance_for_marketing_personelle"];
-	        this.Working_hours_for_production = source["Working_hours_for_production"];
-	        this.Working_hours_for_marketing = source["Working_hours_for_marketing"];
-	        this.Investment_in_production_training = source["Investment_in_production_training"];
-	        this.Investment_in_marketing_training = source["Investment_in_marketing_training"];
-	        this.Increase_of_loans = source["Increase_of_loans"];
-	        this.Dividends = source["Dividends"];
+	        this.Predictions = this.convertValues(source["Predictions"], Object);
+	        this.Finances = this.convertValues(source["Finances"], Object);
+	        this.Marketing = this.convertValues(source["Marketing"], Object);
+	        this.Employees = this.convertValues(source["Employees"], Object);
+	        this.Production = this.convertValues(source["Production"], Object);
+	        this.Research = this.convertValues(source["Research"], Object);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class Effect {
 	    Id: number;
@@ -192,10 +193,11 @@ export namespace simulation {
 		}
 	}
 	export class Employee_action {
-	    Employee: Employee;
+	    Employee_id: number;
 	    Extra_training: number;
 	    Pay: number;
 	    Bonus: number;
+	    Working_hours: number;
 	    Status: number;
 	
 	    static createFrom(source: any = {}) {
@@ -204,10 +206,35 @@ export namespace simulation {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Employee = this.convertValues(source["Employee"], Employee);
+	        this.Employee_id = source["Employee_id"];
 	        this.Extra_training = source["Extra_training"];
 	        this.Pay = source["Pay"];
 	        this.Bonus = source["Bonus"];
+	        this.Working_hours = source["Working_hours"];
+	        this.Status = source["Status"];
+	    }
+	}
+	export class Machine {
+	    Production_capacity: number;
+	    Required_workers: number;
+	    Minimum_workers: number;
+	    Assigned_workers_ptr: Employee[];
+	    Energy_use: number;
+	    Value: number;
+	    Status: number;
+	
+	    static createFrom(source: any = {}) {
+	        return new Machine(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Production_capacity = source["Production_capacity"];
+	        this.Required_workers = source["Required_workers"];
+	        this.Minimum_workers = source["Minimum_workers"];
+	        this.Assigned_workers_ptr = this.convertValues(source["Assigned_workers_ptr"], Employee);
+	        this.Energy_use = source["Energy_use"];
+	        this.Value = source["Value"];
 	        this.Status = source["Status"];
 	    }
 	
@@ -228,28 +255,6 @@ export namespace simulation {
 		    }
 		    return a;
 		}
-	}
-	export class Machine {
-	    Production_capacity: number;
-	    Required_workers: number;
-	    Minimum_workers: number;
-	    Assigned_workers_ids: number[];
-	    Energy_use: number;
-	    Value: number;
-	
-	    static createFrom(source: any = {}) {
-	        return new Machine(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Production_capacity = source["Production_capacity"];
-	        this.Required_workers = source["Required_workers"];
-	        this.Minimum_workers = source["Minimum_workers"];
-	        this.Assigned_workers_ids = source["Assigned_workers_ids"];
-	        this.Energy_use = source["Energy_use"];
-	        this.Value = source["Value"];
-	    }
 	}
 	export class External_factors {
 	    Month: number;
@@ -307,38 +312,14 @@ export namespace simulation {
 		    return a;
 		}
 	}
-	export class FinanceReportEntry {
-	    Name: string;
-	    Group: number;
-	    Info: string;
-	    Cash_cost: boolean;
-	    Value: number;
 	
-	    static createFrom(source: any = {}) {
-	        return new FinanceReportEntry(source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Name = source["Name"];
-	        this.Group = source["Group"];
-	        this.Info = source["Info"];
-	        this.Cash_cost = source["Cash_cost"];
-	        this.Value = source["Value"];
-	    }
-	}
 	export class Financial_Report {
-	    Total_income: number;
-	    Loan_repayments: number;
-	    Bridge_loan_repayments: number;
-	    New_bridge_loan: number;
-	    Non_cash_costs: number;
-	    Cash_costs: number;
-	    Total_expenses_before_tax: number;
-	    Total_expenses_after_tax: number;
-	    Operating_profit: number;
-	    Taxes: number;
-	    Net_Profit: number;
+	    // Go type: struct { Gross_sales float64; Other_income float64; Cost_of_sales float64; Gross_profit float64 }
+	    Income: any;
+	    // Go type: struct { Advertising float64; Facilities_and_logistics float64; Research_and_development float64; Total_operating_expenses float64 }
+	    Operating_expenses: any;
+	    // Go type: struct { Write_offs float64; Loan_interest float64; Loan_repayment float64; Bridge_loan_intrest float64; Bridge_loan_repayment float64; Other float64; Total_non_operating_expenses float64; Income_before_tax float64; Taxes float64; Net_income float64; cashflow float64 }
+	    Non_operating_expenses: any;
 	
 	    static createFrom(source: any = {}) {
 	        return new Financial_Report(source);
@@ -346,18 +327,28 @@ export namespace simulation {
 	
 	    constructor(source: any = {}) {
 	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Total_income = source["Total_income"];
-	        this.Loan_repayments = source["Loan_repayments"];
-	        this.Bridge_loan_repayments = source["Bridge_loan_repayments"];
-	        this.New_bridge_loan = source["New_bridge_loan"];
-	        this.Non_cash_costs = source["Non_cash_costs"];
-	        this.Cash_costs = source["Cash_costs"];
-	        this.Total_expenses_before_tax = source["Total_expenses_before_tax"];
-	        this.Total_expenses_after_tax = source["Total_expenses_after_tax"];
-	        this.Operating_profit = source["Operating_profit"];
-	        this.Taxes = source["Taxes"];
-	        this.Net_Profit = source["Net_Profit"];
+	        this.Income = this.convertValues(source["Income"], Object);
+	        this.Operating_expenses = this.convertValues(source["Operating_expenses"], Object);
+	        this.Non_operating_expenses = this.convertValues(source["Non_operating_expenses"], Object);
 	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	
 	export class Product_statistics {
@@ -382,7 +373,8 @@ export namespace simulation {
 	    Product: Product_statistics;
 	    Price: number;
 	    Bang_for_buck: number;
-	    Promotion: number;
+	    Promotion_quantity: number;
+	    Promotion_quality: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Marketing_statistics(source);
@@ -393,7 +385,8 @@ export namespace simulation {
 	        this.Product = this.convertValues(source["Product"], Product_statistics);
 	        this.Price = source["Price"];
 	        this.Bang_for_buck = source["Bang_for_buck"];
-	        this.Promotion = source["Promotion"];
+	        this.Promotion_quantity = source["Promotion_quantity"];
+	        this.Promotion_quality = source["Promotion_quality"];
 	    }
 	
 		convertValues(a: any, classs: any, asMap: boolean = false): any {
@@ -444,6 +437,41 @@ export namespace simulation {
 	        this.Standard_dev_skill = source["Standard_dev_skill"];
 	    }
 	}
+	export class Personelle_report {
+	    General: Personelle_sub_report;
+	    Marketing: Personelle_sub_report;
+	    Production: Personelle_sub_report;
+	
+	    static createFrom(source: any = {}) {
+	        return new Personelle_report(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.General = this.convertValues(source["General"], Personelle_sub_report);
+	        this.Marketing = this.convertValues(source["Marketing"], Personelle_sub_report);
+	        this.Production = this.convertValues(source["Production"], Personelle_sub_report);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
 	
 	export class Production_report {
 	    Machines_purchased: number;
@@ -509,11 +537,88 @@ export namespace simulation {
 	        this.Avr_bang_for_buck_factor = source["Avr_bang_for_buck_factor"];
 	    }
 	}
+	export class Sales_report {
+	    Product_statistics: Product_statistics;
+	    Company_sales_statistics: Sales_statistics;
+	    Marketing_statistics: Marketing_statistics;
+	
+	    static createFrom(source: any = {}) {
+	        return new Sales_report(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Product_statistics = this.convertValues(source["Product_statistics"], Product_statistics);
+	        this.Company_sales_statistics = this.convertValues(source["Company_sales_statistics"], Sales_statistics);
+	        this.Marketing_statistics = this.convertValues(source["Marketing_statistics"], Marketing_statistics);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class Report {
+	    Month: number;
+	    Financial_Report: Financial_Report;
+	    Balance_sheet: Balance_sheet;
+	    Personelle_report: Personelle_report;
+	    Production_report: Production_report;
+	    Sales_report: Sales_report;
+	
+	    static createFrom(source: any = {}) {
+	        return new Report(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Month = source["Month"];
+	        this.Financial_Report = this.convertValues(source["Financial_Report"], Financial_Report);
+	        this.Balance_sheet = this.convertValues(source["Balance_sheet"], Balance_sheet);
+	        this.Personelle_report = this.convertValues(source["Personelle_report"], Personelle_report);
+	        this.Production_report = this.convertValues(source["Production_report"], Production_report);
+	        this.Sales_report = this.convertValues(source["Sales_report"], Sales_report);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	
+	
 	export class Warehouse {
 	    Id: number;
 	    Capacity: number;
 	    Operating_costs: number;
 	    Value: number;
+	    Status: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Warehouse(source);
@@ -525,6 +630,7 @@ export namespace simulation {
 	        this.Capacity = source["Capacity"];
 	        this.Operating_costs = source["Operating_costs"];
 	        this.Value = source["Value"];
+	        this.Status = source["Status"];
 	    }
 	}
 

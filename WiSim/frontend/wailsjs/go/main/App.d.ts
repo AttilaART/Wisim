@@ -8,23 +8,15 @@ export function Get_External_Factors():Promise<simulation.External_factors>;
 
 export function Get_accounting_data(arg1:number,arg2:number,arg3:string):Promise<Array<simulation.FinanceReportEntry>>;
 
+export function Get_action_employee(arg1:simulation.Employee_action):Promise<simulation.Employee>;
+
 export function Get_bank_balance(arg1:number):Promise<number>;
 
 export function Get_current_stock(arg1:number):Promise<number>;
 
-export function Get_financial_report(arg1:number,arg2:number):Promise<simulation.Financial_Report>;
+export function Get_past_decisions(arg1:number,arg2:number):Promise<simulation.Decisions>;
 
-export function Get_marketing_statistics(arg1:number,arg2:number):Promise<simulation.Marketing_statistics>;
-
-export function Get_past_decisions(arg1:number,arg2:number):Promise<simulation.Decisionsold>;
-
-export function Get_personelle_report(arg1:number,arg2:number,arg3:string):Promise<simulation.Personelle_sub_report>;
-
-export function Get_product_statistics(arg1:number,arg2:number):Promise<simulation.Product_statistics>;
-
-export function Get_production_report(arg1:number,arg2:number):Promise<simulation.Production_report>;
-
-export function Get_sales_statistics(arg1:number,arg2:number):Promise<simulation.Sales_statistics>;
+export function Get_reports(arg1:number,arg2:number):Promise<simulation.Report>;
 
 export function Get_simulation_step():Promise<number>;
 
@@ -32,12 +24,12 @@ export function Greet(arg1:string):Promise<string>;
 
 export function Initial_app_load():Promise<void>;
 
-export function New_simulation():Promise<number>;
+export function New_simulation(arg1:number):Promise<number>;
 
 export function Revert_simulation():Promise<number>;
 
-export function Submit_decisions(arg1:number,arg2:simulation.Decisionsold):Promise<void>;
+export function Submit_decisions(arg1:number,arg2:simulation.Decisions):Promise<void>;
 
-export function Temp_generate_new_emloyee(arg1:number,arg2:number,arg3:number):Promise<simulation.Employee>;
+export function Temp_generate_new_emloyee(arg1:number,arg2:number,arg3:number):Promise<number>;
 
 export function Trigger_simulation(arg1:boolean):Promise<number>;

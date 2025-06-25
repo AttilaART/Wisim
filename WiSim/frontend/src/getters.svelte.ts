@@ -1,4 +1,6 @@
+import { simulation } from "wailsjs/go/models";
 import { Statement, Invoice } from "./IncomeAndLoss.svelte";
+import { latest_reports } from "./store.svelte";
 export async function Get_budget(month: number, company: number): Promise<Statement> {
   let budget = [
     {
@@ -57,41 +59,66 @@ export async function Get_budget_invoices(month: number, company: number): Promi
 }
 
 export async function Get_income_statement(month: number, company: number): Promise<Statement> {
-  let income = [
-    {
-      Name: "Income",
-      Period: "Income & Loss statement 02/0001",
-      Lines: [
-        { Name: "Gross Sales", Value: 123 },
-        { Name: "Cost of Goods Sold", Value: -123 },
-        { Name: "Gross Profit", Value: 123, line_above: true },
-      ],
-    },
-    {
-      Name: "Operating Expenses",
-      Lines: [
-        { Name: "Advertising", Value: -123 },
-        { Name: "Facilities & Logistics", Value: -123 },
-        { Name: "Equipment (machines)", Value: -123 },
-        { Name: "Research & Development", Value: -123 },
-        { Name: "Total Operating Expenses", Value: -123, line_above: true },
-      ],
-    },
-    {
-      Name: "Non-Operating Expenses",
-      Lines: [
-        { Name: "Write-Offs", Value: -123 },
-        { Name: "Loan interest", Value: -123 },
-        { Name: "Bridge Loan interest", Value: -123 },
-        { Name: "Total Non-Operating Expenses", Value: -123, line_above: true },
-        { Name: "    Taxes", Value: -123 },
-        { Name: "Net Income", Value: 123, line_above: true },
-        { Name: "Cashflow", Value: 123, line_above: true },
-      ],
-    },
-  ];
 
-  return income
+  console.log(latest_reports)
+  if (Object.entries(latest_reports).length == 0) {
+    return null
+  }
+
+  let income_report: simulation.Financial_Report = latest_reports.Financial_Report
+
+  let statement: Statement = []
+  for (let sec of Object.entries(income_report)) {
+    let section = {
+      Name: sec[0],
+      Lines: []
+    }
+
+    for (let l of Object.entries(sec[1])) {
+      let line = {
+        Name: l[0],
+        Value: l[1]
+      }
+      section.Lines.push(line)
+    }
+    statement.push(section)
+  }
+  //let income = [
+  //  {
+  //    Name: "Income",
+  //    Period: "Income & Loss statement 02/0001",
+  //    Lines: [
+  //      { Name: "Gross Sales", Value: 123 },
+  //      { Name: "Cost of Goods Sold", Value: -123 },
+  //      { Name: "Gross Profit", Value: 123, line_above: true },
+  //    ],
+  //  },
+  //  {
+  //    Name: "Operating Expenses",
+  //    Lines: [
+  //      { Name: "Advertising", Value: -123 },
+  //      { Name: "Facilities & Logistics", Value: -123 },
+  //      { Name: "Equipment (machines)", Value: -123 },
+  //      { Name: "Research & Development", Value: -123 },
+  //      { Name: "Total Operating Expenses", Value: -123, line_above: true },
+  //    ],
+  //  },
+  //  {
+  //    Name: "Non-Operating Expenses",
+  //    Lines: [
+  //      { Name: "Write-Offs", Value: -123 },
+  //      { Name: "Loan interest", Value: -123 },
+  //      { Name: "Bridge Loan interest", Value: -123 },
+  //      { Name: "Total Non-Operating Expenses", Value: -123, line_above: true },
+  //      { Name: "    Taxes", Value: -123 },
+  //      { Name: "Net Income", Value: 123, line_above: true },
+  //      { Name: "Cashflow", Value: 123, line_above: true },
+  //    ],
+  //  },
+  //];
+
+
+  return statement
 }
 
 export async function Get_invoices(month: number, company: number): Promise<Invoice[]> {

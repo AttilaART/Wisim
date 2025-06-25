@@ -3,7 +3,7 @@
   import { Get_current_stock } from "../wailsjs/go/main/App";
   import { simulation } from "../wailsjs/go/models";
   import Info from "./assets/images/Info.svelte";
-  import { format_currency, format_number } from "./helper";
+  import { format_currency, format_number } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
   import Sidebar from "./Sidebar.svelte";
   import { company_id, decisions, external_factors } from "./store.svelte";

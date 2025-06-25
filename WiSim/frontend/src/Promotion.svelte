@@ -1,10 +1,9 @@
 <script lang="ts">
   import Donut from "./Donut.svelte";
-  import { format_currency, format_number } from "./helper";
+  import { format_currency, format_number, isEqual } from "./helper.svelte";
   import Slider from "./slider.svelte";
   import Tooltip from "./Tooltip.svelte";
   import { decisions } from "./store.svelte";
-  import { isEqual } from "./helper";
   import NumberInput from "./number_input.svelte";
 
   let unsapplied_changes: boolean = $state(false);

@@ -11,11 +11,11 @@
   } from "./window_manager.svelte";
   import Close from "./assets/images/Close.svelte";
   import Marketing from "./Marketing.svelte";
-  import { decisions } from "./store.svelte";
+  import { decisions, month } from "./store.svelte";
   import lttwalpaper from "./assets/images/lttwalpaper.jpeg";
   import Production from "./Production.svelte";
   import Employees from "./Employees.svelte";
-  import { Trigger_simulation } from "../wailsjs/go/main/App";
+  import { trigger_simulation } from "./helper.svelte";
 
   type window = {
     Id: number;
@@ -136,12 +136,12 @@
   <div style="display: flex; flex-direction: column; 100%; width: 100%;">
     <div class="top-bar">
       <div style="flex: 1 1 ">Balance: 100'000 CHF</div>
-      <div style="flex: 1 1 ">01/02/0001</div>
+      <div style="flex: 1 1 ">Month {$month}</div>
       <div style="flex: 1 0 ">
         Time until next step: <span style="color: red;">5 min</span>
         <button
           onclick={() => {
-            Trigger_simulation(true);
+            trigger_simulation(true);
           }}>Ready</button
         >
       </div>
