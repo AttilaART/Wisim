@@ -8,6 +8,9 @@ import (
 	"errors"
 	"fmt"
 	"os"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 type Save_game struct {
@@ -686,10 +689,12 @@ func (game_state *Game_state) Simulate_step() error {
 	println("               Simulation step done!\n")
 	println("===================== RESULTS ===================== ")
 	println("Month: ", game_state.Step)
+
+	printer := message.NewPrinter(language.Swedish)
 	for i, c := range game_state.Companies {
-		fmt.Printf("Company %d: %s:\n", i, c.Name)
-		fmt.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
-		fmt.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_Report.Net_Profit)
+		printer.Printf("Company %d: %s:\n", i, c.Name)
+		printer.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
+		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_Report.Net_Profit)
 		println("")
 	}
 

@@ -6,7 +6,6 @@ import (
 	"encoding/gob"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"log"
 	"math/rand"
@@ -14,6 +13,9 @@ import (
 	"runtime"
 	"slices"
 	"sync"
+
+	"golang.org/x/text/language"
+	"golang.org/x/text/message"
 )
 
 // Game setup functions
@@ -82,7 +84,7 @@ func generate_population(
 	}
 	wg.Wait()
 
-	fmt.Printf("avrg max price: %.2f\n", avr_max_price/float64(len(population)))
+	message.NewPrinter(language.BritishEnglish).Printf("avrg max price: %.2f\n", avr_max_price/float64(len(population)))
 	return population, nil
 }
 
