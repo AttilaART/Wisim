@@ -1,54 +1,58 @@
 <script lang="ts">
   import { blur, draw, fly } from "svelte/transition";
-  import { Get_current_stock } from "../wailsjs/go/main/App";
   import { simulation } from "../wailsjs/go/models";
   import Info from "./assets/images/Info.svelte";
   import { format_currency, format_number } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
   import Sidebar from "./Sidebar.svelte";
-  import { company_id, decisions, external_factors } from "./store.svelte";
+  import {
+    company,
+    company_id,
+    current_decisions,
+    external_factors,
+  } from "./store.svelte";
   import EmployeeCard from "./EmployeeCard.svelte";
 
   let page: string = $state("machines");
-  let production_goal: number = $derived(decisions.Production.Production_goal);
+  let production_goal: number = $derived(
+    current_decisions.Production.Production_goal,
+  );
   let current_stock = $state(0);
   let total_local_storage_capacity = $derived(get_local_storage_capacity());
   let available_storage_capacity = $derived(
     total_local_storage_capacity -
-      (decisions.Production.Production_goal -
-        decisions.Predictions.Sales_prediction +
+      (current_decisions.Production.Production_goal -
+        current_decisions.Predictions.Sales_prediction +
         current_stock),
   );
   let reqired_storage_capacity = $derived(
-    decisions.Production.Production_goal -
-      decisions.Predictions.Sales_prediction +
+    current_decisions.Production.Production_goal -
+      current_decisions.Predictions.Sales_prediction +
       current_stock,
   );
 
-  if (decisions.Production.Machines === null) {
-    decisions.Production.Machines = [];
+  if (current_decisions.Production.Machines === null) {
+    current_decisions.Production.Machines = [];
   }
 
-  console.log(decisions);
+  console.log(current_decisions);
 
-  (async () => {
-    current_stock = await Get_current_stock($company_id);
-  })();
+  current_stock = company.Items_in_storage;
 
-  if (decisions.Production.Logistics === null)
-    decisions.Production.Logistics = [];
+  if (current_decisions.Production.Logistics === null)
+    current_decisions.Production.Logistics = [];
 
   function buy_machine() {
     // TODO: make machines cost money
 
     let bought_machine = external_factors.Machine_on_offer;
-    bought_machine.Assigned_workers_ids = [];
+    bought_machine.Assigned_workers_ptr = [];
 
     try {
-      decisions.Production.Machines.push(bought_machine);
+      current_decisions.Production.Machines.push(bought_machine);
     } catch (exception) {
       if (exception instanceof TypeError) {
-        decisions.Production.Machines = [bought_machine];
+        current_decisions.Production.Machines = [bought_machine];
       } else {
         throw exception;
       }
@@ -59,18 +63,18 @@
     // TODO: make warehouse cost money
     console.log("Warehouse Bought");
     const warehouse = {
-      Id: decisions.Production.Logistics
-        ? decisions.Production.Logistics.length
+      Id: current_decisions.Production.Logistics
+        ? current_decisions.Production.Logistics.length
         : 1,
       Capacity: 10000,
       Operating_costs: 7000,
       Value: 10000,
     };
     try {
-      decisions.Production.Logistics.push(warehouse);
+      current_decisions.Production.Logistics.push(warehouse);
     } catch (exception) {
       if (exception instanceof TypeError) {
-        decisions.Production.Logistics = [warehouse];
+        current_decisions.Production.Logistics = [warehouse];
       } else {
         throw exception;
       }
@@ -80,17 +84,17 @@
   function sell_machine(machine_index: number) {
     // TODO: Get money back when selling
     console.log("machine_sold");
-    decisions.Production.Machines.splice(machine_index, 1);
+    current_decisions.Production.Machines.splice(machine_index, 1);
   }
 
   function sell_warehouse(warehouse_index: number) {
     // TODO: Get money back when selling
     console.log("warehouse sold");
-    decisions.Production.Logistics.splice(warehouse_index, 1);
+    current_decisions.Production.Logistics.splice(warehouse_index, 1);
   }
 
   function find_employee_by_id(id: number): simulation.Employee {
-    for (let e of decisions.Employees) {
+    for (let e of current_decisions.Employees) {
       if (e.Id == id) {
         return e;
       }
@@ -100,7 +104,7 @@
 
   function calculate_production_capacity(): number {
     let total_production_capacity: number = 0;
-    for (let m of decisions.Production.Machines) {
+    for (let m of current_decisions.Production.Machines) {
       total_production_capacity += m.Production_capacity;
     }
 
@@ -109,7 +113,7 @@
 
   function get_local_storage_capacity(): number {
     let local_storage_capacity = 0;
-    for (let w of decisions.Production.Logistics) {
+    for (let w of current_decisions.Production.Logistics) {
       local_storage_capacity += w.Capacity;
     }
     return local_storage_capacity;
@@ -120,7 +124,7 @@
 
     if (local_storage_capacity == 0) return 0;
     let local_storage_cost = 0;
-    for (let w of decisions.Production.Logistics) {
+    for (let w of current_decisions.Production.Logistics) {
       local_storage_cost += w.Operating_costs;
     }
 
@@ -250,7 +254,7 @@
             </footer>
           </dialog>
         </div>
-        {#each decisions.Production.Machines as m, m_idnex}
+        {#each current_decisions.Production.Machines as m, m_idnex}
           <div
             transition:fly
             style="display: flex; border: var(--border-thin); border-radius: var(--border-radius); margin: 10px;"
@@ -349,10 +353,12 @@
       style="text-align: left; grid-row: 1; grid-column: 2;"
     >
       <small>
-        Production goal: {format_number(decisions.Production.Production_goal)}
+        Production goal: {format_number(
+          current_decisions.Production.Production_goal,
+        )}
         <br />
         - Sales estimate: {format_number(
-          decisions.Predictions.Sales_prediction,
+          current_decisions.Predictions.Sales_prediction,
         )}
         <br />
         + Existing stock: {format_number(current_stock)}
@@ -425,7 +431,7 @@
           </footer>
         </dialog>
       </div>
-      {#each decisions.Production.Logistics as warehouse, w_index}
+      {#each current_decisions.Production.Logistics as warehouse, w_index}
         <div
           transition:fly
           style="border: var(--border-thin); border-radius: var(--border-radius); padding: 10px; flex: 1 1 45%; max-width: calc(50% - 30px); height: fit-content;"

@@ -3,7 +3,7 @@
   import { format_currency, format_number, isEqual } from "./helper.svelte";
   import Slider from "./slider.svelte";
   import Tooltip from "./Tooltip.svelte";
-  import { decisions } from "./store.svelte";
+  import { current_decisions } from "./store.svelte";
   import NumberInput from "./number_input.svelte";
 
   let unsapplied_changes: boolean = $state(false);
@@ -14,20 +14,20 @@
     Style_ecology: number;
     Style_ethics: number;
     Style_durability: number;
-  } = $state({ ...decisions.Marketing.Promotion });
+  } = $state({ ...current_decisions.Marketing.Promotion });
 
   let promotion_quantity_input = $state(format_currency(promotion.Quantity));
 
   function apply() {
-    decisions.Marketing.Promotion = { ...promotion };
+    current_decisions.Marketing.Promotion = { ...promotion };
   }
   function cancel() {
-    promotion = { ...decisions.Marketing.Promotion };
+    promotion = { ...current_decisions.Marketing.Promotion };
     promotion_quantity_input = format_currency(promotion.Quantity);
   }
 
   $effect(() => {
-    if (isEqual(promotion, decisions.Marketing.Promotion)) {
+    if (isEqual(promotion, current_decisions.Marketing.Promotion)) {
       unsapplied_changes = false;
     } else {
       unsapplied_changes = true;

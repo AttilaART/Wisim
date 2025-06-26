@@ -1,6 +1,6 @@
 <script lang="ts">
   import Slider from "./slider.svelte";
-  import { decisions } from "./store.svelte";
+  import { current_decisions } from "./store.svelte";
   import { format_number, isEqual } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
 
@@ -10,7 +10,7 @@
     Quality: number;
     Ecology: number;
     Ethical_sourcing: number;
-  } = $state({ ...decisions.Marketing.Product.Materials });
+  } = $state({ ...current_decisions.Marketing.Product.Materials });
 
   let manufacturing: {
     Quality: number;
@@ -18,17 +18,17 @@
     Material_efficiency: number;
     Durability: number;
     Max_durability: number;
-  } = $state({ ...decisions.Marketing.Product.Manufacturing });
-  console.log(decisions.Marketing.Product.Manufacturing);
+  } = $state({ ...current_decisions.Marketing.Product.Manufacturing });
+  console.log(current_decisions.Marketing.Product.Manufacturing);
 
   function cancel() {
-    materials = { ...decisions.Marketing.Product.Materials };
-    manufacturing = { ...decisions.Marketing.Product.Manufacturing };
+    materials = { ...current_decisions.Marketing.Product.Materials };
+    manufacturing = { ...current_decisions.Marketing.Product.Manufacturing };
   }
 
   function apply() {
-    decisions.Marketing.Product.Materials = { ...materials };
-    decisions.Marketing.Product.Manufacturing = { ...manufacturing };
+    current_decisions.Marketing.Product.Materials = { ...materials };
+    current_decisions.Marketing.Product.Manufacturing = { ...manufacturing };
   }
 
   let product_stats = $state({
@@ -46,8 +46,11 @@
 
   $effect(() => {
     if (
-      isEqual(manufacturing, decisions.Marketing.Product.Manufacturing) &&
-      isEqual(materials, decisions.Marketing.Product.Materials)
+      isEqual(
+        manufacturing,
+        current_decisions.Marketing.Product.Manufacturing,
+      ) &&
+      isEqual(materials, current_decisions.Marketing.Product.Materials)
     ) {
       unapplied_changes = false;
     } else {

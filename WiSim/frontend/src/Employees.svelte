@@ -6,18 +6,18 @@
   import { simulation } from "../wailsjs/go/models";
   import { format_number } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
-  import { decisions } from "./store.svelte";
+  import { current_decisions } from "./store.svelte";
   import { company_id, month } from "./store.svelte";
 
   let unapplied_changes: boolean = $state(false);
 
-  console.log(decisions);
+  console.log(current_decisions);
 
   let num_production_employees: number = $state(
-    null_to_zero(decisions.Employees.Production_actions),
+    null_to_zero(current_decisions.Employees.Production_actions),
   );
   let num_marketing_employees: number = $state(
-    null_to_zero(decisions.Employees.Marketing_actions),
+    null_to_zero(current_decisions.Employees.Marketing_actions),
   );
 
   function null_to_zero(item: null | any[]) {
@@ -37,9 +37,9 @@
 
     let employee_actions: simulation.Employee_action[];
     if (type == 0) {
-      employee_actions = decisions.Employees.Production_actions;
+      employee_actions = current_decisions.Employees.Production_actions;
     } else if (type == 1) {
-      employee_actions = decisions.Employees.Marketing_actions;
+      employee_actions = current_decisions.Employees.Marketing_actions;
     }
 
     if (employee_actions == null) employee_actions = [];
@@ -81,28 +81,28 @@
   }
 
   async function apply() {
-    decisions.Employees.Production_actions = await temp_hire_fire(
+    current_decisions.Employees.Production_actions = await temp_hire_fire(
       num_production_employees,
       0,
     );
 
-    decisions.Employees.Marketing_actions = await temp_hire_fire(
+    current_decisions.Employees.Marketing_actions = await temp_hire_fire(
       num_marketing_employees,
       1,
     );
 
-    console.log(decisions.Employees.Production_actions);
-    console.log(decisions.Employees.Marketing_actions);
+    console.log(current_decisions.Employees.Production_actions);
+    console.log(current_decisions.Employees.Marketing_actions);
   }
 
   $effect(() => {
     if (
-      null_to_zero(decisions.Employees.Production_actions) !=
+      null_to_zero(current_decisions.Employees.Production_actions) !=
       num_production_employees
     )
       unapplied_changes = true;
     else if (
-      null_to_zero(decisions.Employees.Marketing_actions) !=
+      null_to_zero(current_decisions.Employees.Marketing_actions) !=
       num_marketing_employees
     )
       unapplied_changes = true;

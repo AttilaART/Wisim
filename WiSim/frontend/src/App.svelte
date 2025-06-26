@@ -1,125 +1,78 @@
 <script lang="ts">
   import GameInterface from "./Game_interface.svelte";
   import Sidebar from "./Sidebar.svelte";
-  import Popup from "./Popup.svelte";
-  import {
-    New_simulation,
-    Initial_app_load,
-    Get_External_Factors,
-    Get_Decisions,
-  } from "../wailsjs/go/main/App";
+  import { start_new_game, initial_app_load } from "./api.svelte";
   import { fade } from "svelte/transition";
 
-  import { company_id, decisions, month } from "./store.svelte";
-  import { update_decisions, update_external_factors } from "./helper.svelte";
-  import { get } from "svelte/store";
+  let popup: HTMLDialogElement = $state();
+  let mode = $state("main_menu");
 
-  let background_image_blurred = $state("");
-  let is_loading = $state(false);
-
-  let mode = $state({
-    main_menu: true,
-    game_interface: false,
-  });
-
-  let Initial_app_load_promise = Initial_app_load();
+  let loading_promise = initial_app_load();
 
   async function load_singleplayer() {
-    is_loading = true;
-    $month = await start_new_game();
-    update_external_factors(await Get_External_Factors());
-    update_decisions(await Get_Decisions(get(company_id), get(month)));
-    background_image_blurred = " blurred";
-    mode.main_menu = false;
-    mode.game_interface = true;
-    is_loading = false;
-  }
-
-  function load_main_menu() {
-    background_image_blurred = "";
-    mode.main_menu = true;
-    mode.game_interface = false;
-  }
-
-  async function start_new_game(): Promise<number> {
-    $month = await New_simulation(1);
-    return $month;
+    await start_new_game();
+    mode = "game";
   }
 </script>
 
 <main>
-  {#if is_loading}
+  {#await loading_promise}
     <dialog open><div class="loader"></div></dialog>
-  {/if}
-  <div
-    style="position: absolute; height: 100vh; width: 100%; z-index: 0; overflow: hidden;"
-  >
-    <div
-      class="background_image{background_image_blurred}"
-      style="background-color: white;"
-    ></div>
-
-    <div
-      style="position:absolute; width: 110%; height: 110%; left: -10px; top: -10px;
-    background-image: linear-gradient(
-      to right,
-      rgba(0, 0, 0, 0.0),
-      rgba(0, 0, 0, 0)
-    );"
-    ></div>
-  </div>
-
-  {#await Initial_app_load_promise}
-    <dialog open>loading</dialog>
   {:then}
-    <div class="main_div" style="">
-      {#if mode.main_menu}
-        <div
-          class="title_menu"
-          out:fade={{ duration: 300 }}
-          in:fade={{ duration: 300, delay: 300 }}
-        >
-          <h1 style="padding: 0 8px;">WiSim</h1>
+    {#if mode == "main_menu"}
+      <div
+        class="title_menu"
+        out:fade={{ duration: 300 }}
+        in:fade={{ duration: 300, delay: 300 }}
+      >
+        <h1 style="padding: 0 8px;">WiSim</h1>
 
-          <Sidebar
-            expand={true}
-            buttons={[
-              {
-                Text: "Singleplayer",
-                Style: "",
-                Show: 1,
-                onClick: load_singleplayer,
-              },
-              {
-                Text: "Host game",
-                Style: "",
-                Show: 1,
-                onClick: () => {},
-              },
-              {
-                Text: "Join game",
-                Style: "",
-                Show: 1,
-                onClick: () => {},
-              },
-              {
-                Text: "Settings",
-                Style: "margin-top: auto",
-                Show: 1,
-                onClick: () => {},
-              },
-            ]}
-          ></Sidebar>
-        </div>
-      {:else if mode.game_interface}
-        <GameInterface></GameInterface>
-      {/if}
-    </div>
+        <Sidebar
+          expand={true}
+          buttons={[
+            {
+              Text: "Singleplayer",
+              Style: "",
+              Show: 1,
+              onClick: load_singleplayer,
+            },
+            {
+              Text: "Host game",
+              Style: "grayed-out",
+              Show: 0,
+              onClick: () => {},
+            },
+            {
+              Text: "Join game",
+              Style: "",
+              Show: 0,
+              onClick: () => {},
+            },
+            {
+              Text: "Settings",
+              Style: "margin-top: auto",
+              Show: 0,
+              onClick: () => {},
+            },
+          ]}
+        ></Sidebar>
+      </div>
+    {:else if mode == "game"}
+      <GameInterface></GameInterface>
+    {/if}
   {:catch error}
-    <div>
-      <Popup button_data={{ text: "OK" }} content={`<div>${error}</div>`}
-      ></Popup>
-    </div>
+    <dialog open bind:this={popup}>
+      <article>
+        {error}
+        <footer>
+          <button
+            onclick={() => {
+              popup.close();
+            }}>OK</button
+          >
+        </footer>
+      </article>
+    </dialog>
   {/await}
 </main>
 
@@ -132,46 +85,12 @@
     box-sizing: border-box;
   }
 
-  .main_div {
-    position: absolute;
-    background-size: cover;
-    background-position: center center;
-    background-repeat: no-repeat;
-    height: 100vh;
-    max-height: 100vh;
-    width: 100%;
-    padding: 0px;
-    margin: 0px;
-  }
-
   .title_menu {
     display: flex;
     flex-direction: column;
-    height: 100%;
+    height: 100vh;
     width: 50%;
     text-align: left;
     padding: 10px;
-  }
-
-  .menu_button.button {
-    width: 200px;
-    height: fit-content;
-    padding: 10px;
-    margin: 0px 0px 0px 0px;
-    border-radius: 3;
-  }
-
-  .background_image {
-    filter: blur(0);
-    position: absolute;
-    width: 110%;
-    height: 110%;
-    left: -10px;
-    top: -10px;
-    transition: filter 300ms;
-  }
-
-  .background_image.blurred {
-    filter: blur(5px);
   }
 </style>

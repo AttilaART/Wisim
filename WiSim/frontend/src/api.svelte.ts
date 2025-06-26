@@ -1,6 +1,39 @@
-import { simulation } from "wailsjs/go/models";
+import { get } from "svelte/store";
+import {
+  Get_company,
+  Get_decisions,
+  Get_external_factors,
+  Initial_app_load,
+  New_simulation,
+  Submit_decisions,
+  Trigger_simulation,
+} from "../wailsjs/go/main/App";
+import { int, simulation } from "../wailsjs/go/models";
+import { company_id, current_decisions, month, update_decisions, update_external_factors, update_reports, latest_reports, update_company, company } from "./store.svelte";
 import { Statement, Invoice } from "./IncomeAndLoss.svelte";
-import { latest_reports } from "./store.svelte";
+
+export async function initial_app_load(): Promise<void> {
+  return Initial_app_load()
+}
+
+export async function start_new_game() {
+  month.set(await New_simulation(1))
+  update_company(await Get_company(get(company_id)))
+
+  update_external_factors(await Get_external_factors());
+  update_decisions(await Get_decisions(get(company_id), get(month)));
+}
+
+export async function trigger_simulation(force?: boolean) {
+  await Submit_decisions(get(company_id), current_decisions)
+  month.set(await Trigger_simulation(Boolean(force)))
+  update_company(await Get_company(get(company_id)))
+  update_reports(company.Reports[company.Reports.length - 1])
+
+  update_external_factors(await Get_external_factors());
+  update_decisions(await Get_decisions(get(company_id), get(month)));
+}
+
 export async function Get_budget(month: number, company: number): Promise<Statement> {
   let budget = [
     {
@@ -83,59 +116,25 @@ export async function Get_income_statement(month: number, company: number): Prom
     }
     statement.push(section)
   }
-  //let income = [
-  //  {
-  //    Name: "Income",
-  //    Period: "Income & Loss statement 02/0001",
-  //    Lines: [
-  //      { Name: "Gross Sales", Value: 123 },
-  //      { Name: "Cost of Goods Sold", Value: -123 },
-  //      { Name: "Gross Profit", Value: 123, line_above: true },
-  //    ],
-  //  },
-  //  {
-  //    Name: "Operating Expenses",
-  //    Lines: [
-  //      { Name: "Advertising", Value: -123 },
-  //      { Name: "Facilities & Logistics", Value: -123 },
-  //      { Name: "Equipment (machines)", Value: -123 },
-  //      { Name: "Research & Development", Value: -123 },
-  //      { Name: "Total Operating Expenses", Value: -123, line_above: true },
-  //    ],
-  //  },
-  //  {
-  //    Name: "Non-Operating Expenses",
-  //    Lines: [
-  //      { Name: "Write-Offs", Value: -123 },
-  //      { Name: "Loan interest", Value: -123 },
-  //      { Name: "Bridge Loan interest", Value: -123 },
-  //      { Name: "Total Non-Operating Expenses", Value: -123, line_above: true },
-  //      { Name: "    Taxes", Value: -123 },
-  //      { Name: "Net Income", Value: 123, line_above: true },
-  //      { Name: "Cashflow", Value: 123, line_above: true },
-  //    ],
-  //  },
-  //];
-
-
   return statement
 }
 
 export async function Get_invoices(month: number, company: number): Promise<Invoice[]> {
-  let invoice: Invoice[] = [
-    {
-      Name: "Sale of products",
-      Info: "Sold 14'000 Products",
-      Category: "Sales",
-      Value: 1800000,
-    },
-    {
-      Name: "Employee pay",
-      Info: "Payed 150 production personelle",
-      Category: "Personelle",
-      Value: -670000,
-    },
-  ];
+  let entries: simulation.FinanceReportEntry[] = latest_reports.Balance_sheet.Invoice_log
 
-  return invoice
+  let invoices: Invoice[] = []
+  for (let entry of entries) {
+    let invoice: Invoice = {
+      Name: entry.Name,
+      Info: entry.Info,
+      Category: int.int[entry.Group],
+      Value: entry.Value
+    }
+
+    invoices.push(invoice)
+
+  }
+  console.log(invoices)
+
+  return invoices
 }

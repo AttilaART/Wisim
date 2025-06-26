@@ -1,22 +1,22 @@
 <script lang="ts">
-  import { format_currency, format_number } from "./helper.svelte";
+  import { format_currency } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
-  import { decisions } from "./store.svelte";
-  let global_price = $state(decisions.Marketing.Price);
+  import { current_decisions } from "./store.svelte";
+  let global_price = $state(current_decisions.Marketing.Price);
   let global_price_input = $state(format_currency(global_price, 2));
   let unapplied_changes = $state(false);
 
   function cancel() {
-    global_price = decisions.Marketing.Price;
+    global_price = current_decisions.Marketing.Price;
     global_price_input = format_currency(global_price, 2);
   }
 
   function apply() {
-    decisions.Marketing.Price = global_price;
+    current_decisions.Marketing.Price = global_price;
   }
 
   $effect(() => {
-    if (global_price == decisions.Marketing.Price) {
+    if (global_price == current_decisions.Marketing.Price) {
       unapplied_changes = false;
     } else {
       unapplied_changes = true;

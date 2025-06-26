@@ -313,23 +313,6 @@ type Report struct {
 	Sales_report      Sales_report
 }
 
-type Financial_Reportold struct {
-	Total_income float64
-
-	Loan_repayments        float64
-	Bridge_loan_repayments float64
-	New_bridge_loan        float64
-
-	Non_cash_costs            float64
-	Cash_costs                float64
-	Total_expenses_before_tax float64
-	Total_expenses_after_tax  float64
-	Operating_profit          float64
-	Taxes                     float64
-
-	Net_Profit float64
-}
-
 type Financial_Report struct {
 	// Income
 	Income struct {
@@ -781,7 +764,11 @@ func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics
 		report.Company_sales_statistics.Difference_to_previous_month = purchasing_statiscs.Products_sold
 	}
 	report.Company_sales_statistics.Product_demand = purchasing_statiscs.Product_demand
-	report.Company_sales_statistics.Market_share = (float32(purchasing_statiscs.Products_sold) / float32(Market_products_sold)) * 100
+	if Market_products_sold != 0 {
+		report.Company_sales_statistics.Market_share = (float32(purchasing_statiscs.Products_sold) / float32(Market_products_sold))
+	} else {
+		report.Company_sales_statistics.Market_share = 0
+	}
 
 	report.Company_sales_statistics.Avr_decision_factor = purchasing_statiscs.Avr_decision_factor
 	report.Company_sales_statistics.Avr_purchasing_threshold = purchasing_statiscs.Avr_purchasing_threshold

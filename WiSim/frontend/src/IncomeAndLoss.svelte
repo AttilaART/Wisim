@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { format_currency, format_number } from "./helper.svelte";
+  import { format_currency } from "./helper.svelte";
   import { month, company_id, error } from "./store.svelte";
 
   export type Statement = Section[] | undefined | null;

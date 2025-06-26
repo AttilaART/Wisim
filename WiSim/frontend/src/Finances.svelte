@@ -6,7 +6,7 @@
     Get_budget_invoices,
     Get_income_statement,
     Get_invoices,
-  } from "./getters.svelte";
+  } from "./api.svelte";
   import Debt from "./Debt.svelte";
   import BalanceSheet from "./BalanceSheet.svelte";
   import { latest_reports } from "./store.svelte";
@@ -69,7 +69,7 @@
     is_budget={true}
   ></IncomeAndLoss>
 {:else if page == "income and loss"}
-  {#key latest_reports}
+  {#key latest_reports.Financial_Report}
     <IncomeAndLoss
       get_income_statement={Get_income_statement}
       get_invoice_log={Get_invoices}
