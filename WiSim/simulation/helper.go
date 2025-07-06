@@ -7,10 +7,47 @@ import (
 	"math/rand"
 )
 
+type Interval struct {
+	Start       int
+	Stop_before int
+}
+
+func split_load(thread_count int, array_len int) []Interval {
+	thread_people_range := make([]Interval, thread_count)
+
+	count_per_thread := array_len / thread_count
+	remainder := array_len % thread_count
+	offset := 0
+
+	for i := range thread_people_range {
+		thread_people_range[i].Start = offset
+		thread_people_range[i].Stop_before = offset + count_per_thread
+		offset += count_per_thread
+
+		if remainder > 0 {
+			thread_people_range[i].Stop_before += 1
+			remainder -= 1
+			offset += 1
+		}
+	}
+	return thread_people_range
+}
+
 func round(num float64, decimal_place int) float64 {
 	num = num * math.Pow(10, (float64(decimal_place)))
 	num = math.Round(num)
 	num = num / math.Pow(10, (float64(decimal_place)))
+	return num
+}
+
+type Number interface {
+	int | float64 | float32
+}
+
+func clamp[V Number](num V, max V) V {
+	if float64(num) > float64(max) {
+		return max
+	}
 	return num
 }
 
@@ -22,29 +59,154 @@ func rand_income(mean_income int, standard_dev int) int {
 	return income
 }
 
-func find_employee_by_id(id int, employees *[]Employee) (Employee, error) {
-	for i := range *employees {
-		if (*employees)[i].Id == id {
-			return (*employees)[i], nil
+type Employee_pool []Employee
+
+func (employees Employee_pool) Find_employee_by_id(id int) (*Employee, error) {
+	for i := range employees {
+		if employees[i].Id == id {
+			return &employees[i], nil
 		}
 	}
-	return Employee{}, errors.New(fmt.Sprint("could not find employee with Id ", id))
+	return nil, errors.New(fmt.Sprint("could not find employee with Id ", id))
 }
 
-func delete_by_index[V Employee | any](s []V, index ...int) []V {
-	var s_not_deleted []V
-	is_to_be_deleted := func(i int) bool {
-		for _, ii := range index {
-			if i == ii {
-				return true
+func (s *Game_state) Link_employees_to_action(a Employee_action) (Employee_action, error) {
+	var err error
+	a.employee, err = s.Employees.Find_employee_by_id(a.Employee_id)
+	return a, err
+}
+
+func (c *Company) Link_employees_to_action(a Employee_action) (Employee_action, error) {
+	var err error
+	a.employee, err = c.employee_pool.Find_employee_by_id(a.Employee_id)
+	return a, err
+}
+
+func (c *Company) Get_decisions() Decisions {
+	var decisions Decisions
+	if len(c.Decision_history) >= 1 {
+		decisions = c.Decision_history[len(c.Decision_history)-1]
+		decisions.Production.Machines = c.Machines
+		decisions.Production.Logistics = c.Warehouses
+
+		for _, e := range c.Production_personelle {
+			last_month_action := c.get_previous_employee_action_by_id(e.Id)
+
+			action := Employee_action{
+				Employee_id:    e.Id,
+				employee:       e,
+				Extra_training: last_month_action.Extra_training,
+				Pay:            e.Pay,
+				Bonus:          e.Bonus,
+
+				Working_hours: e.Working_hours,
+
+				Status: Existing,
 			}
+
+			decisions.Employees.Production_actions = append(decisions.Employees.Production_actions, action)
 		}
-		return false
+
+		for _, e := range c.Marketing_personelle {
+			last_month_action := c.get_previous_employee_action_by_id(e.Id)
+
+			action := Employee_action{
+				Employee_id:    e.Id,
+				employee:       e,
+				Extra_training: last_month_action.Extra_training,
+				Pay:            e.Pay,
+				Bonus:          e.Bonus,
+
+				Working_hours: e.Working_hours,
+
+				Status: Existing,
+			}
+
+			decisions.Employees.Marketing_actions = append(decisions.Employees.Marketing_actions, action)
+		}
+	} else {
+		fmt.Println("No decision history!")
 	}
+
+	//  make sure these are more than 0.1 (otherwise simulation breaks)
+	more_than_0 := []float32{
+		decisions.Marketing.Product.Materials.Quality,
+		decisions.Marketing.Product.Materials.Ecology,
+		decisions.Marketing.Product.Materials.Ethical_sourcing,
+
+		decisions.Marketing.Product.Manufacturing.Quality,
+		decisions.Marketing.Product.Manufacturing.Durability,
+		decisions.Marketing.Product.Manufacturing.Ecological_energy,
+		decisions.Marketing.Product.Manufacturing.Material_efficiency,
+	}
+
+	for i := range more_than_0 {
+		if more_than_0[i] < 0.1 {
+			more_than_0[i] = 0.1
+		}
+	}
+
+	decisions.Marketing.Product.Materials.Quality = more_than_0[0]
+	decisions.Marketing.Product.Materials.Ecology = more_than_0[1]
+	decisions.Marketing.Product.Materials.Ethical_sourcing = more_than_0[2]
+
+	decisions.Marketing.Product.Manufacturing.Quality = more_than_0[3]
+	decisions.Marketing.Product.Manufacturing.Durability = more_than_0[4]
+	decisions.Marketing.Product.Manufacturing.Ecological_energy = more_than_0[5]
+	decisions.Marketing.Product.Manufacturing.Material_efficiency = more_than_0[6]
+
+	if decisions.Marketing.Product.Manufacturing.Max_durability < 1 {
+		decisions.Marketing.Product.Manufacturing.Max_durability = 1
+	}
+
+	return decisions
+}
+
+func (c *Company) get_previous_employee_action_by_id(id int) Employee_action {
+	e, err := c.employee_pool.Find_employee_by_id(id)
+	if err != nil {
+		panic(err)
+	}
+	var search_through *[]Employee_action
+	if e.Employee_type == Marketing_employee {
+		search_through = &c.Decision_history[len(c.Decision_history)-1].Employees.Marketing_actions
+	} else if e.Employee_type == Production_employee {
+		search_through = &c.Decision_history[len(c.Decision_history)-1].Employees.Production_actions
+	} else {
+		panic(fmt.Sprintf("unknown employee type: %d (employee %d %s", e.Employee_type, e.Id, e.Name))
+	}
+
+	for _, a := range *search_through {
+		if a.Employee_id == e.Id {
+			return a
+		}
+	}
+
+	fmt.Println("action not found")
+	return Employee_action{
+		Employee_id: e.Id,
+		employee:    e,
+
+		Pay:   e.Pay,
+		Bonus: e.Bonus,
+
+		Working_hours: e.Working_hours,
+
+		Status: Existing,
+	}
+}
+
+func delete_by_index[V any](s []V, index ...int) []V {
+	to_be_deleted := make([]bool, len(s))
+	for _, i := range index {
+		to_be_deleted[i] = true
+	}
+
+	var out []V
 	for i, el := range s {
-		if !is_to_be_deleted(i) {
-			s_not_deleted = append(s_not_deleted, el)
+		if !to_be_deleted[i] {
+			out = append(out, el)
 		}
 	}
-	return s_not_deleted
+	return out
 }

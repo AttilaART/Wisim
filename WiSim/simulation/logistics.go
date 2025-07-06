@@ -1,47 +1,30 @@
 package simulation
 
-import "errors"
-
 // Logistics
-func (company *Company) calculate_logistics(decisions Decisions) ([]FinanceReportEntry, []FinanceReportEntry, error) {
-	var Income_entries []FinanceReportEntry
-	var Assets_entries []FinanceReportEntry
+func (c *Company) calculate_logistics(decisions Decisions) {
+	if len(c.Warehouses) == 0 && len(decisions.Production.Logistics) == 0 {
+		return
+	}
 
-	if decisions.Purchase_of_warehouses > 0 {
-		existing_warehouses := len(company.Warehouses)
+	for i := range c.Warehouses {
+		c.Machines[i].Status = Existing
+	}
 
-		for i := range decisions.Purchase_of_warehouses {
-			company.Warehouses = append(company.Warehouses, Warehouse{
-				existing_warehouses + i,
-				20000,
-				20000,
-				100000,
-			})
-			Income_entries = append(Income_entries, FinanceReportEntry{"Purchase of warehouse", logistics, "", false, -100000})
-		}
-	} else if (-decisions.Purchase_of_warehouses) == len(company.Warehouses) {
-		company.Reports[len(company.Reports)].Production_report.Warehouses_bought = len(company.Warehouses)
-		company.Warehouses = []Warehouse{}
-	} else if decisions.Purchase_of_warehouses < 0 {
-		if -decisions.Purchase_of_warehouses > len(company.Warehouses) {
-			return Income_entries, Assets_entries, errors.New("can't sell more warehouses than you have")
-		}
-		for range -decisions.Purchase_of_warehouses {
-			Income_entries = append(Income_entries, FinanceReportEntry{
-				"Selling of warehouse",
-				logistics,
-				"",
-				true,
-				float64(company.Warehouses[len(company.Warehouses)-1].Value),
-			})
-			company.Warehouses = company.Warehouses[1:len(company.Warehouses)]
-		}
-
-		for _, w := range company.Warehouses {
-			Assets_entries = append(Assets_entries, FinanceReportEntry{"Warehouse as asset", logistics, "", false, float64(w.Value)})
+	// Purchase Machines
+	println("Purchasing warehouses")
+	var warehouses_to_delete_index []int
+	for i, w := range decisions.Production.Logistics {
+		if w.Status == New {
+			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Purchase of warehouse", production, "", true, -float64(w.Value))
+		} else if w.Status == Sold {
+			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Selling of warehouse", production, "", true, float64(w.Value))
+			warehouses_to_delete_index = append(warehouses_to_delete_index, i)
 		}
 	}
 
-	company.Reports[len(company.Reports)-1].Production_report.Warehouses_bought = decisions.Purchase_of_warehouses
-	return Income_entries, Assets_entries, nil
+	c.Warehouses = delete_by_index(decisions.Production.Logistics, warehouses_to_delete_index...)
+
+	for _, w := range c.Warehouses {
+		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_equity("Warehouse", logistics, "", false, float64(w.Value))
+	}
 }

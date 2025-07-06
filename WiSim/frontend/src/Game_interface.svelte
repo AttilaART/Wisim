@@ -1,309 +1,300 @@
 <script lang="ts">
-  import Popup from "./Popup.svelte";
-  import Reports from "./Reports.svelte";
   import Sidebar from "./Sidebar.svelte";
-  import { format_number, capitalise_first_letter } from "./helper";
-  import {
-    Get_simulation_step,
-    Get_bank_balance,
-    Get_current_stock,
-    Trigger_simulation,
-    Revert_simulation,
-    Submit_decisions,
-  } from "../wailsjs/go/main/App";
   import { fade, fly, slide } from "svelte/transition";
+  import Window from "./Window.svelte";
+  import Finances from "./Finances.svelte";
+  import Close from "./assets/images/Close.svelte";
+  import Marketing from "./Marketing.svelte";
+  import { company, current_decisions, month } from "./store.svelte";
+  import lttwalpaper from "./assets/images/lttwalpaper.jpeg";
+  import Production from "./Production.svelte";
+  import Employees from "./Employees.svelte";
+  import { trigger_simulation } from "./api.svelte";
+  import { format_number } from "./helper.svelte";
+  import { latest_reports } from "./store.svelte";
 
-  import { month_counter, company, decisions } from "./store";
-  import Decisions from "./Decisions.svelte";
-  import { simulation } from "../wailsjs/go/models";
+  let windows: { [key: string]: { Zindex: number; Hidden: boolean } } = $state(
+    {},
+  );
 
-  let { return_function } = $props();
-  let is_error: boolean = $state(false);
-  let error: Error | undefined = $state(undefined);
-  let try_cancel_sim: boolean = false;
-  let reports_tab__greyed_out: number = $state(0);
-  let bottom_data_height: number = $state();
-  $decisions = new simulation.Decisions();
-  $company = 0;
+  let desktop_canvas_size: ResizeObserverSize[] = $state();
 
-  type Menu_state = {
-    Dashboard: boolean;
-    Decisions: boolean;
-    Reports: boolean;
-  };
-
-  let is_simulating: boolean = $state(false);
-  let menu_state: Menu_state = $state({
-    Dashboard: true,
-    Decisions: false,
-    Reports: false,
+  $effect(() => {
+    console.log("decisions have been updated");
+    console.log($state.snapshot(current_decisions));
   });
 
-  let bank_balance: number | string = $state("loading...");
-  let products_in_stock: number | string = $state("loading...");
-
-  month_counter.subscribe((value) => {
-    get_balance();
-    get_products_in_storage();
-
-    if (value < 0) {
-      reports_tab__greyed_out = 0;
-    } else {
-      reports_tab__greyed_out = 1;
-    }
-  });
-
-  async function get_month() {
-    $month_counter = await Get_simulation_step();
-  }
-
-  async function get_balance() {
-    try {
-      bank_balance = await Get_bank_balance(0);
-    } catch {
-      bank_balance = "An error has occured";
+  function new_window(name: string) {
+    console.log(windows[name]);
+    if (windows[name] == undefined) {
+      let max_Zindex: number = Math.min(
+        ...Object.values(windows).map((value) => {
+          return value.Zindex;
+        }),
+      );
+      if (max_Zindex == Infinity) max_Zindex = 0;
+      windows[name] = { Zindex: max_Zindex + 1, Hidden: false };
     }
   }
 
-  async function get_products_in_storage() {
-    try {
-      products_in_stock = await Get_current_stock(0);
-    } catch {
-      products_in_stock = "An error has occured";
-    }
-  }
-  get_month();
-  get_balance();
-  get_products_in_storage();
-
-  async function cancel_simulation() {
-    is_simulating = false;
-    try_cancel_sim = true;
-  }
-
-  async function trigger_simulation() {
-    await Submit_decisions(0, $decisions);
-    is_simulating = true;
-    let month_promise: Promise<number> = Trigger_simulation(false);
-    month_promise.then(
-      (value) => {
-        month_counter.set(value);
-      },
-      (reason) => {
-        (is_error = true), (error = reason);
-        console.log("error due to simulation");
-      },
-    );
-
-    setTimeout(() => {
-      is_simulating = false;
-
-      if (try_cancel_sim) {
-        let month_promise = Revert_simulation();
-        month_promise.then(
-          (value) => {
-            $month_counter = value;
-          },
-          (reason) => {
-            is_error = true;
-            error = reason;
-          },
-        );
+  function move_window_to_top(name: string) {
+    let current_z_index = windows[name].Zindex;
+    for (let i in windows) {
+      if (windows[i].Zindex >= current_z_index && i != name) {
+        windows[i].Zindex -= 1;
       }
-      try_cancel_sim = false;
-    }, 1000);
-
-    try_cancel_sim = false;
-
-    //try {
-    //  month_temp = await Trigger_simulation();
-    //} catch (exception) {
-    //  is_error = true;
-    //  error = exception;
-    //}
-    //is_simulating = false;
-    //month_counter.set(month_temp);
-  }
-
-  function load_menus(mode: string) {
-    if (mode == "Dashboard") {
-      menu_state.Dashboard = true;
-      menu_state.Decisions = false;
-      menu_state.Reports = false;
-    } else if (mode == "Decisions") {
-      menu_state.Dashboard = false;
-      menu_state.Decisions = true;
-      menu_state.Reports = false;
-    } else if (mode == "Reports") {
-      menu_state.Dashboard = false;
-      menu_state.Decisions = false;
-      menu_state.Reports = true;
     }
+    windows[name].Zindex = Object.keys(windows).length;
+    // console.log($state.snapshot(windows))
   }
 </script>
 
-{#if is_simulating}
-  <Popup
-    button_data={{
-      Text: "Cancel simulation",
-      Style: "",
-      Class: "popup_button",
-      Onclick_function: cancel_simulation,
-    }}
-    content={'<div class="loader"></div>'}
-  ></Popup>
-{/if}
-{#if is_error}
-  <Popup
-    button_data={{
-      Text: "OK",
-      Style: "",
-      Class: "popup_button",
-      Onclick_function: () => {
-        is_error = false;
-        error = null;
-      },
-    }}
-    content={`<div> <h2>An Error has occured</h2> <br> ${capitalise_first_letter(error.toString())}</div>`}
-  ></Popup>
-{/if}
 <div
   class="game_interface"
-  style="grid-template-rows: auto {bottom_data_height + 22}px;"
+  style="display: flex; flex-direction: row;"
   in:fade={{ duration: 300, delay: 300 }}
   out:fade={{ duration: 300 }}
 >
-  <div
-    style="display: flex; flex-direction: column; grid-column: 1; grid-row: 1 / span 2;"
-  >
-    <Sidebar
-      expand={false}
-      buttons={[
-        {
-          Text: "Return to main menu",
-          Style: "",
-          Show: 1,
-          Onclick_function: () => {
-            return_function();
-          },
-        },
-      ]}
-    ></Sidebar>
-
+  <div class="sidebar">
+    <div style="flex: 0 0 100px;"></div>
     <Sidebar
       expand={true}
       keep_pressed={true}
       buttons={[
         {
-          Text: "Dashboard",
+          Text: "Employees",
           Style: "",
           Show: 1,
-          Onclick_function: () => {
-            load_menus("Dashboard");
+          onClick: () => {
+            new_window("employees");
           },
+          dont_keep_pressed: true,
         },
         {
-          Text: "Decisions",
+          Text: "Production",
           Style: "",
           Show: 1,
-          Onclick_function: () => {
-            load_menus("Decisions");
+          onClick: () => {
+            new_window("production");
           },
+          dont_keep_pressed: true,
         },
         {
-          Text: "Reports",
+          Text: "Marketing",
           Style: "",
-          Show: reports_tab__greyed_out,
-          Onclick_function: () => {
-            //if (reports_tab__greyed_out == 1) {
-            load_menus("Reports");
-            //}
+          Show: 1,
+          onClick: () => {
+            new_window("marketing");
           },
+          dont_keep_pressed: true,
         },
         {
-          Text: "Simulate",
+          Text: "Finances",
+          Style: "",
+          Show: 1,
+          onClick: () => {
+            new_window("finances");
+          },
+          dont_keep_pressed: true,
+        },
+        {
+          Text: "Research",
+          Style: "",
+          Show: 1,
+          onClick: () => {},
+          dont_keep_pressed: true,
+        },
+        {
+          Text: "Companies",
+          Style: "",
+          Show: 1,
+          onClick: () => {},
+          dont_keep_pressed: true,
+        },
+        {
+          Text: "Main Menu",
           Style: "margin-top: auto",
           Show: 1,
-          Onclick_function: () => {
-            trigger_simulation();
-          },
+          onClick: () => {},
           dont_keep_pressed: true,
         },
       ]}
     ></Sidebar>
   </div>
-  <div style="grid-column: 2; grid-row: 1; width: 100%;">
-    {#if menu_state.Dashboard}
-      <div
-        class="report_div"
-        out:fade={{ duration: 300 }}
-        in:fly={{ duration: 300, delay: 300, y: -40 }}
-      >
-        <div>Dashboard is under construction</div>
+  <div style="display: flex; flex-direction: column; 100%; width: 100%;">
+    <div class="top-bar">
+      <div style="flex: 1 1 ">
+        Balance: {company.Balance
+          ? format_number(company.Balance, true, 2)
+          : "Loading..."}
       </div>
-    {/if}
-    {#if menu_state.Decisions}
-      <div
-        class="report_div"
-        out:fade={{ duration: 300 }}
-        in:fly={{ duration: 300, delay: 300, y: -40 }}
-      >
-        <Decisions></Decisions>
+      <div style="flex: 1 1 ">Month {$month}</div>
+      <div style="flex: 1 0 ">
+        Time until next step: <span style="color: red;">5 min</span>
+        <button
+          onclick={() => {
+            trigger_simulation(true);
+          }}>Ready</button
+        >
       </div>
-    {/if}
-    {#if menu_state.Reports}
-      <div
-        class="report_div"
-        out:fade={{ duration: 300 }}
-        in:fly={{ duration: 300, delay: 300, y: -40 }}
-      >
-        <Reports></Reports>
+      <div style="flex: 0 0 fit-content; height: 100%;">
+        <button style=" height: 100%; border: none;">Messages</button>
       </div>
-    {/if}
-  </div>
-  <div
-    class="bottom"
-    style="grid-column: 2; grid-row: 2; height: fit-content;"
-    bind:clientHeight={bottom_data_height}
-  >
-    <div class="bottom_data">
-      Bank balance: {format_number(bank_balance, true)}
     </div>
-    <div class="bottom_data">
-      Products in storage: {format_number(products_in_stock, false, 0)}
+    <div
+      class="desktop"
+      style="background: no-repeat url({lttwalpaper}); background-size: cover;"
+      bind:contentBoxSize={desktop_canvas_size}
+    >
+      {#if windows["finances"] != undefined}
+        <Window
+          title="Finances"
+          canvas_size={{
+            x: desktop_canvas_size[0].inlineSize,
+            y: desktop_canvas_size[0].blockSize,
+          }}
+          onClose={() => delete windows["finances"]}
+          onDrag={() => move_window_to_top("finances")}
+          onHide={() => (windows["finances"].Hidden = true)}
+          bind:Zindex={windows["finances"].Zindex}
+          bind:Hidden={windows["finances"].Hidden}
+        >
+          <Finances></Finances>
+        </Window>
+      {/if}
+      {#if windows["marketing"] != undefined}
+        <Window
+          title="Marketing"
+          canvas_size={{
+            x: desktop_canvas_size[0].inlineSize,
+            y: desktop_canvas_size[0].blockSize,
+          }}
+          onClose={() => delete windows["marketing"]}
+          onDrag={() => move_window_to_top("marketing")}
+          onHide={() => (windows["marketing"].Hidden = true)}
+          bind:Zindex={windows["marketing"].Zindex}
+          bind:Hidden={windows["marketing"].Hidden}
+        >
+          <Marketing></Marketing></Window
+        >
+      {/if}
+      {#if windows["production"] != undefined}
+        <Window
+          title="Production"
+          canvas_size={{
+            x: desktop_canvas_size[0].inlineSize,
+            y: desktop_canvas_size[0].blockSize,
+          }}
+          onClose={() => delete windows["production"]}
+          onDrag={() => move_window_to_top("production")}
+          onHide={() => (windows["production"].Hidden = true)}
+          bind:Zindex={windows["production"].Zindex}
+          bind:Hidden={windows["production"].Hidden}
+        >
+          <Production></Production></Window
+        >
+      {/if}
+      {#if windows["employees"]}
+        <Window
+          title="Employees"
+          canvas_size={{
+            x: desktop_canvas_size[0].inlineSize,
+            y: desktop_canvas_size[0].blockSize,
+          }}
+          onClose={() => delete windows["employees"]}
+          onDrag={() => move_window_to_top("employees")}
+          onHide={() => (windows["employees"].Hidden = true)}
+          bind:Zindex={windows["employees"].Zindex}
+          bind:Hidden={windows["employees"].Hidden}
+          ><Employees></Employees></Window
+        >
+      {/if}
     </div>
-    <div class="bottom_data">
-      Month / Year: {($month_counter + 1) % 13} / {Math.floor(
-        $month_counter / 12,
-      )}
-    </div>
+    <span class="bottom-bar">
+      {#each Object.keys(windows) as w}
+        <div
+          style="height: calc(var(--height) - var(--border-width); width: 200px; position: relative;"
+          transition:slide={{ axis: "x" }}
+          class="app_button {windows[w].Hidden ? '' : 'shown'}"
+        >
+          <button
+            style="width: fit-content; border: none; mix-blend-mode: difference; background-color: transparent; position: absolute; right: 0; margin-top: 2px;"
+            onclick={() => {
+              delete windows[w];
+            }}><Close></Close></button
+          >
+          <button
+            onclick={() => {
+              windows[w].Hidden = false;
+            }}
+            style="padding: auto 10px auto 10px; border: none; background-color: inherit; color: inherit; margin-right: 10px; margin-top: 2px;"
+            >{w}
+          </button>
+        </div>
+      {/each}
+    </span>
   </div>
 </div>
 
 <style>
   .game_interface {
-    height: calc(100% - 20px);
-    width: calc(100% - 20px);
-    max-height: calc(100% - 20px);
-    padding: 10px;
+    height: 100vh;
+    width: calc(100%);
     display: grid;
-    grid-template-columns: calc(200px + 20px) auto;
-    grid-template-rows: auto 55px;
-    overflow: hidden;
+    background-color: var(--second-color);
   }
-
-  .bottom {
-    background-color: rgba(0, 0, 0, 0.5);
-    border-radius: 10px;
-    margin: 10px;
-    padding: 5px;
+  .top-bar {
+    padding: 5px 10px 5px 10px;
+    width: calc(100% - 20px);
     display: flex;
+    flex-direction: row;
+    align-items: center;
+    border-bottom: var(--border-thin);
   }
 
-  .bottom_data {
-    margin-left: 10px;
-    margin-right: 10px;
-    flex-grow: 1;
-    text-align: center;
+  .bottom-bar {
+    display: flex;
+    width: 100%;
+    --height: 35px;
+    height: var(--height);
+    flex-direction: row;
+    overflow-x: scroll;
+    background-color: var(--second-color);
+    border-top: var(--border-thin);
+    z-index: 9999;
+  }
+
+  .app_button {
+    position: relative;
+    border: none;
+    padding: 0 20px;
+    transition: all 0.25s;
+  }
+
+  .app_button.shown {
+    color: var(--second-color);
+    background-color: var(--main-color);
+  }
+
+  .desktop {
+    height: 100%;
+    width: 100%;
+    padding: 0;
+  }
+
+  .sidebar {
+    display: flex;
+    flex-direction: column;
+    position: absolute;
+    height: 100%;
+    border-right: var(--border-thin);
+    transform: translateX(-190px);
+    background-color: var(--second-color);
+    z-index: 10000;
+    transition: 1s;
+  }
+
+  .sidebar:hover {
+    transform: translateX(0px);
   }
 </style>
