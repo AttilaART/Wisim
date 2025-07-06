@@ -502,7 +502,7 @@ export namespace simulation {
 	    Income: any;
 	    // Go type: struct { Advertising float64; Facilities_and_logistics float64; Research_and_development float64; Total_operating_expenses float64 }
 	    Operating_expenses: any;
-	    // Go type: struct { Write_offs float64; Loan_interest float64; Loan_repayment float64; Bridge_loan_intrest float64; Bridge_loan_repayment float64; Other float64; Total_non_operating_expenses float64; Income_before_tax float64; Taxes float64; Net_income float64; cashflow float64 }
+	    // Go type: struct { Write_offs float64; Loan_interest float64; Loan_repayment float64; Bridge_loan_intrest float64; Bridge_loan_repayment float64; Other float64; Total_non_operating_expenses float64; Income_before_tax float64; Taxes float64; Net_income float64; Cashflow float64 }
 	    Non_operating_expenses: any;
 	
 	    static createFrom(source: any = {}) {

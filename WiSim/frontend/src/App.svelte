@@ -7,9 +7,9 @@
   let popup: HTMLDialogElement = $state();
   let mode = $state("main_menu");
 
-  let loading_promise = initial_app_load();
+  let loading_promise = $state(initial_app_load());
 
-  async function load_singleplayer() {
+  async function load_singleplayer(): Promise<void> {
     await start_new_game();
     mode = "game";
   }
@@ -34,7 +34,9 @@
               Text: "Singleplayer",
               Style: "",
               Show: 1,
-              onClick: load_singleplayer,
+              onClick: () => {
+                loading_promise = load_singleplayer();
+              },
             },
             {
               Text: "Host game",
@@ -58,7 +60,7 @@
         ></Sidebar>
       </div>
     {:else if mode == "game"}
-      <GameInterface></GameInterface>
+      <GameInterface bind:loading_promise></GameInterface>
     {/if}
   {:catch error}
     <dialog open bind:this={popup}>

@@ -38,7 +38,6 @@
     }
     position.x = x;
     position.y = y;
-    console.log($state.snapshot(position));
   }
 
   (async () => {

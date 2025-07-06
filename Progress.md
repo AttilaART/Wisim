@@ -59,6 +59,8 @@
 - [ ] Companies
 - [ ] Main menu
 
+- [ ] All icons
+
 ### Graphs
 
 - [x] Bar chart

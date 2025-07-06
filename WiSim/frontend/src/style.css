@@ -82,7 +82,7 @@ h2 {
 
 h2,
 h3,
-h4, 
+h4,
 h5 {
   margin: 5px;
 }
@@ -222,5 +222,10 @@ dialog {
   border: var(--window-border);
   border-radius: var(--window-border-radius);
   padding: 20px;
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  min-height: 300px;
+  min-width: 500px;
 
 }

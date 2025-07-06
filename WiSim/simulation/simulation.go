@@ -338,7 +338,7 @@ type Financial_Report struct {
 		Income_before_tax            float64
 		Taxes                        float64
 		Net_income                   float64
-		cashflow                     float64
+		Cashflow                     float64
 	}
 }
 
