@@ -1,4 +1,5 @@
 <script lang="ts">
+  import Close from "./assets/images/Close.svelte";
   import { format_currency } from "./helper.svelte";
   import { month, company_id, error } from "./store.svelte";
 
@@ -33,38 +34,22 @@
     get_invoice_log: (month: number, company: number) => Promise<Invoice[]>;
     is_budget: boolean;
   } = $props();
-  let income: Statement = $state(undefined);
-  let invoice_log: undefined | null | Invoice[] = $state(undefined);
+  let income_promise: Promise<Statement> = $state(
+    get_income_statement($month, $company_id),
+  );
+  let invoice_promise: Promise<Invoice[]> = $state(
+    get_invoice_log($month, $company_id),
+  );
 
-  async function s() {
-    try {
-      income = await get_income_statement($month, $company_id);
-    } catch (exeption) {
-      invoice_log = null;
-      $error = exeption;
-    }
-  }
-
-  async function i() {
-    try {
-      invoice_log = await get_invoice_log($month, $company_id);
-    } catch (exeption) {
-      invoice_log = null;
-      $error = exeption;
-    }
-  }
-
-  s();
-  i();
+  let show_invoices = $state(false);
 </script>
 
 <div class="content" style="display: flex; height: calc(100% - 60px);">
+  <div style="flex: 1 1 20%;"></div>
   <div style="padding: 10px; overflow-y: scroll; height: auto; flex: 1 1 60%;">
-    {#if income === undefined}
-      Loading report...
-    {:else if income === null}
-      No report available
-    {:else}
+    {#await income_promise}
+      Loading...
+    {:then income: Statement}
       <table style="border-collapse: collapse; width: calc(100% - 10px);">
         <thead>
           <tr>
@@ -77,27 +62,38 @@
           {@render section(s, i)}
         {/each}
       </table>
-    {/if}
+    {:catch exeption}
+      {exeption}
+    {/await}
   </div>
-  <span
-    class="sep_vertical"
-    style="flex: 0 0 var(--window-border-width); background-color: var(--window-border-color);"
-  ></span>
-  <div
-    style="padding: 0; overflow-y: scroll; flex: 1 1 calc(40% - var(border-width);"
-  >
-    {#if invoice_log === undefined}
-      Loading...
-    {:else if invoice_log === null}
-      Therer was a problem
-    {:else}
-      <h2>Invoice Log</h2>
-      <div class="sep_horisontal"></div>
-      {#each invoice_log as i}
-        {@render invoice(i)}
-      {/each}
-    {/if}
+  <div style="flex: 1 1 20%;">
+    <button
+      style="margin: 10px; padding: 10px;"
+      onclick={() => (show_invoices = true)}>See invoice log</button
+    >
   </div>
+  {#if show_invoices}
+    <dialog open style="height: 80%; overflow-y: scroll;">
+      <button
+        class="borderless"
+        style="aspect-ratio: 1/1; width: 2rem; position: sticky; top: 0rem;"
+        onclick={() => (show_invoices = false)}><Close></Close></button
+      >
+      {#await invoice_promise}
+        Loading...
+      {:then invoice_log}
+        <h2>Invoice Log</h2>
+        <div class="sep_horisontal"></div>
+        {#each invoice_log as i}
+          {@render invoice(i)}
+        {/each}
+      {:catch exeption}
+        {exeption}
+      {/await}
+    </dialog>
+  {/if}
+  <!--
+  -->
 </div>
 
 {#snippet section(s: Section, index: number)}

@@ -624,6 +624,8 @@ export namespace simulation {
 	    Id: number;
 	    Name: string;
 	    Balance: number;
+	    Loans: number;
+	    Bridge_loans: number;
 	    Decision_history: Decisions[];
 	    Reports: Report[];
 	    Global_quality_factor: number;
@@ -645,6 +647,8 @@ export namespace simulation {
 	        this.Id = source["Id"];
 	        this.Name = source["Name"];
 	        this.Balance = source["Balance"];
+	        this.Loans = source["Loans"];
+	        this.Bridge_loans = source["Bridge_loans"];
 	        this.Decision_history = this.convertValues(source["Decision_history"], Decisions);
 	        this.Reports = this.convertValues(source["Reports"], Report);
 	        this.Global_quality_factor = source["Global_quality_factor"];

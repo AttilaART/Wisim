@@ -1,17 +1,25 @@
-<script>
+<script lang="ts">
   import BarChart from "./BarChart.svelte";
   import { format_currency, format_number } from "./helper.svelte";
   import Slider from "./slider.svelte";
-  import Info from "./assets/images/Info.svelte";
-  import { number } from "echarts";
+  import {
+    company,
+    current_decisions,
+    external_factors,
+    latest_reports,
+    month,
+  } from "./store.svelte";
 
-  // TODO: Make loans affect balance
+  import { int, simulation } from "../wailsjs/go/models";
+  import { get } from "svelte/store";
 
-  let slider_value = $state();
-  let balance_without_loans = $state(100000 - 70000);
-  let bridge_loans = $state(30000);
-  let existing_loans = $state(40000);
-  let credit_limit = $state(150000);
+  let bridge_loans = $state(company.Bridge_loans);
+  let existing_loans = $state(current_decisions.Finances.Set_bank_loan);
+  let slider_value = $state(existing_loans);
+  let balance_without_loans = $derived(
+    company.Balance - bridge_loans - existing_loans,
+  );
+  let credit_limit = $state(1000000);
 
   let new_loans = $derived(slider_value - existing_loans);
 
@@ -19,10 +27,9 @@
     balance_without_loans + bridge_loans + existing_loans,
   );
   let balance_after = $derived(balance_before + new_loans);
-  slider_value = existing_loans;
 
-  let interest_rate = 0.0015;
-  let bridge_loan_interest_rate = 0.003;
+  let interest_rate = external_factors.Intrest_rate;
+  let bridge_loan_interest_rate = external_factors.Bridge_loans_intrest_rate;
   let interest_before = $derived(
     interest_rate * existing_loans + bridge_loan_interest_rate * bridge_loans,
   );
@@ -43,86 +50,96 @@
 
 <div style="display: flex; flex-direction: column; height: calc(100% - 60px);">
   <div style="padding: 10px 20px 10px 20px;">
-    <h1 style="text-align: left;">Increase / Decrease Bank Loan</h1>
-    <div style="display: flex; flex-direction: row; margin-bottom: 10px;">
-      <Slider
-        min={0}
-        max={credit_limit - bridge_loans}
-        options={{
-          default_value: existing_loans,
-          show_min_value: true,
-          show_current_value: true,
-          show_max_value: true,
-          snap: 10000,
-          step: 1000,
-          format: (val) => {
-            return format_currency(val);
-          },
-        }}
-        bind:Value={slider_value}
-      ></Slider>
-      <div
-        style="display: flex; gap: 10px; padding: 0 10px; padding-left: 2rem;"
-      >
-        <button
-          class={unaplied_changes ? "" : "greyed_out"}
-          style="flex 0 0 20%"
-          onclick={() => {
-            slider_value = existing_loans;
-          }}>Cancel</button
+    {#key get(month)}
+      <h1 style="text-align: left;">Increase / Decrease Bank Loan</h1>
+      <div style="display: flex; flex-direction: row; margin-bottom: 10px;">
+        <Slider
+          min={0}
+          max={credit_limit - bridge_loans}
+          options={{
+            default_value: existing_loans,
+            show_min_value: true,
+            show_current_value: true,
+            show_max_value: true,
+            snap: 10000,
+            step: 1000,
+            format: (val) => {
+              return format_currency(val);
+            },
+          }}
+          bind:Value={slider_value}
+        ></Slider>
+        <div
+          style="display: flex; gap: 10px; padding: 0 10px; padding-left: 2rem;"
         >
-        <button
-          class={unaplied_changes ? "" : "greyed_out"}
-          style="flex 0 0 20%"
-          onclick={() => {
-            existing_loans = slider_value;
-          }}>Apply</button
-        >
+          <button
+            class={unaplied_changes ? "" : "greyed_out"}
+            style="flex 0 0 20%"
+            onclick={() => {
+              slider_value = existing_loans;
+            }}>Cancel</button
+          >
+          <button
+            class={unaplied_changes ? "" : "greyed_out"}
+            style="flex 0 0 20%"
+            onclick={() => {
+              company.Balance = balance_after;
+              current_decisions.Finances.Set_bank_loan = slider_value;
+              existing_loans = current_decisions.Finances.Set_bank_loan;
+            }}>Apply</button
+          >
+        </div>
       </div>
-    </div>
+    {/key}
   </div>
   <span class="sep_horisontal"></span>
   <div style="padding: 10px 20px 10px 20px; text-align: left;">
     <span class="balance"
-      >Est. Balance: {format_number(balance_after, false, 0)} CHF
-      <span
-        style="color: {balance_after > balance_before
-          ? 'var(--green)'
-          : balance_after < balance_before
-            ? 'var(--red)'
-            : 'var(--grey)'}"
-        >({format_number(balance_after - balance_before, true)})</span
-      >
-      <Info></Info>
+      >Estimated Balance: <br />
+      <h2>{format_currency(balance_after, 0)}</h2>
+      {#if balance_after > balance_before}
+        <span style="color: var(--green);">
+          {format_currency(balance_after - balance_before, 0, true)}</span
+        >
+      {:else if balance_after < balance_before}
+        <span style="color: var(--red);"
+          >{format_currency(balance_after - balance_before, 0, true)}</span
+        >
+      {/if}
       <div class="details">
-        Balance without loans: {format_number(balance_without_loans, false, 0)}
+        Balance without loans: {format_currency(
+          balance_without_loans,
+          0,
+          false,
+        )}
         <br />
-        Bridge Loans: {format_number(bridge_loans, false, 0)} <br />
-        Bank Loans: {format_number(existing_loans + new_loans, false, 0)}
+        Bridge Loan: {format_currency(bridge_loans, 0, false)} <br />
+        Bank Loan: {format_currency(existing_loans + new_loans, 0, false)}
       </div></span
     >
 
     <span class="balance">
-      Est. Monthly Interest: {format_number(interest_after, false, 0)} CHF
-      <span
-        style="color: {interest_after < interest_before
-          ? 'var(--green)'
-          : interest_after > interest_before
-            ? 'var(--red)'
-            : 'var(--grey)'}"
-        >({format_number(interest_after - interest_before, true, 0)})</span
-      >
-      <Info></Info>
+      Estimated Interest: <br />
+      <h2>{format_currency(interest_after, 0, false)}</h2>
+      {#if interest_after < interest_before}
+        <span style="color: var(--green);">
+          {format_currency(balance_after - balance_before, 0, true)}</span
+        >
+      {:else if interest_after > interest_before}
+        <span style="color: var(--red);"
+          >{format_currency(interest_after - interest_before, 0, true)}</span
+        >
+      {/if}
       <div class="details">
-        From Bridge Loans: {format_number(
+        From Bridge Loans: {format_currency(
           bridge_loan_interest_rate * bridge_loans,
-          false,
           0,
+          false,
         )} <br />
-        From Bank Loans: {format_number(
+        From Bank Loans: {format_currency(
           interest_rate * (existing_loans + new_loans),
-          false,
           0,
+          false,
         )}
       </div>
     </span>

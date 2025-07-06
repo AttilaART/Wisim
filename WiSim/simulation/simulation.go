@@ -70,6 +70,8 @@ type Company struct {
 	Id            int
 	Name          string
 	Balance       float64
+	Loans         float64
+	Bridge_loans  float64
 	employee_pool *Employee_pool
 	// Global_effects   []Effect
 	Decision_history []Decisions
@@ -91,47 +93,6 @@ type Company struct {
 	// Production
 	Machines              []Machine
 	Production_personelle []*Employee
-}
-
-type Decisionsold struct {
-	// Planing for budget reports
-	Sales_projection int
-	Selling_price    float32
-
-	// Quality_of_stores int
-	Marketing float32 // Increases probabilty that a potential customer hears of your product
-
-	Quality_development_investment    float32 // Increases Quality
-	Ecological_production_investment  float32 // Decreases material use
-	Durability_development_investment float32 // increases durabilty
-	// Investment_in_coolness_development  float32 // Increases coolness
-
-	Production_target    int
-	Purchase_of_machines int
-	Selling_of_machines  int
-
-	Material_quality                float32
-	Percentage_of_ecological_energy float32
-
-	Purchase_of_warehouses int
-
-	New_hires_in_production             int
-	New_hires_in_marketing              int
-	Base_pay_for_production             float32
-	Base_pay_for_marketing              float32
-	Raise_for_production_personelle     float32
-	Raise_for_marketing_personelle      float32
-	Severance_for_production_personelle float32
-	Severance_for_marketing_personelle  float32
-
-	Working_hours_for_production float32
-	Working_hours_for_marketing  float32
-
-	Investment_in_production_training float32 // Skilled production staff increase quality & give bonus production
-	Investment_in_marketing_training  float32 // Skilled marketing staff increase quality of marketing
-
-	Increase_of_loans float32
-	Dividends         float32
 }
 
 type Decisions struct {

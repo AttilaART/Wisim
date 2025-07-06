@@ -143,6 +143,10 @@ button:active {
   color: var(--second-color);
 }
 
+.borderless {
+  border: none;
+}
+
 .greyed_out {
   opacity: 50%;
   pointer-events: none;

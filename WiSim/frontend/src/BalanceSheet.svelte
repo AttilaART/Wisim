@@ -1,5 +1,4 @@
 <script lang="ts">
-  import { number } from "echarts";
   import { simulation } from "../wailsjs/go/models";
   import { format_currency } from "./helper.svelte";
 

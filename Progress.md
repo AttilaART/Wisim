@@ -30,7 +30,7 @@
   - [ ] Interactivity
     - [x] Income and Loss screen
     - [ ] Budget screen
-    - [ ] Debt screen
+    - [x] Debt screen
     - [ ] Balance sheet
 - [ ] Research
 - [ ] Companies
@@ -78,6 +78,6 @@
 
 ### Loading screens / indicators
 
-- [ ] Starting App
-- [ ] Starting new game
-- [ ] Waiting for simulation
+- [x] Starting App
+- [x] Starting new game
+- [x] Waiting for simulation

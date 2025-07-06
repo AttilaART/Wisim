@@ -93,7 +93,6 @@
 
 {#if !horisontal}
   <div class="sidebar" {style}>
-    <hr />
     {#each buttons as button, index}
       {@render sidebar_button(button, index)}
     {/each}

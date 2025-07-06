@@ -92,10 +92,8 @@ export async function Get_budget_invoices(month: number, company: number): Promi
 }
 
 export async function Get_income_statement(month: number, company: number): Promise<Statement> {
-
-  console.log(latest_reports)
   if (Object.entries(latest_reports).length == 0) {
-    return null
+    throw new Error("No report availible")
   }
 
   let income_report: simulation.Financial_Report = latest_reports.Financial_Report
@@ -120,7 +118,18 @@ export async function Get_income_statement(month: number, company: number): Prom
 }
 
 export async function Get_invoices(month: number, company: number): Promise<Invoice[]> {
-  let entries: simulation.FinanceReportEntry[] = latest_reports.Balance_sheet.Invoice_log
+  let entries: simulation.FinanceReportEntry[]
+  try {
+
+    entries = latest_reports.Balance_sheet.Invoice_log
+  } catch (exception) {
+    if (exception == TypeError) {
+      throw new Error("No invoice log availible")
+    } else {
+      throw (exception)
+    }
+  }
+
 
   let invoices: Invoice[] = []
   for (let entry of entries) {
@@ -132,9 +141,7 @@ export async function Get_invoices(month: number, company: number): Promise<Invo
     }
 
     invoices.push(invoice)
-
   }
-  console.log(invoices)
 
   return invoices
 }

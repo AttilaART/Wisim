@@ -60,7 +60,7 @@
         ></Sidebar>
       </div>
     {:else if mode == "game"}
-      <GameInterface bind:loading_promise></GameInterface>
+      <GameInterface></GameInterface>
     {/if}
   {:catch error}
     <dialog open bind:this={popup}>

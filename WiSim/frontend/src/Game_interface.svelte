@@ -40,15 +40,35 @@
   import MenuBar from "./MenuBar.svelte";
   import { trigger_simulation } from "./api.svelte";
 
-  let { loading_promise = $bindable() } = $props();
+  let loading_promise = $state();
+  let popup: HTMLDialogElement = $state();
 
   let desktop_canvas_size: ResizeObserverSize[] = $state();
 
   $effect(() => {
     console.log("decisions have been updated");
     console.log($state.snapshot(current_decisions));
+    console.log("company data edited");
+    console.log($state.snapshot(company));
   });
 </script>
+
+{#await loading_promise}
+  <dialog open><div class="loader"></div></dialog>
+{:catch error}
+  <dialog open bind:this={popup}>
+    <article>
+      {error}
+      <footer>
+        <button
+          onclick={() => {
+            popup.close();
+          }}>OK</button
+        >
+      </footer>
+    </article>
+  </dialog>
+{/await}
 
 <div
   id="game_interface"

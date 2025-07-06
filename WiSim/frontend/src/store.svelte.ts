@@ -1,9 +1,6 @@
 import { writable, Writable, get } from 'svelte/store';
 import { simulation } from '../wailsjs/go/models';
 
-type empty = {
-}
-
 // hide_tabs: "after_hover || always || never"
 export const preferences = $state({ hide_tabs: "after_hover" })
 

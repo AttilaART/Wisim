@@ -191,6 +191,9 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		Energy_price:              96.2,
 		Machine_depreciation_rate: 0.1,
 
+		Intrest_rate:              0.04,
+		Bridge_loans_intrest_rate: 0.08,
+
 		Turnover:                0.08,
 		Production_minimum_wage: 60000,
 		Marketing_minimum_wage:  80000,
