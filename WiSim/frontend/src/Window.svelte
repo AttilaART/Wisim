@@ -5,7 +5,6 @@
   import Min from "./assets/images/Min.svelte";
   import Fullscreen from "./assets/images/Fullscreen.svelte";
   import { tick } from "svelte";
-  import { fade } from "svelte/transition";
 
   let {
     title,
@@ -42,7 +41,11 @@
 
   (async () => {
     await tick();
-    update_position(canvas_size.x / 4, 0);
+    let spawn_pos: { x: number; y: number } = {
+      x: canvas_size.x / 4,
+      y: canvas_size.y / 4,
+    };
+    update_position(spawn_pos.x, spawn_pos.y);
   })();
 </script>
 

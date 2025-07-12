@@ -1,7 +1,6 @@
 package simulation
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"math/rand"
@@ -61,69 +60,29 @@ func rand_income(mean_income int, standard_dev int) int {
 
 type Employee_pool []Employee
 
-func (employees Employee_pool) Find_employee_by_id(id int) (*Employee, error) {
-	for i := range employees {
-		if employees[i].Id == id {
-			return &employees[i], nil
+func (employee_pool Employee_pool) Find_employee_by_id(id int) *Employee {
+	for i := range employee_pool {
+		if employee_pool[i].Id == id {
+			return &employee_pool[i]
 		}
 	}
-	return nil, errors.New(fmt.Sprint("could not find employee with Id ", id))
+	return nil
 }
 
-func (s *Game_state) Link_employees_to_action(a Employee_action) (Employee_action, error) {
-	var err error
-	a.employee, err = s.Employees.Find_employee_by_id(a.Employee_id)
-	return a, err
-}
+func (employee_pool Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_of_company []*Employee) {
+	for i := range employee_pool {
+		if employee_pool[i].Employer == company_id && employee_pool[i].Employee_type == employee_type {
+			employees_of_company = append(employees_of_company, &employee_pool[i])
+		}
+	}
 
-func (c *Company) Link_employees_to_action(a Employee_action) (Employee_action, error) {
-	var err error
-	a.employee, err = c.employee_pool.Find_employee_by_id(a.Employee_id)
-	return a, err
+	return employees_of_company
 }
 
 func (c *Company) Get_decisions() Decisions {
 	var decisions Decisions
 	if len(c.Decision_history) >= 1 {
 		decisions = c.Decision_history[len(c.Decision_history)-1]
-		decisions.Production.Machines = c.Machines
-		decisions.Production.Logistics = c.Warehouses
-
-		for _, e := range c.Production_personelle {
-			last_month_action := c.get_previous_employee_action_by_id(e.Id)
-
-			action := Employee_action{
-				Employee_id:    e.Id,
-				employee:       e,
-				Extra_training: last_month_action.Extra_training,
-				Pay:            e.Pay,
-				Bonus:          e.Bonus,
-
-				Working_hours: e.Working_hours,
-
-				Status: Existing,
-			}
-
-			decisions.Employees.Production_actions = append(decisions.Employees.Production_actions, action)
-		}
-
-		for _, e := range c.Marketing_personelle {
-			last_month_action := c.get_previous_employee_action_by_id(e.Id)
-
-			action := Employee_action{
-				Employee_id:    e.Id,
-				employee:       e,
-				Extra_training: last_month_action.Extra_training,
-				Pay:            e.Pay,
-				Bonus:          e.Bonus,
-
-				Working_hours: e.Working_hours,
-
-				Status: Existing,
-			}
-
-			decisions.Employees.Marketing_actions = append(decisions.Employees.Marketing_actions, action)
-		}
 	} else {
 		fmt.Println("No decision history!")
 	}
@@ -162,40 +121,6 @@ func (c *Company) Get_decisions() Decisions {
 	return decisions
 }
 
-func (c *Company) get_previous_employee_action_by_id(id int) Employee_action {
-	e, err := c.employee_pool.Find_employee_by_id(id)
-	if err != nil {
-		panic(err)
-	}
-	var search_through *[]Employee_action
-	if e.Employee_type == Marketing_employee {
-		search_through = &c.Decision_history[len(c.Decision_history)-1].Employees.Marketing_actions
-	} else if e.Employee_type == Production_employee {
-		search_through = &c.Decision_history[len(c.Decision_history)-1].Employees.Production_actions
-	} else {
-		panic(fmt.Sprintf("unknown employee type: %d (employee %d %s", e.Employee_type, e.Id, e.Name))
-	}
-
-	for _, a := range *search_through {
-		if a.Employee_id == e.Id {
-			return a
-		}
-	}
-
-	fmt.Println("action not found")
-	return Employee_action{
-		Employee_id: e.Id,
-		employee:    e,
-
-		Pay:   e.Pay,
-		Bonus: e.Bonus,
-
-		Working_hours: e.Working_hours,
-
-		Status: Existing,
-	}
-}
-
 func delete_by_index[V any](s []V, index ...int) []V {
 	to_be_deleted := make([]bool, len(s))
 	for _, i := range index {
@@ -209,4 +134,17 @@ func delete_by_index[V any](s []V, index ...int) []V {
 		}
 	}
 	return out
+}
+
+func delete_by_id[V interface{ get_id() int }](s []V, id ...int) []V {
+	var indexes_to_delete []int
+	for i := range s {
+		for ii := range id {
+			if s[i].get_id() == id[ii] {
+				indexes_to_delete = append(indexes_to_delete, i)
+			}
+		}
+	}
+
+	return delete_by_index(s, indexes_to_delete...)
 }

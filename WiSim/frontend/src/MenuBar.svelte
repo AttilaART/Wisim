@@ -1,10 +1,10 @@
 <script lang="ts">
   import { new_window } from "./Game_interface.svelte";
-  import { format_currency } from "./helper.svelte";
+  import { format_currency, format_number } from "./helper.svelte";
   import { company, external_factors, latest_reports } from "./store.svelte";
 </script>
 
-<div style="width: 100%; position: fixed; bottom: 0; right: 0;">
+<div style="width: 100%; position: fixed; bottom: 0; right: 0; z-index: 99999;">
   <div id="top-section">
     <button
       id="balance"
@@ -51,17 +51,81 @@
   <div id="bottom-section">
     <small style="padding-top: 0.1rem;">Month {external_factors.Month}</small>
     <small style="padding-top: 0.1rem;"
+      >Sales last month: {latest_reports.Sales_report
+        ? format_number(
+            latest_reports.Sales_report.Company_sales_statistics.Products_sold,
+            false,
+            0,
+          )
+        : "NaN"}
+      {#if latest_reports.Sales_report}
+        {@render difference_triangle(
+          latest_reports.Sales_report.Company_sales_statistics
+            .Difference_to_previous_month,
+        )}
+      {/if}
+    </small>
+    <small style="padding-top: 0.1rem;"
+      >Market share: {latest_reports.Sales_report
+        ? format_number(
+            latest_reports.Sales_report.Company_sales_statistics.Market_share *
+              100,
+            false,
+            0,
+          ) + "%"
+        : "NaN"}
+      {#if company.Reports && company.Reports.length >= 2}
+        {@render difference_triangle(
+          latest_reports.Sales_report.Company_sales_statistics.Market_share -
+            company.Reports[company.Reports.length - 2].Sales_report
+              .Company_sales_statistics.Market_share,
+        )}
+      {/if}
+    </small>
+    <small style="padding-top: 0.1rem;"
       >Cashflow: {latest_reports.Financial_Report
-        ? latest_reports.Financial_Report.Non_operating_expenses.Cashflow
-        : "NaN"}</small
-    >
+        ? format_currency(
+            latest_reports.Financial_Report.Non_operating_expenses.Cashflow,
+            0,
+            true,
+          )
+        : "NaN"}
+      {#if company.Reports && company.Reports.length >= 2}
+        {@render difference_triangle(
+          latest_reports.Financial_Report.Non_operating_expenses.Cashflow -
+            company.Reports[company.Reports.length - 2].Financial_Report
+              .Non_operating_expenses.Cashflow,
+        )}
+      {/if}
+    </small>
   </div>
 </div>
+
+{#snippet difference_triangle(value: number, invert_color?: boolean)}
+  {#if value !== undefined}
+    {#if value > 0}
+      <span class="positve {invert_color ? 'inverted' : ''}">▲</span>
+    {:else if value == 0}
+      <span>—</span>
+    {:else}
+      <span class="negative {invert_color ? '-inverted' : ''}">▼</span>
+    {/if}
+  {/if}
+{/snippet}
 
 <style>
   * {
     --side-padding: 16.5rem;
     --balance-width: 16.5rem;
+  }
+
+  .positive,
+  .negative.inverted {
+    color: var(--green);
+  }
+  .negative,
+  .positive.inverted {
+    color: var(--red);
   }
 
   #top-section,

@@ -1,6 +1,6 @@
 <script lang="ts">
   import {
-    Get_action_employee,
+    Get_unemployed,
     Temp_generate_new_emloyee,
   } from "../wailsjs/go/main/App";
   import { simulation } from "../wailsjs/go/models";
@@ -28,56 +28,24 @@
   async function temp_hire_fire(
     new_num_employees: number,
     type: number,
-  ): Promise<simulation.Employee_action[]> {
-    const stati = {
-      existing_employee: 0,
-      new_hire: 1,
-      fired: 2,
-    };
+  ): Promise<simulation.Delta_WiSim_simulation_Employee_[]> {
+    if (new_num_employees == 0) {
+      return [];
+    } else if (new_num_employees > 0) {
+      let unemployed_pool: simulation.Employee[] = await Get_unemployed(0);
+      let new_hires: simulation.Delta_WiSim_simulation_Employee_[] = [];
+      for (let i in unemployed_pool) {
+        if (Number(i) > new_num_employees) {
+          break;
+        }
 
-    let employee_actions: simulation.Employee_action[];
-    if (type == 0) {
-      employee_actions = current_decisions.Employees.Production_actions;
-    } else if (type == 1) {
-      employee_actions = current_decisions.Employees.Marketing_actions;
-    }
-
-    if (employee_actions == null) employee_actions = [];
-
-    let delta: number = new_num_employees - employee_actions.length;
-
-    if (delta > 0) {
-      // hire employees
-      while (delta != 0) {
-        let employee_action: simulation.Employee_action =
-          new simulation.Employee_action();
-        employee_action.Employee_id = await Temp_generate_new_emloyee(
-          $company_id,
-          $month,
-          type,
-        );
-
-        let employee: simulation.Employee =
-          await Get_action_employee(employee_action);
-
-        employee_action.Pay = employee.Pay;
-        employee_action.Bonus = employee.Bonus;
-
-        employee_action.Status = stati.new_hire;
-        employee_actions.push(employee_action);
-
-        delta -= 1;
-      }
-    } else if (delta < 0) {
-      // fire employees
-      for (let i in employee_actions) {
-        if (delta == 0) break;
-
-        employee_actions[i].Status = stati.fired;
-        delta += 1;
+        let new_hire: simulation.Delta_WiSim_simulation_Employee_ =
+          new simulation.Delta_WiSim_simulation_Employee_();
+        new_hire.Change = 0;
+        new_hire.Item = unemployed_pool[i];
+        new_hires.push(new_hire);
       }
     }
-    return employee_actions;
   }
 
   async function apply() {

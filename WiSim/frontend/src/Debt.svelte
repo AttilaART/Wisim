@@ -64,7 +64,7 @@
             snap: 10000,
             step: 1000,
             format: (val) => {
-              return format_currency(val);
+              return format_currency(val, 0);
             },
           }}
           bind:Value={slider_value}

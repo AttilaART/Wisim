@@ -144,7 +144,7 @@
       style="position: absolute; right: 0; top: 1.5rem;"
       bind:this={max_value_element}
     >
-      {max}
+      {options.format(max)}
     </div>
   {/if}
   {#if options.show_current_value}

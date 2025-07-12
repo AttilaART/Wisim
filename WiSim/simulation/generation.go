@@ -118,7 +118,7 @@ func (g *Game_state) Generate_new_employee_id() int {
 	return len(g.Employees)
 }
 
-func (g *Game_state) Generate_employee(base_pay float32, working_hours float32, employee_type int, base_motivation float32) *Employee {
+func (g *Game_state) Generate_employee(base_pay float32, working_hours float32, employee_type Employee_type, base_motivation float32) *Employee {
 	employee := Employee{
 		Id:            g.Generate_new_employee_id(),
 		Employee_type: employee_type,
@@ -153,23 +153,21 @@ func (g *Game_state) generate_companies(
 			required_production_personelle += m.Required_workers
 		}
 
-		companies[i].Production_personelle = make([]*Employee, required_production_personelle)
-		for ii := range companies[i].Production_personelle {
-			companies[i].Production_personelle[ii] = g.Generate_employee(
+		for range required_production_personelle {
+			g.Generate_employee(
 				external_factors.Production_minimum_wage,
 				base_working_hours,
-				Production_employee,
+				Employee_type_production,
 				1,
-			)
+			).Employer = i
 		}
-		companies[i].Marketing_personelle = make([]*Employee, base_number_of_marketing_personelle)
-		for ii := range companies[i].Marketing_personelle {
-			companies[i].Marketing_personelle[ii] = g.Generate_employee(
+		for range base_number_of_marketing_personelle {
+			g.Generate_employee(
 				external_factors.Production_minimum_wage,
 				base_working_hours,
-				Marketing_employee,
+				Employee_type_marketing,
 				1,
-			)
+			).Employer = i
 		}
 
 	}
@@ -322,51 +320,6 @@ func Load_game(path string) (Game_state, error) {
 
 	for i := range game_state.Companies { // fix employee pointer stuff
 		game_state.Companies[i].employee_pool = &game_state.Employees
-
-		for ii, e := range game_state.Companies[i].Production_personelle {
-			var err error
-			game_state.Companies[i].Production_personelle[ii], err = game_state.Employees.Find_employee_by_id(e.Id)
-			if err != nil {
-				panic(err)
-			}
-		}
-
-		for ii, e := range game_state.Companies[i].Marketing_personelle {
-			var err error
-			game_state.Companies[i].Marketing_personelle[ii], err = game_state.Employees.Find_employee_by_id(e.Id)
-			if err != nil {
-				panic(err)
-			}
-		}
-
-		for ii := range game_state.Companies[i].Machines {
-			for iii, e := range game_state.Companies[i].Machines[ii].Assigned_workers_ptr {
-				var err error
-				game_state.Companies[i].Machines[ii].Assigned_workers_ptr[iii], err = game_state.Employees.Find_employee_by_id(e.Id)
-				if err != nil {
-					panic(err)
-				}
-			}
-		}
-
-		if len(game_state.Companies[i].Decision_history) >= 1 {
-			for ii := range game_state.Companies[i].Decision_history {
-				for iii := range game_state.Companies[i].Decision_history[ii].Employees.Marketing_actions {
-
-					game_state.Companies[i].Decision_history[ii].Employees.Marketing_actions[iii].employee, err = game_state.Employees.Find_employee_by_id(game_state.Companies[i].Decision_history[ii].Employees.Marketing_actions[iii].Employee_id)
-					if err != nil {
-						panic(err)
-					}
-				}
-				for iii := range game_state.Companies[i].Decision_history[ii].Employees.Production_actions {
-
-					game_state.Companies[i].Decision_history[ii].Employees.Production_actions[iii].employee, err = game_state.Employees.Find_employee_by_id(game_state.Companies[i].Decision_history[ii].Employees.Production_actions[iii].Employee_id)
-					if err != nil {
-						panic(err)
-					}
-				}
-			}
-		}
 	}
 
 	game_state.Population = population

@@ -96,13 +96,23 @@ func (a *App) Get_decisions(company, step int) (simulation.Decisions, error) {
 	return game_state.state.Companies[company].Get_decisions(), nil
 }
 
-func (a *App) Temp_generate_new_emloyee(company, step int, employee_type int) (int, error) {
+func (a *App) Temp_generate_new_emloyee(company, step int, employee_type simulation.Employee_type) (int, error) {
 	err := check_request(company, step)
 	if err != nil {
 		return -1, err
 	}
 
 	return game_state.state.Generate_employee(10000, 8, employee_type, 1).Id, nil
+}
+
+func (a *App) Get_unemployed(employee_type simulation.Employee_type) (Unemployed []*simulation.Employee) {
+	for i := range game_state.state.Employees {
+		if game_state.state.Employees[i].Employer == simulation.Employee_employer_none && game_state.state.Employees[i].Employee_type == employee_type {
+			Unemployed = append(Unemployed, &game_state.state.Employees[i])
+		}
+	}
+
+	return Unemployed
 }
 
 func (a *App) Get_past_decisions(company int, step int) (simulation.Decisions, error) {
@@ -122,26 +132,10 @@ func (a *App) Submit_decisions(company int, decisions simulation.Decisions) erro
 		}
 	}
 
-	// Link employee id to corresponding pointer
-	for i := range decisions.Employees.Marketing_actions {
-		decisions.Employees.Marketing_actions[i], err = game_state.state.Link_employees_to_action(decisions.Employees.Marketing_actions[i])
-		if err != nil {
-			return err
-		}
-	}
-
-	// TODO: Link employees assigned to machines to their pointers
-
 	game_state.state.Current_decisions[company] = decisions
 	game_state.state.Decisions_submitted[company] = true
 
 	return nil
-}
-
-func (a *App) Get_action_employee(action simulation.Employee_action) (simulation.Employee, error) {
-	e, err := game_state.state.Employees.Find_employee_by_id(action.Employee_id)
-
-	return *e, err
 }
 
 func (a *App) Trigger_simulation(force bool) (new_step int, err error) {

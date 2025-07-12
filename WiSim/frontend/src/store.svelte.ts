@@ -7,9 +7,9 @@ export const preferences = $state({ hide_tabs: "after_hover" })
 export const loading = writable(false)
 export const error: Writable<null> | Writable<Error> = writable(null)
 
-export const month = writable(1)
+export const month: Writable<number> = writable(1)
 
-export const company_id = writable(0)
+export const company_id: Writable<number> = writable(0)
 
 export const current_decisions: simulation.Decisions = $state({})
 export const company: simulation.Company = $state(new simulation.Company)

@@ -55,7 +55,7 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 	c.Loans = loan
 
 	if intrest > 0 {
-		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Intrest payments", loan_intrest, "", true, -intrest)
+		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Intrest payments", loan_intrest, "", true, intrest)
 	}
 	// Calculate bridge loan intrest
 	bl := 0.0 // Bridge_loans
@@ -70,7 +70,7 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 	c.Bridge_loans = bl
 
 	if bl_intrest > 0 {
-		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Bridge loan intrest payments", bridge_loans, "", true, -intrest)
+		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Bridge loan intrest payments", bridge_loans, "", true, intrest)
 	}
 
 	// Increase or decrease loans

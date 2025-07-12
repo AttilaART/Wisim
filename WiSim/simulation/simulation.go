@@ -82,18 +82,18 @@ type Company struct {
 	Base_marketing_strength float32
 
 	// Product
-	Offer                Offer
-	Orders               int
-	Marketing_personelle []*Employee
+	Offer  Offer
+	Orders int
 
 	// Fulfillment
 	Warehouses       []Warehouse
 	Items_in_storage int
 
 	// Production
-	Machines              []Machine
-	Production_personelle []*Employee
+	Machines []Machine
 }
+
+// NOTE: Employees themselves keep track of their employers
 
 type Decisions struct {
 	Predictions struct {
@@ -133,16 +133,16 @@ type Decisions struct {
 	}
 
 	Employees struct {
-		Production_actions []Employee_action
-		Marketing_actions  []Employee_action
+		Production_deltas []Delta[Employee]
+		Marketing_deltas  []Delta[Employee]
 
 		Severance_pay float32
 	}
 
 	Production struct {
 		Production_goal int
-		Machines        []Machine
-		Logistics       []Warehouse
+		Machines        []Delta[Machine]
+		Logistics       []Delta[Warehouse]
 	}
 
 	Research struct {
@@ -154,28 +154,16 @@ type Decisions struct {
 	}
 }
 
-const (
-	Existing = iota
-	New
-	Fired
-	Quit
-	Layed_off
-	Sold
-	Available
-)
-
-type Employee_action struct {
-	Employee_id int
-	employee    *Employee
-
-	Extra_training int
-	Pay            float32
-	Bonus          float32
-
-	Working_hours float32
-
-	Status int
+type Delta[V any] struct {
+	Change int
+	Item   V
 }
+
+const (
+	Delta_New = iota
+	Delta_Change
+	Delta_Remove
+)
 
 type Offer struct {
 	Product           Product
@@ -209,13 +197,18 @@ type Product struct {
 }
 
 type Machine struct {
+	Id int
+
 	Production_capacity  int
 	Required_workers     int
 	Minimum_workers      int
 	Assigned_workers_ptr []*Employee
 	Energy_use           float32
 	Value                float32
-	Status               int
+}
+
+func (m Machine) get_id() int {
+	return m.Id
 }
 
 type Warehouse struct {
@@ -223,36 +216,51 @@ type Warehouse struct {
 	Capacity        int
 	Operating_costs float32
 	Value           float32
-	Status          int
+}
+
+func (w Warehouse) get_id() int {
+	return w.Id
 }
 
 type Employee struct {
-	Id            int
-	Name          string
-	Employee_type int
-	Motivation    float32
-	Skill         float32
-	Global_effect *Effect
+	Id       int
+	Name     string
+	Employer int
+
+	Employee_type Employee_type
+
+	Motivation     float32
+	Skill          float32
+	Extra_training float32
+
+	// Global_effect *Effect
+
 	Pay           float32
 	Bonus         float32
 	Working_hours float32
 }
 
+type Employee_type int
+
 const (
-	Production_employee = iota
-	Marketing_employee
-	Executive_employee
+	Employee_type_production = iota
+	Employee_type_marketing
+	Employee_type_executive
 )
 
-func (e Employee) get_type() string {
+const (
+	Employee_employer_none = iota
+)
+
+func (e_type Employee_type) to_string() string {
 	employee_types := []string{"production", "marketing", "executive"}
 
-	if e.Employee_type > len(employee_types)-1 {
+	if int(e_type) > len(employee_types)-1 {
 		return "unknown"
-	} else if e.Employee_type < 0 {
+	} else if e_type < 0 {
 		return "unknown"
 	}
-	return employee_types[e.Employee_type]
+	return employee_types[e_type]
 }
 
 type Effect struct {

@@ -84,12 +84,16 @@
   function sell_machine(machine_index: number) {
     // TODO: Get money back when selling
     console.log("machine_sold");
+    company.Balance +=
+      current_decisions.Production.Machines[machine_index].Value;
     current_decisions.Production.Machines.splice(machine_index, 1);
   }
 
   function sell_warehouse(warehouse_index: number) {
     // TODO: Get money back when selling
     console.log("warehouse sold");
+    company.Balance +=
+      current_decisions.Production.Logistics[warehouse_index].Value;
     current_decisions.Production.Logistics.splice(warehouse_index, 1);
   }
 
@@ -167,10 +171,10 @@
 {#if page == "machines"}
   <div
     class="grid_container"
-    style="grid-template-columns: 70% 30%; height: calc(100% - 50px); grid-template-rows: auto 100%; overflow-y: scroll;"
+    style="grid-template-columns: 100% 0%; height: calc(100% - 50px); grid-template-rows: auto 100%; overflow-y: scroll;"
   >
     <div
-      style="text-align: left; grid-column: 1; padding: 10px; border-bottom: var(--border-thin); border-right: var(--border-thin); height: fit-content;"
+      style="text-align: left; grid-column: 1; padding: 10px; border-bottom: var(--border-thin); height: fit-content;"
     >
       Production Goal:
 
@@ -193,7 +197,7 @@
     </div>
     <div style="grid-row: 1 / span 2; grid-column: 2;"></div>
     <div
-      style="grid-row: 2; grid-column: 1; display: flex; flex-direction: column; border-right: var(--border-thin); height: fit-content; min-height: 100%;"
+      style="grid-row: 2; grid-column: 1; display: flex; flex-direction: column; height: fit-content; min-height: 100%;"
     >
       <p>
         <input id="manually_assign_workers" type="checkbox" />
