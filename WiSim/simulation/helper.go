@@ -69,14 +69,23 @@ func (employee_pool Employee_pool) Find_employee_by_id(id int) *Employee {
 	return nil
 }
 
-func (employee_pool Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_of_company []*Employee) {
-	for i := range employee_pool {
-		if employee_pool[i].Employer == company_id && employee_pool[i].Employee_type == employee_type {
-			employees_of_company = append(employees_of_company, &employee_pool[i])
+func (employee_pool *Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_of_company []*Employee) {
+	for i := range *employee_pool {
+		if (*employee_pool)[i].Employer == company_id && (*employee_pool)[i].Employee_type == employee_type {
+			employees_of_company = append(employees_of_company, &(*employee_pool)[i])
 		}
 	}
 
 	return employees_of_company
+}
+
+func (employee_pool *Employee_pool) Get_avr_skill(company_id int, employee_type Employee_type) (avrg_skill float32) {
+	employees := employee_pool.Get_employees_of_company(company_id, employee_type)
+	for _, e := range employees {
+		avrg_skill += e.Skill
+	}
+
+	return avrg_skill / float32(len(employees))
 }
 
 func (c *Company) Get_decisions() Decisions {

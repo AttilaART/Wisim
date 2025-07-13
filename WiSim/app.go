@@ -115,6 +115,15 @@ func (a *App) Get_unemployed(employee_type simulation.Employee_type) (Unemployed
 	return Unemployed
 }
 
+func (a *App) Calculate_product_stats(company int, product_decisions simulation.Decisions_product, research_decisions simulation.Decisions_research) (simulation.Product, error) {
+	err := check_request(company, game_state.state.Step)
+	if err != nil {
+		return simulation.Product{}, err
+	}
+
+	return game_state.state.Companies[company].Calculate_product(product_decisions, research_decisions), nil
+}
+
 func (a *App) Get_past_decisions(company int, step int) (simulation.Decisions, error) {
 	err := check_request(company, step)
 	if err != nil {

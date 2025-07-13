@@ -1,8 +1,16 @@
 <script lang="ts">
   import Slider from "./slider.svelte";
-  import { current_decisions } from "./store.svelte";
+  import {
+    company,
+    company_id,
+    current_decisions,
+    external_factors,
+  } from "./store.svelte";
   import { format_number, isEqual } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
+  import { Calculate_product_stats } from "../wailsjs/go/main/App";
+  import { get } from "svelte/store";
+  import { simulation } from "wailsjs/go/models";
 
   let unapplied_changes: boolean = $state(false);
 
@@ -57,6 +65,20 @@
       unapplied_changes = true;
     }
   });
+
+  $effect(() => {
+    (async () => {
+      let product_decisions = new simulation.Product_decisions();
+      product_decisions.Materials = materials;
+      product_decisions.Manufacturing = manufacturing;
+
+      company.Offer.Product = await Calculate_product_stats(
+        get(company_id),
+        product_decisions,
+        current_decisions.Research,
+      );
+    })();
+  });
 </script>
 
 <div
@@ -101,19 +123,26 @@
         <tbody>
           <tr>
             <td>Quality:</td>
-            <td style="text-align: right;">{product_stats.Quality}</td>
+            <td style="text-align: right;"
+              >{company.Offer.Product.Quality_factor}</td
+            >
           </tr>
           <tr>
             <td>Ecology:</td>
-            <td style="text-align: right;">{product_stats.Ecology}</td>
+            <td style="text-align: right;"
+              >{company.Offer.Product.Ecology_factor}</td
+            >
           </tr>
           <tr>
             <td>Ethics:</td>
-            <td style="text-align: right;">{product_stats.Ethics}</td>
+            <td style="text-align: right;"
+              >{company.Offer.Product.Ethics_factor}</td
+            >
           </tr>
           <tr>
             <td>Durability:</td>
-            <td style="text-align: right;">{product_stats.Durability}</td>
+            <td style="text-align: right;">{company.Offer.Product.Durabilty}</td
+            >
           </tr>
         </tbody>
       </table>
@@ -124,15 +153,20 @@
         <tbody>
           <tr>
             <td>Manufacturing Speed:</td>
-            <td style="text-align: right;">{manufacturing_stats.Speed}x</td>
+            <td style="text-align: right;"
+              >{company.Offer.Product.Base_production_speed}x</td
+            >
           </tr>
           <tr>
             <td>Material Cost:</td>
-            <td style="text-align: right;">{manufacturing_stats.Cost}</td>
+            <td style="text-align: right;"
+              >{company.Offer.Product.Material_use *
+                external_factors.Material_price}</td
+            >
           </tr>
           <tr>
             <td>Weight:</td>
-            <td style="text-align: right;">{manufacturing_stats.Weight}</td>
+            <td style="text-align: right;">{company.Offer.Product.Weight}</td>
           </tr>
         </tbody>
       </table>
@@ -171,12 +205,16 @@
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
-    <NumberInput
-      value={manufacturing.Max_durability}
-      formatter={(value) => {
-        return format_number(value, false, 0);
-      }}
-    ></NumberInput>
+    <p>Max durability</p>
+    <h2>
+      <NumberInput
+        value={manufacturing.Max_durability}
+        align_right={true}
+        formatter={(value) => {
+          return format_number(value, false, 0) + " Months";
+        }}
+      ></NumberInput>
+    </h2>
     <div style="display: flex; margin-top: auto; width: 100%;">
       <button
         class={unapplied_changes ? "" : "greyed_out"}

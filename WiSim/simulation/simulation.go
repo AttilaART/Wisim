@@ -43,6 +43,8 @@ type Sim_config struct {
 	Quality_spread              float32 // "spread" parameters increase the standard deviation of the normal distributions
 	Ecology_bias                float32
 	Ecology_spread              float32
+	Ethics_bias                 float32
+	Ethics_spread               float32
 	Coolness_bias               float32
 	Coolness_spread             float32
 	Price_bias                  float32
@@ -95,6 +97,30 @@ type Company struct {
 
 // NOTE: Employees themselves keep track of their employers
 
+type Decisions_product struct {
+	Materials struct {
+		Quality          float32
+		Ecology          float32
+		Ethical_sourcing float32
+	}
+
+	Manufacturing struct {
+		Quality             float32
+		Ecological_energy   float32
+		Material_efficiency float32
+		Durability          float32
+		Max_durability      int
+	}
+}
+
+type Decisions_research struct {
+	Quality    float32
+	Durability float32
+	Ecology    float32
+	Promotion  float32
+	Speed      float32
+}
+
 type Decisions struct {
 	Predictions struct {
 		Sales_prediction int
@@ -107,21 +133,7 @@ type Decisions struct {
 	Marketing struct {
 		Price float32
 
-		Product struct {
-			Materials struct {
-				Quality          float32
-				Ecology          float32
-				Ethical_sourcing float32
-			}
-
-			Manufacturing struct {
-				Quality             float32
-				Ecological_energy   float32
-				Material_efficiency float32
-				Durability          float32
-				Max_durability      int
-			}
-		}
+		Product Decisions_product
 
 		Promotion struct {
 			Quantity         float64
@@ -145,13 +157,7 @@ type Decisions struct {
 		Logistics       []Delta[Warehouse]
 	}
 
-	Research struct {
-		Quality    float32
-		Durability float32
-		Ecology    float32
-		Promotion  float32
-		Speed      float32
-	}
+	Research Decisions_research
 }
 
 type Delta[V any] struct {
@@ -179,19 +185,21 @@ type Offer struct {
 }
 
 type Product struct {
-	Id           int
-	Name         string
-	Weight       float32
-	Material_use float32
+	Id               int
+	Name             string
+	Weight           float32
+	Material_use     float32
+	Production_speed float32
 
+	Base_production_speed float32
 	Base_quality          float32
 	Base_ecology          float32
 	Base_durability       float32
-	Base_production_speed float32
 
-	Quality_factor  float32
-	Ecology_factor  float32
-	Coolness_factor float32
+	Ethics_factor  float32 // TODO: Implement Ethicss Factor
+	Quality_factor float32
+	Ecology_factor float32
+	// Coolness_factor float32
 
 	Durabilty int
 }
@@ -456,11 +464,12 @@ type Purchasing_statistics struct {
 	Avr_decision_factor      float32
 	Avr_purchasing_threshold float32
 
-	Avr_quality_factor       float32
-	Avr_durability_factor    float32
-	Avr_ecology_factor       float32
-	Avr_price_factor         float32
-	Avr_coolness_factor      float32
+	Avr_quality_factor    float32
+	Avr_durability_factor float32
+	Avr_ecology_factor    float32
+	Avr_price_factor      float32
+	Avr_ethics_factor     float32
+	// Avr_coolness_factor      float32
 	Avr_bang_for_buck_factor float32
 }
 
@@ -482,11 +491,12 @@ type Sales_statistics struct {
 	Avr_decision_factor      float32
 	Avr_purchasing_threshold float32
 
-	Avr_quality_factor       float32
-	Avr_durability_factor    float32
-	Avr_ecology_factor       float32
-	Avr_price_factor         float32
-	Avr_coolness_factor      float32
+	Avr_quality_factor    float32
+	Avr_durability_factor float32
+	Avr_ecology_factor    float32
+	Avr_price_factor      float32
+	Avr_ethics_factor     float32
+	/// Avr_coolness_factor      float32
 	Avr_bang_for_buck_factor float32
 }
 
@@ -502,17 +512,19 @@ type Marketing_statistics struct {
 type Product_statistics struct {
 	Quality   float32
 	Durabilty int
-	Coolness  float32
-	Ecology   float32
+	// Coolness  float32
+	Ethics  float32
+	Ecology float32
 }
 
 type Customer struct {
 	Base_need      int
 	Owned_products []Owned_product
 
-	Quality_preference       float32
-	Ecology_preference       float32
-	Coolness_preference      float32
+	Quality_preference float32
+	Ecology_preference float32
+	// Coolness_preference      float32
+	Ethics_preference        float32
 	Price_preference         float32
 	Bang_for_buck_preference float32 // Price / Quality preference
 	Durabilty_preference     float32
@@ -634,7 +646,8 @@ func (game_state *Game_state) Simulate_step() error {
 	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_durability_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_durability_factor
 	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ecology_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_ecology_factor
 	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_price_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_coolness_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ethics_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_ethics_factor
+	// game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_coolness_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor
 	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_bang_for_buck_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_bang_for_buck_factor
 
 	for i := range game_state.Companies {
@@ -722,7 +735,8 @@ func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics
 	report.Product_statistics.Quality = c.Offer.Product.Quality_factor
 	report.Product_statistics.Durabilty = c.Offer.Product.Durabilty
 	report.Product_statistics.Ecology = c.Offer.Product.Ecology_factor
-	report.Product_statistics.Coolness = c.Offer.Product.Coolness_factor
+	report.Product_statistics.Ethics = c.Offer.Product.Ethics_factor
+	// report.Product_statistics.Coolness = c.Offer.Product.Coolness_factor
 
 	// ----------------
 
@@ -746,14 +760,16 @@ func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics
 	report.Company_sales_statistics.Avr_durability_factor = purchasing_statiscs.Avr_durability_factor
 	report.Company_sales_statistics.Avr_ecology_factor = purchasing_statiscs.Avr_ecology_factor
 	report.Company_sales_statistics.Avr_price_factor = purchasing_statiscs.Avr_price_factor
-	report.Company_sales_statistics.Avr_coolness_factor = purchasing_statiscs.Avr_coolness_factor
+	report.Company_sales_statistics.Avr_ethics_factor = purchasing_statiscs.Avr_ethics_factor
+	// report.Company_sales_statistics.Avr_coolness_factor = purchasing_statiscs.Avr_coolness_factor
 	report.Company_sales_statistics.Avr_bang_for_buck_factor = purchasing_statiscs.Avr_bang_for_buck_factor
 
 	// ----------------
 
 	report.Marketing_statistics.Product.Quality = c.Offer.Product.Quality_factor
 	report.Marketing_statistics.Product.Durabilty = c.Offer.Product.Durabilty
-	report.Marketing_statistics.Product.Coolness = c.Offer.Product.Coolness_factor
+	report.Marketing_statistics.Product.Ethics = c.Offer.Product.Ethics_factor
+	// report.Marketing_statistics.Product.Coolness = c.Offer.Product.Coolness_factor
 	report.Marketing_statistics.Product.Ecology = c.Offer.Product.Ecology_factor
 
 	report.Marketing_statistics.Price = float64(c.Offer.Price)

@@ -95,7 +95,8 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		purchasing_statistics[i].Avr_durability_factor /= float32(len(population.Population))
 		purchasing_statistics[i].Avr_ecology_factor /= float32(len(population.Population))
 		purchasing_statistics[i].Avr_price_factor /= float32(len(population.Population))
-		purchasing_statistics[i].Avr_coolness_factor /= float32(len(population.Population))
+		purchasing_statistics[i].Avr_ethics_factor /= float32(len(population.Population))
+		// purchasing_statistics[i].Avr_coolness_factor /= float32(len(population.Population))
 
 		purchasing_statistics[len(purchasing_statistics)-1].Products_sold += purchasing_statistics[i].Products_sold
 		purchasing_statistics[len(purchasing_statistics)-1].Product_demand += purchasing_statistics[i].Product_demand
@@ -107,7 +108,8 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_durability_factor += purchasing_statistics[i].Avr_durability_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_ecology_factor += purchasing_statistics[i].Avr_ecology_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor += purchasing_statistics[i].Avr_price_factor
-		purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor += purchasing_statistics[i].Avr_coolness_factor
+		purchasing_statistics[len(purchasing_statistics)-1].Avr_ethics_factor += purchasing_statistics[i].Avr_ethics_factor
+		// purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor += purchasing_statistics[i].Avr_coolness_factor
 	}
 
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor /= float32(len(purchasing_statistics) - 1)
@@ -117,7 +119,8 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_durability_factor /= float32(len(purchasing_statistics) - 1)
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_ecology_factor /= float32(len(purchasing_statistics) - 1)
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor /= float32(len(purchasing_statistics) - 1)
+	purchasing_statistics[len(purchasing_statistics)-1].Avr_ethics_factor /= float32(len(purchasing_statistics) - 1)
+	// purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor /= float32(len(purchasing_statistics) - 1)
 
 	results := make([]FinanceReportEntry, len(*companies))
 	for i := range results {
@@ -153,7 +156,8 @@ func calculate_purchase(customer Customer, offers []Offer, avg_price float32, ex
 
 		decision_factors[i] = (customer.Quality_preference*o.Product.Quality_factor +
 			customer.Ecology_preference*o.Product.Ecology_factor +
-			customer.Coolness_preference*o.Product.Coolness_factor +
+			customer.Ethics_preference*o.Product.Ethics_factor +
+			// customer.Coolness_preference*o.Product.Coolness_factor +
 			customer.Price_preference*is_cheap(o, avg_price) +
 			customer.Bang_for_buck_preference*(o.Product.Quality_factor/o.Price) +
 			customer.Brand_loyalty_factor*customer.Loyalties[i]) * external_factors.Economic_situation_index
@@ -164,7 +168,8 @@ func calculate_purchase(customer Customer, offers []Offer, avg_price float32, ex
 		(*purchasing_statistics)[i].Avr_durability_factor += customer.Durabilty_preference * float32(offers[i].Product.Durabilty)
 		(*purchasing_statistics)[i].Avr_ecology_factor += customer.Ecology_preference * offers[i].Product.Ecology_factor
 		(*purchasing_statistics)[i].Avr_price_factor += customer.Price_preference * is_cheap(offers[i], avg_price)
-		(*purchasing_statistics)[i].Avr_coolness_factor += customer.Coolness_preference * offers[i].Product.Coolness_factor
+		(*purchasing_statistics)[i].Avr_ethics_factor += customer.Ethics_preference * offers[i].Product.Ethics_factor
+		// (*purchasing_statistics)[i].Avr_coolness_factor += customer.Coolness_preference * offers[i].Product.Coolness_factor
 		(*purchasing_statistics)[i].Avr_bang_for_buck_factor += customer.Bang_for_buck_preference * (o.Product.Quality_factor / o.Price)
 	}
 

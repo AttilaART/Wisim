@@ -40,45 +40,20 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Quality research", research, "", true, float64(-decisions.Research.Quality))
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Ecology research", research, "", true, float64(-decisions.Research.Ecology))
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Durability research", research, "", true, float64(-decisions.Research.Durability))
+	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Production speed research", research, "", true, float64(-decisions.Research.Speed))
 
-	// calculate avg skill of production personelle -> influences Quality_factor
-	production_personelle := c.employee_pool.Get_employees_of_company(c.Id, Employee_type_production)
-	var total_production_skill float32 = 0
-	for _, e := range production_personelle {
-		total_production_skill += e.Skill
-	}
-	avg_production_skill := total_production_skill / float32(len(production_personelle))
-
-	c.Offer.Product.calculate_quality(
-		avg_production_skill,
-		decisions.Marketing.Product.Materials.Quality,
-		decisions.Marketing.Product.Manufacturing.Quality,
-	)
-
-	c.Offer.Product.Base_ecology *= 1 + decisions.Research.Ecology/1000
-
-	c.Offer.Product.calculate_ecology(
-		c.Offer.Product.Base_ecology,
-		c.Offer.Product.Material_use,
-		decisions.Marketing.Product.Manufacturing.Ecological_energy,
-	)
-
-	c.Offer.Product.Base_durability *= 1 + decisions.Research.Durability/1000
-	c.Offer.Product.calculate_durability(decisions.Marketing.Product.Manufacturing.Max_durability, decisions.Marketing.Product.Manufacturing.Durability)
+	c.Offer.Product = c.Calculate_product(decisions.Marketing.Product, decisions.Research)
 
 	// Production
 	println("Calculating production")
 
-	c.Offer.Product.Base_production_speed *= 1 + decisions.Research.Speed/1000
+	c.Offer.Product.Production_speed *= 1 + decisions.Research.Speed/1000
 
-	if c.Offer.Product.Base_production_speed == 0 {
+	if c.Offer.Product.Production_speed == 0 {
 		panic("Base_production_speed is 0")
 	}
 
-	c.calculate_production(decisions, external_factors, calculate_production_speed(
-		decisions.Marketing.Product.Manufacturing,
-		float32(c.Offer.Product.Base_production_speed),
-	))
+	c.calculate_production(decisions, external_factors)
 
 	// Logistics
 	c.Items_in_storage += c.Reports[len(c.Reports)-1].Production_report.Base_production +
@@ -92,7 +67,7 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 }
 
 // Production functions
-func (c *Company) calculate_production(decisions Decisions, external_factors External_factors, production_speed float32) {
+func (c *Company) calculate_production(decisions Decisions, external_factors External_factors) {
 	production_personelle := c.employee_pool.Get_employees_of_company(c.Id, Employee_type_production)
 	if len(production_personelle) == 0 {
 		println("Warning: no production employees!")
@@ -143,7 +118,6 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 	produce(
 		c.Machines,
 		c.Offer.Product,
-		production_speed,
 		production_report,
 		&c.Reports[len(c.Reports)-1].Balance_sheet,
 		external_factors,
@@ -240,7 +214,6 @@ func assign_workers(machines []Machine, workers []*Employee) ([]Machine, int) {
 func produce(
 	machines []Machine,
 	product Product,
-	production_speed float32,
 	production_report *Production_report,
 	balance_sheet *Balance_sheet,
 	external_factors External_factors,
@@ -251,7 +224,7 @@ func produce(
 
 	energy_use := 0.0
 	for _, m := range machines {
-		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(m, production_speed, &employees)
+		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(m, product.Production_speed, &employees)
 		base_production += base_prod_of_machine
 		bonus_production += bonus_prod_of_machine
 

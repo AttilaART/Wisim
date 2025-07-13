@@ -30,6 +30,8 @@ func generate_population(
 	quality_spread float32, // "spread" parameters increase the standard deviation of the normal distributions
 	ecology_bias float32,
 	ecology_spread float32,
+	ethics_bias float32,
+	ethics_spread float32,
 	coolness_bias float32,
 	coolness_spread float32,
 	price_bias float32,
@@ -64,9 +66,10 @@ func generate_population(
 				population[i] = Customer{
 					Base_need: rand.Intn(max_base_need-min_base_need) + min_base_need,
 
-					Quality_preference:       float32(PosNormFloat64())*quality_spread + quality_bias,
-					Ecology_preference:       float32(PosNormFloat64())*ecology_spread + ecology_bias,
-					Coolness_preference:      float32(PosNormFloat64())*coolness_spread + coolness_bias,
+					Quality_preference: float32(PosNormFloat64())*quality_spread + quality_bias,
+					Ecology_preference: float32(PosNormFloat64())*ecology_spread + ecology_bias,
+					Ethics_preference:  float32(PosNormFloat64())*ethics_spread + ethics_bias,
+					// Coolness_preference:      float32(PosNormFloat64())*coolness_spread + coolness_bias,
 					Price_preference:         float32(PosNormFloat64())*price_spread + price_bias,
 					Bang_for_buck_preference: float32(PosNormFloat64())*bang_for_buck_spread + bang_for_buck_bias,
 					Durabilty_preference:     float32(PosNormFloat64())*durability_spread + durabilty_bias,
@@ -232,6 +235,8 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		sim_config.Quality_spread,
 		sim_config.Ecology_bias,
 		sim_config.Ecology_spread,
+		sim_config.Ethics_bias,
+		sim_config.Ethics_spread,
 		sim_config.Coolness_bias,
 		sim_config.Coolness_spread,
 		sim_config.Price_bias,
