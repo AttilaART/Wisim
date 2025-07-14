@@ -179,8 +179,9 @@ export namespace simulation {
 	    Name: string;
 	    Weight: number;
 	    Material_use: number;
-	    Production_speed: number;
-	    Base_production_speed: number;
+	    Production_cost: number;
+	    Base_material_use: number;
+	    Base_production_cost: number;
 	    Base_quality: number;
 	    Base_ecology: number;
 	    Base_durability: number;
@@ -199,8 +200,9 @@ export namespace simulation {
 	        this.Name = source["Name"];
 	        this.Weight = source["Weight"];
 	        this.Material_use = source["Material_use"];
-	        this.Production_speed = source["Production_speed"];
-	        this.Base_production_speed = source["Base_production_speed"];
+	        this.Production_cost = source["Production_cost"];
+	        this.Base_material_use = source["Base_material_use"];
+	        this.Base_production_cost = source["Base_production_cost"];
 	        this.Base_quality = source["Base_quality"];
 	        this.Base_ecology = source["Base_ecology"];
 	        this.Base_durability = source["Base_durability"];
@@ -547,7 +549,7 @@ export namespace simulation {
 	    Durability: number;
 	    Ecology: number;
 	    Promotion: number;
-	    Speed: number;
+	    Production_cost: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Decisions_research(source);
@@ -559,15 +561,84 @@ export namespace simulation {
 	        this.Durability = source["Durability"];
 	        this.Ecology = source["Ecology"];
 	        this.Promotion = source["Promotion"];
-	        this.Speed = source["Speed"];
+	        this.Production_cost = source["Production_cost"];
 	    }
+	}
+	export class Decisions_product {
+	    // Go type: struct { Quality float32; Ecology float32; Ethical_sourcing float32 }
+	    Materials: any;
+	    // Go type: struct { Quality float32; Ecological_energy float32; Material_efficiency float32; Durability float32; Max_durability int }
+	    Manufacturing: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new Decisions_product(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Materials = this.convertValues(source["Materials"], Object);
+	        this.Manufacturing = this.convertValues(source["Manufacturing"], Object);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
+	}
+	export class Decisions_marketing {
+	    Price: number;
+	    Product: Decisions_product;
+	    // Go type: struct { Quantity float64; Style_quality float32; Style_ecology float32; Style_ethics float32; Style_durability float32 }
+	    Promotion: any;
+	
+	    static createFrom(source: any = {}) {
+	        return new Decisions_marketing(source);
+	    }
+	
+	    constructor(source: any = {}) {
+	        if ('string' === typeof source) source = JSON.parse(source);
+	        this.Price = source["Price"];
+	        this.Product = this.convertValues(source["Product"], Decisions_product);
+	        this.Promotion = this.convertValues(source["Promotion"], Object);
+	    }
+	
+		convertValues(a: any, classs: any, asMap: boolean = false): any {
+		    if (!a) {
+		        return a;
+		    }
+		    if (a.slice && a.map) {
+		        return (a as any[]).map(elem => this.convertValues(elem, classs));
+		    } else if ("object" === typeof a) {
+		        if (asMap) {
+		            for (const key of Object.keys(a)) {
+		                a[key] = new classs(a[key]);
+		            }
+		            return a;
+		        }
+		        return new classs(a);
+		    }
+		    return a;
+		}
 	}
 	export class Decisions {
 	    // Go type: struct { Sales_prediction int }
 	    Predictions: any;
 	    // Go type: struct { Set_bank_loan float64 }
 	    Finances: any;
-	    Marketing: struct { Price float32; Product simulation.;
+	    Marketing: Decisions_marketing;
 	    // Go type: struct { Production_deltas []simulation
 	    Employees: any;
 	    // Go type: struct { Production_goal int; Machines []simulation
@@ -582,7 +653,7 @@ export namespace simulation {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Predictions = this.convertValues(source["Predictions"], Object);
 	        this.Finances = this.convertValues(source["Finances"], Object);
-	        this.Marketing = this.convertValues(source["Marketing"], Object);
+	        this.Marketing = this.convertValues(source["Marketing"], Decisions_marketing);
 	        this.Employees = this.convertValues(source["Employees"], Object);
 	        this.Production = this.convertValues(source["Production"], Object);
 	        this.Research = this.convertValues(source["Research"], Decisions_research);
@@ -663,40 +734,8 @@ export namespace simulation {
 		}
 	}
 	
-	export class Decisions_product {
-	    // Go type: struct { Quality float32; Ecology float32; Ethical_sourcing float32 }
-	    Materials: any;
-	    // Go type: struct { Quality float32; Ecological_energy float32; Material_efficiency float32; Durability float32; Max_durability int }
-	    Manufacturing: any;
 	
-	    static createFrom(source: any = {}) {
-	        return new Decisions_product(source);
-	    }
 	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Materials = this.convertValues(source["Materials"], Object);
-	        this.Manufacturing = this.convertValues(source["Manufacturing"], Object);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
 	
 	export class Delta_WiSim_simulation_Employee_ {
 	    Change: number;
@@ -864,46 +903,6 @@ export namespace simulation {
 	
 	
 	
-
-}
-
-export namespace struct { Price float32; Product simulation {
-	
-	export class  {
-	    Price: number;
-	    Product: simulation.Decisions_product;
-	    // Go type: struct { Quantity float64; Style_quality float32; Style_ecology float32; Style_ethics float32; Style_durability float32 }
-	    Promotion: any;
-	
-	    static createFrom(source: any = {}) {
-	        return new (source);
-	    }
-	
-	    constructor(source: any = {}) {
-	        if ('string' === typeof source) source = JSON.parse(source);
-	        this.Price = source["Price"];
-	        this.Product = this.convertValues(source["Product"], simulation.Decisions_product);
-	        this.Promotion = this.convertValues(source["Promotion"], Object);
-	    }
-	
-		convertValues(a: any, classs: any, asMap: boolean = false): any {
-		    if (!a) {
-		        return a;
-		    }
-		    if (a.slice && a.map) {
-		        return (a as any[]).map(elem => this.convertValues(elem, classs));
-		    } else if ("object" === typeof a) {
-		        if (asMap) {
-		            for (const key of Object.keys(a)) {
-		                a[key] = new classs(a[key]);
-		            }
-		            return a;
-		        }
-		        return new classs(a);
-		    }
-		    return a;
-		}
-	}
 
 }
 

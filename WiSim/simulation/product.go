@@ -1,17 +1,25 @@
 package simulation
 
-import "math"
+import (
+	"fmt"
+	"math"
+)
 
 func (c *Company) Calculate_product(
 	product_decisions Decisions_product, research Decisions_research,
 ) (product Product) { // Calcualtes product stats without side effects
 	product = c.Offer.Product
 
+	product.calcualte_material_use(research.Ecology, product_decisions.Manufacturing.Material_efficiency, product_decisions.Materials.Quality)
 	product.calculate_quality(research.Quality, c.employee_pool.Get_avr_skill(c.Id, Employee_type_production), product_decisions.Materials.Quality, product_decisions.Manufacturing.Quality)
-	product.calculate_ecology(research.Ecology, product_decisions.Manufacturing.Ecological_energy, product_decisions.Materials.Ecology)
 	product.calculate_durability(research.Durability, product_decisions.Manufacturing.Max_durability, product_decisions.Manufacturing.Durability)
-	product.calculate_production_speed(research.Speed, product_decisions.Manufacturing)
+	product.calculate_ecology(research.Ecology, product_decisions.Manufacturing.Ecological_energy, product_decisions.Materials.Ecology)
+	product.calculate_production_speed(research.Production_cost, product_decisions.Manufacturing)
 
+	err := check_product(product)
+	if err != nil {
+		panic(fmt.Errorf("%w /n Product: %#+v", err, product))
+	}
 	return product
 }
 
@@ -30,6 +38,13 @@ func promotion_quality(base_marketing_strength float32, marketing_personelle []*
 
 // Product attribute functions
 
+// Calculates Material_use of product w/ side effects and returns value
+func (product *Product) calcualte_material_use(ecology_research float32, material_efficiency float32, quality float32) float32 {
+	product.Base_material_use *= 1 + ecology_research/2000
+	product.Material_use = product.Base_material_use / material_efficiency * quality
+	return product.Material_use
+}
+
 // Calculates Ecology_factor of product w/ side effects and returns value
 func (product *Product) calculate_ecology(
 	ecology_research float32,
@@ -37,9 +52,9 @@ func (product *Product) calculate_ecology(
 	material_ecology float32,
 ) float32 {
 	product.Base_ecology *= 1 + ecology_research/1000
-	product.Ecology_factor = (product.Base_ecology * material_ecology * (product.Material_use/1 +
+	product.Ecology_factor = (product.Base_ecology * material_ecology / (product.Material_use/1 +
 		percentage_of_ecological_energy/10 +
-		product.Quality_factor/10)) / 2
+		product.Quality_factor/10)) / 2 * float32(product.Durabilty) * 10
 	return product.Ecology_factor
 }
 
@@ -53,10 +68,12 @@ func (product *Product) calculate_quality(quality_research, production_skill, ma
 // Calculates Durabilty of product w/ side effects and returns value
 func (product *Product) calculate_durability(durability_research float32, max_durability int, durability_focus float32) int {
 	product.Base_durability *= 1 + durability_research/1000
-	product.Durabilty = int(math.Round(float64(clamp(
-		float32(product.Base_durability)*product.Quality_factor*durability_focus,
-		float32(max_durability),
-	))))
+	product.Durabilty = int(math.Round(float64(product.Base_durability * product.Quality_factor * durability_focus * 2)))
+
+	if product.Durabilty > max_durability {
+		println(max_durability)
+		product.Durabilty = max_durability
+	}
 
 	return product.Durabilty
 }
@@ -71,11 +88,7 @@ func (product *Product) calculate_production_speed(
 		Max_durability      int
 	},
 ) (production_speed float32) {
-	product.Base_production_speed *= 1 + production_speed_research/1000
-	production_speed = product.Base_production_speed / manufacturing.Quality / manufacturing.Material_efficiency / manufacturing.Durability
-
-	if math.IsInf(float64(production_speed), 0) {
-		panic("production_speed is infinite")
-	}
+	product.Base_production_cost *= 1 + production_speed_research/1000
+	product.Production_cost = product.Base_production_cost * manufacturing.Quality * manufacturing.Material_efficiency * manufacturing.Durability
 	return production_speed
 }

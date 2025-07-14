@@ -40,16 +40,16 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Quality research", research, "", true, float64(-decisions.Research.Quality))
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Ecology research", research, "", true, float64(-decisions.Research.Ecology))
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Durability research", research, "", true, float64(-decisions.Research.Durability))
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Production speed research", research, "", true, float64(-decisions.Research.Speed))
+	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Production cost research", research, "", true, float64(-decisions.Research.Production_cost))
 
 	c.Offer.Product = c.Calculate_product(decisions.Marketing.Product, decisions.Research)
 
 	// Production
 	println("Calculating production")
 
-	c.Offer.Product.Production_speed *= 1 + decisions.Research.Speed/1000
+	c.Offer.Product.Production_cost *= 1 + decisions.Research.Production_cost/1000
 
-	if c.Offer.Product.Production_speed == 0 {
+	if c.Offer.Product.Production_cost == 0 {
 		panic("Base_production_speed is 0")
 	}
 
@@ -224,7 +224,7 @@ func produce(
 
 	energy_use := 0.0
 	for _, m := range machines {
-		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(m, product.Production_speed, &employees)
+		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(m, product.Production_cost, &employees)
 		base_production += base_prod_of_machine
 		bonus_production += bonus_prod_of_machine
 

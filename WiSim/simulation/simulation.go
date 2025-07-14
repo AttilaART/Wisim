@@ -97,6 +97,47 @@ type Company struct {
 
 // NOTE: Employees themselves keep track of their employers
 
+type Decisions struct {
+	Predictions struct {
+		Sales_prediction int
+	}
+
+	Finances struct {
+		Set_bank_loan float64
+	}
+
+	Marketing Decisions_marketing
+
+	Employees struct {
+		Production_deltas []Delta[Employee]
+		Marketing_deltas  []Delta[Employee]
+
+		Severance_pay float32
+	}
+
+	Production struct {
+		Production_goal int
+		Machines        []Delta[Machine]
+		Logistics       []Delta[Warehouse]
+	}
+
+	Research Decisions_research
+}
+
+type Decisions_marketing struct {
+	Price float32
+
+	Product Decisions_product
+
+	Promotion struct {
+		Quantity         float64
+		Style_quality    float32
+		Style_ecology    float32
+		Style_ethics     float32
+		Style_durability float32
+	}
+}
+
 type Decisions_product struct {
 	Materials struct {
 		Quality          float32
@@ -114,50 +155,11 @@ type Decisions_product struct {
 }
 
 type Decisions_research struct {
-	Quality    float32
-	Durability float32
-	Ecology    float32
-	Promotion  float32
-	Speed      float32
-}
-
-type Decisions struct {
-	Predictions struct {
-		Sales_prediction int
-	}
-
-	Finances struct {
-		Set_bank_loan float64
-	}
-
-	Marketing struct {
-		Price float32
-
-		Product Decisions_product
-
-		Promotion struct {
-			Quantity         float64
-			Style_quality    float32
-			Style_ecology    float32
-			Style_ethics     float32
-			Style_durability float32
-		}
-	}
-
-	Employees struct {
-		Production_deltas []Delta[Employee]
-		Marketing_deltas  []Delta[Employee]
-
-		Severance_pay float32
-	}
-
-	Production struct {
-		Production_goal int
-		Machines        []Delta[Machine]
-		Logistics       []Delta[Warehouse]
-	}
-
-	Research Decisions_research
+	Quality         float32
+	Durability      float32
+	Ecology         float32
+	Promotion       float32
+	Production_cost float32
 }
 
 type Delta[V any] struct {
@@ -185,16 +187,17 @@ type Offer struct {
 }
 
 type Product struct {
-	Id               int
-	Name             string
-	Weight           float32
-	Material_use     float32
-	Production_speed float32
+	Id              int
+	Name            string
+	Weight          float32
+	Material_use    float32
+	Production_cost float32
 
-	Base_production_speed float32
-	Base_quality          float32
-	Base_ecology          float32
-	Base_durability       float32
+	Base_material_use    float32
+	Base_production_cost float32
+	Base_quality         float32
+	Base_ecology         float32
+	Base_durability      float32
 
 	Ethics_factor  float32 // TODO: Implement Ethicss Factor
 	Quality_factor float32

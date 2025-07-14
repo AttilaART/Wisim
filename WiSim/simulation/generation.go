@@ -323,8 +323,14 @@ func Load_game(path string) (Game_state, error) {
 
 	game_state = save.Game_state
 
-	for i := range game_state.Companies { // fix employee pointer stuff
+	for i := range game_state.Companies {
+		// fix employee pointer stuff
 		game_state.Companies[i].employee_pool = &game_state.Employees
+
+		// check if each product is valid
+		if err := check_product(game_state.Companies[i].Offer.Product); err != nil {
+			return game_state, err
+		}
 	}
 
 	game_state.Population = population

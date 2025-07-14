@@ -4,15 +4,11 @@
       "Product": {
         "Name": "Unnamed Product",
         "Weight": 1,
-        "Material_use": 1,
+        "Base_material_use": 1,
         "Base_quality": 1,
         "Base_ecology": 1,
         "Base_durability": 1,
-        "Base_production_speed": 1,
-        "Quality_factor": 1,
-        "Ecology_factor": 1,
-        "Coolness_factor": 1,
-        "Durabilty": 1
+        "Base_production_cost": 1
       },
       "Price": 100,
       "Marketing_quantity": 100000

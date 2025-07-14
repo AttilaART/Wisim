@@ -10,56 +10,36 @@
   import NumberInput from "./number_input.svelte";
   import { Calculate_product_stats } from "../wailsjs/go/main/App";
   import { get } from "svelte/store";
-  import { simulation } from "wailsjs/go/models";
+  import { simulation } from "../wailsjs/go/models";
 
   let unapplied_changes: boolean = $state(false);
 
-  let materials: {
-    Quality: number;
-    Ecology: number;
-    Ethical_sourcing: number;
-  } = $state({ ...current_decisions.Marketing.Product.Materials });
-
-  let manufacturing: {
-    Quality: number;
-    Ecological_energy: number;
-    Material_efficiency: number;
-    Durability: number;
-    Max_durability: number;
-  } = $state({ ...current_decisions.Marketing.Product.Manufacturing });
-  console.log(current_decisions.Marketing.Product.Manufacturing);
+  let product_decisions: simulation.Decisions_product = $state(
+    JSON.parse(JSON.stringify(current_decisions.Marketing.Product)),
+  );
 
   function cancel() {
-    materials = { ...current_decisions.Marketing.Product.Materials };
-    manufacturing = { ...current_decisions.Marketing.Product.Manufacturing };
+    product_decisions = JSON.parse(
+      JSON.stringify(current_decisions.Marketing.Product),
+    );
   }
 
   function apply() {
-    current_decisions.Marketing.Product.Materials = { ...materials };
-    current_decisions.Marketing.Product.Manufacturing = { ...manufacturing };
+    current_decisions.Marketing.Product = JSON.parse(
+      JSON.stringify(product_decisions),
+    );
   }
 
-  let product_stats = $state({
-    Quality: 0.5,
-    Ecology: 0.5,
-    Ethics: 0.5,
-    Durability: 0.5,
-  });
-
-  let manufacturing_stats = $state({
-    Speed: 0.5,
-    Cost: 0.5,
-    Weight: 0.5,
-  });
+  let temp_product_promise = $state(
+    Calculate_product_stats(
+      get(company_id),
+      product_decisions,
+      current_decisions.Research,
+    ),
+  );
 
   $effect(() => {
-    if (
-      isEqual(
-        manufacturing,
-        current_decisions.Marketing.Product.Manufacturing,
-      ) &&
-      isEqual(materials, current_decisions.Marketing.Product.Materials)
-    ) {
+    if (isEqual(product_decisions, current_decisions.Marketing.Product)) {
       unapplied_changes = false;
     } else {
       unapplied_changes = true;
@@ -67,17 +47,11 @@
   });
 
   $effect(() => {
-    (async () => {
-      let product_decisions = new simulation.Product_decisions();
-      product_decisions.Materials = materials;
-      product_decisions.Manufacturing = manufacturing;
-
-      company.Offer.Product = await Calculate_product_stats(
-        get(company_id),
-        product_decisions,
-        current_decisions.Research,
-      );
-    })();
+    temp_product_promise = Calculate_product_stats(
+      get(company_id),
+      product_decisions,
+      current_decisions.Research,
+    );
   });
 </script>
 
@@ -89,21 +63,21 @@
     <h2>Materials</h2>
     <p>Quality</p>
     <Slider
-      bind:Value={materials.Quality}
+      bind:Value={product_decisions.Materials.Quality}
       min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Ecology</p>
     <Slider
-      bind:Value={materials.Ecology}
+      bind:Value={product_decisions.Materials.Ecology}
       min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Ethical Sourcing</p>
     <Slider
-      bind:Value={materials.Ethical_sourcing}
+      bind:Value={product_decisions.Materials.Ethical_sourcing}
       min={0.1}
       max={5}
       options={{ step: 0.1 }}
@@ -118,58 +92,67 @@
     style="grid-row: 2; grid-column: 1 /span 2; border-right: var(--border-thin); border-top: var(--border-thin); display: flex; flex-direction: row; border-top-right-radius: var(--window-border-radius);"
   >
     <div style="flex: 1 1 40%;">
-      <h3>Product Stats</h3>
-      <table style="width: 100%;">
-        <tbody>
-          <tr>
-            <td>Quality:</td>
-            <td style="text-align: right;"
-              >{company.Offer.Product.Quality_factor}</td
-            >
-          </tr>
-          <tr>
-            <td>Ecology:</td>
-            <td style="text-align: right;"
-              >{company.Offer.Product.Ecology_factor}</td
-            >
-          </tr>
-          <tr>
-            <td>Ethics:</td>
-            <td style="text-align: right;"
-              >{company.Offer.Product.Ethics_factor}</td
-            >
-          </tr>
-          <tr>
-            <td>Durability:</td>
-            <td style="text-align: right;">{company.Offer.Product.Durabilty}</td
-            >
-          </tr>
-        </tbody>
-      </table>
+      {#await temp_product_promise}
+        <h3>Product Stats</h3>
+        <h4>Calculating...</h4>
+      {:then temp_product}
+        <h3>Product Stats</h3>
+        <table style="width: 100%;">
+          <tbody>
+            <tr>
+              <td>Quality:</td>
+              <td style="text-align: right;">
+                {format_number(temp_product.Quality_factor, false, 3)}
+              </td>
+            </tr>
+            <tr>
+              <td>Ecology:</td>
+              <td style="text-align: right;"
+                >{format_number(temp_product.Ecology_factor, false, 3)}</td
+              >
+            </tr>
+            <tr>
+              <td>Ethics:</td>
+              <td style="text-align: right;"
+                >{format_number(temp_product.Ethics_factor, false, 3)}</td
+              >
+            </tr>
+            <tr>
+              <td>Durability:</td>
+              <td style="text-align: right;"
+                >{format_number(temp_product.Durabilty, false, 0)} Mon</td
+              >
+            </tr>
+          </tbody>
+        </table>
+      {/await}
     </div>
     <div style="flex: 1 1 60%;">
-      <h3>Manufacturing Stats</h3>
-      <table style="width: 100%;">
-        <tbody>
-          <tr>
-            <td>Manufacturing Speed:</td>
-            <td style="text-align: right;"
-              >{company.Offer.Product.Base_production_speed}x</td
-            >
-          </tr>
-          <tr>
-            <td>Material Cost:</td>
-            <td style="text-align: right;"
-              >{company.Offer.Product.Material_use *
-                external_factors.Material_price}</td
-            >
-          </tr>
-          <tr>
-            <td>Weight:</td>
-            <td style="text-align: right;">{company.Offer.Product.Weight}</td>
-          </tr>
-        </tbody>
-      </table>
+      {#await temp_product_promise then temp_product}
+        <h3>Manufacturing Stats</h3>
+        <table style="width: 100%;">
+          <tbody>
+            <tr>
+              <td>Manufacturing cost:</td>
+              <td style="text-align: right;"
+                >{format_number(temp_product.Production_cost, false, 3)}x</td
+              >
+            </tr>
+            <tr>
+              <td>Material use:</td>
+              <td style="text-align: right;"
+                >{format_number(temp_product.Material_use, false, 3)}</td
+              >
+            </tr>
+            <tr>
+              <td>Weight:</td>
+              <td style="text-align: right;"
+                >{format_number(temp_product.Weight, false, 3)}</td
+              >
+            </tr>
+          </tbody>
+        </table>
+      {/await}
     </div>
   </div>
   <div
@@ -179,28 +162,28 @@
     <h2>Manufacturing</h2>
     <p>Quality</p>
     <Slider
-      bind:Value={manufacturing.Quality}
+      bind:Value={product_decisions.Manufacturing.Quality}
       min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Durability</p>
     <Slider
-      bind:Value={manufacturing.Durability}
+      bind:Value={product_decisions.Manufacturing.Durability}
       min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Ecological Energy usage</p>
     <Slider
-      bind:Value={manufacturing.Ecological_energy}
+      bind:Value={product_decisions.Manufacturing.Ecological_energy}
       min={0.1}
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
     <p>Material Efficiency</p>
     <Slider
-      bind:Value={manufacturing.Material_efficiency}
+      bind:Value={product_decisions.Manufacturing.Material_efficiency}
       min={0.1}
       max={5}
       options={{ step: 0.1 }}
@@ -208,7 +191,7 @@
     <p>Max durability</p>
     <h2>
       <NumberInput
-        value={manufacturing.Max_durability}
+        bind:value={product_decisions.Manufacturing.Max_durability}
         align_right={true}
         formatter={(value) => {
           return format_number(value, false, 0) + " Months";
