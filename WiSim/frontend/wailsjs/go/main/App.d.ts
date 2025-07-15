@@ -18,7 +18,7 @@ export function Get_unemployed(arg1:simulation.Employee_type):Promise<Array<simu
 
 export function Initial_app_load():Promise<void>;
 
-export function New_simulation(arg1:number):Promise<number>;
+export function New_simulation(arg1:number):Promise<simulation.External_factors>;
 
 export function Revert_simulation():Promise<number>;
 
@@ -26,4 +26,4 @@ export function Submit_decisions(arg1:number,arg2:simulation.Decisions):Promise<
 
 export function Temp_generate_new_emloyee(arg1:number,arg2:number,arg3:simulation.Employee_type):Promise<number>;
 
-export function Trigger_simulation(arg1:boolean):Promise<number>;
+export function Trigger_simulation(arg1:boolean):Promise<simulation.External_factors>;

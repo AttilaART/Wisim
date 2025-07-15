@@ -121,7 +121,6 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 		production_report,
 		&c.Reports[len(c.Reports)-1].Balance_sheet,
 		external_factors,
-		c.employee_pool.Get_employees_of_company(c.Id, Employee_type_production),
 	)
 }
 
@@ -217,18 +216,21 @@ func produce(
 	production_report *Production_report,
 	balance_sheet *Balance_sheet,
 	external_factors External_factors,
-	employees []*Employee,
 ) {
 	base_production := 0
 	bonus_production := 0
 
 	energy_use := 0.0
 	for _, m := range machines {
-		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(m, product.Production_cost, &employees)
+		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(m, product.Production_cost)
 		base_production += base_prod_of_machine
 		bonus_production += bonus_prod_of_machine
 
 		energy_use += float64(m.Energy_use)
+	}
+
+	if len(machines) <= 0 {
+		println("Company owns no machines!")
 	}
 
 	production_report.Products_produced = base_production + bonus_production
@@ -248,7 +250,7 @@ func produce(
 }
 
 // return (base production, bonus production)
-func calculate_machine_production(machine Machine, production_speed float32, employees *[]*Employee) (int, int) {
+func calculate_machine_production(machine Machine, production_speed float32) (int, int) {
 	// calculate averages
 	var skill float32 = 0
 	var motivation float32 = 0
@@ -259,6 +261,11 @@ func calculate_machine_production(machine Machine, production_speed float32, emp
 	}
 
 	if len(machine.Assigned_workers_ptr) < machine.Minimum_workers {
+		fmt.Printf("Machine has too few workers: %d instead of %d+", len(machine.Assigned_workers_ptr), machine.Minimum_workers)
+		return 0, 0
+	}
+
+	if len(machine.Assigned_workers_ptr) < 0 {
 		return 0, 0
 	}
 
@@ -269,15 +276,9 @@ func calculate_machine_production(machine Machine, production_speed float32, emp
 
 	}
 
-	num_assigned_workers := len(machine.Assigned_workers_ptr)
-
-	if num_assigned_workers > 0 {
-		return 0, 0
-	}
-
-	skill = skill / float32(num_assigned_workers)
-	motivation = motivation / float32(num_assigned_workers)
-	working_hours = working_hours / float32(num_assigned_workers)
+	skill = skill / float32(len(machine.Assigned_workers_ptr))
+	motivation = motivation / float32(len(machine.Assigned_workers_ptr))
+	working_hours = working_hours / float32(len(machine.Assigned_workers_ptr))
 
 	if skill <= 0 {
 		panic("skill is 0 or less")

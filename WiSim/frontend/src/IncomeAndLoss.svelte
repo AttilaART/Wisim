@@ -1,7 +1,7 @@
 <script lang="ts">
   import Close from "./assets/images/Close.svelte";
   import { format_currency } from "./helper.svelte";
-  import { month, company_id, error } from "./store.svelte";
+  import { company_id, error, external_factors } from "./store.svelte";
 
   export type Statement = Section[] | undefined | null;
   type StatementLine = {
@@ -35,10 +35,10 @@
     is_budget: boolean;
   } = $props();
   let income_promise: Promise<Statement> = $state(
-    get_income_statement($month, $company_id),
+    get_income_statement(external_factors.Month, $company_id),
   );
   let invoice_promise: Promise<Invoice[]> = $state(
-    get_invoice_log($month, $company_id),
+    get_invoice_log(external_factors.Month, $company_id),
   );
 
   let show_invoices = $state(false);

@@ -41,10 +41,10 @@ func (a *App) Initial_app_load() error { //
 	return nil
 }
 
-func (a *App) New_simulation(num_companies int) (int, error) {
+func (a *App) New_simulation(num_companies int) (simulation.External_factors, error) {
 	game_state.state = simulation.New_game(game_state.config, num_companies, "Test_ui")
 	game_state.is_loaded = true
-	return game_state.state.Step, nil
+	return game_state.state.External_factors, nil
 }
 
 func (a *App) Revert_simulation() (int, error) {
@@ -147,9 +147,9 @@ func (a *App) Submit_decisions(company int, decisions simulation.Decisions) erro
 	return nil
 }
 
-func (a *App) Trigger_simulation(force bool) (new_step int, err error) {
+func (a *App) Trigger_simulation(force bool) (exteral_factors simulation.External_factors, err error) {
 	if !game_state.is_loaded {
-		return 0, errors.New("game hasn't loaded yet")
+		return exteral_factors, errors.New("game hasn't loaded yet")
 	}
 
 	for i := range game_state.state.Decisions_submitted {
@@ -158,7 +158,7 @@ func (a *App) Trigger_simulation(force bool) (new_step int, err error) {
 		}
 
 		if !game_state.state.Decisions_submitted[i] {
-			return 0, errors.New("not all companies' decisions have been submitted")
+			return exteral_factors, errors.New("not all companies' decisions have been submitted")
 		}
 
 		fmt.Printf("decisions_loaded: %t\n", game_state.state.Decisions_submitted[i])
@@ -170,8 +170,8 @@ func (a *App) Trigger_simulation(force bool) (new_step int, err error) {
 	err = game_state.state.Simulate_step()
 	if err != nil {
 		(game_state.state) = old_game_state.state
-		return game_state.state.Step, err
+		return game_state.state.External_factors, err
 	}
 
-	return game_state.state.Step, nil
+	return game_state.state.External_factors, nil
 }

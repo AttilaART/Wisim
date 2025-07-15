@@ -29,6 +29,11 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	for _, o := range offers {
 		avg_price += o.Price
 	}
+
+	if len(offers) == 0 {
+		panic("len(offers) == 0; there are no offers!")
+	}
+
 	avg_price = avg_price / float32(len(offers))
 
 	t_before := time.Now()
@@ -97,6 +102,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		purchasing_statistics[i].Avr_price_factor /= float32(len(population.Population))
 		purchasing_statistics[i].Avr_ethics_factor /= float32(len(population.Population))
 		// purchasing_statistics[i].Avr_coolness_factor /= float32(len(population.Population))
+		purchasing_statistics[i].Avr_bang_for_buck_factor /= float32(len(population.Population))
 
 		purchasing_statistics[len(purchasing_statistics)-1].Products_sold += purchasing_statistics[i].Products_sold
 		purchasing_statistics[len(purchasing_statistics)-1].Product_demand += purchasing_statistics[i].Product_demand
@@ -110,6 +116,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor += purchasing_statistics[i].Avr_price_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_ethics_factor += purchasing_statistics[i].Avr_ethics_factor
 		// purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor += purchasing_statistics[i].Avr_coolness_factor
+		purchasing_statistics[len(purchasing_statistics)-1].Avr_bang_for_buck_factor += purchasing_statistics[i].Avr_bang_for_buck_factor
 	}
 
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor /= float32(len(purchasing_statistics) - 1)
@@ -154,23 +161,31 @@ func calculate_purchase(customer Customer, offers []Offer, avg_price float32, ex
 			continue
 		}
 
-		decision_factors[i] = (customer.Quality_preference*o.Product.Quality_factor +
-			customer.Ecology_preference*o.Product.Ecology_factor +
-			customer.Ethics_preference*o.Product.Ethics_factor +
-			// customer.Coolness_preference*o.Product.Coolness_factor +
-			customer.Price_preference*is_cheap(o, avg_price) +
-			customer.Bang_for_buck_preference*(o.Product.Quality_factor/o.Price) +
-			customer.Brand_loyalty_factor*customer.Loyalties[i]) * external_factors.Economic_situation_index
+		quality_factor := clamp(customer.Quality_preference*o.Product.Quality_factor, customer.Quality_preference*10)
+		durability_factor := clamp(customer.Durabilty_preference*float32(o.Product.Durabilty)*3, customer.Durabilty_preference*10)
+		ecology_factor := clamp(customer.Ecology_preference*o.Product.Ecology_factor, customer.Ecology_preference*10)
+		ethics_factor := clamp(customer.Ethics_preference*o.Product.Ethics_factor, customer.Ethics_preference*10)
+		price_factor := clamp(customer.Price_preference*is_cheap(o, avg_price), customer.Price_preference*10)
+		if o.Price <= 0 {
+			price_factor = customer.Price_preference * 10
+		}
+		bang_for_buck_factor := clamp(customer.Bang_for_buck_preference*(o.Product.Quality_factor/o.Price), customer.Bang_for_buck_preference*10)
+		if o.Price <= 0 {
+			bang_for_buck_factor = customer.Bang_for_buck_preference * 10
+		}
+		brand_loyalty_factor := clamp(customer.Brand_loyalty_factor*customer.Loyalties[i], customer.Brand_loyalty_factor*10)
+
+		decision_factors[i] = (quality_factor + ecology_factor + ethics_factor + price_factor + bang_for_buck_factor + brand_loyalty_factor) * external_factors.Economic_situation_index
 
 		(*purchasing_statistics)[i].Avr_decision_factor += decision_factors[i]
 		(*purchasing_statistics)[i].Avr_purchasing_threshold += customer.Purchashing_threshold
-		(*purchasing_statistics)[i].Avr_quality_factor += customer.Quality_preference * offers[i].Product.Quality_factor
-		(*purchasing_statistics)[i].Avr_durability_factor += customer.Durabilty_preference * float32(offers[i].Product.Durabilty)
-		(*purchasing_statistics)[i].Avr_ecology_factor += customer.Ecology_preference * offers[i].Product.Ecology_factor
-		(*purchasing_statistics)[i].Avr_price_factor += customer.Price_preference * is_cheap(offers[i], avg_price)
-		(*purchasing_statistics)[i].Avr_ethics_factor += customer.Ethics_preference * offers[i].Product.Ethics_factor
+		(*purchasing_statistics)[i].Avr_quality_factor += quality_factor
+		(*purchasing_statistics)[i].Avr_durability_factor += durability_factor
+		(*purchasing_statistics)[i].Avr_ecology_factor += ecology_factor
+		(*purchasing_statistics)[i].Avr_price_factor += price_factor
+		(*purchasing_statistics)[i].Avr_ethics_factor += ethics_factor
 		// (*purchasing_statistics)[i].Avr_coolness_factor += customer.Coolness_preference * offers[i].Product.Coolness_factor
-		(*purchasing_statistics)[i].Avr_bang_for_buck_factor += customer.Bang_for_buck_preference * (o.Product.Quality_factor / o.Price)
+		(*purchasing_statistics)[i].Avr_bang_for_buck_factor += bang_for_buck_factor
 	}
 
 	// Select product using weighted die
@@ -195,9 +210,11 @@ func calculate_purchase(customer Customer, offers []Offer, avg_price float32, ex
 }
 
 func is_cheap(offer Offer, avr_price float32) float32 {
-	difference_from_avg := (avr_price - offer.Price) / avr_price * 10
+	if offer.Price == avr_price {
+		return 0.5
+	}
 
-	return difference_from_avg
+	return 0.5 + (avr_price - offer.Price)
 }
 
 func choose_product(decision_factors []float32, purchasing_threshold float32) int {

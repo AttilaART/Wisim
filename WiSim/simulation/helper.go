@@ -45,7 +45,7 @@ type Number interface {
 }
 
 func clamp[V Number](num V, max V) V {
-	if float64(num) > float64(max) {
+	if num > max {
 		return max
 	}
 	return num
@@ -72,8 +72,12 @@ func (employee_pool Employee_pool) Find_employee_by_id(id int) *Employee {
 
 func (employee_pool *Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_of_company []*Employee) {
 	for i := range *employee_pool {
-		if (*employee_pool)[i].Employer == company_id && (*employee_pool)[i].Employee_type == employee_type {
-			employees_of_company = append(employees_of_company, &(*employee_pool)[i])
+		if (*employee_pool)[i].Employer == company_id {
+			if employee_type == Employee_type_all {
+				employees_of_company = append(employees_of_company, &(*employee_pool)[i])
+			} else if employee_type == (*employee_pool)[i].Employee_type {
+				employees_of_company = append(employees_of_company, &(*employee_pool)[i])
+			}
 		}
 	}
 
@@ -188,4 +192,49 @@ func check_product(p Product) error {
 	}
 
 	return nil
+}
+
+func avr[V Number](values []V) V {
+	var total V = 0
+
+	for _, n := range values {
+		total += n
+	}
+
+	return total / V(len(values))
+}
+
+func max[V Number](values []V) V {
+	var max_val V = 0
+
+	for _, n := range values {
+		if max_val < n {
+			max_val = n
+		}
+	}
+
+	return max_val
+}
+
+func min[V Number](values []V) V {
+	var min_val V = 0
+
+	for _, n := range values {
+		if min_val > n {
+			min_val = n
+		}
+	}
+
+	return min_val
+}
+
+func std_dev[V Number](values []V) V {
+	avr := avr(values)
+
+	var Sigma V = 0
+	for _, n := range values {
+		Sigma += (n - avr) * (n - avr)
+	}
+
+	return V(math.Sqrt(float64(Sigma) / float64(len(values))))
 }

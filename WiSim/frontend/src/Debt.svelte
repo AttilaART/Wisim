@@ -7,7 +7,6 @@
     current_decisions,
     external_factors,
     latest_reports,
-    month,
   } from "./store.svelte";
 
   import { int, simulation } from "../wailsjs/go/models";
@@ -50,7 +49,7 @@
 
 <div style="display: flex; flex-direction: column; height: calc(100% - 60px);">
   <div style="padding: 10px 20px 10px 20px;">
-    {#key get(month)}
+    {#key external_factors.Month}
       <h1 style="text-align: left;">Increase / Decrease Bank Loan</h1>
       <div style="display: flex; flex-direction: row; margin-bottom: 10px;">
         <Slider

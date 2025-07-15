@@ -69,6 +69,7 @@
         <footer>
           <button
             onclick={() => {
+              mode = "main_menu";
               popup.close();
             }}>OK</button
           >

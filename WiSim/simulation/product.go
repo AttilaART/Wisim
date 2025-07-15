@@ -14,7 +14,7 @@ func (c *Company) Calculate_product(
 	product.calculate_quality(research.Quality, c.employee_pool.Get_avr_skill(c.Id, Employee_type_production), product_decisions.Materials.Quality, product_decisions.Manufacturing.Quality)
 	product.calculate_durability(research.Durability, product_decisions.Manufacturing.Max_durability, product_decisions.Manufacturing.Durability)
 	product.calculate_ecology(research.Ecology, product_decisions.Manufacturing.Ecological_energy, product_decisions.Materials.Ecology)
-	product.calculate_production_speed(research.Production_cost, product_decisions.Manufacturing)
+	product.calculate_production_cost(research.Production_cost, product_decisions.Manufacturing)
 
 	err := check_product(product)
 	if err != nil {
@@ -52,9 +52,7 @@ func (product *Product) calculate_ecology(
 	material_ecology float32,
 ) float32 {
 	product.Base_ecology *= 1 + ecology_research/1000
-	product.Ecology_factor = (product.Base_ecology * material_ecology / (product.Material_use/1 +
-		percentage_of_ecological_energy/10 +
-		product.Quality_factor/10)) / 2 * float32(product.Durabilty) * 10
+	product.Ecology_factor = product.Base_ecology*(material_ecology*product.Material_use) + percentage_of_ecological_energy/20 + float32(product.Durabilty)/5
 	return product.Ecology_factor
 }
 
@@ -68,17 +66,16 @@ func (product *Product) calculate_quality(quality_research, production_skill, ma
 // Calculates Durabilty of product w/ side effects and returns value
 func (product *Product) calculate_durability(durability_research float32, max_durability int, durability_focus float32) int {
 	product.Base_durability *= 1 + durability_research/1000
-	product.Durabilty = int(math.Round(float64(product.Base_durability * product.Quality_factor * durability_focus * 2)))
+	product.Durabilty = int(math.Round(float64(product.Base_durability*product.Quality_factor + durability_focus*2)))
 
 	if product.Durabilty > max_durability {
-		println(max_durability)
 		product.Durabilty = max_durability
 	}
 
 	return product.Durabilty
 }
 
-func (product *Product) calculate_production_speed(
+func (product *Product) calculate_production_cost(
 	production_speed_research float32,
 	manufacturing struct {
 		Quality             float32
@@ -89,6 +86,6 @@ func (product *Product) calculate_production_speed(
 	},
 ) (production_speed float32) {
 	product.Base_production_cost *= 1 + production_speed_research/1000
-	product.Production_cost = product.Base_production_cost * manufacturing.Quality * manufacturing.Material_efficiency * manufacturing.Durability
+	product.Production_cost = product.Base_production_cost*manufacturing.Quality + product.Base_production_cost*manufacturing.Material_efficiency*manufacturing.Durability/10
 	return production_speed
 }

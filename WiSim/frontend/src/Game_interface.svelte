@@ -33,7 +33,7 @@
   import Window from "./Window.svelte";
   import Finances from "./Finances.svelte";
   import Marketing from "./Marketing.svelte";
-  import { company, current_decisions, loading, month } from "./store.svelte";
+  import { company, current_decisions } from "./store.svelte";
   import wallpaper from "./assets/images/gnomewallpaper.jpeg";
   import Production from "./Production.svelte";
   import Employees from "./Employees.svelte";

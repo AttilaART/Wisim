@@ -37,7 +37,7 @@
 
 <div style="display: flex; height: calc(100% - 58px);">
   <div
-    style="flex: 1 1 50%; border-right: var(--border); padding: 10px; overflow-y: scroll;"
+    style="flex: 1 1 50%; border-right: var(--border-thin); padding: 10px; overflow-y: scroll;"
   >
     <h2>Promotion Quantity</h2>
     <div style="display: flex;">

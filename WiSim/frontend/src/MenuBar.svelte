@@ -1,7 +1,21 @@
 <script lang="ts">
+  import { simulation } from "../wailsjs/go/models";
   import { new_window } from "./Game_interface.svelte";
   import { format_currency, format_number } from "./helper.svelte";
   import { company, external_factors, latest_reports } from "./store.svelte";
+
+  function get_total_number_of_products_sold(
+    reports: simulation.Report[],
+  ): number {
+    let total: number = 0;
+    for (let rep in reports) {
+      console.log(company.Reports[rep]);
+      total +=
+        company.Reports[rep].Sales_report.Company_sales_statistics
+          .Products_sold;
+    }
+    return total;
+  }
 </script>
 
 <div style="width: 100%; position: fixed; bottom: 0; right: 0; z-index: 99999;">
@@ -20,7 +34,7 @@
       <div style="padding-left: 3rem;">
         <small style="padding-left: 0.3rem;">Balance</small> <br />
         <h3 style={company.Balance < 0 ? "color: var(--red);" : ""}>
-          {format_currency(company.Balance, 0)}
+          {format_number(company.Balance, false, 0)}
         </h3>
       </div>
     </button>
@@ -50,6 +64,11 @@
   </div>
   <div id="bottom-section">
     <small style="padding-top: 0.1rem;">Month {external_factors.Month}</small>
+    <small style="padding-top: 0.1rem;"
+      >Total Products Sold: {get_total_number_of_products_sold(
+        company.Reports,
+      )}</small
+    >
     <small style="padding-top: 0.1rem;"
       >Sales last month: {latest_reports.Sales_report
         ? format_number(
@@ -104,11 +123,15 @@
 {#snippet difference_triangle(value: number, invert_color?: boolean)}
   {#if value !== undefined}
     {#if value > 0}
-      <span class="positve {invert_color ? 'inverted' : ''}">▲</span>
+      <span style="color: {invert_color ? 'var(--red)' : 'var(--green)'};"
+        >▲</span
+      >
     {:else if value == 0}
       <span>—</span>
     {:else}
-      <span class="negative {invert_color ? '-inverted' : ''}">▼</span>
+      <span style="color: {invert_color ? 'var(--green)' : 'var(--red)'};"
+        >▼</span
+      >
     {/if}
   {/if}
 {/snippet}
@@ -117,15 +140,6 @@
   * {
     --side-padding: 16.5rem;
     --balance-width: 16.5rem;
-  }
-
-  .positive,
-  .negative.inverted {
-    color: var(--green);
-  }
-  .negative,
-  .positive.inverted {
-    color: var(--red);
   }
 
   #top-section,

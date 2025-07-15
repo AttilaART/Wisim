@@ -7,7 +7,6 @@
   import { format_number } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
   import { current_decisions } from "./store.svelte";
-  import { company_id, month } from "./store.svelte";
 
   let unapplied_changes: boolean = $state(false);
 

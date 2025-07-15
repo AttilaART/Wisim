@@ -75,7 +75,7 @@
       max={5}
       options={{ step: 0.1 }}
     ></Slider>
-    <p>Ethical Sourcing</p>
+    <p>Ethical Sourcing (Not implemented)</p>
     <Slider
       bind:Value={product_decisions.Materials.Ethical_sourcing}
       min={0.1}
@@ -129,11 +129,11 @@
     </div>
     <div style="flex: 1 1 60%;">
       {#await temp_product_promise then temp_product}
-        <h3>Manufacturing Stats</h3>
+        <h3>Production Stats</h3>
         <table style="width: 100%;">
           <tbody>
             <tr>
-              <td>Manufacturing cost:</td>
+              <td>Production cost:</td>
               <td style="text-align: right;"
                 >{format_number(temp_product.Production_cost, false, 3)}x</td
               >

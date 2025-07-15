@@ -406,6 +406,7 @@ export namespace simulation {
 	export class Personelle_sub_report {
 	    Number_of_employees: number;
 	    Number_of_hires: number;
+	    Number_of_departures: number;
 	    Avg_pay: number;
 	    Minimum_pay: number;
 	    Maximum_pay: number;
@@ -414,6 +415,14 @@ export namespace simulation {
 	    Maximum_skill: number;
 	    Avg_skill: number;
 	    Standard_dev_skill: number;
+	    Minimum_motivation: number;
+	    Maximum_motivation: number;
+	    Avg_motivation: number;
+	    Standard_dev_motivation: number;
+	    Minimum_productivity: number;
+	    Maximum_productivity: number;
+	    Avg_productivity: number;
+	    Standard_dev_productivity: number;
 	
 	    static createFrom(source: any = {}) {
 	        return new Personelle_sub_report(source);
@@ -423,6 +432,7 @@ export namespace simulation {
 	        if ('string' === typeof source) source = JSON.parse(source);
 	        this.Number_of_employees = source["Number_of_employees"];
 	        this.Number_of_hires = source["Number_of_hires"];
+	        this.Number_of_departures = source["Number_of_departures"];
 	        this.Avg_pay = source["Avg_pay"];
 	        this.Minimum_pay = source["Minimum_pay"];
 	        this.Maximum_pay = source["Maximum_pay"];
@@ -431,6 +441,14 @@ export namespace simulation {
 	        this.Maximum_skill = source["Maximum_skill"];
 	        this.Avg_skill = source["Avg_skill"];
 	        this.Standard_dev_skill = source["Standard_dev_skill"];
+	        this.Minimum_motivation = source["Minimum_motivation"];
+	        this.Maximum_motivation = source["Maximum_motivation"];
+	        this.Avg_motivation = source["Avg_motivation"];
+	        this.Standard_dev_motivation = source["Standard_dev_motivation"];
+	        this.Minimum_productivity = source["Minimum_productivity"];
+	        this.Maximum_productivity = source["Maximum_productivity"];
+	        this.Avg_productivity = source["Avg_productivity"];
+	        this.Standard_dev_productivity = source["Standard_dev_productivity"];
 	    }
 	}
 	export class Personelle_report {

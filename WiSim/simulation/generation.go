@@ -56,6 +56,13 @@ func generate_population(
 		return nil, errors.New("max_base_need must be >= min_base_need")
 	}
 
+	if bang_for_buck_bias <= 0 {
+		println("bang_for_buck_bias <= 0")
+	}
+	if bang_for_buck_spread <= 0 {
+		println("bang_for_buck_spread <= 0")
+	}
+
 	avr_max_price := 0.0
 
 	var wg sync.WaitGroup
@@ -180,7 +187,7 @@ func (g *Game_state) generate_companies(
 func New_game(sim_config Sim_config, number_of_companies int, game_name string) Game_state {
 	var game_state Game_state
 
-	game_state.Step = 0
+	game_state.Step = 1
 	game_state.Step_simulated = false
 	game_state.Game_name = game_name
 

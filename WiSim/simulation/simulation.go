@@ -257,6 +257,7 @@ const (
 	Employee_type_production = iota
 	Employee_type_marketing
 	Employee_type_executive
+	Employee_type_all = -1
 )
 
 const (
@@ -416,8 +417,9 @@ type Personelle_report struct {
 }
 
 type Personelle_sub_report struct {
-	Number_of_employees float32
-	Number_of_hires     float32
+	Number_of_employees  int
+	Number_of_hires      int
+	Number_of_departures int
 
 	Avg_pay          float32
 	Minimum_pay      float32
@@ -429,9 +431,15 @@ type Personelle_sub_report struct {
 	Avg_skill          float32
 	Standard_dev_skill float32
 
-	avg_productivity     float32
-	minimum_productivity float32
-	maximum_productivity float32
+	Minimum_motivation      float32
+	Maximum_motivation      float32
+	Avg_motivation          float32
+	Standard_dev_motivation float32
+
+	Minimum_productivity      float32
+	Maximum_productivity      float32
+	Avg_productivity          float32
+	Standard_dev_productivity float32
 }
 
 type Production_report struct {
@@ -653,6 +661,19 @@ func (game_state *Game_state) Simulate_step() error {
 	// game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_coolness_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor
 	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_bang_for_buck_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_bang_for_buck_factor
 
+	//for range game_state.Market_sales_statistics {
+	//	println("----------")
+	//	fmt.Printf("%f \n", game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_decision_factor)
+	//	fmt.Printf("%f \n", game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_purchasing_threshold)
+	//	fmt.Printf("%f \n", game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_quality_factor)
+	//	fmt.Printf("%f \n", game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_durability_factor)
+	//	fmt.Printf("%f \n", game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ecology_factor)
+	//	fmt.Printf("%f \n", game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_price_factor)
+	//	fmt.Printf("%f \n", game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ethics_factor)
+	//	fmt.Printf("%f \n", game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_bang_for_buck_factor)
+	//	println("----------")
+	//}
+
 	for i := range game_state.Companies {
 		fmt.Printf("Compiling reports for company %d\n", i)
 		game_state.Companies[i].compile_reports(
@@ -678,8 +699,19 @@ func (game_state *Game_state) Simulate_step() error {
 	printer := message.NewPrinter(language.Swedish)
 	for i, c := range game_state.Companies {
 		printer.Printf("Company %d: %s:\n", i, c.Name)
+		printer.Printf("Products produced: %d\n", c.Reports[len(c.Reports)-1].Production_report.Products_produced)
 		printer.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
 		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_Report.Non_operating_expenses.Net_income)
+		println("")
+		printer.Printf("Number of employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Number_of_employees)
+		printer.Printf("Number of production employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.Production.Number_of_employees)
+		printer.Printf("Number of marketing employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.Marketing.Number_of_employees)
+		printer.Printf("Number of hires: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Number_of_hires)
+		printer.Printf("Number of departures: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Number_of_departures)
+		printer.Printf("Avr Pay: %.2f\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Avg_pay)
+		printer.Printf("Avr Skill: %.2f\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Avg_skill)
+		printer.Printf("Avr Motivation: %.2f\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Avg_motivation)
+		printer.Printf("Avr Productivity: %.2f\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Avg_productivity)
 		println("")
 	}
 
@@ -729,7 +761,78 @@ func (company *Company) compile_reports(
 	// Finance
 	company.calculate_budget(decisions, external_factors)
 
+	// Personelle
+	company.Reports[len(company.Reports)-1].Personelle_report = company.compile_personelle_report(decisions)
+
 	return nil
+}
+
+func (c *Company) compile_personelle_report(decisions Decisions) Personelle_report {
+	personelle_report := Personelle_report{}
+
+	personelle_report.General = c.compile_personelle_subreport(decisions, Employee_type_all)
+	personelle_report.Marketing = c.compile_personelle_subreport(decisions, Employee_type_marketing)
+	personelle_report.Production = c.compile_personelle_subreport(decisions, Employee_type_production)
+
+	return personelle_report
+}
+
+func (c *Company) compile_personelle_subreport(decisions Decisions, employee_type Employee_type) Personelle_sub_report {
+	var sub_report Personelle_sub_report
+	employees := c.employee_pool.Get_employees_of_company(c.Id, employee_type)
+
+	sub_report.Number_of_employees = len(employees)
+
+	var employee_deltas []Delta[Employee] // We can trust that the employees exist because we checked this when "simulating employees"
+	if employee_type == Employee_type_marketing {
+		employee_deltas = decisions.Employees.Marketing_deltas
+	} else if employee_type == Employee_type_production {
+		employee_deltas = decisions.Employees.Production_deltas
+	} else if employee_type == Employee_type_all {
+		employee_deltas = decisions.Employees.Production_deltas
+		employee_deltas = append(employee_deltas, decisions.Employees.Marketing_deltas...)
+	}
+
+	for _, e_delta := range employee_deltas {
+		if e_delta.Change == Delta_New {
+			sub_report.Number_of_hires += 1
+		} else if e_delta.Change == Delta_Remove {
+			sub_report.Number_of_departures += 1
+		}
+	}
+
+	pay := make([]float32, len(employees))
+	skill := make([]float32, len(employees))
+	motivation := make([]float32, len(employees))
+	productivity := make([]float32, len(employees))
+	for i, e := range employees {
+		pay[i] = e.Pay
+		skill[i] = e.Skill
+		motivation[i] = e.Motivation
+		productivity[i] = e.Motivation * e.Skill * e.Working_hours // TODO: Make sure this is actually accurate
+	}
+
+	sub_report.Avg_pay = avr(pay)
+	sub_report.Maximum_pay = max(pay)
+	sub_report.Minimum_pay = min(pay)
+	sub_report.Standard_dev_pay = std_dev(pay)
+
+	sub_report.Avg_skill = avr(skill)
+	sub_report.Maximum_skill = max(skill)
+	sub_report.Minimum_skill = min(skill)
+	sub_report.Standard_dev_skill = std_dev(skill)
+
+	sub_report.Avg_motivation = avr(motivation)
+	sub_report.Maximum_motivation = max(motivation)
+	sub_report.Minimum_motivation = min(motivation)
+	sub_report.Standard_dev_motivation = std_dev(motivation)
+
+	sub_report.Avg_productivity = avr(productivity)
+	sub_report.Maximum_productivity = max(productivity)
+	sub_report.Minimum_productivity = min(productivity)
+	sub_report.Standard_dev_productivity = std_dev(productivity)
+
+	return sub_report
 }
 
 func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics, Market_products_sold int) Sales_report {

@@ -9,7 +9,7 @@ import {
   Trigger_simulation,
 } from "../wailsjs/go/main/App";
 import { int, simulation } from "../wailsjs/go/models";
-import { company_id, current_decisions, month, update_decisions, update_external_factors, update_reports, latest_reports, update_company, company } from "./store.svelte";
+import { company_id, current_decisions, update_decisions, update_external_factors, update_reports, latest_reports, update_company, company, external_factors } from "./store.svelte";
 import { Statement, Invoice } from "./IncomeAndLoss.svelte";
 
 export async function initial_app_load(): Promise<void> {
@@ -17,21 +17,20 @@ export async function initial_app_load(): Promise<void> {
 }
 
 export async function start_new_game() {
-  month.set(await New_simulation(1))
+  update_external_factors(await New_simulation(1));
   update_company(await Get_company(get(company_id)))
 
-  update_external_factors(await Get_external_factors());
-  update_decisions(await Get_decisions(get(company_id), get(month)));
+  update_decisions(await Get_decisions(get(company_id), external_factors.Month));
 }
 
 export async function trigger_simulation(force?: boolean) {
   await Submit_decisions(get(company_id), current_decisions)
-  month.set(await Trigger_simulation(Boolean(force)))
+
+  update_external_factors(await Trigger_simulation(force))
   update_company(await Get_company(get(company_id)))
   update_reports(company.Reports[company.Reports.length - 1])
 
-  update_external_factors(await Get_external_factors());
-  update_decisions(await Get_decisions(get(company_id), get(month)));
+  update_decisions(await Get_decisions(get(company_id), external_factors.Month));
 }
 
 export async function Get_budget(month: number, company: number): Promise<Statement> {
