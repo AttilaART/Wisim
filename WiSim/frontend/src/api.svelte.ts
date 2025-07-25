@@ -12,6 +12,12 @@ import { int, simulation } from "../wailsjs/go/models";
 import { company_id, current_decisions, update_decisions, update_external_factors, update_reports, latest_reports, update_company, company, external_factors } from "./store.svelte";
 import { Statement, Invoice } from "./IncomeAndLoss.svelte";
 
+export enum Delta {
+  Delta_New = 1,
+  Delta_Change,
+  Delta_Remove,
+}
+
 export async function initial_app_load(): Promise<void> {
   return Initial_app_load()
 }

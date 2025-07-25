@@ -12,6 +12,7 @@
     external_factors,
   } from "./store.svelte";
   import EmployeeCard from "./EmployeeCard.svelte";
+  import { Delta } from "./api.svelte";
 
   let page: string = $state("machines");
   let production_goal: number = $derived(
@@ -84,9 +85,15 @@
   function sell_machine(machine_index: number) {
     // TODO: Get money back when selling
     console.log("machine_sold");
-    company.Balance +=
-      current_decisions.Production.Machines[machine_index].Value;
-    current_decisions.Production.Machines.splice(machine_index, 1);
+    company.Balance += company.Machines[machine_index].Value;
+
+    let delta: simulation.Delta_WiSim_simulation_Machine_ =
+      new simulation.Delta_WiSim_simulation_Machine_();
+    delta.Item = company.Machines[machine_index];
+    delta.Change = Delta.Delta_Remove;
+
+    current_decisions.Production.Machines.push(delta);
+    company.Machines.splice(machine_index, 1);
   }
 
   function sell_warehouse(warehouse_index: number) {
@@ -223,8 +230,7 @@
             <button
               style="width: 100%; background-color: var(--green);"
               onclick={() => {
-                let dialogue: HTMLDialogElement =
-                  document.getElementById("buy_machine");
+                let dialogue: any = document.getElementById("buy_machine");
                 dialogue.showModal();
               }}
               >Buy: {format_currency(
@@ -243,14 +249,12 @@
             <footer style="display: flex; gap: 10px;">
               <button
                 onclick={() => {
-                  let dialogue: HTMLDialogElement =
-                    document.getElementById("buy_machine");
+                  let dialogue: any = document.getElementById("buy_machine");
                   dialogue.close();
                 }}>No</button
               ><button
                 onclick={() => {
-                  let dialogue: HTMLDialogElement =
-                    document.getElementById("buy_machine");
+                  let dialogue: any = document.getElementById("buy_machine");
                   dialogue.close();
                   buy_machine();
                 }}>Yes</button
@@ -258,31 +262,32 @@
             </footer>
           </dialog>
         </div>
-        {#each current_decisions.Production.Machines as m, m_idnex}
-          <div
-            transition:fly
-            style="display: flex; border: var(--border-thin); border-radius: var(--border-radius); margin: 10px;"
-          >
-            <div style="  padding: 10px; flex: 1 0 40%; text-align: left;">
-              <p>Machine</p>
-              <small>Base Production Capacity</small>
-              <p>{m.Production_capacity} items/month</p>
-              <small>Min / Max Required Employees</small>
-              <p>{m.Minimum_workers} / {m.Required_workers}</p>
-              <small>Energy Use</small>
-              <p>{m.Energy_use} kWh/month</p>
-              <button
-                style="width: 100%; background-color: var(--red);"
-                onclick={() => {
-                  let dialogue: HTMLDialogElement = document.getElementById(
-                    `sell_machine_${m_idnex}`,
-                  );
-                  dialogue.showModal();
-                }}>Sell: {format_currency(m.Value, 0)}</button
-              >
-            </div>
+        {#key company.Machines}
+          {#each company.Machines as m, m_idnex}
+            <div
+              transition:fly
+              style="display: flex; border: var(--border-thin); border-radius: var(--border-radius); margin: 10px;"
+            >
+              <div style="  padding: 10px; flex: 1 0 40%; text-align: left;">
+                <p>Machine</p>
+                <small>Base Production Capacity</small>
+                <p>{m.Production_capacity} items/month</p>
+                <small>Min / Max Required Employees</small>
+                <p>{m.Minimum_workers} / {m.Required_workers}</p>
+                <small>Energy Use</small>
+                <p>{m.Energy_use} kWh/month</p>
+                <button
+                  style="width: 100%; background-color: var(--red);"
+                  onclick={() => {
+                    let dialogue: any = document.getElementById(
+                      `sell_machine_${m_idnex}`,
+                    );
+                    dialogue.showModal();
+                  }}>Sell: {format_currency(m.Value, 0)}</button
+                >
+              </div>
 
-            <!--<div
+              <!--<div
               style="display: flex; flex-wrap: wrap; gap: 10px; margin: 10px; overflow-y: scroll; max-height: 100%;"
             >
               {#each m.Assigned_workers_ids as w_id}
@@ -294,34 +299,35 @@
                 <EmployeeCard employee_data={undefined}></EmployeeCard>
               {/each}
             </div>-->
-          </div>
+            </div>
 
-          <dialog id="sell_machine_{m_idnex}">
-            <article>
-              Are you sure you want to sell this machine for {format_currency(
-                m.Value,
-              )}
-            </article>
-            <footer style="display: flex; gap: 10px;">
-              <button
-                onclick={() => {
-                  let dialogue: HTMLDialogElement = document.getElementById(
-                    `sell_machine_${m_idnex}`,
-                  );
-                  dialogue.close();
-                }}>No</button
-              ><button
-                onclick={() => {
-                  let dialogue: HTMLDialogElement = document.getElementById(
-                    `sell_machine_${m_idnex}`,
-                  );
-                  dialogue.close();
-                  sell_machine(m_idnex);
-                }}>Yes</button
-              >
-            </footer>
-          </dialog>
-        {/each}
+            <dialog id="sell_machine_{m_idnex}">
+              <article>
+                Are you sure you want to sell this machine for {format_currency(
+                  m.Value,
+                )}
+              </article>
+              <footer style="display: flex; gap: 10px;">
+                <button
+                  onclick={() => {
+                    let dialogue: any = document.getElementById(
+                      `sell_machine_${m_idnex}`,
+                    );
+                    dialogue.close();
+                  }}>No</button
+                ><button
+                  onclick={() => {
+                    let dialogue: any = document.getElementById(
+                      `sell_machine_${m_idnex}`,
+                    );
+                    dialogue.close();
+                    sell_machine(m_idnex);
+                  }}>Yes</button
+                >
+              </footer>
+            </dialog>
+          {/each}
+        {/key}
       </div>
     </div>
   </div>
@@ -405,8 +411,7 @@
         <br />
         <button
           onclick={() => {
-            let dialogue: HTMLDialogElement =
-              document.getElementById("buy_new");
+            let dialogue: any = document.getElementById("buy_new");
             dialogue.showModal();
           }}
           style="background-color: var(--green);"
@@ -420,14 +425,12 @@
           <footer style="display: flex; gap: 10px;">
             <button
               onclick={() => {
-                let dialogue: HTMLDialogElement =
-                  document.getElementById("buy_new");
+                let dialogue: any = document.getElementById("buy_new");
                 dialogue.close();
               }}>No</button
             ><button
               onclick={() => {
-                let dialogue: HTMLDialogElement =
-                  document.getElementById("buy_new");
+                let dialogue: any = document.getElementById("buy_new");
                 dialogue.close();
                 buy_warehouse();
               }}>Yes</button
@@ -435,7 +438,7 @@
           </footer>
         </dialog>
       </div>
-      {#each current_decisions.Production.Logistics as warehouse, w_index}
+      {#each company.Warehouses as warehouse, w_index}
         <div
           transition:fly
           style="border: var(--border-thin); border-radius: var(--border-radius); padding: 10px; flex: 1 1 45%; max-width: calc(50% - 30px); height: fit-content;"
@@ -461,9 +464,7 @@
           <br />
           <button
             onclick={() => {
-              let dialogue: HTMLDialogElement = document.getElementById(
-                `sell_${w_index}`,
-              );
+              let dialogue: any = document.getElementById(`sell_${w_index}`);
               dialogue.showModal();
             }}
             style="background-color: var(--red);"
@@ -478,14 +479,14 @@
             <footer style="display: flex; gap: 10px;">
               <button
                 onclick={() => {
-                  let dialogue: HTMLDialogElement = document.getElementById(
+                  let dialogue: any = document.getElementById(
                     `sell_${w_index}`,
                   );
                   dialogue.close();
                 }}>No</button
               ><button
                 onclick={() => {
-                  let dialogue: HTMLDialogElement = document.getElementById(
+                  let dialogue: any = document.getElementById(
                     `sell_${w_index}`,
                   );
                   dialogue.close();

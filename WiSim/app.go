@@ -3,10 +3,9 @@ package main
 import (
 	"WiSim/simulation"
 	"context"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
+	"log"
 )
 
 // App struct
@@ -26,14 +25,10 @@ func (a *App) startup(ctx context.Context) {
 }
 
 func (a *App) Initial_app_load() error { //
-	sim_config_file, err := os.ReadFile(program_info.Data_dir + "config/sim_config.json")
+	var err error
+	game_state.config, err = simulation.Load_sim_config(program_info.Data_dir + "config/sim_config.json")
 	if err != nil {
-		return errors.New("error loading sim_config.json at '" + program_info.Data_dir + "config/sim_config.json'")
-	}
-
-	err = json.Unmarshal(sim_config_file, &game_state.config)
-	if err != nil {
-		return errors.New("error in sim_config.json")
+		log.Fatal("An Error occured while loading config: ", err)
 	}
 
 	println("app loaded successfully")

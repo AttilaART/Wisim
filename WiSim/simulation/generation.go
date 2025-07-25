@@ -20,6 +20,21 @@ import (
 
 // Game setup functions
 
+func Load_sim_config(path string) (Sim_config, error) {
+	sim_config_file, err := os.ReadFile(path)
+	if err != nil {
+		return Sim_config{}, errors.New("error loading sim_config at '" + path + "'")
+	}
+
+	var sim_config Sim_config
+	err = json.Unmarshal(sim_config_file, &sim_config)
+	if err != nil {
+		return Sim_config{}, errors.New("error in sim_config.json")
+	}
+
+	return sim_config, nil
+}
+
 func generate_population(
 	population_size int,
 
