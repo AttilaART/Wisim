@@ -2,10 +2,7 @@ package main
 
 import (
 	"WiSim/simulation"
-	"bytes"
-	"encoding/json"
 	"fmt"
-	"io"
 	"log"
 	"net/http"
 	"os"
@@ -13,29 +10,29 @@ import (
 	"strconv"
 	"sync"
 
-	"golang.org/x/net/websocket"
+	"github.com/gorilla/websocket"
+	"github.com/mitchellh/mapstructure"
 )
 
 const (
-	method_len      = 5
-	min_message_len = 8 // eg.: gDecs {}
+	method_len = 5
 )
 
 type Server struct {
 	conns       map[*websocket.Conn]Player
 	conns_mutex sync.Mutex
 
-	methods map[string]func(*Server, *websocket.Conn, []byte)
+	methods map[string]func(*Server, *websocket.Conn, Message[any])
 }
 
 func NewServer() *Server {
 	return &Server{
 		conns:   make(map[*websocket.Conn]Player),
-		methods: make(map[string]func(*Server, *websocket.Conn, []byte)),
+		methods: make(map[string]func(*Server, *websocket.Conn, Message[any])),
 	}
 }
 
-func (s *Server) addMethod(method_name string, method_func func(*Server, *websocket.Conn, []byte)) {
+func (s *Server) addMethod(method_name string, method_func func(*Server, *websocket.Conn, Message[any])) {
 	s.methods[method_name] = method_func
 }
 
@@ -49,40 +46,40 @@ func (s *Server) handleWS(ws *websocket.Conn) {
 	s.readLoop(ws)
 }
 
-func (s *Server) broadcast(message []byte) {
+func broadcast[V any](s *Server, message Message[V]) error {
 	for client := range s.conns {
-		client.Write(message)
+		err := client.WriteJSON(message)
+		if err != nil {
+			return err
+		}
 	}
+
+	return nil
 }
 
 func (s *Server) readLoop(ws *websocket.Conn) {
-	buf := make([]byte, 1024)
 	for {
-		length_read, err := ws.Read(buf)
+		message := Message[any]{}
+		err := ws.ReadJSON(&message)
 		if err != nil {
-			if err == io.EOF {
-				break
+			err := ws.WriteJSON(Message[any]{Method: "", IsResponse: true, Error: err.Error()})
+			if err != nil {
+				println("Unexpected Error durng JSON encoding: ", err.Error())
 			}
-			println("Read Error: ", err)
-			continue
 		}
-		message := buf[:length_read]
 
-		if len(message) < min_message_len {
-			println("Invalid method: message too short")
-		}
-		fmt.Printf("Recieving message: %s\n", string(message))
+		fmt.Printf("Recieving message: %+v\n", message)
 
-		method := message[:method_len]
-
-		method_func, method_exists := s.methods[string(method)]
+		method_func, method_exists := s.methods[message.Method]
 		if !method_exists {
-			fmt.Fprintf(ws, "RE %s ER \"invalid method\"", method)
-			fmt.Printf("RE %s ER \"invalid method\"", method)
+			err := ws.WriteJSON(Message[any]{Method: message.Method, IsResponse: true, Error: "given method doesn't exist"})
+			if err != nil {
+				println("Unexpected Error durng JSON encoding: ", err.Error())
+			}
 			continue
 		}
 
-		method_func(s, ws, message[method_len:])
+		method_func(s, ws, message)
 	}
 }
 
@@ -90,6 +87,13 @@ type Player struct {
 	Active  bool
 	Ready   bool
 	Company int
+}
+
+type Message[V any] struct {
+	Method     string
+	IsResponse bool
+	Error      string
+	Data       *V
 }
 
 var (
@@ -103,6 +107,12 @@ var (
 	gamestate  simulation.Game_state
 )
 
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
+}
+
 const USAGE_MESSAGE = "USAGE: ./server <Desired Port> <Num Players> <New/Load> <Game_filepath/name>"
 
 const (
@@ -115,114 +125,99 @@ const (
 	error_json              = "error_json"
 )
 
-func getDecisions(s *Server, ws *websocket.Conn, _ []byte) {
-	reply := bytes.NewBuffer(make([]byte, 0))
-	defer func() { ws.Write(reply.Bytes()) }()
-
-	fmt.Fprint(reply, "RE gDecs ")
-
-	if len(gamestate.Companies) <= s.conns[ws].Company {
-		fmt.Fprint(reply, "ER ", error_invalid_company)
-		return
-	}
-
-	json, err := json.Marshal(
-		(gamestate.Companies[s.conns[ws].Company].Get_decisions()))
-	if err != nil {
-		fmt.Fprint(reply, "ER ", error_json)
-		return
-	}
-
-	reply.Write(json)
-}
-
-func getCompany(s *Server, ws *websocket.Conn, _ []byte) {
-	reply := bytes.NewBuffer(make([]byte, 0))
-	defer func() { ws.Write(reply.Bytes()) }()
-
-	fmt.Fprint(reply, "RE gComp ")
+func getDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.Decisions]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
 
 	if len(gamestate.Companies) <= s.conns[ws].Company {
-		fmt.Fprint(reply, "ER ", error_invalid_company)
+		reply.Error = error_invalid_company
 		return
 	}
 
-	json, err := json.Marshal(
-		gamestate.Companies[s.conns[ws].Company])
-	if err != nil {
-		fmt.Fprint(reply, "ER ", error_json)
-		return
-	}
-
-	fmt.Fprint(reply, "OK ")
-	reply.Write(json)
+	decisions := gamestate.Companies[s.conns[ws].Company].Get_decisions()
+	reply.Data = &decisions
 }
 
-func getExternalFactors(s *Server, ws *websocket.Conn, _ []byte) {
-	reply := bytes.NewBuffer(make([]byte, 0))
-	defer func() { ws.Write(reply.Bytes()) }()
-
-	fmt.Fprint(reply, "RE gExFa ")
+func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.Company]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
 
 	if len(gamestate.Companies) <= s.conns[ws].Company {
-		fmt.Fprint(reply, "ER ", error_invalid_company)
+		reply.Error = error_invalid_company
 		return
 	}
 
-	json, err := json.Marshal(
-		(gamestate.External_factors))
-	if err != nil {
-		fmt.Fprint(reply, "ER ", error_json)
-		return
-	}
-
-	fmt.Fprint(reply, "OK ")
-	reply.Write(json)
+	company := gamestate.Companies[s.conns[ws].Company]
+	reply.Data = &company
 }
 
-func setDecisions(s *Server, ws *websocket.Conn, message []byte) {
-	reply := bytes.NewBuffer(make([]byte, 0))
-	defer func() { ws.Write(reply.Bytes()) }()
+func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.External_factors]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
 
-	fmt.Fprint(reply, "RE sDecs ")
+	external_factors := gamestate.External_factors
+	reply.Data = &external_factors
+}
+
+func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[any]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
 
 	decisions := simulation.Decisions{}
-	err := json.Unmarshal(message[7:], &decisions)
+	err := mapstructure.Decode(message.Data, decisions)
 	if err != nil {
-		fmt.Fprint(reply, "ER ", error_json)
+		reply.Error = err.Error()
 		return
 	}
 
 	if len(gamestate.Companies) <= s.conns[ws].Company {
-		fmt.Fprint(reply, "ER ", error_invalid_company)
+		reply.Error = error_invalid_company
 		return
 	}
-	gamestate.Current_decisions[s.conns[ws].Company] = decisions
 
-	fmt.Fprint(reply, "OK {}")
+	gamestate.Current_decisions[s.conns[ws].Company] = decisions
 }
 
-func setReady(s *Server, ws *websocket.Conn, message []byte) {
-	reply := bytes.NewBuffer(make([]byte, 0))
-	defer func() { ws.Write(reply.Bytes()) }()
-
-	fmt.Fprint(reply, "RE sRedy ")
+func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[any]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
 
 	s.conns_mutex.Lock()
 	player, exists := s.conns[ws]
 	if !exists {
 		s.conns_mutex.Unlock()
-		fmt.Fprint(reply, "ER ", error_unexpected)
+		reply.Error = error_unexpected
 		return
 	}
 
 	player.Ready = true
 	s.conns[ws] = player
-	s.conns_mutex.Unlock()
 
-	fmt.Fprint(reply, "OK {}")
-
-	s.conns_mutex.Lock()
 	for client := range s.conns {
 		if !s.conns[client].Ready {
 			s.conns_mutex.Unlock()
@@ -233,103 +228,94 @@ func setReady(s *Server, ws *websocket.Conn, message []byte) {
 	runSimulation(s)
 }
 
-func setUnReady(s *Server, ws *websocket.Conn, message []byte) {
-	reply := bytes.NewBuffer(make([]byte, 0))
-	defer func() { ws.Write(reply.Bytes()) }()
-
-	fmt.Fprint(reply, "RE sURdy ")
+func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[any]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
 
 	s.conns_mutex.Lock()
 	player, exists := s.conns[ws]
 	if !exists {
 		s.conns_mutex.Unlock()
-		fmt.Fprint(reply, "ER ", error_unexpected)
+		reply.Error = error_unexpected
 		return
 	}
 
 	player.Ready = false
 	s.conns[ws] = player
 	s.conns_mutex.Unlock()
-
-	fmt.Fprint(reply, "OK {}")
 }
 
 func runSimulation(s *Server) {
-	s.broadcast(([]byte)("bSimS {}"))
+	broadcast(s, Message[any]{Method: "bSim_starting", IsResponse: false})
 
-	result := struct {
-		Success bool
-		Message string
-	}{true, ""}
+	sim_done_message := Message[any]{Method: "bSim_done", IsResponse: false}
+	defer func() {
+		err := broadcast(s, sim_done_message)
+		if err != nil {
+			println("Error broadcasting JSON to websockets: ", err.Error())
+		}
+	}()
 
 	defer func() {
 		if r := recover(); r != nil {
-			result.Message = fmt.Sprint("Unxpected Error: ", r)
-			result.Success = false
+			sim_done_message.Error = fmt.Sprint("Critical Simulation Error: ", r)
 		}
-
-		result_json, err := json.Marshal(result)
-		if err != nil {
-			panic(fmt.Errorf("error packing json of simulation: %w", err))
-		}
-
-		s.broadcast(append(([]byte)("bSimD "), result_json...))
 	}()
 
 	err := gamestate.Simulate_step()
 	if err != nil {
-		result.Message = err.Error()
-		result.Success = false
+		sim_done_message.Error = err.Error()
 	}
 }
 
-func calculateProductStats(s *Server, ws *websocket.Conn, message []byte) {
-	reply := bytes.NewBuffer(make([]byte, 0))
-
-	defer func() { ws.Write(reply.Bytes()) }()
-
-	fmt.Fprint(reply, "RE fProd")
+func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.Product]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
 
 	decisions := struct {
 		Product  simulation.Decisions_product
 		Research simulation.Decisions_research
 	}{}
-	err := json.Unmarshal(message[7:], &decisions)
+	err := mapstructure.Decode(message.Data, &decisions)
 	if err != nil {
-		fmt.Fprint(reply, "ER ", error_json)
+		reply.Error = err.Error()
 		return
 	}
 
 	if len(gamestate.Companies) <= s.conns[ws].Company {
-		fmt.Fprint(reply, "ER ", error_invalid_company)
+		reply.Error = error_invalid_company
 		return
 	}
+
 	product := gamestate.Companies[s.conns[ws].Company].Calculate_product(decisions.Product, decisions.Research)
-
-	product_json, err := json.Marshal(product)
-	if err != nil {
-		fmt.Fprint(reply, "ER ", error_json)
-	}
-
-	fmt.Fprint(reply, "OK ")
-	reply.Write(product_json)
+	reply.Data = &product
 }
 
-func sendChat(s *Server, ws *websocket.Conn, message []byte) {
-	reply := bytes.NewBuffer(make([]byte, 0))
+func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[string]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
 
-	defer func() { ws.Write(reply.Bytes()) }()
-
-	fmt.Fprint(reply, "RE bChat ")
-
-	message_struct := struct{ Message []byte }{}
-	err := json.Unmarshal(message[7:], &message_struct)
-	if err != nil {
-		fmt.Fprint(reply, " ER ", err)
+	if message.Data != nil {
+		chat := fmt.Sprint(*message.Data)
+		reply.Data = &chat
+		broadcast(s, reply)
+		fmt.Printf("CHAT (%d): %s\n", s.conns[ws].Company, *message.Data)
 	}
-
-	fmt.Fprint(reply, "OK {}")
-	s.broadcast(message_struct.Message)
 }
 
 func main() {
@@ -361,19 +347,26 @@ func main() {
 
 	server := NewServer()
 
-	server.addMethod("gDecs", getDecisions)
-	server.addMethod("gComp", getCompany)
-	server.addMethod("gExFa", getExternalFactors)
+	server.addMethod("gDecisions", getDecisions)
+	server.addMethod("gCompany", getCompany)
+	server.addMethod("gExternal_factors", getExternalFactors)
 
-	server.addMethod("sDecs", setDecisions)
-	server.addMethod("sRedy", setReady)
-	server.addMethod("sURdy", setUnReady)
+	server.addMethod("sDecisions", setDecisions)
+	server.addMethod("sReady", setReady)
+	server.addMethod("sUnready", setUnReady)
 
-	server.addMethod("fProd", calculateProductStats)
+	server.addMethod("fProduct_stats", calculateProductStats)
 
 	server.addMethod("bChat", sendChat)
 
-	http.Handle("/connect", websocket.Handler(server.handleWS))
+	http.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			println("Upgrade failed", err.Error())
+			return
+		}
+		server.handleWS(conn)
+	})
 
 	println("Serving on port: ", PORT)
 	err = http.ListenAndServe(fmt.Sprintf(":%d", PORT), nil)
