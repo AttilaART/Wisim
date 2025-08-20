@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Close from "./assets/images/Close.svelte";
+  import close from "./assets/images/close.svg";
   import { format_currency } from "./helper.svelte";
   import { company_id, error, external_factors } from "./store.svelte";
 
@@ -77,8 +77,10 @@
       <button
         class="borderless"
         style="aspect-ratio: 1/1; width: 2rem; position: sticky; top: 0rem;"
-        onclick={() => (show_invoices = false)}><Close></Close></button
+        onclick={() => (show_invoices = false)}
       >
+        <img class="window_button" src={close} alt="close" />
+      </button>
       {#await invoice_promise}
         Loading...
       {:then invoice_log}

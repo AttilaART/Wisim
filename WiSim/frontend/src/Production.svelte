@@ -1,7 +1,7 @@
 <script lang="ts">
   import { blur, draw, fly } from "svelte/transition";
   import { simulation } from "../wailsjs/go/models";
-  import Info from "./assets/images/Info.svelte";
+  import info from "./assets/images/info.svg";
   import { format_currency, format_number } from "./helper.svelte";
   import NumberInput from "./number_input.svelte";
   import Sidebar from "./Sidebar.svelte";
@@ -341,7 +341,7 @@
       style="text-align: left; grid-row: 1; grid-column: 1; border-right: var(--border-thin);"
     >
       <p>
-        <Info />
+        <img src={info} class="info" alt="info" />
         Whatever products your company cannot sell during a month will have to be
         stored in a warehouse.
         <br />

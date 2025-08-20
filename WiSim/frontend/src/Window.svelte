@@ -1,9 +1,9 @@
 <script lang="ts">
   // import { Component } from "svelte";
   import { draggable } from "@neodrag/svelte";
-  import Close from "./assets/images/Close.svelte";
-  import Min from "./assets/images/Min.svelte";
-  import Fullscreen from "./assets/images/Fullscreen.svelte";
+  import close from "./assets/images/close.svg";
+  import min from "./assets/images/min.svg";
+  import fullscreen_icon from "./assets/images/fullscreen.svg";
   import { tick } from "svelte";
 
   let {
@@ -79,7 +79,7 @@
         class="window_button"
         onclick={() => {
           onHide();
-        }}><Min></Min></button
+        }}><img class="window-icon" src={min} alt="minimise" /></button
       >
       <button
         class="window_button"
@@ -92,7 +92,7 @@
           }
           fullscreen = !fullscreen;
         }}
-        ><Fullscreen></Fullscreen>
+        ><img class="window-icon" src={fullscreen_icon} alt="maximise" />
       </button>
       <button
         class="window_button"
@@ -100,7 +100,7 @@
           onClose();
         }}
       >
-        <Close></Close>
+        <img class="window-icon" src={close} alt="close" />
       </button>
     </div>
   </div>
@@ -144,5 +144,17 @@
     height: 25px;
     border: none;
     background-color: transparent;
+
+    img {
+      width: 15px;
+      height: 15px;
+      mix-blend-mode: lighten;
+      margin: 5px;
+      line-height: 0;
+    }
+
+    &:hover {
+      backdrop-filter: brightness(1.1);
+    }
   }
 </style>

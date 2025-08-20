@@ -1,5 +1,5 @@
 <script lang="ts">
-  import Info from "./assets/images/Info.svelte";
+  import info from "./assets/images/info.svg";
   import { fade } from "svelte/transition";
 
   let { text, position }: { text: string; position?: string } = $props();
@@ -38,7 +38,7 @@
   }}
   role="tooltip"
 >
-  <Info></Info>
+  <img class="window_button" src={info} alt="info" />
   {#if show_text}
     <div
       class="tooltip-text"

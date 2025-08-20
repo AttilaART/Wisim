@@ -287,14 +287,14 @@ type Effect_Function func(int)
 type Report struct {
 	Month int
 
-	Financial_Report  Financial_Report
+	Financial_report  Financial_report
 	Balance_sheet     Balance_sheet
 	Personelle_report Personelle_report
 	Production_report Production_report
 	Sales_report      Sales_report
 }
 
-type Financial_Report struct {
+type Financial_report struct {
 	// Income
 	Income struct {
 		Gross_sales   float64
@@ -701,7 +701,7 @@ func (game_state *Game_state) Simulate_step() error {
 		printer.Printf("Company %d: %s:\n", i, c.Name)
 		printer.Printf("Products produced: %d\n", c.Reports[len(c.Reports)-1].Production_report.Products_produced)
 		printer.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
-		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_Report.Non_operating_expenses.Net_income)
+		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_report.Non_operating_expenses.Net_income)
 		println("")
 		printer.Printf("Number of employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Number_of_employees)
 		printer.Printf("Number of production employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.Production.Number_of_employees)

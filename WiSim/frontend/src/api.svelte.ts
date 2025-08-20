@@ -18,6 +18,130 @@ export enum Delta {
   Delta_Remove,
 }
 
+export enum Methods {
+  Get_decisions = "gDecisions",
+  Get_company = "gCompany",
+  Get_external_factors = "gExternal_factors",
+
+  Set_decisions = "sDecisions",
+  Set_ready = "sReady",
+  Set_unready = "sUnready",
+
+  func_calculate_product_stats = "fProduct_stats",
+  broadcast_chat = "bChat",
+}
+
+type Message = {
+  Method: string,
+  IsResponse: boolean,
+  Error: string,
+  DataType: string,
+  Data: Object
+}
+
+export function newConnection(url: string) {
+  let websocket = new WebSocket(url)
+
+  websocket.addEventListener("message", (event) => {
+    let message = JSON.parse(event.data)
+    console.log(message)
+  })
+
+  return {
+    socket: websocket,
+    gDecisions: function () {
+      let message: Message = {
+        Method: Methods.Get_decisions,
+        IsResponse: false,
+        Error: "",
+        DataType: "",
+        Data: ""
+      }
+      websocket.send(JSON.stringify(message))
+    },
+
+    gCompany: function () {
+      let message: Message = {
+        Method: Methods.Get_company,
+        IsResponse: false,
+        Error: "",
+        DataType: "",
+        Data: ""
+      }
+      websocket.send(JSON.stringify(message))
+    },
+
+    gExternal_factors: function () {
+      let message: Message = {
+        Method: Methods.Get_external_factors,
+        IsResponse: false,
+        Error: "",
+        DataType: "",
+        Data: ""
+      }
+      websocket.send(JSON.stringify(message))
+    },
+
+    sDecisions: function (decisions: simulation.Decisions) {
+      let message: Message = {
+        Method: Methods.Set_decisions,
+        IsResponse: false,
+        Error: "",
+        DataType: "Decisions",
+        Data: current_decisions
+      }
+      websocket.send(JSON.stringify(message))
+    },
+
+    sReady: function () {
+      let message: Message = {
+        Method: Methods.Set_ready,
+        IsResponse: false,
+        Error: "",
+        DataType: "",
+        Data: ""
+      }
+      websocket.send(JSON.stringify(message))
+    },
+
+    sUnready: function () {
+      let message: Message = {
+        Method: Methods.Set_unready,
+        IsResponse: false,
+        Error: "",
+        DataType: "",
+        Data: ""
+      }
+      websocket.send(JSON.stringify(message))
+    },
+
+    fProduct_stats: function (decisions: simulation.Decisions_product, research: simulation.Decisions_research) {
+      let message: Message = {
+        Method: Methods.Set_unready,
+        IsResponse: false,
+        Error: "",
+        DataType: "",
+        Data: {
+          Product_decisions: decisions,
+          Research_decisions: research,
+        }
+      }
+      websocket.send(JSON.stringify(message))
+    },
+
+    bChat: function (chat: string) {
+      let message: Message = {
+        Method: Methods.Set_unready,
+        IsResponse: false,
+        Error: "",
+        DataType: "",
+        Data: chat
+      }
+      websocket.send(JSON.stringify(message))
+    }
+  }
+}
+
 export async function initial_app_load(): Promise<void> {
   return Initial_app_load()
 }

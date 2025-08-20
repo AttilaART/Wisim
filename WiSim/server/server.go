@@ -39,6 +39,11 @@ func (s *Server) addMethod(method_name string, method_func func(*Server, *websoc
 func (s *Server) handleWS(ws *websocket.Conn) {
 	fmt.Println("New incoming conn: ", ws.RemoteAddr())
 
+	defer func() {
+		r := recover()
+		fmt.Printf("Panic: %#v", r)
+	}()
+
 	s.conns_mutex.Lock()
 	s.conns[ws] = Player{true, false, len(s.conns)}
 	s.conns_mutex.Unlock()
@@ -61,11 +66,17 @@ func (s *Server) readLoop(ws *websocket.Conn) {
 	for {
 		message := Message[any]{}
 		err := ws.ReadJSON(&message)
-		if err != nil {
+
+		if websocket.IsCloseError(err, 1000) {
+			println("Websocket client", ws.RemoteAddr().String(), "disconnected")
+			break
+		} else if err != nil {
+			println(err.Error())
 			err := ws.WriteJSON(Message[any]{Method: "", IsResponse: true, Error: err.Error()})
 			if err != nil {
 				println("Unexpected Error durng JSON encoding: ", err.Error())
 			}
+			continue
 		}
 
 		fmt.Printf("Recieving message: %+v\n", message)
@@ -81,6 +92,9 @@ func (s *Server) readLoop(ws *websocket.Conn) {
 
 		method_func(s, ws, message)
 	}
+	s.conns_mutex.Lock()
+	delete(s.conns, ws)
+	s.conns_mutex.Unlock()
 }
 
 type Player struct {

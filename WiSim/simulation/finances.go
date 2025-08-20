@@ -8,7 +8,7 @@ import (
 // Finances
 func (c *Company) calculate_budget(decisions Decisions, external_factors External_factors) {
 	// using a pointer to avoid refactiong :)
-	financial_report := &c.Reports[len(c.Reports)-1].Financial_Report
+	financial_report := &c.Reports[len(c.Reports)-1].Financial_report
 
 	local_storage_capacity := 0
 	local_storage_costs := 0.0
