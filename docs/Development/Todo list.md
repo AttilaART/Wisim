@@ -1,0 +1,69 @@
+# Implement
+- [ ] Implement main simulation functions
+	- [ ] Product / offer  properties calculations
+		- [ ] Coolness factor (provisory)
+		- [x] Ecology factor
+		- [ ] Durability factor
+		- [x] Quality factor
+	- [ ] R&D and Marketing
+		- [x] Quality research
+		- [ ] Ecology research
+		- [ ] Durabilty reasearch
+	- [x] Production simulation
+		- [x] Purchase / selling of machines
+		- [x] Assignment of employees to machines
+			- [x] Sort employees function
+		- [x] Basic production calculation
+		- [x] Bonus production from productive employees
+	- [ ] Distribution / storage costs
+	- [x] Employee calculations
+		- [x] Motivation
+		- [x] Raises
+		- [x] Training
+			- [x] Active
+			- [x] Passive
+		- [x] Basic turnover
+	- [ ] Reports
+		- [ ] [[Finance reports]]
+		- [ ] Production reports
+			- [x] Purchase / Selling of machines
+			- [x] Production statistics
+		- [ ] Personelle reports
+		- [ ] Results
+	- [ ] Consumer calculations
+		- [ ] Marketing influence
+		- [x] Decision making
+		- [ ] Loyalty forming
+	- [ ] External factors generation
+		- [ ] Inflation
+		- [ ] Minimum Wage
+		- [ ] Grants & subsidies
+		- [ ] Economic situation
+			- [ ] Economic booms?
+			- [ ] Economic collapse?
+- [ ] Starting new game
+	- [x] Company Generation
+		- [ ] Generating employees
+- [ ] Loading / Saving game
+- [ ] Basic User interface
+- [ ] Networking
+- [ ] Tweak simulation
+- [ ] Polish
+# Critical rewrites
+- [x] Rewrite motivation function
+- [x] Product Properties caluclations (Recursive calculation leads to nonsensical increases)
+- [ ] Coolness research (refactor)
+	- [ ] Passive coolness loss
+- [ ] Implement Bonuses (in combination with Motivation)
+- [ ] Implement simulation configuration
+- [x] Improve product purchasing algorithm so that customers roll a weighted die to choose which product they buy (currently, if there are 2 products with the same stats, customers always buy the first one)
+# Non critical rewrites
+- [ ] Revamp coolness factor
+- [ ] Optimise `sort_employees` function (perhaps using quicksort?)
+- [ ] Implement criteria based laying off
+- [ ] Better handle errors
+	- [ ] When purchasing / selling machines
+- [ ] Implement unique IDs
+	- [ ] For Products
+- [ ] Proper loans
+# Tests
