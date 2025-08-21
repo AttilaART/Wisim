@@ -1,9 +1,3 @@
-<script>
-	import Counter from './Counter.svelte';
-	import welcome from '$lib/images/svelte-welcome.webp';
-	import welcomeFallback from '$lib/images/svelte-welcome.png';
-</script>
-
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
@@ -15,7 +9,7 @@
 		<div id="buttons">
 			<button disabled>Continue</button>
 			<button disabled>Multiplayer</button>
-			<a href="/singlplayer"><button>Singleplayer</button></a>
+			<a href="/singleplayer"><button>Singleplayer</button></a>
 			<button class="secondary">Exit</button>
 		</div>
 	</article>

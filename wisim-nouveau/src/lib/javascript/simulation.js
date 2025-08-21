@@ -1,6 +1,10 @@
 // NOTE: Most of the types defined in this file were generated from Go types through ChatGPT
 
 /**
+ * @typedef {{company: Company, decisions: Decisions, external_factors: External_factors}} clientState
+ */
+
+/**
  * @typedef {Object} Decisions
  * @property {{Sales_prediction: number}} Predictions
  * @property {{Set_bank_loan: number}} Finances
@@ -8,7 +12,7 @@
  * @property {{Production_deltas: Delta<Employee>[], Marketing_deltas: Delta<Employee>[], Severance_pay: number}} Employees
  * @property {{Production_goal: number, Machines: Delta<Machine>[], Logistics: Delta<Warehouse>[]}} Production
  * @property {Decisions_research} Research
-*/
+ */
 
 /**
  * @typedef {Object} Decisions_marketing
@@ -72,7 +76,7 @@
  */
 
 /**
- * @typedef {number} Employee_type 
+ * @typedef {number} Employee_type
  */
 
 /**
@@ -350,4 +354,4 @@
  * @property {number} Machine_depreciation_rate - In decimal
  */
 
-module.exports = {}
+export {};

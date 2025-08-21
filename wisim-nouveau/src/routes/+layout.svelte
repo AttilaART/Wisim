@@ -1,15 +1,20 @@
 <script>
 	import Header from './Header.svelte';
 	import '../app.css';
-	import '../pico.css';
+	import '@picocss/pico';
 
 	/** @type {{children: import('svelte').Snippet}} */
 	let { children } = $props();
 </script>
 
-<div class="app">
-	{@render children()}
-</div>
+<svelte:boundary>
+	<div class="app">
+		{@render children()}
+	</div>
+	{#snippet pending()}
+		<p>loading</p>
+	{/snippet}
+</svelte:boundary>
 
 <style>
 	.app {

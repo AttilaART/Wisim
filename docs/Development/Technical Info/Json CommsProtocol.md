@@ -42,6 +42,7 @@ Note: `DataType` should match the reciever implementation's type. So if sending 
 - `gCompany() -> Company`: Gets latest company state
 - `gExternal_factors() -> External_factors`: Gets latest external factors
 
+- `sCompany(company-number) -> bool`: When joining, asks server to set company
 - `sDecisions(Decisions) -> void`: Sets company decisions
 - `sReady() -> void` Marks company as ready
 - `sUnready() -> void`: Marks company us unready

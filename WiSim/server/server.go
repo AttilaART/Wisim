@@ -14,13 +14,9 @@ import (
 	"github.com/mitchellh/mapstructure"
 )
 
-const (
-	method_len = 5
-)
-
 type Server struct {
-	conns       map[*websocket.Conn]Player
-	conns_mutex sync.Mutex
+	conns      map[*websocket.Conn]Player
+	connsMutex sync.Mutex
 
 	methods map[string]func(*Server, *websocket.Conn, Message[any])
 }
@@ -32,21 +28,16 @@ func NewServer() *Server {
 	}
 }
 
-func (s *Server) addMethod(method_name string, method_func func(*Server, *websocket.Conn, Message[any])) {
-	s.methods[method_name] = method_func
+func (s *Server) addMethod(methodName string, methodFunc func(*Server, *websocket.Conn, Message[any])) {
+	s.methods[methodName] = methodFunc
 }
 
 func (s *Server) handleWS(ws *websocket.Conn) {
 	fmt.Println("New incoming conn: ", ws.RemoteAddr())
 
-	defer func() {
-		r := recover()
-		fmt.Printf("Panic: %#v", r)
-	}()
-
-	s.conns_mutex.Lock()
-	s.conns[ws] = Player{true, false, len(s.conns)}
-	s.conns_mutex.Unlock()
+	s.connsMutex.Lock()
+	s.conns[ws] = Player{true, false, -1}
+	s.connsMutex.Unlock()
 
 	s.readLoop(ws)
 }
@@ -63,26 +54,37 @@ func broadcast[V any](s *Server, message Message[V]) error {
 }
 
 func (s *Server) readLoop(ws *websocket.Conn) {
+	defer func() {
+		println("Websocket client", ws.RemoteAddr().String(), "disconnected")
+		s.connsMutex.Lock()
+		delete(s.conns, ws)
+		s.connsMutex.Unlock()
+	}()
+
+	defer func() {
+		r := recover()
+		fmt.Printf("Panic: %#v \n", r)
+	}()
+
 	for {
 		message := Message[any]{}
 		err := ws.ReadJSON(&message)
 
-		if websocket.IsCloseError(err, 1000) {
-			println("Websocket client", ws.RemoteAddr().String(), "disconnected")
+		if websocket.IsCloseError(err, websocket.CloseAbnormalClosure, websocket.CloseGoingAway) {
 			break
 		} else if err != nil {
 			println(err.Error())
 			err := ws.WriteJSON(Message[any]{Method: "", IsResponse: true, Error: err.Error()})
 			if err != nil {
-				println("Unexpected Error durng JSON encoding: ", err.Error())
+				println(fmt.Errorf("unexpected Error durng JSON encoding: %w", err).Error())
 			}
 			continue
 		}
 
 		fmt.Printf("Recieving message: %+v\n", message)
 
-		method_func, method_exists := s.methods[message.Method]
-		if !method_exists {
+		methodFunc, methodExists := s.methods[message.Method]
+		if !methodExists {
 			err := ws.WriteJSON(Message[any]{Method: message.Method, IsResponse: true, Error: "given method doesn't exist"})
 			if err != nil {
 				println("Unexpected Error durng JSON encoding: ", err.Error())
@@ -90,11 +92,8 @@ func (s *Server) readLoop(ws *websocket.Conn) {
 			continue
 		}
 
-		method_func(s, ws, message)
+		methodFunc(s, ws, message)
 	}
-	s.conns_mutex.Lock()
-	delete(s.conns, ws)
-	s.conns_mutex.Unlock()
 }
 
 type Player struct {
@@ -127,16 +126,16 @@ var upgrader = websocket.Upgrader{
 	CheckOrigin:     func(r *http.Request) bool { return true },
 }
 
-const USAGE_MESSAGE = "USAGE: ./server <Desired Port> <Num Players> <New/Load> <Game_filepath/name>"
+const usageMessage = "USAGE: ./server <Desired Port> <Num Players> <New/Load> <Game_filepath/name>"
 
 const (
-	error_game_full         = "error_game_full"
-	error_not_authorised    = "error_not_authorised"
-	error_unexpected        = "error_unexpected"
-	error_invalid_company   = "error_invalid_company"
-	error_no_company        = "error_no_company"
-	error_invalid_decisions = "error_invalid_decisions"
-	error_json              = "error_json"
+	errorGameFull         = "error_game_full"
+	errorNotAuthorised    = "error_not_authorised"
+	errorUnexpected       = "error_unexpected"
+	errorInvalidCompany   = "error_invalid_company"
+	errorNoCompany        = "error_no_company"
+	errorInvalidDecisions = "error_invalid_decisions"
+	errorJSON             = "error_json"
 )
 
 func getDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
@@ -149,7 +148,7 @@ func getDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 	}()
 
 	if len(gamestate.Companies) <= s.conns[ws].Company {
-		reply.Error = error_invalid_company
+		reply.Error = errorInvalidCompany
 		return
 	}
 
@@ -167,7 +166,7 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	}()
 
 	if len(gamestate.Companies) <= s.conns[ws].Company {
-		reply.Error = error_invalid_company
+		reply.Error = errorInvalidCompany
 		return
 	}
 
@@ -184,8 +183,54 @@ func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
 		}
 	}()
 
-	external_factors := gamestate.External_factors
-	reply.Data = &external_factors
+	externalFactors := gamestate.External_factors
+	reply.Data = &externalFactors
+}
+
+func setCompany(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[bool]{Method: message.Method, IsResponse: true}
+
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	var requestedCompanyID int
+	tempStruct := struct{ ID int }{}
+	err := mapstructure.Decode(*message.Data, &tempStruct)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	requestedCompanyID = tempStruct.ID
+
+	playerGotRequestedID := false
+	reply.Data = &playerGotRequestedID
+
+	if requestedCompanyID >= PLAYER_COUNT {
+		reply.Error = "ID too high"
+		return
+	}
+
+	s.connsMutex.Lock()
+	defer s.connsMutex.Unlock()
+
+	for conn := range s.conns {
+		player := s.conns[conn]
+		if player.Company == requestedCompanyID {
+			reply.Error = "ID taken"
+			return
+		}
+	}
+
+	playerGotRequestedID = true
+
+	player := s.conns[ws]
+	player.Company = requestedCompanyID
+	s.conns[ws] = player
 }
 
 func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
@@ -198,14 +243,14 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 	}()
 
 	decisions := simulation.Decisions{}
-	err := mapstructure.Decode(message.Data, decisions)
+	err := mapstructure.Decode(message.Data, &decisions)
 	if err != nil {
 		reply.Error = err.Error()
 		return
 	}
 
 	if len(gamestate.Companies) <= s.conns[ws].Company {
-		reply.Error = error_invalid_company
+		reply.Error = errorInvalidCompany
 		return
 	}
 
@@ -221,23 +266,25 @@ func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
 		}
 	}()
 
-	s.conns_mutex.Lock()
+	s.connsMutex.Lock()
+	defer s.connsMutex.Lock()
 	player, exists := s.conns[ws]
 	if !exists {
-		s.conns_mutex.Unlock()
-		reply.Error = error_unexpected
+		reply.Error = errorUnexpected
 		return
 	}
 
 	player.Ready = true
 	s.conns[ws] = player
 
+	println("Company ", player.Company, "ready!")
+
 	for client := range s.conns {
 		if !s.conns[client].Ready {
-			s.conns_mutex.Unlock()
 			return
 		}
 	}
+	println("Every player is ready: running simulation")
 
 	runSimulation(s)
 }
@@ -251,25 +298,26 @@ func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
 		}
 	}()
 
-	s.conns_mutex.Lock()
+	s.connsMutex.Lock()
+	defer s.connsMutex.Unlock()
+
 	player, exists := s.conns[ws]
 	if !exists {
-		s.conns_mutex.Unlock()
-		reply.Error = error_unexpected
+		reply.Error = errorUnexpected
 		return
 	}
 
 	player.Ready = false
 	s.conns[ws] = player
-	s.conns_mutex.Unlock()
+	println("Company ", player.Company, "unready!")
 }
 
 func runSimulation(s *Server) {
 	broadcast(s, Message[any]{Method: "bSim_starting", IsResponse: false})
 
-	sim_done_message := Message[any]{Method: "bSim_done", IsResponse: false}
+	simDoneMessage := Message[any]{Method: "bSim_done", IsResponse: false}
 	defer func() {
-		err := broadcast(s, sim_done_message)
+		err := broadcast(s, simDoneMessage)
 		if err != nil {
 			println("Error broadcasting JSON to websockets: ", err.Error())
 		}
@@ -277,13 +325,13 @@ func runSimulation(s *Server) {
 
 	defer func() {
 		if r := recover(); r != nil {
-			sim_done_message.Error = fmt.Sprint("Critical Simulation Error: ", r)
+			simDoneMessage.Error = fmt.Sprint("Critical Simulation Error: ", r)
 		}
 	}()
 
 	err := gamestate.Simulate_step()
 	if err != nil {
-		sim_done_message.Error = err.Error()
+		simDoneMessage.Error = err.Error()
 	}
 }
 
@@ -307,7 +355,7 @@ func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) 
 	}
 
 	if len(gamestate.Companies) <= s.conns[ws].Company {
-		reply.Error = error_invalid_company
+		reply.Error = errorInvalidCompany
 		return
 	}
 
@@ -335,18 +383,18 @@ func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
 func main() {
 	// Check args, format "[EXECUTABLE NAME] <PORT> <Number of Players>"
 	if len(os.Args) < 4 {
-		log.Fatal(USAGE_MESSAGE)
+		log.Fatal(usageMessage)
 	}
 
 	var err error
 	PORT, err = strconv.Atoi(os.Args[1])
 	if err != nil {
-		log.Fatalf("Error: %s \n%s\n", err.Error(), USAGE_MESSAGE)
+		log.Fatalf("Error: %s \n%s\n", err.Error(), usageMessage)
 	}
 
 	PLAYER_COUNT, err = strconv.Atoi(os.Args[2])
 	if err != nil {
-		log.Fatalf("Error: %s \n%s\n", err.Error(), USAGE_MESSAGE)
+		log.Fatalf("Error: %s \n%s\n", err.Error(), usageMessage)
 	}
 
 	// load sim_config & start game
@@ -365,6 +413,7 @@ func main() {
 	server.addMethod("gCompany", getCompany)
 	server.addMethod("gExternal_factors", getExternalFactors)
 
+	server.addMethod("sCompany", setCompany)
 	server.addMethod("sDecisions", setDecisions)
 	server.addMethod("sReady", setReady)
 	server.addMethod("sUnready", setUnReady)
