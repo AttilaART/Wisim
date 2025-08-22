@@ -27,6 +27,7 @@
 		"vite": "^7.0.4"
 	},
 	"dependencies": {
+		"@neodrag/svelte": "^2.3.3",
 		"@picocss/pico": "^2.1.1"
 	}
 }

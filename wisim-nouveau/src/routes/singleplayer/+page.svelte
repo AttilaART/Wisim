@@ -1,7 +1,13 @@
 <script>
 	// as@ts-nocheck
 
+	import Canvas from '$lib/canvas.svelte';
 	import { baseState, Methods, newConnection } from '$lib/javascript/connection';
+	import Marketing from '../../components/marketing.svelte';
+	import Window from '../../components/window.svelte';
+
+	/** @type {import("svelte").Snippet[]} */
+	let windows = $state([]);
 
 	let errorDialogue = $state();
 	let companyDialogue = $state();
@@ -124,10 +130,18 @@
 	</dialog>
 	<div id="ui">
 		{#key clientState}
-			<div id="canvas"></div>
+			<Canvas>
+				{#each windows as w}
+					{@render w()}
+				{/each}
+			</Canvas>
 			<div id="bottom-menu">
 				<button>{clientState?.company.Balance} $</button>
-				<button>Marketing</button>
+				<button
+					onclick={() => {
+						windows.push(marketing);
+					}}>Marketing</button
+				>
 				<button>Employees</button>
 				<button>Production</button>
 				<button>Research</button>
@@ -164,16 +178,23 @@
 	</dialog>
 {/await}
 
+{#snippet marketing()}
+	<Window>
+		<Marketing
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></Marketing>
+	</Window>
+{/snippet}
+
 <style>
 	#ui {
 		display: flex;
 		flex-direction: column;
 		height: 100vh;
 		width: 100%;
-	}
-
-	#canvas {
-		flex: 1 1;
 	}
 
 	#bottom-menu {

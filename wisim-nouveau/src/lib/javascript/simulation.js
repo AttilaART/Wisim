@@ -112,7 +112,7 @@
  * @property {number} Global_quality_factor - Global quality factor from R&D
  * @property {number} Base_marketing_strength - Base marketing strength from R&D
  *
- * @property {Offer | undefined} Offer - Product offer
+ * @property {Offer} Offer - Product offer
  * @property {number} Orders - Number of orders
  *
  * @property {Warehouse[]} Warehouses - Warehouses owned by the company
