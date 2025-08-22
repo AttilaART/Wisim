@@ -213,6 +213,9 @@ func setCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	if requestedCompanyID >= PLAYER_COUNT {
 		reply.Error = "ID too high"
 		return
+	} else if requestedCompanyID < 0 {
+		reply.Error = "ID too low"
+		return
 	}
 
 	s.connsMutex.Lock()
