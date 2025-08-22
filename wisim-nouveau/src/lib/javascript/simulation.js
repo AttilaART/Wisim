@@ -17,7 +17,7 @@
 /**
  * @typedef {Object} Decisions_marketing
  * @property {number} Price - Price setting
- * @property {Decisions_product | undefined} Product - Product-related decisions
+ * @property {Decisions_product} Product - Product-related decisions
  * @property {Object} Promotion - Promotion decisions
  * @property {number} Promotion.Quantity - Promotion quantity
  * @property {number} Promotion.Style_quality - Quality style emphasis
@@ -29,9 +29,9 @@
 /**
  * @typedef {Object} Decisions_product
  * @property {Object} Materials - Material-related decisions
- * @property {number} Materials.quality - Material quality
- * @property {number} Materials.ecology - Ecological impact of materials
- * @property {number} Materials.ethical_sourcing - Ethical sourcing emphasis
+ * @property {number} Materials.Quality - Material quality
+ * @property {number} Materials.Ecology - Ecological impact of materials
+ * @property {number} Materials.Ethical_sourcing - Ethical sourcing emphasis
  *
  * @property {Object} Manufacturing - Manufacturing-related decisions
  * @property {number} Manufacturing.Quality - Manufacturing quality
@@ -354,4 +354,4 @@
  * @property {number} Machine_depreciation_rate - In decimal
  */
 
-export {};
+export { };

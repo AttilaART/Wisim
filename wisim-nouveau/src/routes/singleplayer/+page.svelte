@@ -1,16 +1,20 @@
 <script>
 	// as@ts-nocheck
 
-	import Canvas from '$lib/canvas.svelte';
+	import Canvas from '../../components/canvas.svelte';
 	import { baseState, Methods, newConnection } from '$lib/javascript/connection';
-	import Marketing from '../../components/marketing.svelte';
+	import Product from '../../components/product.svelte';
 	import Window from '../../components/window.svelte';
+	import '@picocss/pico';
+	import '../../app.css';
+	import Marketing from '../../components/marketing.svelte';
 
 	/** @type {import("svelte").Snippet[]} */
 	let windows = $state([]);
 
 	let errorDialogue = $state();
 	let companyDialogue = $state();
+	let isReady = $state();
 
 	/**
 	 * @type {number}
@@ -118,68 +122,109 @@
 	</dialog>
 {:then}
 	<dialog bind:this={companyDialogue} open>
-		<header><p>Choose Your Company</p></header>
-		<form
-			onsubmit={() => {
-				connection.sCompany(companyID);
-			}}
-		>
-			<input bind:value={companyID} type="number" required placeholder="Company ID" />
-			<input type="submit" value="Confirm" />
-		</form>
+		<article>
+			<header>
+				<p>Choose Your Company</p>
+			</header>
+			<form
+				onsubmit={() => {
+					connection.sCompany(companyID);
+				}}
+			>
+				<input bind:value={companyID} type="number" required placeholder="Company ID" />
+				<input type="submit" value="Confirm" />
+			</form>
+		</article>
 	</dialog>
 	<div id="ui">
-		{#key clientState}
-			<Canvas>
-				{#each windows as w}
-					{@render w()}
-				{/each}
-			</Canvas>
-			<div id="bottom-menu">
-				<button>{clientState?.company.Balance} $</button>
-				<button
-					onclick={() => {
-						windows.push(marketing);
-					}}>Marketing</button
-				>
-				<button>Employees</button>
-				<button>Production</button>
-				<button>Research</button>
-				<button>Market</button>
-				<button>Chat</button>
-				<button onclick={connection.sReady}>Ready</button>
-			</div>
-		{/key}
+		<Canvas>
+			{#each windows as w}
+				{@render w()}
+			{/each}
+		</Canvas>
+		<div id="bottom-menu">
+			<button>{clientState?.company.Balance} $</button>
+			<button
+				onclick={() => {
+					windows.push(product);
+				}}>Product</button
+			>
+			<button
+				onclick={() => {
+					windows.push(marketing);
+				}}>Marketing</button
+			>
+			<button>Employees</button>
+			<button>Production</button>
+			<button>Research</button>
+			<button>Market</button>
+			<button>Chat</button>
+			<button
+				style="display: {isReady ? 'none' : 'unset'};"
+				onclick={() => {
+					connection.sReady();
+					isReady = true;
+				}}>Ready</button
+			>
+			<button
+				class="secondary"
+				style="display: {!isReady ? 'none' : 'unset'};"
+				onclick={() => {
+					connection.sUnready();
+					isReady = false;
+				}}>Unready</button
+			>
+		</div>
 	</div>
-{:catch}
+{:catch error}
 	<script>
 	</script>
 	<dialog bind:this={errorDialogue} open>
-		<header>
-			<p>Connection Failed</p>
-			<button aria-label="Close" rel="prev"></button>
-		</header>
-		<div>
-			<p>Failed to connect to server</p>
-		</div>
-		<footer>
-			<button
-				class="secondary"
-				onclick={() => {
-					onClose(null);
-				}}>Retry Connection</button
-			>
-			<button
-				onclick={() => {
-					errorDialogue.close();
-				}}>Return To Main Menu</button
-			>
-		</footer>
+		<article>
+			<header>
+				<button
+					aria-label="Close"
+					rel="prev"
+					onclick={() => {
+						errorDialogue.close();
+					}}
+				></button>
+				<p>Connection Failed</p>
+			</header>
+			<div>
+				<p>Failed to connect to server</p>
+				<small>{error}</small>
+			</div>
+			<footer>
+				<button
+					class="secondary"
+					onclick={() => {
+						onClose(null);
+					}}>Retry Connection</button
+				>
+				<button
+					onclick={() => {
+						errorDialogue.close();
+					}}>Return To Main Menu</button
+				>
+			</footer>
+		</article>
 	</dialog>
 {/await}
 
+{#snippet product()}
+	<Window title="Product" closeWindow={() => {}}>
+		<Product
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></Product>
+	</Window>
+{/snippet}
+
 {#snippet marketing()}
-	<Window>
+	<Window title="Marketing" closeWindow={() => {}}>
 		<Marketing
 			bind:clientState
 			updateDecisions={(decisions) => {

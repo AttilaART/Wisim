@@ -1,10 +1,12 @@
 <script>
-	import { draggable } from '@neodrag/svelte';
-	let { children } = $props();
+	import { draggable, controls, ControlFrom } from '@neodrag/svelte';
+	let { title, closeWindow, children } = $props();
 </script>
 
-<article use:draggable>
-	<header>Window</header>
+<article {@attach draggable([controls({ allow: ControlFrom.selector('header') })])}>
+	<header>
+		<button onclick={closeWindow} rel="prev" aria-label="Close"></button><center>{title}</center>
+	</header>
 	{@render children()}
 </article>
 
@@ -13,5 +15,36 @@
 		max-width: 100vh;
 		max-height: 100vh;
 		overflow: scroll;
+		position: fixed;
+		top: 0;
+		left: 0;
+		header {
+			button {
+				float: right;
+				margin: 0;
+				margin-left: var(--pico-spacing);
+				padding: 0;
+				display: block;
+				width: 1rem;
+				height: 1rem;
+				margin-top: calc(var(--pico-spacing) * -1);
+				margin-bottom: var(--pico-spacing);
+				margin-left: auto;
+				border: none;
+				background-image: var(--pico-icon-close);
+				background-position: center;
+				background-size: auto 1rem;
+				background-repeat: no-repeat;
+				background-color: transparent;
+				opacity: 0.5;
+				transition: opacity var(--pico-transition);
+
+				margin: 0;
+				margin-left: 0px;
+				margin-left: var(--pico-spacing);
+				padding: 0;
+				float: right;
+			}
+		}
 	}
 </style>
