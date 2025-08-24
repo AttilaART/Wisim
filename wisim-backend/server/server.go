@@ -4,9 +4,10 @@ import (
 	"WiSim/simulation"
 	"fmt"
 	"log"
+	"math"
 	"net/http"
 	"os"
-	"path/filepath"
+	"reflect"
 	"strconv"
 	"sync"
 
@@ -169,7 +170,14 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 		reply.Error = errorInvalidCompany
 		return
 	}
-
+	// Make sure product stats are up to date
+	var err error
+	gamestate.Companies[s.conns[ws].Company].Offer.Product, err = gamestate.Companies[s.conns[ws].Company].
+		Calculate_product(gamestate.Current_decisions[s.conns[ws].Company].Marketing.Product,
+			gamestate.Current_decisions[s.conns[ws].Company].Research)
+	if err != nil {
+		reply.Error = err.Error()
+	}
 	company := gamestate.Companies[s.conns[ws].Company]
 	reply.Data = &company
 }
@@ -246,7 +254,7 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 	}()
 
 	decisions := simulation.Decisions{}
-	err := mapstructure.Decode(message.Data, &decisions)
+	err := mapstructure.Decode(*message.Data, &decisions)
 	if err != nil {
 		reply.Error = err.Error()
 		return
@@ -262,15 +270,15 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 
 func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply := Message[any]{Method: message.Method, IsResponse: true}
-	defer func() {
-		err := ws.WriteJSON(reply)
-		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
-		}
-	}()
 
 	s.connsMutex.Lock()
-	defer s.connsMutex.Lock()
+
+	mutexUnlocked := false
+	defer func() {
+		if !mutexUnlocked {
+			s.connsMutex.Unlock()
+		}
+	}()
 	player, exists := s.conns[ws]
 	if !exists {
 		reply.Error = errorUnexpected
@@ -280,16 +288,50 @@ func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
 	player.Ready = true
 	s.conns[ws] = player
 
+	err := ws.WriteJSON(reply)
+	if err != nil {
+		println("Error writing JSON to websocket: ", err.Error())
+	}
+
 	println("Company ", player.Company, "ready!")
 
 	for client := range s.conns {
-		if !s.conns[client].Ready {
-			return
+		if s.conns[client].Company >= 0 && s.conns[client].Company < PLAYER_COUNT {
+			if !s.conns[client].Ready {
+				return
+			}
 		}
 	}
+
+	s.connsMutex.Unlock()
+	mutexUnlocked = true
 	println("Every player is ready: running simulation")
 
-	runSimulation(s)
+	broadcast(s, Message[any]{Method: "bSim_starting", IsResponse: false})
+
+	go SimulateStep(s)
+}
+
+func SimulateStep(s *Server) {
+	simDoneMessage := Message[any]{Method: "bSim_done", IsResponse: false}
+	defer func() {
+		err := broadcast(s, simDoneMessage)
+		if err != nil {
+			println("Error broadcasting JSON to websockets: ", err.Error())
+		}
+	}()
+
+	defer func() {
+		if r := recover(); r != nil {
+			simDoneMessage.Error = fmt.Sprint("Critical Simulation Error: ", r)
+		}
+	}()
+
+	println("Simulation Done!")
+	err := gamestate.Simulate_step()
+	if err != nil {
+		simDoneMessage.Error = err.Error()
+	}
 }
 
 func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
@@ -315,29 +357,6 @@ func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
 	println("Company ", player.Company, "unready!")
 }
 
-func runSimulation(s *Server) {
-	broadcast(s, Message[any]{Method: "bSim_starting", IsResponse: false})
-
-	simDoneMessage := Message[any]{Method: "bSim_done", IsResponse: false}
-	defer func() {
-		err := broadcast(s, simDoneMessage)
-		if err != nil {
-			println("Error broadcasting JSON to websockets: ", err.Error())
-		}
-	}()
-
-	defer func() {
-		if r := recover(); r != nil {
-			simDoneMessage.Error = fmt.Sprint("Critical Simulation Error: ", r)
-		}
-	}()
-
-	err := gamestate.Simulate_step()
-	if err != nil {
-		simDoneMessage.Error = err.Error()
-	}
-}
-
 func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply := Message[simulation.Product]{Method: message.Method, IsResponse: true}
 	defer func() {
@@ -351,7 +370,7 @@ func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) 
 		Product  simulation.Decisions_product
 		Research simulation.Decisions_research
 	}{}
-	err := mapstructure.Decode(message.Data, &decisions)
+	err := mapstructure.Decode(*message.Data, &decisions)
 	if err != nil {
 		reply.Error = err.Error()
 		return
@@ -362,8 +381,30 @@ func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) 
 		return
 	}
 
-	product := gamestate.Companies[s.conns[ws].Company].Calculate_product(decisions.Product, decisions.Research)
+	product, err := gamestate.Companies[s.conns[ws].Company].
+		Calculate_product(decisions.Product, decisions.Research)
+	if err != nil {
+		reply.Error = err.Error()
+	}
+	fmt.Printf("%+v\n", product)
+	product = removeProductNaN(product)
 	reply.Data = &product
+}
+
+func removeProductNaN(p simulation.Product) simulation.Product {
+	reflectProduct := reflect.ValueOf(&p)
+	numFields := reflectProduct.Elem().NumField()
+
+	for i := range numFields {
+		if reflectProduct.Elem().Field(i).Kind() == reflect.Float32 {
+			if math.IsNaN(reflectProduct.Elem().Field(i).Float()) {
+				reflectProduct.Elem().Field(i).SetFloat(0)
+			}
+		}
+	}
+
+	fmt.Printf("%+v\n", p)
+	return p
 }
 
 func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
@@ -401,7 +442,7 @@ func main() {
 	}
 
 	// load sim_config & start game
-	sim_config, err = simulation.Load_sim_config(filepath.Dir(os.Args[0]) + "/sim_config.json")
+	sim_config, err = simulation.Load_sim_config("../simulation/config/sim_config.json")
 	if err != nil {
 		log.Fatalf("Error: %s \n", err.Error())
 	}

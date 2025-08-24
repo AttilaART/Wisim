@@ -42,7 +42,10 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Durability research", research, "", true, float64(-decisions.Research.Durability))
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Production cost research", research, "", true, float64(-decisions.Research.Production_cost))
 
-	c.Offer.Product = c.Calculate_product(decisions.Marketing.Product, decisions.Research)
+	c.Offer.Product, err = c.Calculate_product(decisions.Marketing.Product, decisions.Research)
+	if err != nil {
+		panic(err)
+	}
 
 	// Production
 	println("Calculating production")

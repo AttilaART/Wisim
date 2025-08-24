@@ -22,8 +22,11 @@ export const Methods = {
   Set_ready: 'sReady',
   Set_unready: 'sUnready',
 
-  func_calculate_product_stats: 'fProduct_stats',
-  broadcast_chat: 'bChat'
+  Func_calculate_product_stats: 'fProduct_stats',
+  Broadcast_chat: 'bChat',
+
+  Sim_starting: "bsim_starting",
+  Sim_done: "bSim_done",
 };
 
 export const baseState = {
@@ -236,7 +239,7 @@ export async function newConnection(url, eventHandler, onClose, onError) {
        * @type {Message}
        */
       let message = {
-        Method: Methods.Set_unready,
+        Method: Methods.Func_calculate_product_stats,
         IsResponse: false,
         Error: '',
         DataType: '',
@@ -256,7 +259,7 @@ export async function newConnection(url, eventHandler, onClose, onError) {
        * @type {Message}
        */
       let message = {
-        Method: Methods.broadcast_chat,
+        Method: Methods.Broadcast_chat,
         IsResponse: false,
         Error: '',
         DataType: '',

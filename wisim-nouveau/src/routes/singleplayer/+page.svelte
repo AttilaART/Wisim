@@ -8,9 +8,32 @@
 	import '@picocss/pico';
 	import '../../app.css';
 	import Marketing from '../../components/marketing.svelte';
+	import Debt from '../../components/debt.svelte';
 
-	/** @type {import("svelte").Snippet[]} */
-	let windows = $state([]);
+	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
+	let windows = $state({});
+
+	/**
+	 *@param {import("svelte").Snippet<[number]>} snippet
+	 * @returns {number} window ID
+	 */
+	function newWindow(snippet) {
+		let id = Math.round(Math.random() * 100000);
+
+		if (windows[id] != undefined) {
+			return newWindow(snippet);
+		}
+		windows[id] = snippet;
+		return id;
+	}
+
+	/**
+	 *@param {number} id
+	 * @returns {void}
+	 */
+	function deleteWindow(id) {
+		delete windows[id];
+	}
 
 	let errorDialogue = $state();
 	let companyDialogue = $state();
@@ -19,7 +42,8 @@
 	/**
 	 * @type {number}
 	 */
-	let companyID = $state(-1);
+	let companyIDUserFacing = $state(0);
+	let companyID = $derived(companyIDUserFacing - 1);
 
 	/** @type {Promise<{connection: import("$lib/javascript/connection").Connection, clientState: import("$lib/javascript/simulation").clientState}>} */
 	let connectionPromise = $state(
@@ -88,6 +112,20 @@
 					console.log('external_factors updated');
 					console.log(clientState.external_factors);
 					break;
+				case Methods.Func_calculate_product_stats:
+					clientState.company.Offer.Product = dataJSON.Data;
+					console.log('external_factors updated');
+					console.log(clientState.external_factors);
+			}
+		} else {
+			switch (dataJSON.Method) {
+				case Methods.Sim_starting:
+					isReady = true;
+					break;
+				case Methods.Sim_done:
+					isReady = false;
+					fetchEverything(connection);
+					break;
 			}
 		}
 	}
@@ -131,27 +169,31 @@
 					connection.sCompany(companyID);
 				}}
 			>
-				<input bind:value={companyID} type="number" required placeholder="Company ID" />
+				<input bind:value={companyIDUserFacing} type="number" required placeholder="Company ID" />
 				<input type="submit" value="Confirm" />
 			</form>
 		</article>
 	</dialog>
 	<div id="ui">
 		<Canvas>
-			{#each windows as w}
-				{@render w()}
+			{#each Object.entries(windows) as w}
+				{@render w[1](w[0])}
 			{/each}
 		</Canvas>
 		<div id="bottom-menu">
-			<button>{clientState?.company.Balance} $</button>
 			<button
 				onclick={() => {
-					windows.push(product);
+					newWindow(debt);
+				}}>{clientState?.company.Balance} $</button
+			>
+			<button
+				onclick={() => {
+					newWindow(product);
 				}}>Product</button
 			>
 			<button
 				onclick={() => {
-					windows.push(marketing);
+					newWindow(marketing);
 				}}>Marketing</button
 			>
 			<button>Employees</button>
@@ -159,21 +201,20 @@
 			<button>Research</button>
 			<button>Market</button>
 			<button>Chat</button>
-			<button
-				style="display: {isReady ? 'none' : 'unset'};"
-				onclick={() => {
-					connection.sReady();
-					isReady = true;
-				}}>Ready</button
-			>
-			<button
-				class="secondary"
-				style="display: {!isReady ? 'none' : 'unset'};"
-				onclick={() => {
-					connection.sUnready();
-					isReady = false;
-				}}>Unready</button
-			>
+			{#if !isReady}
+				<button
+					onclick={() => {
+						connection.sReady();
+						isReady = true;
+					}}>Ready</button
+				>{:else}
+				<button
+					class="secondary"
+					onclick={() => {
+						connection.sUnready();
+						isReady = false;
+					}}>Unready</button
+				>{/if}
 		</div>
 	</div>
 {:catch error}
@@ -202,35 +243,66 @@
 						onClose(null);
 					}}>Retry Connection</button
 				>
-				<button
-					onclick={() => {
-						errorDialogue.close();
-					}}>Return To Main Menu</button
-				>
+				<a href="/">
+					<button
+						onclick={() => {
+							errorDialogue.close();
+						}}>Return To Main Menu</button
+					>
+				</a>
 			</footer>
 		</article>
 	</dialog>
 {/await}
 
-{#snippet product()}
-	<Window title="Product" closeWindow={() => {}}>
+{#snippet product(/** @type {Number} id */ id)}
+	<Window
+		title="Product"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
 		<Product
 			bind:clientState
 			updateDecisions={(decisions) => {
 				connection.sDecisions(decisions);
+				connection.fProduct_stats(decisions.Marketing.Product, decisions.Research);
 			}}
+			product={clientState.company.Offer.Product}
+			externalFactors={clientState.external_factors}
 		></Product>
 	</Window>
 {/snippet}
 
-{#snippet marketing()}
-	<Window title="Marketing" closeWindow={() => {}}>
+{#snippet marketing(/** @type {Number} id */ id)}
+	<Window
+		title="Marketing"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
 		<Marketing
 			bind:clientState
 			updateDecisions={(decisions) => {
 				connection.sDecisions(decisions);
 			}}
 		></Marketing>
+	</Window>
+{/snippet}
+
+{#snippet debt(/** @type {Number} id */ id)}
+	<Window
+		title="Debt"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<Debt
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></Debt>
 	</Window>
 {/snippet}
 

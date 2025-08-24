@@ -164,33 +164,42 @@ func delete_by_id[V interface{ get_id() int }](s []V, id ...int) []V {
 }
 
 func check_product(p Product) error {
+	errorString := ""
 	if p.Base_quality <= 0 {
-		return errors.New("Invalid_product: Base_quality <= 0")
-	} else if p.Base_durability <= 0 {
-		return errors.New("Invalid_product: Base_durability <= 0")
-	} else if p.Base_production_cost <= 0 {
-		return errors.New("Invalid_product: Base_production_cost <= 0")
-	} else if p.Base_ecology <= 0 {
-		return errors.New("Invalid_product: Base_ecology <= 0")
-	} else if p.Base_material_use <= 0 {
-		return errors.New("Invalid_product: Base_material_use <= 0")
+		errorString += "Base_quality <= 0;"
 	}
-
+	if p.Base_durability <= 0 {
+		errorString += "Base_durability <= 0;"
+	}
+	if p.Base_production_cost <= 0 {
+		errorString += "Invalid_product: Base_production_cost <= 0;"
+	}
+	if p.Base_ecology <= 0 {
+		errorString += "Base_ecology <= 0;"
+	}
+	if p.Base_material_use <= 0 {
+		errorString += "Base_material_use <= 0;"
+	}
 	if p.Production_cost <= 0 {
-		return errors.New("Invalid_product: Production_cost <= 0")
-	} else if p.Weight <= 0 {
-		return errors.New("Invalid_product: Weight <= 0")
-	} else if p.Material_use <= 0 {
-		return errors.New("Invalid_product: Material_use <= 0")
+		errorString += "Production_cost <= 0;"
+	}
+	if p.Weight <= 0 {
+		errorString += "Weight <= 0;"
+	}
+	if p.Material_use <= 0 {
+		errorString += "Material_use <= 0;"
 	}
 	if p.Durabilty < 0 {
-		return errors.New("Invalid_product: Durabilty < 0")
+		errorString += "Durabilty < 0;"
 	}
 
 	if math.IsInf(float64(p.Production_cost), 1) {
-		return errors.New("Invalid_product: Production_cost == +Inf")
+		errorString += "Production_cost == +Inf;"
 	}
 
+	if errorString != "" {
+		return errors.New("Invalid_product: " + errorString)
+	}
 	return nil
 }
 

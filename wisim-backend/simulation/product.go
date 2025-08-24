@@ -7,7 +7,7 @@ import (
 
 func (c *Company) Calculate_product(
 	product_decisions Decisions_product, research Decisions_research,
-) (product Product) { // Calcualtes product stats without side effects
+) (product Product, error error) { // Calcualtes product stats without side effects
 	product = c.Offer.Product
 
 	product.calcualte_material_use(research.Ecology, product_decisions.Manufacturing.Material_efficiency, product_decisions.Materials.Quality)
@@ -15,12 +15,13 @@ func (c *Company) Calculate_product(
 	product.calculate_durability(research.Durability, product_decisions.Manufacturing.Max_durability, product_decisions.Manufacturing.Durability)
 	product.calculate_ecology(research.Ecology, product_decisions.Manufacturing.Ecological_energy, product_decisions.Materials.Ecology)
 	product.calculate_production_cost(research.Production_cost, product_decisions.Manufacturing)
+	product.Ethics_factor = 1
 
 	err := check_product(product)
 	if err != nil {
-		panic(fmt.Errorf("%w /n Product: %#+v", err, product))
+		error = fmt.Errorf("%w /n Product: %#+v", err, product)
 	}
-	return product
+	return product, error
 }
 
 // offer functions

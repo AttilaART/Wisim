@@ -286,6 +286,40 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 	)
 
 	game_state.Current_decisions = make([]Decisions, number_of_companies)
+
+	defaultDecisions := Decisions{
+		Marketing: Decisions_marketing{
+			Product: Decisions_product{
+				Materials: struct {
+					Quality          float32
+					Ecology          float32
+					Ethical_sourcing float32
+				}{
+					Quality:          1,
+					Ecology:          1,
+					Ethical_sourcing: 1,
+				},
+				Manufacturing: struct {
+					Quality             float32
+					Ecological_energy   float32
+					Material_efficiency float32
+					Durability          float32
+					Max_durability      int
+				}{
+					Quality:             1,
+					Ecological_energy:   1,
+					Material_efficiency: 1,
+					Durability:          1,
+					Max_durability:      1,
+				},
+			},
+		},
+	}
+
+	for i := range game_state.Current_decisions {
+		game_state.Current_decisions[i] = defaultDecisions
+	}
+
 	game_state.Decisions_submitted = make([]bool, number_of_companies)
 
 	return game_state
