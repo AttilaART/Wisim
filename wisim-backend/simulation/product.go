@@ -42,7 +42,7 @@ func promotion_quality(base_marketing_strength float32, marketing_personelle []*
 // Calculates Material_use of product w/ side effects and returns value
 func (product *Product) calcualte_material_use(ecology_research float32, material_efficiency float32, quality float32) float32 {
 	product.Base_material_use *= 1 + ecology_research/2000
-	product.Material_use = product.Base_material_use / material_efficiency * quality
+	product.Material_use = product.Base_material_use / max([]float32{material_efficiency, 0.1}) * quality
 	return product.Material_use
 }
 

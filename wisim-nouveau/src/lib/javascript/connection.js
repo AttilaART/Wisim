@@ -244,8 +244,8 @@ export async function newConnection(url, eventHandler, onClose, onError) {
         Error: '',
         DataType: '',
         Data: {
-          Product_decisions: decisions,
-          Research_decisions: research
+          Product: decisions,
+          Research: research
         }
       };
       websocket.send(JSON.stringify(message));
@@ -284,8 +284,8 @@ export async function newConnection(url, eventHandler, onClose, onError) {
       return { connection: methods, clientState: state };
     }
 
-    await asyncWait(1000);
-    waitTime += 1000;
+    await asyncWait(100);
+    waitTime += 100;
   }
 
   throw 'connection timed out';

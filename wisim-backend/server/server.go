@@ -386,7 +386,7 @@ func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) 
 	if err != nil {
 		reply.Error = err.Error()
 	}
-	fmt.Printf("%+v\n", product)
+
 	product = removeProductNaN(product)
 	reply.Data = &product
 }

@@ -100,22 +100,21 @@
 				case Methods.Get_company:
 					clientState.company = dataJSON.Data;
 					console.log('company updated');
-					console.log(clientState.company);
+					console.log($state.snapshot(clientState.company));
 					break;
 				case Methods.Get_decisions:
 					clientState.decisions = dataJSON.Data;
 					console.log('decisions updated');
-					console.log(clientState.decisions);
+					console.log($state.snapshot(clientState.decisions));
 					break;
 				case Methods.Get_external_factors:
 					clientState.external_factors = dataJSON.Data;
 					console.log('external_factors updated');
-					console.log(clientState.external_factors);
+					console.log($state.snapshot(clientState.external_factors));
 					break;
 				case Methods.Func_calculate_product_stats:
 					clientState.company.Offer.Product = dataJSON.Data;
-					console.log('external_factors updated');
-					console.log(clientState.external_factors);
+					console.log('product Stats updated');
 			}
 		} else {
 			switch (dataJSON.Method) {
