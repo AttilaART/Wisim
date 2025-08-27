@@ -11,12 +11,14 @@
             "id": "fe4ad6bf3b999cf2",
             "type": "leaf",
             "state": {
-              "type": "excalidraw",
+              "type": "markdown",
               "state": {
-                "file": "Development/UI/UI Prototype 3.md"
+                "file": "Development/Technical Info/Json CommsProtocol.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "excalidraw-icon",
-              "title": "UI Prototype 3"
+              "icon": "lucide-file",
+              "title": "Json CommsProtocol"
             }
           }
         ]
@@ -76,8 +78,7 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300,
-    "collapsed": true
+    "width": 300
   },
   "right": {
     "id": "e8b572bfaebaa5f6",
@@ -171,8 +172,8 @@
   },
   "active": "fe4ad6bf3b999cf2",
   "lastOpenFiles": [
-    "Development/Technical Info/Json CommsProtocol.md",
     "Development/UI/UI Prototype 3.md",
+    "Development/Technical Info/Json CommsProtocol.md",
     "Development/Normalverteilung Diagramm.md",
     "Development/Technical Info/Random income function.md",
     "Development/Todo list.md",

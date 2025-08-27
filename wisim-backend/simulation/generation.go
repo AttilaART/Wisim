@@ -144,8 +144,11 @@ func (g *Game_state) Generate_new_employee_id() int {
 }
 
 func (g *Game_state) Generate_employee(base_pay float32, working_hours float32, employee_type Employee_type, base_motivation float32) *Employee {
+	employeeeID := g.Generate_new_employee_id()
+
 	employee := Employee{
-		Id:            g.Generate_new_employee_id(),
+		Id:            employeeeID,
+		Name:          randomName(employeeeID),
 		Employee_type: employee_type,
 		Motivation:    base_motivation,
 		Skill:         float32(rand.NormFloat64()*0.1 + 1),
@@ -155,6 +158,56 @@ func (g *Game_state) Generate_employee(base_pay float32, working_hours float32, 
 	g.Employees = append(g.Employees, employee)
 
 	return &g.Employees[len(g.Employees)-1]
+}
+
+func randomName(seed int) string {
+	firstNames := []string{
+		"Borg",
+		"Tim",
+		"Trim",
+		"Andrin",
+		"Attila",
+		"Ali",
+		"Brahim",
+		"Fatima",
+		"Bob",
+		"Felix",
+		"Yäl",
+		"Jael",
+		"Lizza",
+		"Carmelon",
+		"El-Ias",
+		"Keira",
+		"Kimberly",
+		"John",
+		"Heldegard",
+		"Tinish",
+		"Chasable",
+		"Cecily",
+		"Earnest",
+		"Gwendilyn",
+		"Patrik",
+	}
+	lastNames := []string{
+		"Smith",
+		"Brugger",
+		"Schaginhaufen",
+		"Gehfehler",
+		"McChicken",
+		"Ouegouri",
+		"Fullagar",
+		"Keller",
+		"Acharya",
+		"Mozarella",
+		"Stift",
+		"Pluss",
+		"The Great",
+		"Bunbury",
+	}
+
+	randomiser := rand.New(rand.NewSource(int64(seed)))
+
+	return firstNames[randomiser.Int()%len(firstNames)] + " " + lastNames[randomiser.Int()%len(lastNames)]
 }
 
 func (g *Game_state) generate_companies(

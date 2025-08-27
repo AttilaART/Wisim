@@ -41,6 +41,7 @@ Note: `DataType` should match the reciever implementation's type. So if sending 
 - `gDecisions() -> Decisons`: Gets latest decisions of company
 - `gCompany() -> Company`: Gets latest company state
 - `gExternal_factors() -> External_factors`: Gets latest external factors
+- `gEmployees(type) -> []Employee` Gets current list of employees
 
 - `sCompany(company-number) -> bool`: When joining, asks server to set company
 - `sDecisions(Decisions) -> void`: Sets company decisions

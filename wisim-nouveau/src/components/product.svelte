@@ -2,7 +2,12 @@
 	import { format } from '$lib/javascript/format';
 
 	/** @type {{clientState: import("$lib/javascript/simulation").clientState, updateDecisions: (decisions: import("$lib/javascript/simulation").Decisions)=>void, product: import("$lib/javascript/simulation").Product, externalFactors: import("$lib/javascript/simulation").External_factors}} */
-	let { clientState = $bindable(), updateDecisions, product, externalFactors } = $props();
+	let {
+		clientState = $bindable(),
+		updateDecisions,
+		product = $bindable(),
+		externalFactors
+	} = $props();
 </script>
 
 <div>

@@ -70,6 +70,10 @@ func (employee_pool Employee_pool) Find_employee_by_id(id int) *Employee {
 	return nil
 }
 
+func (c *Company) Get_employees(employee_type Employee_type) []*Employee {
+	return c.employee_pool.Get_employees_of_company(c.Id, employee_type)
+}
+
 func (employee_pool *Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_of_company []*Employee) {
 	for i := range *employee_pool {
 		if (*employee_pool)[i].Employer == company_id {

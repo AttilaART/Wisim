@@ -9,59 +9,44 @@ import (
 // Employee functions
 
 func (c *Company) simulate_employees(employee_deltas []Delta[Employee], external_factors External_factors, severance_pay float32, employee_type Employee_type) error {
+	c.calculateDeltas(employee_deltas)
+
 	// Get correct employee slice
 	company_employees := c.employee_pool.Get_employees_of_company(c.Id, employee_type)
 
-	// get corresponding pointers for employees & update values
-	var employee_deltas_ptr []Delta[*Employee]
-	for _, e_delta := range employee_deltas {
-		employee_ptr := c.employee_pool.Find_employee_by_id(e_delta.Item.Id)
-		if employee_ptr == nil {
-			panic("Employee Not Found")
-		}
-
-		*employee_ptr = e_delta.Item
-		employee_deltas_ptr = append(employee_deltas_ptr, Delta[*Employee]{Change: e_delta.Change, Item: employee_ptr})
-	}
-
-	if company_employees == nil {
-		panic("No employee list loaded")
-	}
-
-	// Fire/"layoff" employees
-	var employees_layed_off int
-	for i := range employee_deltas_ptr {
-		if employee_deltas_ptr[i].Change == Delta_Remove {
-			employees_layed_off += 1
-			employee_deltas_ptr[i].Item.Employer = Employee_employer_none
-		}
-	}
-
-	// Calcualte Turnover
-	var num_employees_who_left int
-	for _, e_ptr := range company_employees {
-		if e_ptr.Employer != Employee_employer_none {
-			if rand.Float32() <= external_factors.Turnover {
-				e_ptr.Employer = Employee_employer_none
-				num_employees_who_left += 1
+	/*
+		// Fire/"layoff" employees
+		var employees_layed_off int
+		for i := range employee_deltas_ptr {
+			if employee_deltas_ptr[i].Change == Delta_Remove {
+				employees_layed_off += 1
+				employee_deltas_ptr[i].Item.Employer = Employee_employer_none
 			}
 		}
-	}
 
-	// calculate severance pay
+		// Calcualte Turnover
+		var num_employees_who_left int
+		for _, e_ptr := range company_employees {
+			if e_ptr.Employer != Employee_employer_none {
+				if rand.Float32() <= external_factors.Turnover {
+					e_ptr.Employer = Employee_employer_none
+					num_employees_who_left += 1
+				}
+			}
+		}
 
-	for range employees_layed_off {
-		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(
-			"Severance pay for employee",
-			severance,
-			"When you layoff an employee, you have to pay them severance. Sometimes it's more expensive to fire someone, than just letting them sit idle.",
-			true,
-			-float64(severance),
-		)
-	}
+		// calculate severance pay
 
-	// Refresh employees after some left
-	company_employees = c.employee_pool.Get_employees_of_company(c.Id, employee_type)
+		for range employees_layed_off {
+			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(
+				"Severance pay for employee",
+				severance,
+				"When you layoff an employee, you have to pay them severance. Sometimes it's more expensive to fire someone, than just letting them sit idle.",
+				true,
+				-float64(severance),
+			)
+		}
+	*/
 
 	// Calcualate Payroll
 	var group int
@@ -133,7 +118,22 @@ func layoff(employees []Employee, size_of_layoff int) ([]Employee, int) {
 	return employees, number_of_employees_who_left
 }
 
-func (c Company) turnover(employees []*Employee, turnover_rate float32) (employees_who_left_count int) { // returns new list of employees & number employees that left
+func (c *Company) calculateDeltas(deltas []Delta[Employee]) {
+	for _, d := range deltas {
+		employee := c.employee_pool.Find_employee_by_id(d.Item.Id)
+		if d.Change == Delta_Remove {
+			employee = &d.Item
+			employee.Employer = -1
+		} else if d.Change == Delta_Change {
+			employee = &d.Item
+		} else if d.Change == Delta_New {
+			employee = &d.Item
+			employee.Employer = c.Id
+		}
+	}
+}
+
+func (c *Company) turnover(employees []*Employee, turnover_rate float32) (employees_who_left_count int) { // returns new list of employees & number employees that left
 	for _, e_ptr := range employees {
 		if e_ptr.Employer != Employee_employer_none {
 			if rand.Float32() <= turnover_rate {

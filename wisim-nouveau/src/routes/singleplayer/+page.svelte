@@ -9,6 +9,8 @@
 	import '../../app.css';
 	import Marketing from '../../components/marketing.svelte';
 	import Debt from '../../components/debt.svelte';
+	import { format } from '$lib/javascript/format';
+	import Employees from '../../components/employees.svelte';
 
 	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
 	let windows = $state({});
@@ -38,6 +40,7 @@
 	let errorDialogue = $state();
 	let companyDialogue = $state();
 	let isReady = $state();
+	let isSimulating = $state(false);
 
 	/**
 	 * @type {number}
@@ -100,29 +103,35 @@
 				case Methods.Get_company:
 					clientState.company = dataJSON.Data;
 					console.log('company updated');
-					console.log($state.snapshot(clientState.company));
 					break;
 				case Methods.Get_decisions:
 					clientState.decisions = dataJSON.Data;
+					clientState.decisions.Employees.Production_deltas = [];
+					clientState.decisions.Employees.Marketing_deltas = [];
 					console.log('decisions updated');
-					console.log($state.snapshot(clientState.decisions));
 					break;
 				case Methods.Get_external_factors:
 					clientState.external_factors = dataJSON.Data;
 					console.log('external_factors updated');
-					console.log($state.snapshot(clientState.external_factors));
 					break;
 				case Methods.Func_calculate_product_stats:
 					clientState.company.Offer.Product = dataJSON.Data;
 					console.log('product Stats updated');
+				case Methods.Get_employees:
+					if (dataJSON.Data.Type == 'production') {
+						clientState.employees.production = dataJSON.Data.Employees;
+					}
+					console.log('employees updated');
 			}
 		} else {
 			switch (dataJSON.Method) {
 				case Methods.Sim_starting:
 					isReady = true;
+					isSimulating = true;
 					break;
 				case Methods.Sim_done:
 					isReady = false;
+					isSimulating = false;
 					fetchEverything(connection);
 					break;
 			}
@@ -137,6 +146,7 @@
 		connection.gCompany();
 		connection.gDecisions();
 		connection.gExternal_factors();
+		connection.gEmployees('production');
 	}
 
 	/**
@@ -173,6 +183,16 @@
 			</form>
 		</article>
 	</dialog>
+
+	{#if isSimulating}
+		<dialog open>
+			<center>
+				<h2>Loading...</h2>
+				<p>Simulation Simulating</p>
+			</center>
+		</dialog>
+	{/if}
+
 	<div id="ui">
 		<Canvas>
 			{#each Object.entries(windows) as w}
@@ -183,8 +203,12 @@
 			<button
 				onclick={() => {
 					newWindow(debt);
-				}}>{clientState?.company.Balance} $</button
+				}}
 			>
+				<strong>
+					{format.currency(clientState.company.Balance, true, 2)}
+				</strong>
+			</button>
 			<button
 				onclick={() => {
 					newWindow(product);
@@ -195,7 +219,11 @@
 					newWindow(marketing);
 				}}>Marketing</button
 			>
-			<button>Employees</button>
+			<button
+				onclick={() => {
+					newWindow(employees);
+				}}>Employees</button
+			>
 			<button>Production</button>
 			<button>Research</button>
 			<button>Market</button>
@@ -267,7 +295,7 @@
 				connection.sDecisions(decisions);
 				connection.fProduct_stats(decisions.Marketing.Product, decisions.Research);
 			}}
-			product={clientState.company.Offer.Product}
+			bind:product={clientState.company.Offer.Product}
 			externalFactors={clientState.external_factors}
 		></Product>
 	</Window>
@@ -302,6 +330,22 @@
 				connection.sDecisions(decisions);
 			}}
 		></Debt>
+	</Window>
+{/snippet}
+
+{#snippet employees(/** @type {Number} id */ id)}
+	<Window
+		title="Employees"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<Employees
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></Employees>
 	</Window>
 {/snippet}
 

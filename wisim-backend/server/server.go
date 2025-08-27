@@ -195,6 +195,48 @@ func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply.Data = &externalFactors
 }
 
+func getEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[struct {
+		Type      string
+		Employees []*simulation.Employee
+	}]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	if len(gamestate.Companies) <= s.conns[ws].Company || s.conns[ws].Company < 0 {
+		reply.Error = errorInvalidCompany
+		return
+	}
+
+	var tempStruct struct{ Type string }
+	err := mapstructure.Decode(*message.Data, &tempStruct)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	data := struct {
+		Type      string
+		Employees []*simulation.Employee
+	}{
+		Type:      tempStruct.Type,
+		Employees: make([]*simulation.Employee, 0),
+	}
+
+	reply.Data = &data
+
+	if reply.Data.Type == "production" {
+		reply.Data.Type = "production"
+		reply.Data.Employees = gamestate.Companies[s.conns[ws].Company].Get_employees(simulation.Employee_type_production)
+	} else {
+		reply.Error = "Invalid Employee type"
+	}
+}
+
 func setCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply := Message[bool]{Method: message.Method, IsResponse: true}
 
@@ -391,7 +433,7 @@ func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) 
 	reply.Data = &product
 }
 
-func removeProductNaN(p simulation.Product) simulation.Product {
+func removeProductNaN[v simulation.Product](p v) v {
 	reflectProduct := reflect.ValueOf(&p)
 	numFields := reflectProduct.Elem().NumField()
 
@@ -456,6 +498,7 @@ func main() {
 	server.addMethod("gDecisions", getDecisions)
 	server.addMethod("gCompany", getCompany)
 	server.addMethod("gExternal_factors", getExternalFactors)
+	server.addMethod("gEmployees", getEmployees)
 
 	server.addMethod("sCompany", setCompany)
 	server.addMethod("sDecisions", setDecisions)

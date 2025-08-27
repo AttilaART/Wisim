@@ -1,7 +1,7 @@
 // NOTE: Most of the types defined in this file were generated from Go types through ChatGPT
 
 /**
- * @typedef {{company: Company, decisions: Decisions, external_factors: External_factors}} clientState
+ * @typedef {{company: Company, decisions: Decisions, external_factors: External_factors, employees: {production: Employee[]}}} clientState
  */
 
 /**
@@ -354,4 +354,4 @@
  * @property {number} Machine_depreciation_rate - In decimal
  */
 
-export { };
+export {};
