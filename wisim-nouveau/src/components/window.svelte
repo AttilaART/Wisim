@@ -7,7 +7,7 @@
 	<header>
 		<button onclick={closeWindow} rel="prev" aria-label="Close"></button><center>{title}</center>
 	</header>
-	<div style="overflow: scroll; max-height: calc(100vh - 136px - 58px - var(--pico-spacing));">
+	<div style="overflow: scroll; max-height: calc(100vh - 136px - 58px - var(--pico-spacing)*2);">
 		{@render children()}
 	</div>
 </article>

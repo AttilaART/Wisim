@@ -229,11 +229,91 @@ func getEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
 
 	reply.Data = &data
 
-	if reply.Data.Type == "production" {
-		reply.Data.Type = "production"
+	switch reply.Data.Type {
+	case "production":
 		reply.Data.Employees = gamestate.Companies[s.conns[ws].Company].Get_employees(simulation.Employee_type_production)
-	} else {
+	case "marketing":
+		reply.Data.Employees = gamestate.Companies[s.conns[ws].Company].Get_employees(simulation.Employee_type_marketing)
+	default:
 		reply.Error = "Invalid Employee type"
+	}
+}
+
+func getUnemployedEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[struct {
+		Type      string
+		Employees []*simulation.Employee
+	}]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	var tempStruct struct{ Type string }
+	err := mapstructure.Decode(*message.Data, &tempStruct)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	data := struct {
+		Type      string
+		Employees []*simulation.Employee
+	}{
+		Type:      tempStruct.Type,
+		Employees: make([]*simulation.Employee, 0),
+	}
+
+	reply.Data = &data
+
+	// update unemployed
+	unemployedCountProduction := 0
+	unemployedCountMarketing := 0
+	for _, e := range gamestate.Employees {
+		if e.Employer < 0 {
+			switch e.Employee_type {
+			case simulation.Employee_type_marketing:
+				unemployedCountMarketing += 1
+			case simulation.Employee_type_production:
+				unemployedCountProduction += 1
+			}
+		}
+	}
+
+	requiredUnemployedMarketing := 5 - unemployedCountMarketing
+	for ; requiredUnemployedMarketing > 0; requiredUnemployedMarketing-- {
+		gamestate.Generate_employee(gamestate.External_factors.Marketing_minimum_wage,
+			8,
+			simulation.Employee_type_marketing,
+			1)
+	}
+
+	requiredUnemployedProduction := 10 - unemployedCountProduction
+	for ; requiredUnemployedProduction > 0; requiredUnemployedProduction-- {
+		gamestate.Generate_employee(gamestate.External_factors.Production_minimum_wage,
+			8,
+			simulation.Employee_type_production,
+			1)
+	}
+
+	for i, e := range gamestate.Employees {
+		if e.Employer >= 0 {
+			continue
+		}
+		switch reply.Data.Type {
+		case "production":
+			if e.Employee_type == simulation.Employee_type_production {
+				reply.Data.Employees = append(reply.Data.Employees, &gamestate.Employees[i])
+			}
+		case "marketing":
+			if e.Employee_type == simulation.Employee_type_marketing {
+				reply.Data.Employees = append(reply.Data.Employees, &gamestate.Employees[i])
+			}
+		default:
+			reply.Data.Employees = append(reply.Data.Employees, &gamestate.Employees[i])
+		}
 	}
 }
 
@@ -499,6 +579,7 @@ func main() {
 	server.addMethod("gCompany", getCompany)
 	server.addMethod("gExternal_factors", getExternalFactors)
 	server.addMethod("gEmployees", getEmployees)
+	server.addMethod("gUnemployedEmployees", getUnemployedEmployees)
 
 	server.addMethod("sCompany", setCompany)
 	server.addMethod("sDecisions", setDecisions)

@@ -61,10 +61,10 @@ func rand_income(mean_income int, standard_dev int) int {
 
 type Employee_pool []Employee
 
-func (employee_pool Employee_pool) Find_employee_by_id(id int) *Employee {
-	for i := range employee_pool {
-		if employee_pool[i].Id == id {
-			return &employee_pool[i]
+func (employee_pool *Employee_pool) Find_employee_by_id(id int) *Employee {
+	for i := range *employee_pool {
+		if (*employee_pool)[i].Id == id {
+			return &(*employee_pool)[i]
 		}
 	}
 	return nil
@@ -98,7 +98,7 @@ func (employee_pool *Employee_pool) Get_avr_skill(company_id int, employee_type 
 }
 
 func (c *Company) Get_decisions() Decisions {
-	var decisions Decisions
+	var decisions Decisions = Decisions{}
 	if len(c.Decision_history) >= 1 {
 		decisions = c.Decision_history[len(c.Decision_history)-1]
 	} else {
@@ -135,6 +135,13 @@ func (c *Company) Get_decisions() Decisions {
 	if decisions.Marketing.Product.Manufacturing.Max_durability < 1 {
 		decisions.Marketing.Product.Manufacturing.Max_durability = 1
 	}
+
+	// initialise slices
+	decisions.Employees.Marketing_deltas = make([]Delta[Employee], 0)
+	decisions.Employees.Production_deltas = make([]Delta[Employee], 0)
+
+	decisions.Production.Logistics = make([]Delta[Warehouse], 0)
+	decisions.Production.Machines = make([]Delta[Machine], 0)
 
 	return decisions
 }

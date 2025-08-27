@@ -1,7 +1,7 @@
 // NOTE: Most of the types defined in this file were generated from Go types through ChatGPT
 
 /**
- * @typedef {{company: Company, decisions: Decisions, external_factors: External_factors, employees: {production: Employee[]}}} clientState
+ * @typedef {{company: Company, decisions: Decisions, external_factors: External_factors, employees: {production: Employee[], marketing: Employee[]}, unemployed: {production: Employee[], marketing: Employee[]}}} clientState
  */
 
 /**

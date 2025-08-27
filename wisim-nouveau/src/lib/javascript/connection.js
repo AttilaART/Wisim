@@ -5,11 +5,7 @@
 
 /**
  * Message sent to server
- * @typedef {{Method: string, IsResponse: boolean, Error: string, DataType: DataType, Data: any}} Message
- */
-
-/**
- * @typedef {string} DataType
+ * @typedef {{Method: string, IsResponse: boolean, Error: string, Data: any}} Message
  */
 
 export const Methods = {
@@ -17,6 +13,7 @@ export const Methods = {
 	Get_company: 'gCompany',
 	Get_external_factors: 'gExternal_factors',
 	Get_employees: 'gEmployees',
+	Get_unemployed_employees: 'gUnemployedEmployees',
 
 	Set_company: 'sCompany',
 	Set_decisions: 'sDecisions',
@@ -142,7 +139,12 @@ export const baseState = {
 		Machine_depreciation_rate: 0
 	},
 	employees: {
-		production: []
+		production: [],
+		marketing: []
+	},
+	unemployed: {
+		production: [],
+		marketing: []
 	}
 };
 
@@ -155,6 +157,7 @@ export const baseState = {
  * @property {()=>void} Connection.gCompany
  * @property {()=>void} Connection.gExternal_factors
  * @property {(Type: employeeType)=>void} Connection.gEmployees
+ * @property {(Type: employeeType)=>void} Connection.gUnemployedEmployees
  *
  * @property {(ID: number)=>void} Connection.sCompany
  * @property {(decisions: import('./simulation').Decisions)=>void} Connection.sDecisions
@@ -199,7 +202,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Get_decisions,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
 				Data: ''
 			};
 			websocket.send(JSON.stringify(message));
@@ -213,7 +215,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Get_company,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
 				Data: ''
 			};
 			websocket.send(JSON.stringify(message));
@@ -227,7 +228,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Get_external_factors,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
 				Data: ''
 			};
 			websocket.send(JSON.stringify(message));
@@ -239,7 +239,17 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Get_employees,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
+				Data: { Type }
+			};
+			websocket.send(JSON.stringify(message));
+		},
+		/** @param {employeeType} Type */
+		gUnemployedEmployees: (Type) => {
+			/** @type {Message} */
+			let message = {
+				Method: Methods.Get_unemployed_employees,
+				IsResponse: false,
+				Error: '',
 				Data: { Type }
 			};
 			websocket.send(JSON.stringify(message));
@@ -252,7 +262,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Set_company,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
 				Data: { ID }
 			};
 
@@ -270,7 +279,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Set_decisions,
 				IsResponse: false,
 				Error: '',
-				DataType: 'Decisions',
 				Data: decisions
 			};
 			websocket.send(JSON.stringify(message));
@@ -284,7 +292,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Set_ready,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
 				Data: ''
 			};
 			websocket.send(JSON.stringify(message));
@@ -296,7 +303,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Set_unready,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
 				Data: ''
 			};
 			websocket.send(JSON.stringify(message));
@@ -314,7 +320,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Func_calculate_product_stats,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
 				Data: {
 					Product: decisions,
 					Research: research
@@ -334,7 +339,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				Method: Methods.Broadcast_chat,
 				IsResponse: false,
 				Error: '',
-				DataType: '',
 				Data: chat
 			};
 			websocket.send(JSON.stringify(message));

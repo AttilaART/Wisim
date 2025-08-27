@@ -12,11 +12,11 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 	// Personelle
 	println("Simulatig personelle")
 
-	err := c.simulate_employees(decisions.Employees.Production_deltas, external_factors, decisions.Employees.Severance_pay, Employee_type_production)
+	err := c.simulate_employees(external_factors, decisions.Employees.Severance_pay, Employee_type_production)
 	if err != nil {
 		return err
 	}
-	err = c.simulate_employees(decisions.Employees.Marketing_deltas, external_factors, decisions.Employees.Severance_pay, Employee_type_marketing)
+	err = c.simulate_employees(external_factors, decisions.Employees.Severance_pay, Employee_type_marketing)
 	if err != nil {
 		return err
 	}

@@ -19,9 +19,8 @@ type Save_game struct {
 }
 
 type Game_state struct {
-	Step           int
-	Step_simulated bool
-	Game_name      string
+	Step      int
+	Game_name string
 
 	Population              Population
 	Employees               Employee_pool
@@ -261,7 +260,7 @@ const (
 )
 
 const (
-	Employee_employer_none = iota
+	Employee_employer_none = -1
 )
 
 func (e_type Employee_type) to_string() string {
@@ -609,7 +608,6 @@ func (c Company) Mock_simulate_step(decisions Decisions, external_factors Extern
 
 // Gameloop functions
 func (game_state *Game_state) Simulate_step() error {
-	game_state.Step_simulated = false
 	game_state.Step += 1
 
 	game_state.External_factors.Month = game_state.Step
@@ -617,15 +615,19 @@ func (game_state *Game_state) Simulate_step() error {
 	if len(game_state.Companies) != len(game_state.Current_decisions) {
 		return errors.New("amount of decisions does not match number of companies")
 	}
+	println("============ Simulating Hiring / Firing ===========")
+	game_state.handleEmployeeDeltas()
 
 	println("=============== Simulating companies ==============")
 	for i := range game_state.Companies {
+		game_state.Companies[i].employee_pool = &game_state.Employees
 		fmt.Printf("--------------- Simulating company %d -------------- \n", i)
 		err := game_state.Companies[i].simulate_company(game_state.Current_decisions[i], game_state.External_factors)
 		if err != nil {
 			return err
 		}
 	}
+
 	println("Simulating companies done!")
 
 	println("---------------- Simulatig economy ----------------")
@@ -685,8 +687,6 @@ func (game_state *Game_state) Simulate_step() error {
 		)
 
 	}
-
-	game_state.Step_simulated = true
 
 	for i := range game_state.Decisions_submitted {
 		game_state.Decisions_submitted[i] = false

@@ -120,8 +120,17 @@
 				case Methods.Get_employees:
 					if (dataJSON.Data.Type == 'production') {
 						clientState.employees.production = dataJSON.Data.Employees;
+					} else if (dataJSON.Data.Type == 'marketing') {
+						clientState.employees.marketing = dataJSON.Data.Employees;
 					}
 					console.log('employees updated');
+				case Methods.Get_unemployed_employees:
+					if (dataJSON.Data.Type == 'production') {
+						clientState.unemployed.production = dataJSON.Data.Employees;
+					} else if (dataJSON.Data.Type == 'marketing') {
+						clientState.unemployed.marketing = dataJSON.Data.Employees;
+					}
+					console.log('unemployed updated');
 			}
 		} else {
 			switch (dataJSON.Method) {
@@ -147,6 +156,9 @@
 		connection.gDecisions();
 		connection.gExternal_factors();
 		connection.gEmployees('production');
+		connection.gEmployees('marketing');
+		connection.gUnemployedEmployees('production');
+		connection.gUnemployedEmployees('marketing');
 	}
 
 	/**

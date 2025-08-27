@@ -154,6 +154,7 @@ func (g *Game_state) Generate_employee(base_pay float32, working_hours float32, 
 		Skill:         float32(rand.NormFloat64()*0.1 + 1),
 		Pay:           base_pay,
 		Working_hours: working_hours,
+		Employer:      Employee_employer_none,
 	}
 	g.Employees = append(g.Employees, employee)
 
@@ -256,7 +257,6 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 	var game_state Game_state
 
 	game_state.Step = 1
-	game_state.Step_simulated = false
 	game_state.Game_name = game_name
 
 	game_state.External_factors = External_factors{
