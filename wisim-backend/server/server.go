@@ -179,6 +179,8 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 		reply.Error = err.Error()
 	}
 	company := gamestate.Companies[s.conns[ws].Company]
+
+	company = removeProductNaNInf(company)
 	reply.Data = &company
 }
 
@@ -509,11 +511,11 @@ func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) 
 		reply.Error = err.Error()
 	}
 
-	product = removeProductNaN(product)
+	product = removeProductNaNInf(product)
 	reply.Data = &product
 }
 
-func removeProductNaN[v simulation.Product](p v) v {
+func removeProductNaNInf[v simulation.Product | simulation.Company](p v) v {
 	reflectProduct := reflect.ValueOf(&p)
 	numFields := reflectProduct.Elem().NumField()
 
@@ -521,11 +523,14 @@ func removeProductNaN[v simulation.Product](p v) v {
 		if reflectProduct.Elem().Field(i).Kind() == reflect.Float32 {
 			if math.IsNaN(reflectProduct.Elem().Field(i).Float()) {
 				reflectProduct.Elem().Field(i).SetFloat(0)
+			} else if math.IsInf(reflectProduct.Elem().Field(i).Float(), 1) {
+				reflectProduct.Elem().Field(i).SetFloat(math.MaxFloat32)
+			} else if math.IsInf(reflectProduct.Elem().Field(i).Float(), -1) {
+				reflectProduct.Elem().Field(i).SetFloat(-math.MaxFloat32)
 			}
 		}
 	}
 
-	fmt.Printf("%+v\n", p)
 	return p
 }
 

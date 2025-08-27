@@ -215,6 +215,7 @@ type Machine struct {
 	Assigned_workers_ptr []*Employee
 	Energy_use           float32
 	Value                float32
+	Maintanance_cost     float32 // Monthly
 }
 
 func (m Machine) get_id() int {
@@ -449,9 +450,13 @@ type Production_report struct {
 	// Max_machine_productivity float32
 	// Min_machine_productivity float32
 
-	Products_produced int
-	Base_production   int
-	Bonus_production  int
+	Total_production int
+	Base_production  int
+	Bonus_production int
+
+	Total_products_produced int
+	Base_products_produced  int
+	Bonus_products_produced int
 
 	Material_used float32
 	Energy_used   float32
@@ -699,7 +704,8 @@ func (game_state *Game_state) Simulate_step() error {
 	printer := message.NewPrinter(language.Swedish)
 	for i, c := range game_state.Companies {
 		printer.Printf("Company %d: %s:\n", i, c.Name)
-		printer.Printf("Products produced: %d\n", c.Reports[len(c.Reports)-1].Production_report.Products_produced)
+		printer.Printf("Total Production: %d\n", c.Reports[len(c.Reports)-1].Production_report.Total_production)
+		printer.Printf("Total Products Produced: %d\n", c.Reports[len(c.Reports)-1].Production_report.Total_products_produced)
 		printer.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
 		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_report.Non_operating_expenses.Net_income)
 		println("")

@@ -11,6 +11,7 @@
 	import Debt from '../../components/debt.svelte';
 	import { format } from '$lib/javascript/format';
 	import Employees from '../../components/employees.svelte';
+	import Reasearch from '../../components/reasearch.svelte';
 
 	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
 	let windows = $state({});
@@ -237,7 +238,11 @@
 				}}>Employees</button
 			>
 			<button>Production</button>
-			<button>Research</button>
+			<button
+				onclick={() => {
+					newWindow(research);
+				}}>Research</button
+			>
 			<button>Market</button>
 			<button>Chat</button>
 			{#if !isReady}
@@ -358,6 +363,22 @@
 				connection.sDecisions(decisions);
 			}}
 		></Employees>
+	</Window>
+{/snippet}
+
+{#snippet research(/** @type {Number} id */ id)}
+	<Window
+		title="Employees"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<Reasearch
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></Reasearch>
 	</Window>
 {/snippet}
 

@@ -15,18 +15,19 @@
     },
     "Warehouses": [
       {
-        "Capacity": 20000,
+        "Capacity": 2000,
         "Operating_costs": 20000
       }
     ],
-    "Items_in_storage": 10000,
+    "Items_in_storage": 1000,
     "Machines": [
       {
-        "Production_capacity": 15000,
+        "Production_capacity": 1500,
         "Required_workers": 5,
         "Minimum_workers": 3,
         "Energy_use": 0.5,
-        "Value": 90000
+        "Value": 100000,
+        "Maintanance_cost": 15000
       },
       {
         "Production_capacity": 15000,

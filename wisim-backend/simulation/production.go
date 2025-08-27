@@ -50,17 +50,10 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 	// Production
 	println("Calculating production")
 
-	c.Offer.Product.Production_cost *= 1 + decisions.Research.Production_cost/1000
-
-	if c.Offer.Product.Production_cost == 0 {
-		panic("Base_production_speed is 0")
-	}
-
 	c.calculate_production(decisions, external_factors)
 
 	// Logistics
-	c.Items_in_storage += c.Reports[len(c.Reports)-1].Production_report.Base_production +
-		c.Reports[len(c.Reports)-1].Production_report.Bonus_production
+	c.Items_in_storage += c.Reports[len(c.Reports)-1].Production_report.Total_products_produced
 
 	println("Calculating logistics")
 	c.calculate_logistics(decisions)
@@ -112,6 +105,12 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 		&c.Reports[len(c.Reports)-1].Balance_sheet,
 		external_factors,
 	)
+	// Calculate machine upkeep
+	var machineUpkeep float32
+	for _, m := range c.Machines {
+		machineUpkeep += m.Maintanance_cost
+	}
+	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Machine upkeep", production, "The upkeep of out production machines", true, float64(machineUpkeep))
 
 	// Produce
 	println("Assigning workers")
@@ -236,11 +235,15 @@ func produce(
 		println("Company owns no machines!")
 	}
 
-	production_report.Products_produced = base_production + bonus_production
+	production_report.Total_production = base_production + bonus_production
 	production_report.Base_production = base_production
 	production_report.Bonus_production = bonus_production
 
-	production_report.Material_used = product.Material_use * float32(production_report.Products_produced)
+	production_report.Total_products_produced = int(float32(production_report.Total_production) / float32(product.Production_cost))
+	production_report.Base_products_produced = int(float32(production_report.Base_production) / float32(product.Production_cost))
+	production_report.Bonus_products_produced = int(float32(production_report.Bonus_production) / float32(product.Production_cost))
+
+	production_report.Material_used = product.Material_use * float32(production_report.Total_production)
 	production_report.Energy_used = float32(energy_use)
 
 	material_costs := -round(float64(external_factors.Material_price)*float64(production_report.Material_used), 2)
@@ -249,7 +252,7 @@ func produce(
 	balance_sheet.add_to_income_statement("Material costs", production, "The cost of materials used in your products", true, material_costs)
 	balance_sheet.add_to_income_statement("Energy costs", production, "The cost of energy used by machines in production", true, energy_costs)
 
-	production_report.Avg_machine_productivity = float32(production_report.Products_produced) / float32(len(machines))
+	production_report.Avg_machine_productivity = float32(production_report.Total_production) / float32(len(machines))
 }
 
 // return (base production, bonus production)

@@ -42,7 +42,7 @@ func promotion_quality(base_marketing_strength float32, marketing_personelle []*
 // Calculates Material_use of product w/ side effects and returns value
 func (product *Product) calcualte_material_use(ecology_research float32, material_efficiency float32, quality float32) float32 {
 	product.Base_material_use *= 1 + ecology_research/2000
-	product.Material_use = product.Base_material_use / max([]float32{material_efficiency, 0.1}) * quality
+	product.Material_use = (product.Base_material_use * quality * 0.25) / (0.01 * max([]float32{material_efficiency, 0.1}))
 	return product.Material_use
 }
 
@@ -54,6 +54,7 @@ func (product *Product) calculate_ecology(
 ) float32 {
 	product.Base_ecology *= 1 + ecology_research/1000
 	product.Ecology_factor = product.Base_ecology*(material_ecology*product.Material_use) + percentage_of_ecological_energy/20 + float32(product.Durabilty)/5
+	product.Ecology_factor = min([]float32{product.Ecology_factor, math.MaxFloat32})
 	return product.Ecology_factor
 }
 
@@ -61,6 +62,7 @@ func (product *Product) calculate_ecology(
 func (product *Product) calculate_quality(quality_research, production_skill, material_quality, manufacturing_quality float32) float32 {
 	product.Base_quality *= 1 + quality_research/1000
 	product.Quality_factor = material_quality * production_skill * product.Base_quality * manufacturing_quality
+	product.Quality_factor = min([]float32{product.Quality_factor, math.MaxFloat32})
 	return product.Quality_factor
 }
 
@@ -72,6 +74,8 @@ func (product *Product) calculate_durability(durability_research float32, max_du
 	if product.Durabilty > max_durability {
 		product.Durabilty = max_durability
 	}
+
+	product.Durabilty = min([]int{product.Durabilty, math.MaxInt})
 
 	return product.Durabilty
 }
@@ -86,7 +90,8 @@ func (product *Product) calculate_production_cost(
 		Max_durability      int
 	},
 ) (production_speed float32) {
-	product.Base_production_cost *= 1 + production_speed_research/1000
-	product.Production_cost = product.Base_production_cost*manufacturing.Quality + product.Base_production_cost*manufacturing.Material_efficiency*manufacturing.Durability/10
+	product.Base_production_cost /= 1 + production_speed_research/1000
+	product.Production_cost = product.Base_production_cost * (float32(exponential(1.1, float64(manufacturing.Quality), 0.1)) + float32(exponential(1.1, float64(manufacturing.Material_efficiency), 0.01)) + manufacturing.Durability/10)
+	product.Production_cost = max([]float32{product.Production_cost, 0.5})
 	return production_speed
 }

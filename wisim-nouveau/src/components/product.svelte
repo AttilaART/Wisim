@@ -23,7 +23,7 @@
 				<td>Quality: </td>
 				<td>{format.number(product.Quality_factor, false, 1)}</td>
 				<td>Production Cost:</td>
-				<td>{format.number(product.Base_production_cost, false, 1)}</td>
+				<td>{format.number(product.Production_cost, false, 1)}</td>
 			</tr>
 			<tr>
 				<td>Ecology: </td>
@@ -99,7 +99,7 @@
 		</label>
 
 		<label for="ProductMaterialEfficiency"
-			>Material Use
+			>Material Efficiency
 			<input
 				id="ProductMaterialEfficiency"
 				bind:value={clientState.decisions.Marketing.Product.Manufacturing.Material_efficiency}

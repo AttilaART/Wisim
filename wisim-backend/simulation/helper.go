@@ -225,7 +225,7 @@ func avr[V Number](values []V) V {
 }
 
 func max[V Number](values []V) V {
-	var max_val V = 0
+	var max_val V = values[0]
 
 	for _, n := range values {
 		if max_val < n {
@@ -237,7 +237,7 @@ func max[V Number](values []V) V {
 }
 
 func min[V Number](values []V) V {
-	var min_val V = 0
+	var min_val V = values[0]
 
 	for _, n := range values {
 		if min_val > n {
@@ -257,4 +257,8 @@ func std_dev[V Number](values []V) V {
 	}
 
 	return V(math.Sqrt(float64(Sigma) / float64(len(values))))
+}
+
+func exponential(base, x, scale float64) float64 {
+	return math.Pow(base, x) * scale
 }
