@@ -1,5 +1,4 @@
 <script>
-	import '$lib/javascript/format';
 	import { format } from '$lib/javascript/format';
 	/** @type {{clientState: import("$lib/javascript/simulation").clientState, updateDecisions: (decisions: import("$lib/javascript/simulation").Decisions)=>void}} */
 	let { clientState = $bindable(), updateDecisions } = $props();

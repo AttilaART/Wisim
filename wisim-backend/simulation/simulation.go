@@ -819,24 +819,24 @@ func (c *Company) compile_personelle_subreport(decisions Decisions, employee_typ
 	}
 
 	sub_report.Avg_pay = avr(pay)
-	sub_report.Maximum_pay = max(pay)
-	sub_report.Minimum_pay = min(pay)
-	sub_report.Standard_dev_pay = std_dev(pay)
+	sub_report.Maximum_pay = max(pay...)
+	sub_report.Minimum_pay = min(pay...)
+	sub_report.Standard_dev_pay = std_dev(pay...)
 
 	sub_report.Avg_skill = avr(skill)
-	sub_report.Maximum_skill = max(skill)
-	sub_report.Minimum_skill = min(skill)
-	sub_report.Standard_dev_skill = std_dev(skill)
+	sub_report.Maximum_skill = max(skill...)
+	sub_report.Minimum_skill = min(skill...)
+	sub_report.Standard_dev_skill = std_dev(skill...)
 
 	sub_report.Avg_motivation = avr(motivation)
-	sub_report.Maximum_motivation = max(motivation)
-	sub_report.Minimum_motivation = min(motivation)
-	sub_report.Standard_dev_motivation = std_dev(motivation)
+	sub_report.Maximum_motivation = max(motivation...)
+	sub_report.Minimum_motivation = min(motivation...)
+	sub_report.Standard_dev_motivation = std_dev(motivation...)
 
 	sub_report.Avg_productivity = avr(productivity)
-	sub_report.Maximum_productivity = max(productivity)
-	sub_report.Minimum_productivity = min(productivity)
-	sub_report.Standard_dev_productivity = std_dev(productivity)
+	sub_report.Maximum_productivity = max(productivity...)
+	sub_report.Minimum_productivity = min(productivity...)
+	sub_report.Standard_dev_productivity = std_dev(productivity...)
 
 	return sub_report
 }

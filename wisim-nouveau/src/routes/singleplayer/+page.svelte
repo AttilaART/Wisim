@@ -12,6 +12,8 @@
 	import { format } from '$lib/javascript/format';
 	import Employees from '../../components/employees.svelte';
 	import Reasearch from '../../components/reasearch.svelte';
+	import Finances from '../../components/finances.svelte';
+	import FinancialReport from '../../components/financialReport.svelte';
 
 	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
 	let windows = $state({});
@@ -110,6 +112,11 @@
 					clientState.decisions.Employees.Production_deltas = [];
 					clientState.decisions.Employees.Marketing_deltas = [];
 					console.log('decisions updated');
+					connection.fProduct_stats(
+						clientState.decisions.Marketing.Product,
+						clientState.decisions.Research
+					);
+					connection.sDecisions(clientState.decisions);
 					break;
 				case Methods.Get_external_factors:
 					clientState.external_factors = dataJSON.Data;
@@ -215,7 +222,7 @@
 		<div id="bottom-menu">
 			<button
 				onclick={() => {
-					newWindow(debt);
+					newWindow(finances);
 				}}
 			>
 				<strong>
@@ -350,6 +357,40 @@
 	</Window>
 {/snippet}
 
+{#snippet finances(/** @type {Number} id */ id)}
+	<Window
+		title="Finances"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<Finances
+			bind:clientState
+			openDebtWindow={() => newWindow(debt)}
+			openFinancialReportWindow={() => newWindow(financialReport)}
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></Finances>
+	</Window>
+{/snippet}
+
+{#snippet financialReport(/** @type {Number} id */ id)}
+	<Window
+		title="Finance Report"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<FinancialReport
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></FinancialReport>
+	</Window>
+{/snippet}
+
 {#snippet employees(/** @type {Number} id */ id)}
 	<Window
 		title="Employees"
@@ -368,7 +409,7 @@
 
 {#snippet research(/** @type {Number} id */ id)}
 	<Window
-		title="Employees"
+		title="Research"
 		closeWindow={() => {
 			deleteWindow(id);
 		}}
@@ -396,6 +437,9 @@
 		flex-direction: row;
 		gap: var(--pico-spacing);
 		padding: var(--pico-spacing);
+		backdrop-filter: blur(10px);
+		border-top: 0.5px solid color-mix(in oklab, var(--pico-background-color), transparent 10%);
+		z-index: 99;
 
 		button {
 			flex: 1 1;

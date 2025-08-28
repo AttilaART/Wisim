@@ -110,7 +110,7 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 	for _, m := range c.Machines {
 		machineUpkeep += m.Maintanance_cost
 	}
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Machine upkeep", production, "The upkeep of out production machines", true, float64(machineUpkeep))
+	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Machine upkeep", production, "The upkeep of out production machines", true, float64(-machineUpkeep))
 
 	// Produce
 	println("Assigning workers")

@@ -226,6 +226,8 @@ func (g *Game_state) generate_companies(
 		companies[i] = default_company
 		companies[i].Id = i
 		companies[i].Name = "Unnamed Company"
+		companies[i].Reports = make([]Report, 0)
+		companies[i].Decision_history = make([]Decisions, 0)
 
 		required_production_personelle := 0
 		for _, m := range companies[i].Machines {
@@ -280,6 +282,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 			Minimum_workers:     3,
 			Energy_use:          0.5,
 			Value:               100000,
+			Maintanance_cost:    15000,
 		},
 	}
 

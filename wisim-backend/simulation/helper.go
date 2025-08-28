@@ -102,6 +102,35 @@ func (c *Company) Get_decisions() Decisions {
 	if len(c.Decision_history) >= 1 {
 		decisions = c.Decision_history[len(c.Decision_history)-1]
 	} else {
+		decisions = Decisions{
+			Marketing: Decisions_marketing{
+				Product: Decisions_product{
+					Materials: struct {
+						Quality          float32
+						Ecology          float32
+						Ethical_sourcing float32
+					}{
+						50,
+						50,
+						50,
+					},
+					Manufacturing: struct {
+						Quality             float32
+						Ecological_energy   float32
+						Material_efficiency float32
+						Durability          float32
+						Max_durability      int
+					}{
+						50,
+						50,
+						50,
+						50,
+						5,
+					},
+				},
+				Price: 350,
+			},
+		}
 		fmt.Println("No decision history!")
 	}
 
@@ -224,7 +253,7 @@ func avr[V Number](values []V) V {
 	return total / V(len(values))
 }
 
-func max[V Number](values []V) V {
+func max[V Number](values ...V) V {
 	var max_val V = values[0]
 
 	for _, n := range values {
@@ -236,7 +265,7 @@ func max[V Number](values []V) V {
 	return max_val
 }
 
-func min[V Number](values []V) V {
+func min[V Number](values ...V) V {
 	var min_val V = values[0]
 
 	for _, n := range values {
@@ -248,7 +277,7 @@ func min[V Number](values []V) V {
 	return min_val
 }
 
-func std_dev[V Number](values []V) V {
+func std_dev[V Number](values ...V) V {
 	avr := avr(values)
 
 	var Sigma V = 0

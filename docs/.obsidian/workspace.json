@@ -11,12 +11,14 @@
             "id": "fe4ad6bf3b999cf2",
             "type": "leaf",
             "state": {
-              "type": "excalidraw",
+              "type": "markdown",
               "state": {
-                "file": "Development/UI/UI Prototype 3.md"
+                "file": "Maturaarbeit/Treffen Notizen/Maturarbeit Treffen.md",
+                "mode": "source",
+                "source": false
               },
-              "icon": "excalidraw-icon",
-              "title": "UI Prototype 3"
+              "icon": "lucide-file",
+              "title": "Maturarbeit Treffen"
             }
           }
         ]
@@ -168,9 +170,13 @@
       "obsidian-excalidraw-plugin:New drawing": false
     }
   },
-  "active": "fe4ad6bf3b999cf2",
+  "active": "8427c5015b9fa7b1",
   "lastOpenFiles": [
+    "Maturaarbeit/Treffen Notizen",
+    "Matura-Arbeit Konzept Attila 1.md",
+    "Maturaarbeit/Treffen Notizen/Maturarbeit Treffen.md",
     "Development/Technical Info/Json CommsProtocol.md",
+    "Maturaarbeit",
     "Development/UI/UI Prototype 3.md",
     "Development/Normalverteilung Diagramm.md",
     "Development/Technical Info/Random income function.md",

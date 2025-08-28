@@ -157,7 +157,7 @@
 /**
  * @typedef {Object} Report
  * @property {number} Month - Reporting month
- * @property {Financial_report} Financial_Report - Financial report
+ * @property {Financial_report} Financial_report - Financial report
  * @property {Balance_sheet} Balance_sheet - Balance sheet
  * @property {Personelle_report} Personelle_report - Personnel report
  * @property {Production_report} Production_report - Production report
