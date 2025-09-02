@@ -265,7 +265,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		Inflation:                 0.005,
 		Economic_situation_index:  1,
 		Tax_rate:                  0.147,
-		Material_price:            10,
+		Material_price:            5.5,
 		Energy_price:              96.2,
 		Machine_depreciation_rate: 0.1,
 
@@ -277,7 +277,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		Marketing_minimum_wage:  80000,
 
 		Machine_on_offer: Machine{
-			Production_capacity: 15000,
+			Production_capacity: 1500,
 			Required_workers:    5,
 			Minimum_workers:     3,
 			Energy_use:          0.5,

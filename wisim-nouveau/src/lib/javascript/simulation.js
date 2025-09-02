@@ -181,6 +181,53 @@
  * @property {FinanceReportEntry[]} Liabilities - List of liabilities
  */
 
+export const production = 0,
+	marketing = 1,
+	production_personelle = 2,
+	marketing_personelle = 3,
+	other_personelle = 4,
+	facilities = 5,
+	logistics = 6,
+	materials = 7,
+	energy = 8,
+	research = 9,
+	employee_training = 10,
+	loans = 11,
+	loan_intrest = 12,
+	bridge_loans = 13,
+	bridge_loan_intrest = 14,
+	taxes = 15,
+	sales = 16,
+	severance = 17,
+	predictions = 18,
+	write_off = 19,
+	other = 20;
+
+/** @type {Object<string, string>} */
+export const financeReportCategories = {
+	0: 'production',
+	1: 'marketing',
+	2: 'production_personelle',
+	3: 'marketing_personelle',
+	4: 'other_personelle',
+	5: 'facilities',
+	6: 'logistics',
+	7: 'materials',
+	8: 'energy',
+	9: 'research',
+	10: 'employee_training',
+	11: 'loans',
+	12: 'loan_intrest',
+	13: 'bridge_loans',
+	14: 'bridge_loan_intrest',
+	15: 'taxes',
+	16: 'sales',
+	17: 'severance',
+	18: 'predictions',
+	19: 'write_off',
+	20: 'other'
+};
+
 /**
  * @typedef {Object} Financial_report
  *
@@ -194,7 +241,6 @@
  * @property {number} Operating_expenses.Advertising - Advertising expenses
  * @property {number} Operating_expenses.Facilities_and_logistics - Facilities and logistics costs
  * @property {number} Operating_expenses.Research_and_development - Research and development expenses
- * @property {number} Operating_expenses.Total_operating_expenses - Total operating expenses
  *
  * @property {Object} Non_operating_expenses - Non-operating expenses
  * @property {number} Non_operating_expenses.Write_offs - Write-offs
@@ -203,11 +249,14 @@
  * @property {number} Non_operating_expenses.Bridge_loan_intrest - Bridge loan interest
  * @property {number} Non_operating_expenses.Bridge_loan_repayment - Bridge loan repayment
  * @property {number} Non_operating_expenses.Other - Other non-operating expenses
- * @property {number} Non_operating_expenses.Total_non_operating_expenses - Total non-operating expenses
- * @property {number} Non_operating_expenses.Income_before_tax - Income before tax
  * @property {number} Non_operating_expenses.Taxes - Taxes
- * @property {number} Non_operating_expenses.Net_income - Net income
- * @property {number} Non_operating_expenses.Cashflow - Cashflow
+ *
+ * @property {Object} Totals
+ * @property {number} Totals.Total_operating_expenses - Total operating expenses
+ * @property {number} Totals.Total_non_operating_expenses - Total non-operating expenses
+ * @property {number} Totals.Income_before_tax - Income before tax
+ * @property {number} Totals.Cashflow - Cashflow
+ * @property {number} Totals.Net_income - Net income
  */
 
 /**

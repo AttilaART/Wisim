@@ -113,7 +113,7 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 	// Totals
 	insert_in_finance_report := func(e FinanceReportEntry) {
 		if e.Cash_cost {
-			financial_report.Non_operating_expenses.Cashflow += e.Value
+			financial_report.Totals.Cashflow += e.Value
 		}
 
 		if e.Value > 0 {
@@ -132,77 +132,77 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 			// operating expenses
 			case production_personelle, production, materials, energy: // Cost of sales
 				financial_report.Income.Cost_of_sales += e.Value
-				financial_report.Income.Cost_of_sales += e.Value
+				financial_report.Income.Gross_profit += e.Value
 
 			case marketing, marketing_personelle: // advertising
 				financial_report.Operating_expenses.Advertising += e.Value
-				financial_report.Operating_expenses.Total_operating_expenses += e.Value
+				financial_report.Totals.Total_operating_expenses += e.Value
 			case logistics, facilities: // facilities and logistics
 				financial_report.Operating_expenses.Facilities_and_logistics += e.Value
-				financial_report.Operating_expenses.Total_operating_expenses += e.Value
+				financial_report.Totals.Total_operating_expenses += e.Value
 			case research: // research & development
 				financial_report.Operating_expenses.Research_and_development += e.Value
-				financial_report.Operating_expenses.Total_operating_expenses += e.Value
+				financial_report.Totals.Total_operating_expenses += e.Value
 
 			// non operating expenses
 			case write_off: // write offs
 				financial_report.Non_operating_expenses.Write_offs += e.Value
-				financial_report.Non_operating_expenses.Total_non_operating_expenses += e.Value
+				financial_report.Totals.Total_non_operating_expenses += e.Value
 			case loan_intrest: // loan interest
 				financial_report.Non_operating_expenses.Loan_interest += e.Value
-				financial_report.Non_operating_expenses.Total_non_operating_expenses += e.Value
+				financial_report.Totals.Total_non_operating_expenses += e.Value
 			case loans: // loan repayment
 				financial_report.Non_operating_expenses.Loan_repayment += e.Value
-				financial_report.Non_operating_expenses.Total_non_operating_expenses += e.Value
+				financial_report.Totals.Total_non_operating_expenses += e.Value
 			case bridge_loan_intrest:
 				financial_report.Non_operating_expenses.Bridge_loan_intrest += e.Value
-				financial_report.Non_operating_expenses.Total_non_operating_expenses += e.Value
+				financial_report.Totals.Total_non_operating_expenses += e.Value
 			case bridge_loans:
 				financial_report.Non_operating_expenses.Bridge_loan_repayment += e.Value
-				financial_report.Non_operating_expenses.Total_non_operating_expenses += e.Value
+				financial_report.Totals.Total_non_operating_expenses += e.Value
 			case taxes:
 				financial_report.Non_operating_expenses.Taxes += e.Value
 			default:
 				financial_report.Non_operating_expenses.Other += e.Value
-				financial_report.Non_operating_expenses.Total_non_operating_expenses += e.Value
+				financial_report.Totals.Total_non_operating_expenses += e.Value
 				// totals
 				// case taxes:
 				//	financial_report.Non_operating_expenses.Taxes += e.Value
 			}
 		}
-		financial_report.Non_operating_expenses.Income_before_tax += e.Value
+		financial_report.Totals.Income_before_tax += e.Value
 	}
 
 	for _, e := range c.Reports[len(c.Reports)-1].Balance_sheet.Invoice_log {
 		insert_in_finance_report(e)
 	}
 
-	financial_report.Non_operating_expenses.Cashflow += financial_report.Non_operating_expenses.Taxes
+	financial_report.Totals.Cashflow += financial_report.Non_operating_expenses.Taxes
 	ptr_taxes_entry := c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(
 		"Taxes",
 		taxes,
 		"Taxes paid on our profit",
 		true,
-		tax(financial_report.Non_operating_expenses.Income_before_tax, external_factors))
+		tax(financial_report.Totals.Income_before_tax, external_factors))
 	insert_in_finance_report(*ptr_taxes_entry)
 
-	financial_report.Non_operating_expenses.Net_income = financial_report.Non_operating_expenses.Income_before_tax + financial_report.Non_operating_expenses.Taxes
+	financial_report.Totals.Net_income = financial_report.Totals.Income_before_tax + financial_report.Non_operating_expenses.Taxes
 	// Calculate bridge loans
 
 	// try to pay off existing bridge loans
-	if c.Balance+financial_report.Non_operating_expenses.Cashflow > 0 {
+	if c.Balance+financial_report.Totals.Cashflow > 0 {
 		var loans_to_delete []int
 		for i, e := range c.Reports[len(c.Reports)-1].Balance_sheet.Liabilities {
 			if e.Group != bridge_loans {
 				continue
 			}
-			if c.Balance+financial_report.Non_operating_expenses.Cashflow >= e.Value {
+			if c.Balance+financial_report.Totals.Cashflow >= e.Value {
 				ptr_repayment := c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Payment of bridge loan", bridge_loans, "", true, -e.Value)
 				insert_in_finance_report(*ptr_repayment)
 
 				loans_to_delete = append(loans_to_delete, i)
-			} else if c.Balance+financial_report.Non_operating_expenses.Cashflow < e.Value {
-				c.Reports[len(c.Reports)-1].Balance_sheet.Liabilities[i].Value = e.Value - (c.Balance + financial_report.Non_operating_expenses.Cashflow)
+			} else if c.Balance+financial_report.Totals.Cashflow < e.Value {
+				c.Reports[len(c.Reports)-1].Balance_sheet.Liabilities[i].Value = e.Value - (c.Balance + financial_report.Totals.Cashflow)
 				ptr_repayment := c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Payement of bridge loan", bridge_loans, "", true, -c.Balance)
 				insert_in_finance_report(*ptr_repayment)
 
@@ -212,13 +212,13 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 
 		c.Reports[len(c.Reports)-1].Balance_sheet.Liabilities = delete_by_index(c.Reports[len(c.Reports)-1].Balance_sheet.Liabilities, loans_to_delete...)
 
-	} else if c.Balance+financial_report.Non_operating_expenses.Cashflow < 0 {
+	} else if c.Balance+financial_report.Totals.Cashflow < 0 {
 		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(
 			"Bridge loan",
 			bridge_loans,
 			"You are automatically lent out bridge loans when your balance goes beneath 0",
 			true,
-			-(c.Balance + financial_report.Non_operating_expenses.Cashflow))
+			-(c.Balance + financial_report.Totals.Cashflow))
 		ptr_bridge_loan := c.Reports[len(c.Reports)-1].Balance_sheet.add_to_liabilities(
 			"Bridge loan",
 			bridge_loans,
@@ -229,7 +229,7 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 		insert_in_finance_report(*ptr_bridge_loan)
 	}
 
-	c.Balance += financial_report.Non_operating_expenses.Cashflow
+	c.Balance += financial_report.Totals.Cashflow
 
 	// calculate Liabilities
 	total_assets := 0.0
@@ -265,4 +265,14 @@ func (c *Company) loan_quantity() (loan_value float64) {
 	}
 
 	return loan_value
+}
+
+func clean_up_financeReportEntries(entries []FinanceReportEntry) []FinanceReportEntry {
+	for i := len(entries) - 1; i >= 0; i-- {
+		if entries[i].Value == 0 {
+			entries = delete_by_index(entries, i)
+		}
+	}
+
+	return entries
 }

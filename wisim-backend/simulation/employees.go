@@ -61,7 +61,9 @@ func (c *Company) simulate_employees(external_factors External_factors, severanc
 	}
 	for i := range company_employees {
 		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(fmt.Sprintf("Pay for %s employee %d", company_employees[i].Employee_type.to_string(), company_employees[i].Id), group, "", true, round(float64(-company_employees[i].Pay)/12, 2))
-		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(fmt.Sprintf("Bonus for %s employee %d", company_employees[i].Employee_type.to_string(), company_employees[i].Id), group, "", true, round(float64(-company_employees[i].Bonus)/12, 2))
+		if company_employees[i].Bonus > 0 {
+			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(fmt.Sprintf("Bonus for %s employee %d", company_employees[i].Employee_type.to_string(), company_employees[i].Id), group, "", true, round(float64(-company_employees[i].Bonus)/12, 2))
+		}
 	}
 
 	// Calculate training

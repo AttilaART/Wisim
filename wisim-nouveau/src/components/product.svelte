@@ -57,6 +57,14 @@
 			>Price
 			<input id="price" bind:value={clientState.decisions.Marketing.Price} type="number" />
 		</label>
+		<label for="maxProduction"
+			>Product goal
+			<input
+				id="maxProduction"
+				bind:value={clientState.decisions.Production.Production_goal}
+				type="number"
+			/>
+		</label>
 
 		<h2>Materials</h2>
 		<label for="quality"

@@ -40,5 +40,26 @@ export const format = {
 		}
 
 		return `${this.number(num, add_plus, decimal_places)} CHF`;
+	},
+
+	/**
+	 * @param {string} string
+	 * @returns {string}
+	 */
+	capitaliseFirstLetter: function (string) {
+		return string[0].toUpperCase() + string.slice(1);
+	},
+	/**
+	 * @param {string} string
+	 * @returns {string}
+	 */
+	titleCase: function (string) {
+		let titleString = '';
+		for (let word of string.split(' ')) {
+			titleString += this.capitaliseFirstLetter(word);
+			titleString += ' ';
+		}
+
+		return titleString.slice(0, titleString.length - 1);
 	}
 };

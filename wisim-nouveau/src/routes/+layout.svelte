@@ -11,7 +11,11 @@
 		{@render children()}
 	</div>
 	{#snippet pending()}
-		<p>loading</p>
+		<dialog open>
+			<center>
+				<h2>Loading...</h2>
+			</center>
+		</dialog>
 	{/snippet}
 </svelte:boundary>
 

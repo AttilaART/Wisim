@@ -14,6 +14,7 @@
 	import Reasearch from '../../components/reasearch.svelte';
 	import Finances from '../../components/finances.svelte';
 	import FinancialReport from '../../components/financialReport.svelte';
+	import Invoices from '../../components/invoices.svelte';
 
 	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
 	let windows = $state({});
@@ -215,7 +216,7 @@
 
 	<div id="ui">
 		<Canvas>
-			{#each Object.entries(windows) as w}
+			{#each Object.entries(windows) as w (w[0])}
 				{@render w[1](w[0])}
 			{/each}
 		</Canvas>
@@ -368,6 +369,7 @@
 			bind:clientState
 			openDebtWindow={() => newWindow(debt)}
 			openFinancialReportWindow={() => newWindow(financialReport)}
+			openInvoicesWindow={() => newWindow(invoiceLog)}
 			updateDecisions={(decisions) => {
 				connection.sDecisions(decisions);
 			}}
@@ -388,6 +390,22 @@
 				connection.sDecisions(decisions);
 			}}
 		></FinancialReport>
+	</Window>
+{/snippet}
+
+{#snippet invoiceLog(/** @type {Number} id */ id)}
+	<Window
+		title="Finance Report"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<Invoices
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></Invoices>
 	</Window>
 {/snippet}
 

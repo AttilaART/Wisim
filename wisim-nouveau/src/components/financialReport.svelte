@@ -16,7 +16,7 @@
 <div style="min-width: 600px;">
 	{#if financial_Report}
 		{#each Object.entries(financial_Report ? financial_Report : {}) as reportSection}
-			<h3>{reportSection[0]}</h3>
+			<h3>{reportSection[0].replaceAll('_', ' ')}</h3>
 			{@render renderSection(reportSection[1])}
 		{/each}
 	{:else}
@@ -28,8 +28,8 @@
 {#snippet renderSection(/** @type {Object.<String, Number>}}*/ section)}
 	{#each Object.entries(section) as entry}
 		<div class="grid">
-			<p>{entry[0]}</p>
-			<p style="text-align: right;">{format.number(entry[1], true, 2)}</p>
+			<p>{entry[0].replaceAll('_', ' ')}</p>
+			<p style="text-align: right;">{format.currency(entry[1], true, 2)}</p>
 		</div>
 	{/each}
 {/snippet}

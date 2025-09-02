@@ -2,10 +2,15 @@
 
 ## Changes
 
-- Basic menu bar
-- Implementation of Web-Socket communication with server
-- Base state management on front-end
+- Added default research amounts
+- Added basic invoice log
+- Added enforcing of production goal
+- Tweaked external factors
 
 ## Bug Fixes
 
-- SERVER: Company ID taken when used disconnected
+- Fixed: all windows moving when deleting a window that was opened earlier
+- Fixed: spelling mistake: "cost of sale" -> "cost of sales"
+- Fixed: gross profit not containing cost of sales
+- Fixed: bonuses of value=0 in invoice log
+- Fixed: advertising costs of value=0 in invoice log

@@ -130,6 +130,20 @@ func (c *Company) Get_decisions() Decisions {
 				},
 				Price: 350,
 			},
+			Research: Decisions_research{
+				Quality:         1000,
+				Durability:      1000,
+				Ecology:         1000,
+				Promotion:       1000,
+				Production_cost: 1000,
+			},
+			Production: struct {
+				Production_goal int
+				Machines        []Delta[Machine]
+				Logistics       []Delta[Warehouse]
+			}{
+				Production_goal: 20000,
+			},
 		}
 		fmt.Println("No decision history!")
 	}

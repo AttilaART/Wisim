@@ -306,18 +306,20 @@ type Financial_report struct {
 		Advertising              float64
 		Facilities_and_logistics float64
 		Research_and_development float64
-		Total_operating_expenses float64
 	}
 	Non_operating_expenses struct {
-		Write_offs                   float64
-		Loan_interest                float64
-		Loan_repayment               float64
-		Bridge_loan_intrest          float64
-		Bridge_loan_repayment        float64
-		Other                        float64
+		Write_offs            float64
+		Loan_interest         float64
+		Loan_repayment        float64
+		Bridge_loan_intrest   float64
+		Bridge_loan_repayment float64
+		Other                 float64
+		Taxes                 float64
+	}
+	Totals struct {
+		Total_operating_expenses     float64
 		Total_non_operating_expenses float64
 		Income_before_tax            float64
-		Taxes                        float64
 		Net_income                   float64
 		Cashflow                     float64
 	}
@@ -450,9 +452,10 @@ type Production_report struct {
 	// Max_machine_productivity float32
 	// Min_machine_productivity float32
 
-	Total_production int
-	Base_production  int
-	Bonus_production int
+	Total_production  int
+	Base_production   int
+	Bonus_production  int
+	Excess_production int
 
 	Total_products_produced int
 	Base_products_produced  int
@@ -705,9 +708,10 @@ func (game_state *Game_state) Simulate_step() error {
 	for i, c := range game_state.Companies {
 		printer.Printf("Company %d: %s:\n", i, c.Name)
 		printer.Printf("Total Production: %d\n", c.Reports[len(c.Reports)-1].Production_report.Total_production)
+		printer.Printf("Excess Production: %d\n", c.Reports[len(c.Reports)-1].Production_report.Excess_production)
 		printer.Printf("Total Products Produced: %d\n", c.Reports[len(c.Reports)-1].Production_report.Total_products_produced)
 		printer.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
-		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_report.Non_operating_expenses.Net_income)
+		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_report.Totals.Net_income)
 		println("")
 		printer.Printf("Number of employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Number_of_employees)
 		printer.Printf("Number of production employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.Production.Number_of_employees)
@@ -766,6 +770,9 @@ func (company *Company) compile_reports(
 
 	// Finance
 	company.calculate_budget(decisions, external_factors)
+	company.Reports[len(company.Reports)-1].Balance_sheet.Assets = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].Balance_sheet.Assets)
+	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log)
+	company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities)
 
 	// Personelle
 	company.Reports[len(company.Reports)-1].Personelle_report = company.compile_personelle_report(decisions)

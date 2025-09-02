@@ -102,7 +102,7 @@
           "Severance_pay": 10000
         },
         "Production": {
-          "Production_goal": 0,
+          "Production_goal": 20000,
           "Machines": null,
           "Logistics": null
         },
@@ -116,7 +116,7 @@
       }
     ]
   },
-  "Population_size": 50000000,
+  "Population_size": 10000,
   "Min_base_need": 1,
   "Max_base_need": 4,
   "Quality_bias": 1,
@@ -133,5 +133,5 @@
   "Durability_spread": 1,
   "Purchasing_threshold_bias": 1,
   "Purchasing_threshold_spread": 1,
-  "Base_market_price": 100
+  "Base_market_price": 400
 }

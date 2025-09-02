@@ -123,6 +123,7 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 		production_report,
 		&c.Reports[len(c.Reports)-1].Balance_sheet,
 		external_factors,
+		decisions.Production.Production_goal,
 	)
 }
 
@@ -218,6 +219,7 @@ func produce(
 	production_report *Production_report,
 	balance_sheet *Balance_sheet,
 	external_factors External_factors,
+	productionGoal int,
 ) {
 	base_production := 0
 	bonus_production := 0
@@ -239,9 +241,11 @@ func produce(
 	production_report.Base_production = base_production
 	production_report.Bonus_production = bonus_production
 
-	production_report.Total_products_produced = int(float32(production_report.Total_production) / float32(product.Production_cost))
-	production_report.Base_products_produced = int(float32(production_report.Base_production) / float32(product.Production_cost))
-	production_report.Bonus_products_produced = int(float32(production_report.Bonus_production) / float32(product.Production_cost))
+	production_report.Base_products_produced = min(int(float32(production_report.Base_production)/float32(product.Production_cost)), productionGoal)
+	production_report.Bonus_products_produced = min(int(float32(production_report.Bonus_production)/float32(product.Production_cost)), production_report.Base_products_produced-productionGoal)
+	production_report.Total_products_produced = production_report.Base_products_produced + production_report.Bonus_products_produced
+
+	production_report.Excess_production = production_report.Total_production - (int(product.Production_cost * float32(production_report.Total_products_produced)))
 
 	production_report.Material_used = product.Material_use * float32(production_report.Total_production)
 	production_report.Energy_used = float32(energy_use)

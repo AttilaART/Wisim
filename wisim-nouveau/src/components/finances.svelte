@@ -1,11 +1,21 @@
 <script>
 	import { format } from '$lib/javascript/format';
-	/** @type {{clientState: import("$lib/javascript/simulation").clientState, updateDecisions: (decisions: import("$lib/javascript/simulation").Decisions)=>void, openDebtWindow: ()=>void, openFinancialReportWindow: ()=>void}} */
+	/**
+	 * @typedef {Object} props
+	 * @property {import("$lib/javascript/simulation").clientState} clientState
+	 * @property {(decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions
+	 * @property {()=>void} openDebtWindow
+	 * @property {()=>void} openFinancialReportWindow
+	 * @property {()=>void} openInvoicesWindow
+	 */
+
+	/** @type {props} */
 	let {
 		clientState = $bindable(),
 		updateDecisions,
 		openDebtWindow,
-		openFinancialReportWindow
+		openFinancialReportWindow,
+		openInvoicesWindow
 	} = $props();
 
 	let financial_Report = $derived(
@@ -27,7 +37,7 @@
 			</div>
 
 			<div>
-				<h3>Cost of Sale</h3>
+				<h3>Cost of Sales</h3>
 				<h2>
 					{format.currency(financial_Report?.Income.Cost_of_sales, true, 2)}
 				</h2>
@@ -38,7 +48,7 @@
 				<h2>
 					{format.currency(
 						financial_Report
-							? financial_Report.Non_operating_expenses.Net_income /
+							? financial_Report.Totals.Net_income /
 									clientState.company.Reports[clientState.company.Reports.length - 1].Sales_report
 										.Company_sales_statistics.Products_sold
 							: 0,
@@ -50,12 +60,11 @@
 
 			<div>
 				<h3>Net Income</h3>
-				<h2>{format.currency(financial_Report?.Non_operating_expenses.Net_income, true, 2)}</h2>
+				<h2>{format.currency(financial_Report?.Totals.Net_income, true, 2)}</h2>
 			</div>
 
-			<button style="grid-column: span 2;" onclick={openFinancialReportWindow}
-				>See full report</button
-			>
+			<button onclick={openFinancialReportWindow}> See full report </button>
+			<button onclick={openInvoicesWindow}> See invoice log</button>
 		{:else}
 			<h3>No Data</h3>
 			<small>Data will show up here after the first step</small>
