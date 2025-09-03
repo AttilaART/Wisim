@@ -182,6 +182,8 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 
 	company = removeProductNaNInf(company)
 	reply.Data = &company
+
+	fmt.Printf("%+v\n", company)
 }
 
 func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {

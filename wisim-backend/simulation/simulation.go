@@ -55,6 +55,7 @@ type Sim_config struct {
 	Purchasing_threshold_bias   float32
 	Purchasing_threshold_spread float32
 	Base_market_price           float32
+	Market_saturation           float32
 }
 
 // ##########################################################################################

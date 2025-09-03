@@ -58,6 +58,7 @@ func generate_population(
 	purchasing_threshold_bias float32,
 	purchasing_threshold_spread float32,
 	base_market_price float32,
+	market_saturation float32,
 
 	number_of_companies int,
 ) ([]Customer, error) {
@@ -97,6 +98,12 @@ func generate_population(
 					Durabilty_preference:     float32(PosNormFloat64())*durability_spread + durabilty_bias,
 					Purchashing_threshold:    float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
 					Loyalties:                make([]float32, number_of_companies),
+				}
+				number_of_owned_products := int(PosNormFloat64()*float64(population[i].Base_need) + float64(market_saturation))
+				for range number_of_owned_products {
+					population[i].Owned_products = append(population[i].Owned_products,
+						Owned_product{-1, int(PosNormFloat64()*float64(population[i].Base_need) +
+							float64(market_saturation))})
 				}
 
 				population[i].Max_price = ((base_market_price * 1.1) / population[i].Price_preference) * float32(PosNormFloat64()*100)
@@ -265,7 +272,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		Inflation:                 0.005,
 		Economic_situation_index:  1,
 		Tax_rate:                  0.147,
-		Material_price:            5.5,
+		Material_price:            3.5,
 		Energy_price:              96.2,
 		Machine_depreciation_rate: 0.1,
 
@@ -326,6 +333,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		sim_config.Purchasing_threshold_bias,
 		sim_config.Purchasing_threshold_spread,
 		sim_config.Base_market_price,
+		sim_config.Market_saturation,
 
 		number_of_companies,
 	)

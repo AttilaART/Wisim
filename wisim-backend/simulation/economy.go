@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"log"
+	"math"
 	"math/rand"
 	"runtime"
 	"sync"
@@ -21,7 +22,9 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	}
 
 	if external_factors.Economic_situation_index <= 0 {
-		return make([]FinanceReportEntry, len(*companies)), make([]Purchasing_statistics, len(offers)+1), errors.New("economic_situation_index cannot be 0")
+		return make([]FinanceReportEntry, len(*companies)),
+			make([]Purchasing_statistics, len(offers)+1),
+			errors.New("economic_situation_index cannot be 0")
 	}
 
 	// Calculate purchases
@@ -55,7 +58,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 				}
 
 				population.Population[current_customer_index] = calculate_purchase(
-					calcualte_durability(population.Population[current_customer_index]),
+					simulate_deterioration(population.Population[current_customer_index]),
 					offers, avg_price, external_factors,
 					&product_availability,
 					&purchasing_statistics)
@@ -137,7 +140,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	return results, purchasing_statistics, nil
 }
 
-func calcualte_durability(customer Customer) Customer {
+func simulate_deterioration(customer Customer) Customer {
 	var new_owned_products []Owned_product
 	for _, p := range customer.Owned_products {
 		p.Remaining_durabilty -= 1
@@ -220,10 +223,13 @@ func is_cheap(offer Offer, avr_price float32) float32 {
 func choose_product(decision_factors []float32, purchasing_threshold float32) int {
 	top_products_index := []int{}
 
+	// println("----------")
 	// Round decision_factors
 	for i, f := range decision_factors {
-		decision_factors[i] = float32(round(float64(f), 1))
+		decision_factors[i] = float32(math.Round(float64(f)))
+		// fmt.Printf("decision_factors[%d]: %f\n", i, decision_factors[i])
 	}
+	// fmt.Printf("purchasing_threshold: %f\n", purchasing_threshold)
 
 	for i, p := range decision_factors {
 		if p < purchasing_threshold {
@@ -244,6 +250,6 @@ func choose_product(decision_factors []float32, purchasing_threshold float32) in
 	case 0:
 		return -1
 	default:
-		return top_products_index[rand.Intn(len(top_products_index)-1)]
+		return top_products_index[rand.Intn(len(top_products_index))]
 	}
 }

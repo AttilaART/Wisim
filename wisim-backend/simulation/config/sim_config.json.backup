@@ -10,26 +10,60 @@
         "Base_durability": 1,
         "Base_production_cost": 1,
         "Durabilty": 1
-      }
+      },
+      "Price": 100,
+      "Marketing_quantity": 100000
     },
     "Warehouses": [
       {
-        "Capacity": 1000,
-        "Operating_costs": 100
+        "Capacity": 20000,
+        "Operating_costs": 20000
       }
     ],
-    "Items_in_storage": 100,
+    "Items_in_storage": 10000,
     "Machines": [
       {
-        "Production_capacity": 150,
-        "Required_workers": 1,
-        "Minimum_workers": 1,
-        "Energy_use": 0.01,
-        "Value": 5000,
-        "Maintanance_cost": 50
+        "Production_capacity": 15000,
+        "Required_workers": 5,
+        "Minimum_workers": 3,
+        "Energy_use": 0.5,
+        "Value": 90000,
+        "Maintanance_cost": 15000
+      },
+      {
+        "Production_capacity": 15000,
+        "Required_workers": 5,
+        "Minimum_workers": 3,
+        "Energy_use": 0.5,
+        "Value": 90000,
+        "Maintanance_cost": 15000
+      },
+      {
+        "Production_capacity": 15000,
+        "Required_workers": 5,
+        "Minimum_workers": 3,
+        "Energy_use": 0.5,
+        "Value": 90000,
+        "Maintanance_cost": 15000
+      },
+      {
+        "Production_capacity": 15000,
+        "Required_workers": 5,
+        "Minimum_workers": 3,
+        "Energy_use": 0.5,
+        "Value": 90000,
+        "Maintanance_cost": 15000
+      },
+      {
+        "Production_capacity": 15000,
+        "Required_workers": 5,
+        "Minimum_workers": 3,
+        "Energy_use": 0.5,
+        "Value": 90000,
+        "Maintanance_cost": 15000
       }
     ],
-    "Balance": 50000,
+    "Balance": 1000000,
     "Decision_history": [
       {
         "Predictions": {

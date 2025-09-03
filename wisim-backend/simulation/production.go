@@ -242,12 +242,12 @@ func produce(
 	production_report.Bonus_production = bonus_production
 
 	production_report.Base_products_produced = min(int(float32(production_report.Base_production)/float32(product.Production_cost)), productionGoal)
-	production_report.Bonus_products_produced = min(int(float32(production_report.Bonus_production)/float32(product.Production_cost)), production_report.Base_products_produced-productionGoal)
+	production_report.Bonus_products_produced = min(int(float32(production_report.Bonus_production)/float32(product.Production_cost)), max(production_report.Base_products_produced-productionGoal, 0))
 	production_report.Total_products_produced = production_report.Base_products_produced + production_report.Bonus_products_produced
 
 	production_report.Excess_production = production_report.Total_production - (int(product.Production_cost * float32(production_report.Total_products_produced)))
 
-	production_report.Material_used = product.Material_use * float32(production_report.Total_production)
+	production_report.Material_used = product.Material_use * float32(production_report.Total_products_produced)
 	production_report.Energy_used = float32(energy_use)
 
 	material_costs := -round(float64(external_factors.Material_price)*float64(production_report.Material_used), 2)
