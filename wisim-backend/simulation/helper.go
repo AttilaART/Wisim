@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
+
+	"github.com/pehringer/simd"
 )
 
 type Interval struct {
@@ -295,4 +297,14 @@ func std_dev[V Number](values ...V) V {
 
 func exponential(base, x, scale float64) float64 {
 	return math.Pow(base, x) * scale
+}
+
+func scalar_product32(a, b, result []float32) float32 {
+	var product float32
+
+	simd.MulFloat32(a, b, result)
+	for _, s := range result {
+		product += s
+	}
+	return product
 }

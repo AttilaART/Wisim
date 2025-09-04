@@ -88,16 +88,16 @@ func generate_population(
 				population[i] = Customer{
 					Base_need: rand.Intn(max_base_need-min_base_need) + min_base_need,
 
-					Quality_preference: float32(PosNormFloat64())*quality_spread + quality_bias,
-					Ecology_preference: float32(PosNormFloat64())*ecology_spread + ecology_bias,
-					Ethics_preference:  float32(PosNormFloat64())*ethics_spread + ethics_bias,
-					// Coolness_preference:      float32(PosNormFloat64())*coolness_spread + coolness_bias,
-					Price_preference:         float32(PosNormFloat64())*price_spread + price_bias,
-					Bang_for_buck_preference: float32(PosNormFloat64())*bang_for_buck_spread + bang_for_buck_bias,
-					Durabilty_preference:     float32(PosNormFloat64())*durability_spread + durabilty_bias,
-					Purchashing_threshold:    float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
-					Loyalties:                make([]float32, number_of_companies),
+					Purchashing_threshold: float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
+					Loyalties:             make([]float32, number_of_companies),
 				}
+				population[i].Preferences[properties_quality] = float32(PosNormFloat64())*quality_spread + quality_bias
+				population[i].Preferences[properties_ecology] = float32(PosNormFloat64())*ecology_spread + ecology_bias
+				population[i].Preferences[properties_ethics] = float32(PosNormFloat64())*ethics_spread + ethics_bias
+				population[i].Preferences[properties_price] = float32(PosNormFloat64())*price_spread + price_bias
+				population[i].Preferences[properties_bang_for_buck] = float32(PosNormFloat64())*bang_for_buck_spread + bang_for_buck_bias
+				population[i].Preferences[properties_durability] = float32(PosNormFloat64())*durability_spread + durabilty_bias
+
 				number_of_owned_products := int(PosNormFloat64()*float64(population[i].Base_need) + float64(market_saturation))
 				for range number_of_owned_products {
 					population[i].Owned_products = append(population[i].Owned_products,
@@ -105,7 +105,7 @@ func generate_population(
 							float64(market_saturation))})
 				}
 
-				population[i].Max_price = ((base_market_price * 1.1) / population[i].Price_preference) * float32(PosNormFloat64()*100)
+				population[i].Max_price = ((base_market_price * 1.5) / population[i].Preferences[properties_price]) * float32(PosNormFloat64()*100)
 				avr_max_price += float64(population[i].Max_price)
 
 				// fmt.Printf("|%6d|%6d|\n", i, customer.income)

@@ -1,6 +1,8 @@
 module WiSim
 
-go 1.23
+go 1.23.1
+
+toolchain go1.24.6
 
 require (
 	github.com/gorilla/websocket v1.5.3
@@ -23,6 +25,7 @@ require (
 	github.com/leaanthony/u v1.1.1 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.20 // indirect
+	github.com/pehringer/simd v1.2.7 // indirect
 	github.com/pkg/browser v0.0.0-20240102092130-5ac0b6a4141c // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.4.7 // indirect

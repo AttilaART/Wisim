@@ -9,6 +9,8 @@ import (
 	"runtime"
 	"sync"
 	"time"
+
+	"github.com/pehringer/simd"
 )
 
 // Economy functions
@@ -47,6 +49,23 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	num_threads := runtime.NumCPU()
 
 	wg.Add(num_threads)
+
+	offer_prices := make([]float32, len(offers))
+	offers_properties := make([]Properties, len(offers))
+	for i, o := range offers {
+		offer_prices[i] = o.Price
+
+		offers_properties[i][properties_quality] = o.Product.Quality_factor
+		offers_properties[i][properties_ecology] = o.Product.Ecology_factor
+		offers_properties[i][properties_ethics] = o.Product.Ethics_factor
+		offers_properties[i][properties_price] = is_cheap(o, avg_price)
+		offers_properties[i][properties_bang_for_buck] = o.Product.Quality_factor / o.Price
+		if o.Price <= 0 {
+			offers_properties[i][properties_price] = 10
+			offers_properties[i][properties_bang_for_buck] = 10
+		}
+		offers_properties[i][properties_durability] = float32(o.Product.Durabilty)
+	}
 	for id, interval := range split_load(num_threads, len(population.Population)) {
 		go func(wg *sync.WaitGroup, population_range Interval, id int,
 		) {
@@ -59,7 +78,9 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 
 				population.Population[current_customer_index] = calculate_purchase(
 					simulate_deterioration(population.Population[current_customer_index]),
-					offers, avg_price, external_factors,
+					offers_properties,
+					offer_prices,
+					external_factors,
 					&product_availability,
 					&purchasing_statistics)
 
@@ -95,17 +116,25 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	delta_time := time.Since(t_before)
 	println("#### Time to calculate: ", delta_time.String())
 
+	div_vector := [6]float32{
+		float32(len(population.Population)),
+		float32(len(population.Population)),
+		float32(len(population.Population)),
+		float32(len(population.Population)),
+		float32(len(population.Population)),
+		float32(len(population.Population)),
+	}
+
+	if len(purchasing_statistics[0].Avr_purchasing_factors[:]) != len(div_vector[:]) {
+		panic("div vector not same length as Properties, expect undefined behavior")
+	}
+
 	for i := range len(purchasing_statistics) - 1 {
 		purchasing_statistics[i].Avr_decision_factor /= float32(len(population.Population))
 		purchasing_statistics[i].Avr_purchasing_threshold /= float32(len(population.Population))
 
-		purchasing_statistics[i].Avr_quality_factor /= float32(len(population.Population))
-		purchasing_statistics[i].Avr_durability_factor /= float32(len(population.Population))
-		purchasing_statistics[i].Avr_ecology_factor /= float32(len(population.Population))
-		purchasing_statistics[i].Avr_price_factor /= float32(len(population.Population))
-		purchasing_statistics[i].Avr_ethics_factor /= float32(len(population.Population))
-		// purchasing_statistics[i].Avr_coolness_factor /= float32(len(population.Population))
-		purchasing_statistics[i].Avr_bang_for_buck_factor /= float32(len(population.Population))
+		Avr_purchasing_factors := purchasing_statistics[i].Avr_purchasing_factors
+		simd.DivFloat32(Avr_purchasing_factors[:], div_vector[:], purchasing_statistics[i].Avr_purchasing_factors[:])
 
 		purchasing_statistics[len(purchasing_statistics)-1].Products_sold += purchasing_statistics[i].Products_sold
 		purchasing_statistics[len(purchasing_statistics)-1].Product_demand += purchasing_statistics[i].Product_demand
@@ -113,24 +142,15 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor += purchasing_statistics[i].Avr_decision_factor
 		purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_threshold += purchasing_statistics[i].Avr_purchasing_threshold
 
-		purchasing_statistics[len(purchasing_statistics)-1].Avr_quality_factor += purchasing_statistics[i].Avr_quality_factor
-		purchasing_statistics[len(purchasing_statistics)-1].Avr_durability_factor += purchasing_statistics[i].Avr_durability_factor
-		purchasing_statistics[len(purchasing_statistics)-1].Avr_ecology_factor += purchasing_statistics[i].Avr_ecology_factor
-		purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor += purchasing_statistics[i].Avr_price_factor
-		purchasing_statistics[len(purchasing_statistics)-1].Avr_ethics_factor += purchasing_statistics[i].Avr_ethics_factor
-		// purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor += purchasing_statistics[i].Avr_coolness_factor
-		purchasing_statistics[len(purchasing_statistics)-1].Avr_bang_for_buck_factor += purchasing_statistics[i].Avr_bang_for_buck_factor
+		general_avr_purchasing_factors := purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors
+		simd.AddFloat32(general_avr_purchasing_factors[:], purchasing_statistics[i].Avr_purchasing_factors[:], purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[:])
 	}
 
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor /= float32(len(purchasing_statistics) - 1)
 	purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_threshold /= float32(len(purchasing_statistics) - 1)
 
-	purchasing_statistics[len(purchasing_statistics)-1].Avr_quality_factor /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Avr_durability_factor /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Avr_ecology_factor /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Avr_price_factor /= float32(len(purchasing_statistics) - 1)
-	purchasing_statistics[len(purchasing_statistics)-1].Avr_ethics_factor /= float32(len(purchasing_statistics) - 1)
-	// purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor /= float32(len(purchasing_statistics) - 1)
+	general_avr_purchasing_factors := purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors
+	simd.DivFloat32(general_avr_purchasing_factors[:], div_vector[:], purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[:])
 
 	results := make([]FinanceReportEntry, len(*companies))
 	for i := range results {
@@ -153,42 +173,28 @@ func simulate_deterioration(customer Customer) Customer {
 	return customer
 }
 
-func calculate_purchase(customer Customer, offers []Offer, avg_price float32, external_factors External_factors, product_availability *[]int, purchasing_statistics *[]Purchasing_statistics) Customer {
-	decision_factors := make([]float32, len(offers))
-	for i, o := range offers {
+func calculate_purchase(customer Customer, offers_properties []Properties, offer_prices []float32, external_factors External_factors, product_availability *[]int, purchasing_statistics *[]Purchasing_statistics) Customer {
+	decision_factors := make([]float32, len(offers_properties))
+	for i := range offers_properties {
 		if (*product_availability)[i] <= 0 {
 			continue
 		} // idk if this is good but it saves 2s of processing
 
-		if o.Price > customer.Max_price {
+		if offer_prices[i] > customer.Max_price {
 			continue
 		}
 
-		quality_factor := clamp(customer.Quality_preference*o.Product.Quality_factor, customer.Quality_preference*10)
-		durability_factor := clamp(customer.Durabilty_preference*float32(o.Product.Durabilty)*3, customer.Durabilty_preference*10)
-		ecology_factor := clamp(customer.Ecology_preference*o.Product.Ecology_factor, customer.Ecology_preference*10)
-		ethics_factor := clamp(customer.Ethics_preference*o.Product.Ethics_factor, customer.Ethics_preference*10)
-		price_factor := clamp(customer.Price_preference*is_cheap(o, avg_price), customer.Price_preference*10)
-		if o.Price <= 0 {
-			price_factor = customer.Price_preference * 10
-		}
-		bang_for_buck_factor := clamp(customer.Bang_for_buck_preference*(o.Product.Quality_factor/o.Price), customer.Bang_for_buck_preference*10)
-		if o.Price <= 0 {
-			bang_for_buck_factor = customer.Bang_for_buck_preference * 10
-		}
+		purchasing_factors := Properties{}
+		purchasing_factors_product := scalar_product32(customer.Preferences[:], offers_properties[i][:], purchasing_factors[:])
+
 		brand_loyalty_factor := clamp(customer.Brand_loyalty_factor*customer.Loyalties[i], customer.Brand_loyalty_factor*10)
 
-		decision_factors[i] = (quality_factor + ecology_factor + ethics_factor + price_factor + bang_for_buck_factor + brand_loyalty_factor) * external_factors.Economic_situation_index
+		decision_factors[i] = (purchasing_factors_product + brand_loyalty_factor) * external_factors.Economic_situation_index
 
 		(*purchasing_statistics)[i].Avr_decision_factor += decision_factors[i]
 		(*purchasing_statistics)[i].Avr_purchasing_threshold += customer.Purchashing_threshold
-		(*purchasing_statistics)[i].Avr_quality_factor += quality_factor
-		(*purchasing_statistics)[i].Avr_durability_factor += durability_factor
-		(*purchasing_statistics)[i].Avr_ecology_factor += ecology_factor
-		(*purchasing_statistics)[i].Avr_price_factor += price_factor
-		(*purchasing_statistics)[i].Avr_ethics_factor += ethics_factor
-		// (*purchasing_statistics)[i].Avr_coolness_factor += customer.Coolness_preference * offers[i].Product.Coolness_factor
-		(*purchasing_statistics)[i].Avr_bang_for_buck_factor += bang_for_buck_factor
+		Avr_purchasing_factors := (*purchasing_statistics)[i].Avr_purchasing_factors
+		simd.AddFloat32(purchasing_factors[:], Avr_purchasing_factors[:], (*purchasing_statistics)[i].Avr_purchasing_factors[:])
 	}
 
 	// Select product using weighted die
@@ -199,7 +205,7 @@ func calculate_purchase(customer Customer, offers []Offer, avg_price float32, ex
 		number_of_products_purchased := 0
 		for range customer.Base_need - len(customer.Owned_products) {
 			if (*product_availability)[choice] > 0 {
-				customer.Owned_products = append(customer.Owned_products, Owned_product{choice, offers[choice].Product.Durabilty})
+				customer.Owned_products = append(customer.Owned_products, Owned_product{choice, int(offers_properties[choice][properties_durability])})
 				(*product_availability)[choice] -= 1
 				number_of_products_purchased += 1
 			} else {
