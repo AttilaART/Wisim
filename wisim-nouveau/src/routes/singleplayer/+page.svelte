@@ -60,6 +60,10 @@
 	let connection = $state(null);
 	/** @type {import("$lib/javascript/simulation").clientState} */
 	let clientState = $state(JSON.parse(JSON.stringify(baseState)));
+	/** @type {{Message: string, From: string}[]} */
+	let chats = $state([]);
+	/** @type {string} */
+	let chatMessage = $state('');
 
 	$effect(() => {
 		connectionPromise.then((value) => {
@@ -152,6 +156,8 @@
 					isSimulating = false;
 					fetchEverything(connection);
 					break;
+				case Methods.Broadcast_chat:
+					chats.push(dataJSON.Data);
 			}
 		}
 	}
@@ -169,11 +175,6 @@
 		connection.gUnemployedEmployees('production');
 		connection.gUnemployedEmployees('marketing');
 	}
-
-	/**
-	 * @type {string}
-	 */
-	let chat = $state('');
 </script>
 
 <svelte:head>
@@ -252,7 +253,11 @@
 				}}>Research</button
 			>
 			<button>Market</button>
-			<button>Chat</button>
+			<button
+				onclick={() => {
+					newWindow(chat);
+				}}>Chat</button
+			>
 			{#if !isReady}
 				<button
 					onclick={() => {
@@ -438,6 +443,35 @@
 				connection.sDecisions(decisions);
 			}}
 		></Reasearch>
+	</Window>
+{/snippet}
+
+{#snippet chat(/** @type {Number} id */ id)}
+	<Window
+		title="Chat"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<div style="display: grid; grid-template-columns: auto 1fr;">
+			{#each chats as c}
+				<span>
+					{c.From}:
+				</span>
+				<span style="margin-left: 10px;">
+					{c.Message}
+				</span>
+			{/each}
+		</div>
+		<form
+			onsubmit={() => {
+				connection.bChat(chatMessage);
+				chatMessage = '';
+			}}
+		>
+			<input bind:value={chatMessage} type="text" />
+			<input type="submit" style="display: none" />
+		</form>
 	</Window>
 {/snippet}
 
