@@ -233,13 +233,24 @@ func getEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
 
 	reply.Data = &data
 
+	employee_type := -1
+
 	switch reply.Data.Type {
 	case "production":
-		reply.Data.Employees = gamestate.Companies[s.conns[ws].Company].Get_employees(simulation.Employee_type_production)
+		employee_type = simulation.Employee_type_production
 	case "marketing":
-		reply.Data.Employees = gamestate.Companies[s.conns[ws].Company].Get_employees(simulation.Employee_type_marketing)
+		employee_type = simulation.Employee_type_marketing
 	default:
 		reply.Error = "Invalid Employee type"
+	}
+
+	if employee_type != -1 {
+		employee_ids := gamestate.Companies[s.conns[ws].Company].Get_employees_ids(simulation.Employee_type(employee_type))
+		reply.Data.Employees = make([]*simulation.Employee, len(employee_ids))
+
+		for i, id := range employee_ids {
+			reply.Data.Employees[i] = gamestate.Employees[id]
+		}
 	}
 }
 
@@ -302,21 +313,21 @@ func getUnemployedEmployees(s *Server, ws *websocket.Conn, message Message[any])
 			1)
 	}
 
-	for i, e := range gamestate.Employees {
+	for id, e := range gamestate.Employees {
 		if e.Employer >= 0 {
 			continue
 		}
 		switch reply.Data.Type {
 		case "production":
 			if e.Employee_type == simulation.Employee_type_production {
-				reply.Data.Employees = append(reply.Data.Employees, &gamestate.Employees[i])
+				reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
 			}
 		case "marketing":
 			if e.Employee_type == simulation.Employee_type_marketing {
-				reply.Data.Employees = append(reply.Data.Employees, &gamestate.Employees[i])
+				reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
 			}
 		default:
-			reply.Data.Employees = append(reply.Data.Employees, &gamestate.Employees[i])
+			reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
 		}
 	}
 }
@@ -537,19 +548,21 @@ func removeProductNaNInf[v simulation.Product | simulation.Company](p v) v {
 }
 
 func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
-	reply := Message[string]{Method: message.Method, IsResponse: true}
-	defer func() {
-		err := ws.WriteJSON(reply)
-		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
-		}
-	}()
+	reply := Message[struct {
+		Message string
+		From    string
+	}]{Method: message.Method, IsResponse: false}
 
 	if message.Data != nil {
-		chat := fmt.Sprint(*message.Data)
+		var chat struct {
+			Message string
+			From    string
+		}
+		chat.Message = fmt.Sprint(*message.Data)
+		chat.From = gamestate.Companies[s.conns[ws].Company].Name
 		reply.Data = &chat
 		broadcast(s, reply)
-		fmt.Printf("CHAT (%d): %s\n", s.conns[ws].Company, *message.Data)
+		fmt.Printf("CHAT (%d): %s\n", s.conns[ws].Company, chat.Message)
 	}
 }
 
