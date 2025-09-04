@@ -74,7 +74,7 @@ type Company struct {
 	Balance       float64
 	Loans         float64
 	Bridge_loans  float64
-	employee_pool *Employee_pool
+	employee_pool Employee_pool
 	// Global_effects   []Effect
 	Decision_history []Decisions
 
@@ -213,7 +213,7 @@ type Machine struct {
 	Production_capacity  int
 	Required_workers     int
 	Minimum_workers      int
-	Assigned_workers_ptr []*Employee
+	Assigned_workers_ids []int
 	Energy_use           float32
 	Value                float32
 	Maintanance_cost     float32 // Monthly
@@ -629,7 +629,7 @@ func (game_state *Game_state) Simulate_step() error {
 
 	println("=============== Simulating companies ==============")
 	for i := range game_state.Companies {
-		game_state.Companies[i].employee_pool = &game_state.Employees
+		game_state.Companies[i].employee_pool = game_state.Employees
 		fmt.Printf("--------------- Simulating company %d -------------- \n", i)
 		err := game_state.Companies[i].simulate_company(game_state.Current_decisions[i], game_state.External_factors)
 		if err != nil {
@@ -793,9 +793,9 @@ func (c *Company) compile_personelle_report(decisions Decisions) Personelle_repo
 
 func (c *Company) compile_personelle_subreport(decisions Decisions, employee_type Employee_type) Personelle_sub_report {
 	var sub_report Personelle_sub_report
-	employees := c.employee_pool.Get_employees_of_company(c.Id, employee_type)
+	employee_ids := c.employee_pool.Get_employees_of_company(c.Id, employee_type)
 
-	sub_report.Number_of_employees = len(employees)
+	sub_report.Number_of_employees = len(employee_ids)
 
 	var employee_deltas []Delta[Employee] // We can trust that the employees exist because we checked this when "simulating employees"
 	if employee_type == Employee_type_marketing {
@@ -815,15 +815,15 @@ func (c *Company) compile_personelle_subreport(decisions Decisions, employee_typ
 		}
 	}
 
-	pay := make([]float32, len(employees))
-	skill := make([]float32, len(employees))
-	motivation := make([]float32, len(employees))
-	productivity := make([]float32, len(employees))
-	for i, e := range employees {
-		pay[i] = e.Pay
-		skill[i] = e.Skill
-		motivation[i] = e.Motivation
-		productivity[i] = e.Motivation * e.Skill * e.Working_hours // TODO: Make sure this is actually accurate
+	pay := make([]float32, len(employee_ids))
+	skill := make([]float32, len(employee_ids))
+	motivation := make([]float32, len(employee_ids))
+	productivity := make([]float32, len(employee_ids))
+	for i, e := range employee_ids {
+		pay[i] = c.employee_pool[e].Pay
+		skill[i] = c.employee_pool[e].Skill
+		motivation[i] = c.employee_pool[e].Motivation
+		productivity[i] = c.employee_pool[e].Motivation * c.employee_pool[e].Skill * c.employee_pool[e].Working_hours // TODO: Make sure this is actually accurate
 	}
 
 	sub_report.Avg_pay = avr(pay)

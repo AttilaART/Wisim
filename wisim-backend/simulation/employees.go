@@ -12,7 +12,7 @@ func (c *Company) simulate_employees(external_factors External_factors, severanc
 	// IMPORTANT: Calculation of employee deltas now happens before individual companies
 
 	// Get correct employee slice
-	company_employees := c.employee_pool.Get_employees_of_company(c.Id, employee_type)
+	company_employees_ids := c.employee_pool.Get_employees_of_company(c.Id, employee_type)
 
 	/*
 		// Fire/"layoff" employees
@@ -40,10 +40,12 @@ func (c *Company) simulate_employees(external_factors External_factors, severanc
 
 	// Calcualte Turnover
 	var num_employees_who_left int
-	for _, e_ptr := range company_employees {
-		if e_ptr.Employer != Employee_employer_none {
+	for _, id := range company_employees_ids {
+		if c.employee_pool[id].Employer != Employee_employer_none {
 			if rand.Float32() <= external_factors.Turnover {
-				e_ptr.Employer = Employee_employer_none
+				e := c.employee_pool[id]
+				e.Employer = Employee_employer_none
+				c.employee_pool[id] = e
 				num_employees_who_left += 1
 			}
 		}
@@ -59,24 +61,24 @@ func (c *Company) simulate_employees(external_factors External_factors, severanc
 	default:
 		group = other_personelle
 	}
-	for i := range company_employees {
-		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(fmt.Sprintf("Pay for %s employee %d", company_employees[i].Employee_type.to_string(), company_employees[i].Id), group, "", true, round(float64(-company_employees[i].Pay)/12, 2))
-		if company_employees[i].Bonus > 0 {
-			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(fmt.Sprintf("Bonus for %s employee %d", company_employees[i].Employee_type.to_string(), company_employees[i].Id), group, "", true, round(float64(-company_employees[i].Bonus)/12, 2))
+	for _, id := range company_employees_ids {
+		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(fmt.Sprintf("Pay for %s employee %d", c.employee_pool[id].Employee_type.to_string(), c.employee_pool[id].Id), group, "", true, round(float64(-c.employee_pool[id].Pay)/12, 2))
+		if c.employee_pool[id].Bonus > 0 {
+			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(fmt.Sprintf("Bonus for %s employee %d", c.employee_pool[id].Employee_type.to_string(), c.employee_pool[id].Id), group, "", true, round(float64(-c.employee_pool[id].Bonus)/12, 2))
 		}
 	}
 
 	// Calculate training
-	err := c.train_employees(company_employees, 0.01)
+	err := c.train_employees(company_employees_ids, 0.01)
 	if err != nil {
 		return err
 	}
 
 	// Calculate Motivation
 	if employee_type == Employee_type_production {
-		calculate_motivation(company_employees, external_factors.Production_minimum_wage, 1)
+		calculate_motivation(c.employee_pool, company_employees_ids, external_factors.Production_minimum_wage, 1)
 	} else if employee_type == Employee_type_marketing {
-		calculate_motivation(company_employees, external_factors.Marketing_minimum_wage, 1)
+		calculate_motivation(c.employee_pool, company_employees_ids, external_factors.Marketing_minimum_wage, 1)
 	} else {
 		panic("Unsupported Employee_type")
 	}
@@ -126,9 +128,9 @@ func (g *Game_state) handleEmployeeDeltas() {
 	for _, decisions := range g.Current_decisions {
 		for _, e := range decisions.Employees.Marketing_deltas {
 			if e.Change == Delta_Change {
-				*g.Employees.Find_employee_by_id(e.Item.Id) = e.Item
+				g.Employees[e.Item.Id] = &e.Item
 			} else if e.Change == Delta_Remove {
-				g.Employees.Find_employee_by_id(e.Item.Id).Employer = Employee_employer_none
+				g.Employees[e.Item.Id].Employer = Employee_employer_none
 			}
 		}
 	}
@@ -164,9 +166,9 @@ func (g *Game_state) handleEmployeeDeltas() {
 	for hire := range newHires {
 		potentialEmployers := newHires[hire]
 		if len(potentialEmployers) == 1 {
-			g.Employees.Find_employee_by_id(hire).Employer = potentialEmployers[0]
+			g.Employees[hire].Employer = potentialEmployers[0]
 		} else {
-			g.Employees.Find_employee_by_id(hire).Employer = potentialEmployers[rand.Int()%len(potentialEmployers)]
+			g.Employees[hire].Employer = potentialEmployers[rand.Int()%len(potentialEmployers)]
 		}
 	}
 
@@ -188,16 +190,18 @@ func (c *Company) turnover(employees []*Employee, turnover_rate float32) (employ
 	return employees_who_left_count
 }
 
-func (c *Company) train_employees(employees []*Employee, passive_training float32) error {
-	for i := range employees {
-		if employees[i].Extra_training > 0 {
-			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Extra training for employee: "+employees[i].Name, employee_training, "Training improves speed and quality of employeess' work", true, float64(employees[i].Extra_training))
-		} else if employees[i].Extra_training < 0 {
-			return errors.New(fmt.Sprintf("Training for %s employee %d (%s) is less than 0", employees[i].Employee_type.to_string(), employees[i].Id, employees[i].Name))
+func (c *Company) train_employees(employees_ids []int, passive_training float32) error {
+	for _, id := range employees_ids {
+		if c.employee_pool[id].Extra_training > 0 {
+			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Extra training for employee: "+c.employee_pool[id].Name, employee_training, "Training improves speed and quality of employeess' work", true, float64(c.employee_pool[id].Extra_training))
+		} else if c.employee_pool[id].Extra_training < 0 {
+			return errors.New(fmt.Sprintf("Training for %s employee %d (%s) is less than 0", c.employee_pool[id].Employee_type.to_string(), c.employee_pool[id].Id, c.employee_pool[id].Name))
 		}
 
-		employees[i].Skill += float32(employees[i].Extra_training) / 1000.0
-		employees[i].Skill += passive_training
+		e := c.employee_pool[id]
+		e.Skill += float32(c.employee_pool[id].Extra_training) / 1000.0
+		e.Skill += passive_training
+		c.employee_pool[id] = e
 
 	}
 
@@ -234,16 +238,16 @@ func (c *Company) calculate_payroll(employees []*Employee, employee_type Employe
 	}
 }
 
-func calculate_motivation(employees []*Employee, minimum_wage float32, base_motivation float32) {
+func calculate_motivation(employee_pool Employee_pool, employees_ids []int, minimum_wage float32, base_motivation float32) {
 	// REDO MOTIVATION
-	for _, a := range employees {
-		pay_factor := float32(a.Pay / (minimum_wage * 1.2))
-		raise_factor := float32(a.Pay / a.Pay)
-		working_hours_factor := float32(a.Working_hours / 8)
-		time_off_factor := float32(a.Working_hours / a.Working_hours)
-		training_factor := float32(a.Extra_training / 1000)
+	for _, id := range employees_ids {
+		pay_factor := float32(employee_pool[id].Pay / (minimum_wage * 1.2))
+		raise_factor := float32(employee_pool[id].Pay / employee_pool[id].Pay) // TODO: Fix!
+		working_hours_factor := float32(employee_pool[id].Working_hours / 8)
+		time_off_factor := float32(employee_pool[id].Working_hours / employee_pool[id].Working_hours)
+		training_factor := float32(employee_pool[id].Extra_training / 1000)
 
-		a.Motivation = ((base_motivation*2 +
+		employee_pool[id].Motivation = ((base_motivation*2 +
 			pay_factor +
 			raise_factor*2 +
 			working_hours_factor +

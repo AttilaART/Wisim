@@ -26,7 +26,7 @@ func (c *Company) simulate_company(decisions Decisions, external_factors Externa
 	c.Offer.Price = decisions.Marketing.Price
 
 	c.Base_marketing_strength += decisions.Research.Promotion / 1000 * c.Base_marketing_strength
-	c.Offer.Promotion_quality = promotion_quality(c.Base_marketing_strength, c.employee_pool.Get_employees_of_company(c.Id, Employee_type_marketing))
+	c.Offer.Promotion_quality = promotion_quality(c.employee_pool, c.Base_marketing_strength, c.employee_pool.Get_employees_of_company(c.Id, Employee_type_marketing))
 
 	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(
 		"Advertisement costs",
@@ -88,17 +88,6 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 
 	c.Machines = delete_by_id(c.Machines, machines_to_delete_id...)
 
-	// fix pointer stuff (json doesn't transmit pointers)
-	for i := range c.Machines {
-		for ii, e := range c.Machines[i].Assigned_workers_ptr {
-
-			c.Machines[i].Assigned_workers_ptr[ii] = c.employee_pool.Find_employee_by_id(e.Id)
-			if c.Machines[i].Assigned_workers_ptr[ii] == nil {
-				panic("Invalid employee assigned to machine")
-			}
-		}
-	}
-
 	calculate_machines_value(
 		&c.Machines,
 		&c.Reports[len(c.Reports)-1].Production_report,
@@ -114,10 +103,16 @@ func (c *Company) calculate_production(decisions Decisions, external_factors Ext
 
 	// Produce
 	println("Assigning workers")
-	c.Machines, production_report.Worker_surplus = assign_workers(c.Machines, c.employee_pool.Get_employees_of_company(c.Id, Employee_type_production))
+	c.Machines, production_report.Worker_surplus = assign_workers(
+		c.employee_pool,
+		c.Machines,
+		c.employee_pool.Get_employees_of_company(
+			c.Id, Employee_type_production),
+	)
 
 	println("Producing products")
 	produce(
+		c.employee_pool,
 		c.Machines,
 		c.Offer.Product,
 		production_report,
@@ -156,18 +151,20 @@ func calculate_machines_value(
 }
 
 // returns machines & number of unassigned wokers (if not enough workers for the machines, it return a negative int)
-func assign_workers(machines []Machine, workers []*Employee) ([]Machine, int) {
+func assign_workers(employee_pool Employee_pool, machines []Machine, workers_ids []int) ([]Machine, int) {
 	println("Sorting Employees")
 
-	workers = slices.SortedFunc(func(yield func(*Employee) bool) {
-		for _, w := range workers {
-			if !yield(w) {
+	workers_ids = slices.SortedFunc(func(yield func(int) bool) {
+		for _, id := range workers_ids {
+			if !yield(id) {
 				return
 			}
 		}
-	}, func(a, b *Employee) int {
-		vala := (a.Motivation * a.Skill * a.Working_hours)
-		valb := (b.Motivation * b.Skill * a.Working_hours)
+	}, func(a, b int) int {
+		e_a := employee_pool[a]
+		e_b := employee_pool[b]
+		vala := (e_a.Motivation * e_a.Skill * e_a.Working_hours)
+		valb := (e_b.Motivation * e_b.Skill * e_b.Working_hours)
 		if vala < valb {
 			return 1
 		} else if vala == valb {
@@ -194,26 +191,27 @@ func assign_workers(machines []Machine, workers []*Employee) ([]Machine, int) {
 	var Worker_surplus int
 	ii := 0
 	for i := range machines {
-		machines[i].Assigned_workers_ptr = make([]*Employee, 0)
+		machines[i].Assigned_workers_ids = make([]int, 0)
 
 		for range machines[i].Required_workers {
-			if ii >= (len(workers) - 1) {
+			if ii >= (len(workers_ids) - 1) {
 				break
 			}
-			machines[i].Assigned_workers_ptr = append(machines[i].Assigned_workers_ptr, workers[ii])
+			machines[i].Assigned_workers_ids = append(machines[i].Assigned_workers_ids, workers_ids[ii])
 			ii++
 		}
-		Worker_surplus += len(machines[i].Assigned_workers_ptr) - machines[i].Required_workers
+		Worker_surplus += len(machines[i].Assigned_workers_ids) - machines[i].Required_workers
 	}
 
 	if Worker_surplus >= 0 {
-		Worker_surplus = len(workers) - ii - 1
+		Worker_surplus = len(workers_ids) - ii - 1
 	}
 
 	return machines, Worker_surplus
 }
 
 func produce(
+	employee_pool Employee_pool,
 	machines []Machine,
 	product Product,
 	production_report *Production_report,
@@ -226,7 +224,7 @@ func produce(
 
 	energy_use := 0.0
 	for _, m := range machines {
-		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(m, product.Production_cost)
+		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(employee_pool, m, product.Production_cost)
 		base_production += base_prod_of_machine
 		bonus_production += bonus_prod_of_machine
 
@@ -260,7 +258,7 @@ func produce(
 }
 
 // return (base production, bonus production)
-func calculate_machine_production(machine Machine, production_speed float32) (int, int) {
+func calculate_machine_production(employee_pool Employee_pool, machine Machine, production_speed float32) (int, int) {
 	// calculate averages
 	var skill float32 = 0
 	var motivation float32 = 0
@@ -270,25 +268,25 @@ func calculate_machine_production(machine Machine, production_speed float32) (in
 		panic("machine.Minimum_workers <= 0")
 	}
 
-	if len(machine.Assigned_workers_ptr) < machine.Minimum_workers {
-		fmt.Printf("Machine has too few workers: %d instead of %d+", len(machine.Assigned_workers_ptr), machine.Minimum_workers)
+	if len(machine.Assigned_workers_ids) < machine.Minimum_workers {
+		fmt.Printf("Machine has too few workers: %d instead of %d+", len(machine.Assigned_workers_ids), machine.Minimum_workers)
 		return 0, 0
 	}
 
-	if len(machine.Assigned_workers_ptr) < 0 {
+	if len(machine.Assigned_workers_ids) < 0 {
 		return 0, 0
 	}
 
-	for _, employee_ptr := range machine.Assigned_workers_ptr {
-		skill += employee_ptr.Skill
-		motivation += employee_ptr.Motivation
-		working_hours += employee_ptr.Working_hours
+	for _, e_id := range machine.Assigned_workers_ids {
+		skill += employee_pool[e_id].Skill
+		motivation += employee_pool[e_id].Motivation
+		working_hours += employee_pool[e_id].Working_hours
 
 	}
 
-	skill = skill / float32(len(machine.Assigned_workers_ptr))
-	motivation = motivation / float32(len(machine.Assigned_workers_ptr))
-	working_hours = working_hours / float32(len(machine.Assigned_workers_ptr))
+	skill = skill / float32(len(machine.Assigned_workers_ids))
+	motivation = motivation / float32(len(machine.Assigned_workers_ids))
+	working_hours = working_hours / float32(len(machine.Assigned_workers_ids))
 
 	if skill <= 0 {
 		panic("skill is 0 or less")
@@ -313,7 +311,7 @@ func calculate_machine_production(machine Machine, production_speed float32) (in
 	fmt.Printf("machine skill: %f\n", skill)
 	fmt.Printf("machine motivation: %f\n", skill)
 	fmt.Printf("machine working_hours: %f\n", skill)
-	fmt.Printf("Workers assigned: %d\n", len(machine.Assigned_workers_ptr))
+	fmt.Printf("Workers assigned: %d\n", len(machine.Assigned_workers_ids))
 
 	return base_production, bonus_production
 }

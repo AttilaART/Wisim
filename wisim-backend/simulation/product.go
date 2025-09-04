@@ -25,16 +25,16 @@ func (c *Company) Calculate_product(
 }
 
 // offer functions
-func promotion_quality(base_marketing_strength float32, marketing_personelle []*Employee) float32 {
+func promotion_quality(employee_pool Employee_pool, base_marketing_strength float32, marketing_personelle_ids []int) float32 {
 	// Temporary method
 	var total_personelle_strength float32 = 1.0
-	for _, e := range marketing_personelle {
-		total_personelle_strength += e.Motivation * e.Skill * (e.Working_hours / 8.0)
+	for _, id := range marketing_personelle_ids {
+		total_personelle_strength += employee_pool[id].Motivation * employee_pool[id].Skill * (employee_pool[id].Working_hours / 8.0)
 	}
 
 	return base_marketing_strength *
-		(total_personelle_strength / float32(len(marketing_personelle))) *
-		float32((1 + math.Log(float64(len(marketing_personelle)))))
+		(total_personelle_strength / float32(len(marketing_personelle_ids))) *
+		float32(1+math.Log(float64(len(marketing_personelle_ids))))
 }
 
 // Product attribute functions
@@ -62,7 +62,7 @@ func (product *Product) calculate_ecology(
 // Calculates Quality_factor of product w/ side effects and returns value
 func (product *Product) calculate_quality(quality_research, production_skill, material_quality, manufacturing_quality float32) float32 {
 	product.Base_quality *= 1 + quality_research/1000
-	product.Quality_factor = float32(2 * math.Log(float64(material_quality*production_skill*product.Base_quality*manufacturing_quality)))
+	product.Quality_factor = float32(2 * math.Sqrt(float64(material_quality*production_skill*product.Base_quality*manufacturing_quality)))
 	product.Quality_factor = min(product.Quality_factor, math.MaxFloat32)
 	product.Quality_factor = max(product.Quality_factor, 0)
 	return product.Quality_factor

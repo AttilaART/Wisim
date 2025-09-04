@@ -59,42 +59,33 @@ func rand_income(mean_income int, standard_dev int) int {
 	return income
 }
 
-type Employee_pool []Employee
+type Employee_pool map[int]*Employee
 
-func (employee_pool *Employee_pool) Find_employee_by_id(id int) *Employee {
-	for i := range *employee_pool {
-		if (*employee_pool)[i].Id == id {
-			return &(*employee_pool)[i]
-		}
-	}
-	return nil
-}
-
-func (c *Company) Get_employees(employee_type Employee_type) []*Employee {
+func (c *Company) Get_employees_ids(employee_type Employee_type) []int {
 	return c.employee_pool.Get_employees_of_company(c.Id, employee_type)
 }
 
-func (employee_pool *Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_of_company []*Employee) {
-	for i := range *employee_pool {
-		if (*employee_pool)[i].Employer == company_id {
+func (employee_pool Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_ids_of_company []int) {
+	for id := range employee_pool {
+		if employee_pool[id].Employer == company_id {
 			if employee_type == Employee_type_all {
-				employees_of_company = append(employees_of_company, &(*employee_pool)[i])
-			} else if employee_type == (*employee_pool)[i].Employee_type {
-				employees_of_company = append(employees_of_company, &(*employee_pool)[i])
+				employees_ids_of_company = append(employees_ids_of_company, id)
+			} else if employee_type == employee_pool[id].Employee_type {
+				employees_ids_of_company = append(employees_ids_of_company, id)
 			}
 		}
 	}
 
-	return employees_of_company
+	return employees_ids_of_company
 }
 
-func (employee_pool *Employee_pool) Get_avr_skill(company_id int, employee_type Employee_type) (avrg_skill float32) {
-	employees := employee_pool.Get_employees_of_company(company_id, employee_type)
-	for _, e := range employees {
-		avrg_skill += e.Skill
+func (employee_pool Employee_pool) Get_avr_skill(company_id int, employee_type Employee_type) (avrg_skill float32) {
+	employees_ids := employee_pool.Get_employees_of_company(company_id, employee_type)
+	for _, id := range employees_ids {
+		avrg_skill += employee_pool[id].Skill
 	}
 
-	return avrg_skill / float32(len(employees))
+	return avrg_skill / float32(len(employees_ids))
 }
 
 func (c *Company) Get_decisions() Decisions {

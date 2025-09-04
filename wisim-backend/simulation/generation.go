@@ -11,7 +11,6 @@ import (
 	"math/rand"
 	"os"
 	"runtime"
-	"slices"
 	"sync"
 
 	"golang.org/x/text/language"
@@ -130,24 +129,13 @@ func PosNormFloat64() float64 {
 }
 
 func (g *Game_state) Generate_new_employee_id() int {
-	// Find taken IDs
-	var taken_ids []int
+	randId := rand.Int()
 
-	for _, e := range g.Employees {
-		taken_ids = append(taken_ids, e.Id)
+	if _, exists := g.Employees[randId]; exists {
+		return g.Generate_new_employee_id()
 	}
 
-	// Generate lowest non-taken ID
-
-	gen_id := 0
-	for range g.Employees {
-		if !slices.Contains(taken_ids, gen_id) {
-			return gen_id
-		}
-		gen_id++
-	}
-
-	return len(g.Employees)
+	return randId
 }
 
 func (g *Game_state) Generate_employee(base_pay float32, working_hours float32, employee_type Employee_type, base_motivation float32) *Employee {
@@ -163,9 +151,9 @@ func (g *Game_state) Generate_employee(base_pay float32, working_hours float32, 
 		Working_hours: working_hours,
 		Employer:      Employee_employer_none,
 	}
-	g.Employees = append(g.Employees, employee)
+	g.Employees[employeeeID] = &employee
 
-	return &g.Employees[len(g.Employees)-1]
+	return g.Employees[employeeeID]
 }
 
 func randomName(seed int) string {
@@ -225,7 +213,6 @@ func (g *Game_state) generate_companies(
 	base_working_hours float32,
 	base_number_of_marketing_personelle int,
 ) []Company {
-	default_company.employee_pool = &g.Employees
 	// Make each company according to defaults & preferences
 	companies := make([]Company, number_of_companies)
 
@@ -235,6 +222,7 @@ func (g *Game_state) generate_companies(
 		companies[i].Name = "Unnamed Company"
 		companies[i].Reports = make([]Report, 0)
 		companies[i].Decision_history = make([]Decisions, 0)
+		companies[i].employee_pool = g.Employees
 
 		required_production_personelle := 0
 		for _, m := range companies[i].Machines {
@@ -267,6 +255,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 
 	game_state.Step = 1
 	game_state.Game_name = game_name
+	game_state.Employees = make(Employee_pool)
 
 	game_state.External_factors = External_factors{
 		Inflation:                 0.005,
@@ -346,7 +335,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 		number_of_companies,
 		game_state.External_factors,
 		8,
-		5,
+		1,
 	)
 
 	game_state.Current_decisions = make([]Decisions, number_of_companies)
@@ -445,7 +434,7 @@ func Load_game(path string) (Game_state, error) {
 
 	for i := range game_state.Companies {
 		// fix employee pointer stuff
-		game_state.Companies[i].employee_pool = &game_state.Employees
+		game_state.Companies[i].employee_pool = game_state.Employees
 
 		// check if each product is valid
 		if err := check_product(game_state.Companies[i].Offer.Product); err != nil {
