@@ -12,6 +12,7 @@ require (
 )
 
 require (
+	github.com/alivanz/go-simd v0.0.0-20250531081328-f3b5f7d73797 // indirect
 	github.com/bep/debounce v1.2.1 // indirect
 	github.com/go-ole/go-ole v1.3.0 // indirect
 	github.com/godbus/dbus/v5 v5.1.0 // indirect

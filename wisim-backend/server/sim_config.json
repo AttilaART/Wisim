@@ -19,7 +19,7 @@
         "Operating_costs": 20000
       }
     ],
-    "Items_in_storage": 1000,
+    "Items_in_storage": 100000000,
     "Machines": [
       {
         "Production_capacity": 1500,

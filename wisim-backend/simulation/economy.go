@@ -51,6 +51,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	wg.Add(num_threads)
 
 	offer_prices := make([]float32, len(offers))
+	offer_durabilities := make([]int, len(offers))
 	offers_properties := make([]Properties, len(offers))
 	for i, o := range offers {
 		offer_prices[i] = o.Price
@@ -65,26 +66,63 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 			offers_properties[i][properties_bang_for_buck] = 10
 		}
 		offers_properties[i][properties_durability] = float32(o.Product.Durabilty)
+
+		offer_durabilities[i] = int(offers_properties[i][properties_durability])
 	}
 	for id, interval := range split_load(num_threads, len(population.Population)) {
 		go func(wg *sync.WaitGroup, population_range Interval, id int,
 		) {
+			all_customer_preferences := make([]float32, len(population.Population)*len(population.Population[0].Preferences))
 			for current_customer_index := population_range.Start; current_customer_index < population_range.Stop_before; current_customer_index++ {
+				for ii := range population.Population[current_customer_index].Preferences {
+					all_customer_preferences[current_customer_index*6+ii] = population.Population[current_customer_index].Preferences[ii]
+				}
+			}
+
+			all_customer_all_product_decision_factor_constituents := make([][]float32, len(offers_properties))
+			for i, offer_properties := range offers_properties {
+				corresponding_product_properties := make([]float32, len(population.Population)*len(population.Population[0].Preferences))
+				for ii := range all_customer_preferences {
+					corresponding_product_properties[ii] = offer_properties[ii%len(offer_properties)]
+				}
+				all_customer_product_decision_factor_constituents := make([]float32, len(population.Population)*len(population.Population[0].Preferences))
+				simd.MulFloat32(all_customer_preferences, corresponding_product_properties, all_customer_product_decision_factor_constituents)
+				all_customer_all_product_decision_factor_constituents[i] = all_customer_product_decision_factor_constituents
+			}
+
+			all_purchasing_factors := make([][]float32, (population_range.Stop_before+1)-population_range.Start)
+			for i := range all_purchasing_factors {
+				all_purchasing_factors[i] = make([]float32, len(offers_properties))
+				for ii := range all_purchasing_factors[i] {
+					all_purchasing_factors[i][ii] = all_customer_all_product_decision_factor_constituents[ii][i*6+0] +
+						all_customer_all_product_decision_factor_constituents[ii][i*6+1] +
+						all_customer_all_product_decision_factor_constituents[ii][i*6+2] +
+						all_customer_all_product_decision_factor_constituents[ii][i*6+3] +
+						all_customer_all_product_decision_factor_constituents[ii][i*6+4] +
+						all_customer_all_product_decision_factor_constituents[ii][i*6+5]
+				}
+			}
+
+			for current_customer_index := population_range.Start; current_customer_index < population_range.Stop_before; current_customer_index++ {
+				relative_current_customer_index := 0
 
 				if current_customer_index >= len(population.Population) {
 					log.Panic("current_customer_index higher than len")
 					break
 				}
 
+				population.Population[current_customer_index].Max_price *= 1 + external_factors.Inflation
+
 				population.Population[current_customer_index] = calculate_purchase(
 					simulate_deterioration(population.Population[current_customer_index]),
-					offers_properties,
+					all_purchasing_factors[relative_current_customer_index],
 					offer_prices,
+					offer_durabilities,
 					external_factors,
 					&product_availability,
 					&purchasing_statistics)
 
-				population.Population[current_customer_index].Max_price *= 1 + external_factors.Inflation
+				relative_current_customer_index++
 			}
 
 			wg.Done()
@@ -173,9 +211,9 @@ func simulate_deterioration(customer Customer) Customer {
 	return customer
 }
 
-func calculate_purchase(customer Customer, offers_properties []Properties, offer_prices []float32, external_factors External_factors, product_availability *[]int, purchasing_statistics *[]Purchasing_statistics) Customer {
-	decision_factors := make([]float32, len(offers_properties))
-	for i := range offers_properties {
+func calculate_purchase(customer Customer, purchasing_factors []float32, offer_prices []float32, offer_durabilities []int, external_factors External_factors, product_availability *[]int, purchasing_statistics *[]Purchasing_statistics) Customer {
+	decision_factors := make([]float32, len(offer_prices))
+	for i := range offer_prices {
 		if (*product_availability)[i] <= 0 {
 			continue
 		} // idk if this is good but it saves 2s of processing
@@ -184,12 +222,9 @@ func calculate_purchase(customer Customer, offers_properties []Properties, offer
 			continue
 		}
 
-		purchasing_factors := Properties{}
-		purchasing_factors_product := scalar_product32(customer.Preferences[:], offers_properties[i][:], purchasing_factors[:])
-
 		brand_loyalty_factor := clamp(customer.Brand_loyalty_factor*customer.Loyalties[i], customer.Brand_loyalty_factor*10)
 
-		decision_factors[i] = (purchasing_factors_product + brand_loyalty_factor) * external_factors.Economic_situation_index
+		decision_factors[i] = (purchasing_factors[i] + brand_loyalty_factor) * external_factors.Economic_situation_index
 
 		(*purchasing_statistics)[i].Avr_decision_factor += decision_factors[i]
 		(*purchasing_statistics)[i].Avr_purchasing_threshold += customer.Purchashing_threshold
@@ -205,7 +240,7 @@ func calculate_purchase(customer Customer, offers_properties []Properties, offer
 		number_of_products_purchased := 0
 		for range customer.Base_need - len(customer.Owned_products) {
 			if (*product_availability)[choice] > 0 {
-				customer.Owned_products = append(customer.Owned_products, Owned_product{choice, int(offers_properties[choice][properties_durability])})
+				customer.Owned_products = append(customer.Owned_products, Owned_product{choice, offer_durabilities[choice]})
 				(*product_availability)[choice] -= 1
 				number_of_products_purchased += 1
 			} else {
