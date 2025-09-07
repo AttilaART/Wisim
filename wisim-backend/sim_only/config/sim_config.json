@@ -114,7 +114,7 @@
       }
     ]
   },
-  "Population_size": 100000,
+  "Population_size": 10000000,
   "Min_base_need": 1,
   "Max_base_need": 4,
   "Quality_bias": 1,
