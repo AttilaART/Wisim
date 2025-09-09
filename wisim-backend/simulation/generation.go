@@ -60,15 +60,16 @@ func generate_population(
 	market_saturation float32,
 
 	number_of_companies int,
-) ([]Customer, error) {
+) ([]Customer, []Properties, error) {
 	population := make([]Customer, population_size)
+	populationPreferences := make([]Properties, population_size)
 
 	// Handle errors
 	if min_base_need <= 0 {
-		return nil, errors.New("min_base_need must be > 0")
+		return nil, nil, errors.New("min_base_need must be > 0")
 	}
 	if max_base_need < min_base_need {
-		return nil, errors.New("max_base_need must be >= min_base_need")
+		return nil, nil, errors.New("max_base_need must be >= min_base_need")
 	}
 
 	if bang_for_buck_bias <= 0 {
@@ -91,12 +92,12 @@ func generate_population(
 					Purchashing_threshold: float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
 					Loyalties:             make([]float32, number_of_companies),
 				}
-				population[i].Preferences[properties_quality] = float32(PosNormFloat64())*quality_spread + quality_bias
-				population[i].Preferences[properties_ecology] = float32(PosNormFloat64())*ecology_spread + ecology_bias
-				population[i].Preferences[properties_ethics] = float32(PosNormFloat64())*ethics_spread + ethics_bias
-				population[i].Preferences[properties_price] = float32(PosNormFloat64())*price_spread + price_bias
-				population[i].Preferences[properties_bang_for_buck] = float32(PosNormFloat64())*bang_for_buck_spread + bang_for_buck_bias
-				population[i].Preferences[properties_durability] = float32(PosNormFloat64())*durability_spread + durabilty_bias
+				populationPreferences[i][propertiesQuality] = float32(PosNormFloat64())*quality_spread + quality_bias
+				populationPreferences[i][propertiesEcology] = float32(PosNormFloat64())*ecology_spread + ecology_bias
+				populationPreferences[i][propertiesEthics] = float32(PosNormFloat64())*ethics_spread + ethics_bias
+				populationPreferences[i][propertiesPrice] = float32(PosNormFloat64())*price_spread + price_bias
+				populationPreferences[i][propertiesBangForBuck] = float32(PosNormFloat64())*bang_for_buck_spread + bang_for_buck_bias
+				populationPreferences[i][propertiesDurability] = float32(PosNormFloat64())*durability_spread + durabilty_bias
 
 				number_of_owned_products := int(PosNormFloat64()*float64(population[i].Base_need) + float64(market_saturation))
 				for range number_of_owned_products {
@@ -105,7 +106,7 @@ func generate_population(
 							float64(market_saturation))})
 				}
 
-				population[i].Max_price = ((base_market_price * 1.5) / population[i].Preferences[properties_price]) * float32(PosNormFloat64()*100)
+				population[i].Max_price = ((base_market_price * 1.5) / populationPreferences[i][propertiesPrice]) * float32(PosNormFloat64()*100)
 				avr_max_price += float64(population[i].Max_price)
 
 				// fmt.Printf("|%6d|%6d|\n", i, customer.income)
@@ -116,7 +117,7 @@ func generate_population(
 	wg.Wait()
 
 	message.NewPrinter(language.BritishEnglish).Printf("avrg max price: %.2f\n", avr_max_price/float64(len(population)))
-	return population, nil
+	return population, populationPreferences, nil
 }
 
 func PosNormFloat64() float64 {
@@ -301,7 +302,7 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 	// "purchasing_threshold_spread": 1
 
 	var err error
-	game_state.Population.Population, err = generate_population(
+	game_state.Population.Population, game_state.Population.Preferences, err = generate_population(
 		sim_config.Population_size,
 		sim_config.Min_base_need,
 		sim_config.Max_base_need,

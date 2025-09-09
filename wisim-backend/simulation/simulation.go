@@ -534,7 +534,7 @@ type Customer struct {
 	Base_need      int
 	Owned_products []Owned_product
 
-	Preferences Properties
+	// Preferences moved to sepeate array in gamestate
 
 	Purchashing_threshold float32
 	Max_price             float32
@@ -544,19 +544,20 @@ type Customer struct {
 	Loyalties            []float32
 }
 
-type Properties [6]float32
+type Properties [8]float32 // last 2 slots are left empty (for optimisation)
 
 const (
-	properties_quality = iota
-	properties_ecology
-	properties_ethics
-	properties_price
-	properties_bang_for_buck
-	properties_durability
+	propertiesQuality = iota
+	propertiesEcology
+	propertiesEthics
+	propertiesPrice
+	propertiesBangForBuck
+	propertiesDurability
 )
 
 type Population struct {
-	Population []Customer
+	Population  []Customer
+	Preferences []Properties
 }
 
 type Owned_product struct {
@@ -663,13 +664,13 @@ func (game_state *Game_state) Simulate_step() error {
 	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_decision_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor
 	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_purchasing_threshold = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_threshold
 
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_quality_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[properties_quality]
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_durability_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[properties_durability]
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ecology_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[properties_ecology]
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_price_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[properties_price]
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ethics_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[properties_ethics]
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_quality_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesQuality]
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_durability_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesDurability]
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ecology_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesEcology]
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_price_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesPrice]
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ethics_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesEthics]
 	// game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_coolness_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_bang_for_buck_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[properties_bang_for_buck]
+	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_bang_for_buck_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesBangForBuck]
 
 	//for range game_state.Market_sales_statistics {
 	//	println("----------")
@@ -875,13 +876,13 @@ func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics
 	report.Company_sales_statistics.Avr_decision_factor = purchasing_statiscs.Avr_decision_factor
 	report.Company_sales_statistics.Avr_purchasing_threshold = purchasing_statiscs.Avr_purchasing_threshold
 
-	report.Company_sales_statistics.Avr_quality_factor = purchasing_statiscs.Avr_purchasing_factors[properties_quality]
-	report.Company_sales_statistics.Avr_durability_factor = purchasing_statiscs.Avr_purchasing_factors[properties_durability]
-	report.Company_sales_statistics.Avr_ecology_factor = purchasing_statiscs.Avr_purchasing_factors[properties_ecology]
-	report.Company_sales_statistics.Avr_price_factor = purchasing_statiscs.Avr_purchasing_factors[properties_price]
-	report.Company_sales_statistics.Avr_ethics_factor = purchasing_statiscs.Avr_purchasing_factors[properties_ethics]
+	report.Company_sales_statistics.Avr_quality_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesQuality]
+	report.Company_sales_statistics.Avr_durability_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesDurability]
+	report.Company_sales_statistics.Avr_ecology_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesEcology]
+	report.Company_sales_statistics.Avr_price_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesPrice]
+	report.Company_sales_statistics.Avr_ethics_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesEthics]
 	// report.Company_sales_statistics.Avr_coolness_factor = purchasing_statiscs.Avr_coolness_factor
-	report.Company_sales_statistics.Avr_bang_for_buck_factor = purchasing_statiscs.Avr_purchasing_factors[properties_bang_for_buck]
+	report.Company_sales_statistics.Avr_bang_for_buck_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesBangForBuck]
 
 	// ----------------
 

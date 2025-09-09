@@ -447,6 +447,14 @@ func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
 	broadcast(s, Message[any]{Method: "bSim_starting", IsResponse: false})
 
 	go SimulateStep(s)
+
+	s.connsMutex.Lock()
+	for client := range s.conns {
+		player := s.conns[client]
+		player.Ready = false
+		s.conns[client] = player
+	}
+	s.connsMutex.Unlock()
 }
 
 func SimulateStep(s *Server) {
