@@ -6,6 +6,7 @@ import (
 	"log"
 	"math"
 	"net/http"
+	_ "net/http/pprof"
 	"os"
 	"reflect"
 	"strconv"
@@ -617,6 +618,10 @@ func main() {
 	server.addMethod("fProduct_stats", calculateProductStats)
 
 	server.addMethod("bChat", sendChat)
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
 
 	http.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)

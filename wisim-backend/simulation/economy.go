@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"math/rand"
 	"runtime"
+	"slices"
 	"sync"
 	"time"
 
@@ -58,7 +59,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		offersProperties[i][propertiesQuality] = o.Product.Quality_factor
 		offersProperties[i][propertiesEcology] = o.Product.Ecology_factor
 		offersProperties[i][propertiesEthics] = o.Product.Ethics_factor
-		offersProperties[i][propertiesPrice] = is_cheap(o, avgPrice)
+		offersProperties[i][propertiesPrice] = isCheap(o, avgPrice)
 		offersProperties[i][propertiesBangForBuck] = o.Product.Quality_factor / o.Price
 		if o.Price <= 0 {
 			offersProperties[i][propertiesPrice] = 10
@@ -69,72 +70,15 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 		offerDurabilities[i] = int(offersProperties[i][propertiesDurability])
 	}
 	for _, interval := range split_load(numThreads, len(population.Population)) {
-		go func(wg *sync.WaitGroup, populationSegment []Customer, populationSegmentPreferences []Properties,
-		) {
-			for i := range populationSegment {
-				populationSegment[i].Max_price *= 1 + external_factors.Inflation
-				populationSegment[i] = simulateDeterioration(populationSegment[i])
-			}
-
-			productsPurchasingFactors := make([]float32, len(offersProperties))
-
-			for i := range populationSegmentPreferences {
-				customer := populationSegment[i]
-
-				if customer.Base_need <= len(customer.Owned_products) {
-					continue
-				}
-
-				for ii := range offersProperties {
-					if productAvailability[ii] <= 0 {
-						productsPurchasingFactors[ii] = 0
-						continue
-					} else if offerPrices[ii] > customer.Max_price {
-						productsPurchasingFactors[ii] = 0
-						continue
-					}
-					var productPurchasingFactorsComponents Properties
-					simd.MulFloat32(populationSegmentPreferences[i][:], offersProperties[ii][:], productPurchasingFactorsComponents[:])
-					productPurchasingFactor := float32(int(productPurchasingFactorsComponents[5] +
-						productPurchasingFactorsComponents[4] +
-						productPurchasingFactorsComponents[3] +
-						productPurchasingFactorsComponents[2] +
-						productPurchasingFactorsComponents[1] +
-						productPurchasingFactorsComponents[0] +
-						customer.Brand_loyalty_factor*customer.Loyalties[ii]))
-
-					productPurchasingFactor *= external_factors.Economic_situation_index
-
-					productsPurchasingFactors[ii] = productPurchasingFactor
-
-					simd.AddFloat32(productPurchasingFactorsComponents[:], purchasingStatistics[ii].Avr_purchasing_factors[:], purchasingStatistics[ii].Avr_purchasing_factors[:])
-
-					purchasingStatistics[ii].Avr_decision_factor += productPurchasingFactor
-					purchasingStatistics[ii].Avr_purchasing_threshold += populationSegment[i].Purchashing_threshold
-				}
-
-				const noProductChosen = -1
-
-				// Select product using weighted die
-				choice := choose_product(productsPurchasingFactors, populationSegment[i].Purchashing_threshold)
-
-				if choice != noProductChosen {
-					purchasingStatistics[choice].Product_demand += customer.Base_need - len(customer.Owned_products)
-					numberOfProductsPurchased := 0
-					for range customer.Base_need - len(customer.Owned_products) {
-						if productAvailability[choice] > 0 {
-							populationSegment[i].Owned_products = append(customer.Owned_products, Owned_product{choice, offerDurabilities[choice]})
-							productAvailability[choice] -= 1
-							numberOfProductsPurchased += 1
-						} else {
-							break
-						}
-					}
-					purchasingStatistics[choice].Products_sold += numberOfProductsPurchased
-				}
-			}
-			wg.Done()
-		}(&wg, population.Population[interval.Start:interval.Stop_before], population.Preferences[interval.Start:interval.Stop_before])
+		go simulatePopulationSegment(&wg,
+			population.Population[interval.Start:interval.Stop_before],
+			population.Preferences[interval.Start:interval.Stop_before],
+			offersProperties,
+			offerPrices,
+			offerDurabilities,
+			productAvailability,
+			external_factors,
+			purchasingStatistics)
 	}
 
 	wg.Wait()
@@ -180,20 +124,86 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	return results, purchasingStatistics, nil
 }
 
-func simulateDeterioration(customer Customer) Customer {
-	var newOwnedProducts []Owned_product
-	for _, p := range customer.Owned_products {
-		p.Remaining_durabilty -= 1
-		if p.Remaining_durabilty > 0 {
-			newOwnedProducts = append(newOwnedProducts, p)
-		}
-	}
+func simulatePopulationSegment(
+	wg *sync.WaitGroup,
+	populationSegment []Customer,
+	populationSegmentPreferences []Properties,
+	offersProperties []Properties,
+	offerPrices []float32,
+	offerDurabilities []int,
+	productAvailability []int,
+	externalFactors External_factors,
+	purchasingStatistics []Purchasing_statistics,
+) {
+	productsPurchasingFactors := make([]float32, len(offersProperties))
 
-	customer.Owned_products = newOwnedProducts
-	return customer
+	for i, customer := range populationSegment {
+		customer.Max_price *= 1 + externalFactors.Inflation
+
+		for i := range customer.Owned_products {
+			customer.Owned_products[i].Remaining_durabilty -= 1
+			if customer.Owned_products[i].Remaining_durabilty > 0 {
+				customer.Owned_products = slices.Delete(customer.Owned_products, i, i)
+			}
+		}
+
+		if customer.Base_need <= len(customer.Owned_products) {
+			continue
+		}
+
+		for ii := range offersProperties {
+			if productAvailability[ii] <= 0 {
+				productsPurchasingFactors[ii] = 0
+				continue
+			} else if offerPrices[ii] > customer.Max_price {
+				productsPurchasingFactors[ii] = 0
+				continue
+			}
+			var productPurchasingFactorsComponents Properties
+			simd.MulFloat32(populationSegmentPreferences[i][:], offersProperties[ii][:], productPurchasingFactorsComponents[:])
+			productPurchasingFactor := float32(int(productPurchasingFactorsComponents[5] +
+				productPurchasingFactorsComponents[4] +
+				productPurchasingFactorsComponents[3] +
+				productPurchasingFactorsComponents[2] +
+				productPurchasingFactorsComponents[1] +
+				productPurchasingFactorsComponents[0] +
+				customer.Brand_loyalty_factor*customer.Loyalties[ii]))
+
+			productPurchasingFactor *= externalFactors.Economic_situation_index
+
+			productsPurchasingFactors[ii] = productPurchasingFactor
+
+			simd.AddFloat32(productPurchasingFactorsComponents[:], purchasingStatistics[ii].Avr_purchasing_factors[:], purchasingStatistics[ii].Avr_purchasing_factors[:])
+
+			purchasingStatistics[ii].Avr_decision_factor += productPurchasingFactor
+			purchasingStatistics[ii].Avr_purchasing_threshold += populationSegment[i].Purchashing_threshold
+		}
+
+		const noProductChosen = -1
+
+		// Select product using weighted die
+		choice := chooseProduct(productsPurchasingFactors, populationSegment[i].Purchashing_threshold)
+
+		if choice != noProductChosen {
+			purchasingStatistics[choice].Product_demand += customer.Base_need - len(customer.Owned_products)
+			numberOfProductsPurchased := 0
+			for range customer.Base_need - len(customer.Owned_products) {
+				if productAvailability[choice] > 0 {
+					populationSegment[i].Owned_products = append(customer.Owned_products, Owned_product{choice, offerDurabilities[choice]})
+					productAvailability[choice] -= 1
+					numberOfProductsPurchased += 1
+				} else {
+					break
+				}
+			}
+			purchasingStatistics[choice].Products_sold += numberOfProductsPurchased
+		}
+		populationSegment[i] = customer
+	}
+	wg.Done()
 }
 
-func is_cheap(offer Offer, avr_price float32) float32 {
+func isCheap(offer Offer, avr_price float32) float32 {
 	if offer.Price == avr_price {
 		return 0.5
 	}
@@ -201,28 +211,28 @@ func is_cheap(offer Offer, avr_price float32) float32 {
 	return 0.5 + (avr_price - offer.Price)
 }
 
-func choose_product(decision_factors []float32, purchasing_threshold float32) int {
-	top_products_index := []int{}
+func chooseProduct(decision_factors []float32, purchasing_threshold float32) int {
+	topProductsIndex := []int{}
 
 	for i, p := range decision_factors {
 		if p < purchasing_threshold {
 			continue
-		} else if len(top_products_index) == 0 {
-			top_products_index = []int{i}
-		} else if p > decision_factors[top_products_index[0]] {
-			top_products_index = []int{i}
-		} else if p == decision_factors[top_products_index[0]] {
-			top_products_index = append(top_products_index, i)
+		} else if len(topProductsIndex) == 0 {
+			topProductsIndex = []int{i}
+		} else if p > decision_factors[topProductsIndex[0]] {
+			topProductsIndex = []int{i}
+		} else if p == decision_factors[topProductsIndex[0]] {
+			topProductsIndex = append(topProductsIndex, i)
 		}
 	}
 
 	// If only one product is best, choose that one
-	switch len(top_products_index) {
+	switch len(topProductsIndex) {
 	case 1:
-		return top_products_index[0]
+		return topProductsIndex[0]
 	case 0:
 		return -1
 	default:
-		return top_products_index[rand.Intn(len(top_products_index))]
+		return topProductsIndex[rand.Intn(len(topProductsIndex))]
 	}
 }
