@@ -1,0 +1,640 @@
+package main
+
+import (
+	"WiSim/simulation"
+	"fmt"
+	"log"
+	"math"
+	"net/http"
+	_ "net/http/pprof"
+	"os"
+	"reflect"
+	"strconv"
+	"sync"
+
+	"github.com/gorilla/websocket"
+	"github.com/mitchellh/mapstructure"
+)
+
+type Server struct {
+	conns      map[*websocket.Conn]Player
+	connsMutex sync.Mutex
+
+	methods map[string]func(*Server, *websocket.Conn, Message[any])
+}
+
+func NewServer() *Server {
+	return &Server{
+		conns:   make(map[*websocket.Conn]Player),
+		methods: make(map[string]func(*Server, *websocket.Conn, Message[any])),
+	}
+}
+
+func (s *Server) addMethod(methodName string, methodFunc func(*Server, *websocket.Conn, Message[any])) {
+	s.methods[methodName] = methodFunc
+}
+
+func (s *Server) handleWS(ws *websocket.Conn) {
+	fmt.Println("New incoming conn: ", ws.RemoteAddr())
+
+	s.connsMutex.Lock()
+	s.conns[ws] = Player{true, false, -1}
+	s.connsMutex.Unlock()
+
+	s.readLoop(ws)
+}
+
+func broadcast[V any](s *Server, message Message[V]) error {
+	for client := range s.conns {
+		err := client.WriteJSON(message)
+		if err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (s *Server) readLoop(ws *websocket.Conn) {
+	defer func() {
+		println("Websocket client", ws.RemoteAddr().String(), "disconnected")
+		s.connsMutex.Lock()
+		delete(s.conns, ws)
+		s.connsMutex.Unlock()
+	}()
+
+	defer func() {
+		r := recover()
+		fmt.Printf("Panic: %#v \n", r)
+	}()
+
+	for {
+		message := Message[any]{}
+		err := ws.ReadJSON(&message)
+
+		if websocket.IsCloseError(err, websocket.CloseAbnormalClosure, websocket.CloseGoingAway) {
+			break
+		} else if err != nil {
+			println(err.Error())
+			err := ws.WriteJSON(Message[any]{Method: "", IsResponse: true, Error: err.Error()})
+			if err != nil {
+				println(fmt.Errorf("unexpected Error durng JSON encoding: %w", err).Error())
+			}
+			continue
+		}
+
+		fmt.Printf("Recieving message: %+v\n", message)
+
+		methodFunc, methodExists := s.methods[message.Method]
+		if !methodExists {
+			err := ws.WriteJSON(Message[any]{Method: message.Method, IsResponse: true, Error: "given method doesn't exist"})
+			if err != nil {
+				println("Unexpected Error durng JSON encoding: ", err.Error())
+			}
+			continue
+		}
+
+		methodFunc(s, ws, message)
+	}
+}
+
+type Player struct {
+	Active  bool
+	Ready   bool
+	Company int
+}
+
+type Message[V any] struct {
+	Method     string
+	IsResponse bool
+	Error      string
+	Data       *V
+}
+
+var (
+	PORT                int
+	PLAYER_COUNT        int
+	ACTIVE_PLAYER_COUNT int
+)
+
+var (
+	sim_config simulation.Sim_config
+	gamestate  simulation.Game_state
+)
+
+var upgrader = websocket.Upgrader{
+	ReadBufferSize:  1024,
+	WriteBufferSize: 1024,
+	CheckOrigin:     func(r *http.Request) bool { return true },
+}
+
+const usageMessage = "USAGE: ./server <Desired Port> <Num Players> <New/Load> <Game_filepath/name>"
+
+const (
+	errorGameFull         = "error_game_full"
+	errorNotAuthorised    = "error_not_authorised"
+	errorUnexpected       = "error_unexpected"
+	errorInvalidCompany   = "error_invalid_company"
+	errorNoCompany        = "error_no_company"
+	errorInvalidDecisions = "error_invalid_decisions"
+	errorJSON             = "error_json"
+)
+
+func getDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.Decisions]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	if len(gamestate.Companies) <= s.conns[ws].Company {
+		reply.Error = errorInvalidCompany
+		return
+	}
+
+	decisions := gamestate.Companies[s.conns[ws].Company].Get_decisions()
+	reply.Data = &decisions
+}
+
+func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.Company]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	if len(gamestate.Companies) <= s.conns[ws].Company {
+		reply.Error = errorInvalidCompany
+		return
+	}
+	// Make sure product stats are up to date
+	var err error
+	gamestate.Companies[s.conns[ws].Company].Offer.Product, err = gamestate.Companies[s.conns[ws].Company].
+		Calculate_product(gamestate.Current_decisions[s.conns[ws].Company].Marketing.Product,
+			gamestate.Current_decisions[s.conns[ws].Company].Research)
+	if err != nil {
+		reply.Error = err.Error()
+	}
+	company := gamestate.Companies[s.conns[ws].Company]
+
+	company = removeProductNaNInf(company)
+	reply.Data = &company
+
+	fmt.Printf("%+v\n", company)
+}
+
+func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.External_factors]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	externalFactors := gamestate.External_factors
+	reply.Data = &externalFactors
+}
+
+func getEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[struct {
+		Type      string
+		Employees []*simulation.Employee
+	}]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	if len(gamestate.Companies) <= s.conns[ws].Company || s.conns[ws].Company < 0 {
+		reply.Error = errorInvalidCompany
+		return
+	}
+
+	var tempStruct struct{ Type string }
+	err := mapstructure.Decode(*message.Data, &tempStruct)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	data := struct {
+		Type      string
+		Employees []*simulation.Employee
+	}{
+		Type:      tempStruct.Type,
+		Employees: make([]*simulation.Employee, 0),
+	}
+
+	reply.Data = &data
+
+	employee_type := -1
+
+	switch reply.Data.Type {
+	case "production":
+		employee_type = simulation.Employee_type_production
+	case "marketing":
+		employee_type = simulation.Employee_type_marketing
+	default:
+		reply.Error = "Invalid Employee type"
+	}
+
+	if employee_type != -1 {
+		employee_ids := gamestate.Companies[s.conns[ws].Company].Get_employees_ids(simulation.Employee_type(employee_type))
+		reply.Data.Employees = make([]*simulation.Employee, len(employee_ids))
+
+		for i, id := range employee_ids {
+			reply.Data.Employees[i] = gamestate.Employees[id]
+		}
+	}
+}
+
+func getUnemployedEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[struct {
+		Type      string
+		Employees []*simulation.Employee
+	}]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	var tempStruct struct{ Type string }
+	err := mapstructure.Decode(*message.Data, &tempStruct)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	data := struct {
+		Type      string
+		Employees []*simulation.Employee
+	}{
+		Type:      tempStruct.Type,
+		Employees: make([]*simulation.Employee, 0),
+	}
+
+	reply.Data = &data
+
+	// update unemployed
+	unemployedCountProduction := 0
+	unemployedCountMarketing := 0
+	for _, e := range gamestate.Employees {
+		if e.Employer < 0 {
+			switch e.Employee_type {
+			case simulation.Employee_type_marketing:
+				unemployedCountMarketing += 1
+			case simulation.Employee_type_production:
+				unemployedCountProduction += 1
+			}
+		}
+	}
+
+	requiredUnemployedMarketing := 5 - unemployedCountMarketing
+	for ; requiredUnemployedMarketing > 0; requiredUnemployedMarketing-- {
+		gamestate.Generate_employee(gamestate.External_factors.Marketing_minimum_wage,
+			8,
+			simulation.Employee_type_marketing,
+			1)
+	}
+
+	requiredUnemployedProduction := 10 - unemployedCountProduction
+	for ; requiredUnemployedProduction > 0; requiredUnemployedProduction-- {
+		gamestate.Generate_employee(gamestate.External_factors.Production_minimum_wage,
+			8,
+			simulation.Employee_type_production,
+			1)
+	}
+
+	for id, e := range gamestate.Employees {
+		if e.Employer >= 0 {
+			continue
+		}
+		switch reply.Data.Type {
+		case "production":
+			if e.Employee_type == simulation.Employee_type_production {
+				reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
+			}
+		case "marketing":
+			if e.Employee_type == simulation.Employee_type_marketing {
+				reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
+			}
+		default:
+			reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
+		}
+	}
+}
+
+func setCompany(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[bool]{Method: message.Method, IsResponse: true}
+
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	var requestedCompanyID int
+	tempStruct := struct{ ID int }{}
+	err := mapstructure.Decode(*message.Data, &tempStruct)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	requestedCompanyID = tempStruct.ID
+
+	playerGotRequestedID := false
+	reply.Data = &playerGotRequestedID
+
+	if requestedCompanyID >= PLAYER_COUNT {
+		reply.Error = "ID too high"
+		return
+	} else if requestedCompanyID < 0 {
+		reply.Error = "ID too low"
+		return
+	}
+
+	s.connsMutex.Lock()
+	defer s.connsMutex.Unlock()
+
+	for conn := range s.conns {
+		player := s.conns[conn]
+		if player.Company == requestedCompanyID {
+			reply.Error = "ID taken"
+			return
+		}
+	}
+
+	playerGotRequestedID = true
+
+	player := s.conns[ws]
+	player.Company = requestedCompanyID
+	s.conns[ws] = player
+}
+
+func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[any]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	decisions := simulation.Decisions{}
+	err := mapstructure.Decode(*message.Data, &decisions)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	if len(gamestate.Companies) <= s.conns[ws].Company {
+		reply.Error = errorInvalidCompany
+		return
+	}
+
+	gamestate.Current_decisions[s.conns[ws].Company] = decisions
+}
+
+func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[any]{Method: message.Method, IsResponse: true}
+
+	s.connsMutex.Lock()
+
+	mutexUnlocked := false
+	defer func() {
+		if !mutexUnlocked {
+			s.connsMutex.Unlock()
+		}
+	}()
+	player, exists := s.conns[ws]
+	if !exists {
+		reply.Error = errorUnexpected
+		return
+	}
+
+	player.Ready = true
+	s.conns[ws] = player
+
+	err := ws.WriteJSON(reply)
+	if err != nil {
+		println("Error writing JSON to websocket: ", err.Error())
+	}
+
+	println("Company ", player.Company, "ready!")
+
+	for client := range s.conns {
+		if s.conns[client].Company >= 0 && s.conns[client].Company < PLAYER_COUNT {
+			if !s.conns[client].Ready {
+				return
+			}
+		}
+	}
+
+	s.connsMutex.Unlock()
+	mutexUnlocked = true
+	println("Every player is ready: running simulation")
+
+	broadcast(s, Message[any]{Method: "bSim_starting", IsResponse: false})
+
+	go SimulateStep(s)
+
+	s.connsMutex.Lock()
+	for client := range s.conns {
+		player := s.conns[client]
+		player.Ready = false
+		s.conns[client] = player
+	}
+	s.connsMutex.Unlock()
+}
+
+func SimulateStep(s *Server) {
+	simDoneMessage := Message[any]{Method: "bSim_done", IsResponse: false}
+	defer func() {
+		err := broadcast(s, simDoneMessage)
+		if err != nil {
+			println("Error broadcasting JSON to websockets: ", err.Error())
+		}
+	}()
+
+	defer func() {
+		if r := recover(); r != nil {
+			simDoneMessage.Error = fmt.Sprint("Critical Simulation Error: ", r)
+		}
+	}()
+
+	println("Simulation Done!")
+	err := gamestate.Simulate_step()
+	if err != nil {
+		simDoneMessage.Error = err.Error()
+	}
+}
+
+func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[any]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	s.connsMutex.Lock()
+	defer s.connsMutex.Unlock()
+
+	player, exists := s.conns[ws]
+	if !exists {
+		reply.Error = errorUnexpected
+		return
+	}
+
+	player.Ready = false
+	s.conns[ws] = player
+	println("Company ", player.Company, "unready!")
+}
+
+func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.Product]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	decisions := struct {
+		Product  simulation.Decisions_product
+		Research simulation.Decisions_research
+	}{}
+	err := mapstructure.Decode(*message.Data, &decisions)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	if len(gamestate.Companies) <= s.conns[ws].Company {
+		reply.Error = errorInvalidCompany
+		return
+	}
+
+	product, err := gamestate.Companies[s.conns[ws].Company].
+		Calculate_product(decisions.Product, decisions.Research)
+	if err != nil {
+		reply.Error = err.Error()
+	}
+
+	product = removeProductNaNInf(product)
+	reply.Data = &product
+}
+
+func removeProductNaNInf[v simulation.Product | simulation.Company](p v) v {
+	reflectProduct := reflect.ValueOf(&p)
+	numFields := reflectProduct.Elem().NumField()
+
+	for i := range numFields {
+		if reflectProduct.Elem().Field(i).Kind() == reflect.Float32 {
+			if math.IsNaN(reflectProduct.Elem().Field(i).Float()) {
+				reflectProduct.Elem().Field(i).SetFloat(0)
+			} else if math.IsInf(reflectProduct.Elem().Field(i).Float(), 1) {
+				reflectProduct.Elem().Field(i).SetFloat(math.MaxFloat32)
+			} else if math.IsInf(reflectProduct.Elem().Field(i).Float(), -1) {
+				reflectProduct.Elem().Field(i).SetFloat(-math.MaxFloat32)
+			}
+		}
+	}
+
+	return p
+}
+
+func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[struct {
+		Message string
+		From    string
+	}]{Method: message.Method, IsResponse: false}
+
+	if message.Data != nil {
+		var chat struct {
+			Message string
+			From    string
+		}
+		chat.Message = fmt.Sprint(*message.Data)
+		chat.From = gamestate.Companies[s.conns[ws].Company].Name
+		reply.Data = &chat
+		broadcast(s, reply)
+		fmt.Printf("CHAT (%d): %s\n", s.conns[ws].Company, chat.Message)
+	}
+}
+
+func main() {
+	// Check args, format "[EXECUTABLE NAME] <PORT> <Number of Players>"
+	if len(os.Args) < 4 {
+		log.Fatal(usageMessage)
+	}
+
+	var err error
+	PORT, err = strconv.Atoi(os.Args[1])
+	if err != nil {
+		log.Fatalf("Error: %s \n%s\n", err.Error(), usageMessage)
+	}
+
+	PLAYER_COUNT, err = strconv.Atoi(os.Args[2])
+	if err != nil {
+		log.Fatalf("Error: %s \n%s\n", err.Error(), usageMessage)
+	}
+
+	// load sim_config & start game
+	sim_config, err = simulation.Load_sim_config("../simulation/config/sim_config.json")
+	if err != nil {
+		log.Fatalf("Error: %s \n", err.Error())
+	}
+
+	gamestate = simulation.New_game(sim_config, PLAYER_COUNT, "TempGameName")
+
+	// Prepare server
+
+	server := NewServer()
+
+	server.addMethod("gDecisions", getDecisions)
+	server.addMethod("gCompany", getCompany)
+	server.addMethod("gExternal_factors", getExternalFactors)
+	server.addMethod("gEmployees", getEmployees)
+	server.addMethod("gUnemployedEmployees", getUnemployedEmployees)
+
+	server.addMethod("sCompany", setCompany)
+	server.addMethod("sDecisions", setDecisions)
+	server.addMethod("sReady", setReady)
+	server.addMethod("sUnready", setUnReady)
+
+	server.addMethod("fProduct_stats", calculateProductStats)
+
+	server.addMethod("bChat", sendChat)
+
+	go func() {
+		log.Println(http.ListenAndServe("localhost:6060", nil))
+	}()
+
+	http.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+		conn, err := upgrader.Upgrade(w, r, nil)
+		if err != nil {
+			println("Upgrade failed", err.Error())
+			return
+		}
+		server.handleWS(conn)
+	})
+
+	println("Serving on port: ", PORT)
+	err = http.ListenAndServe(fmt.Sprintf(":%d", PORT), nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+}

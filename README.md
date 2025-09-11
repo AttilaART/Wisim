@@ -47,13 +47,22 @@ Before running the program, make sure to have the following programs installed
 
 ```zsh
 git clone https://github.com/AttilaART/Wisim.git
-git switch windows
 ```
 
-2.
+2. Start the server
 
 ```zsh
-cd Wisim/Wisim
+cd Wisim/Wisim/server
+PORT=8000
+NUMBER_OF_PLAYERS=1
+go build .
+./server $PORT $NUMBER_OF_PLAYERS new
+```
+
+3. Start the front-end
+
+```zsh
+cd ..
 wails dev
 ```
 

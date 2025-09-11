@@ -1,0 +1,310 @@
+package simulation
+
+import (
+	"errors"
+	"fmt"
+	"math"
+	"math/rand"
+
+	"github.com/pehringer/simd"
+)
+
+type Interval struct {
+	Start       int
+	Stop_before int
+}
+
+func split_load(thread_count int, array_len int) []Interval {
+	thread_people_range := make([]Interval, thread_count)
+
+	count_per_thread := array_len / thread_count
+	remainder := array_len % thread_count
+	offset := 0
+
+	for i := range thread_people_range {
+		thread_people_range[i].Start = offset
+		thread_people_range[i].Stop_before = offset + count_per_thread
+		offset += count_per_thread
+
+		if remainder > 0 {
+			thread_people_range[i].Stop_before += 1
+			remainder -= 1
+			offset += 1
+		}
+	}
+	return thread_people_range
+}
+
+func round(num float64, decimal_place int) float64 {
+	num = num * math.Pow(10, (float64(decimal_place)))
+	num = math.Round(num)
+	num = num / math.Pow(10, (float64(decimal_place)))
+	return num
+}
+
+type Number interface {
+	int | float64 | float32
+}
+
+func clamp[V Number](num V, max V) V {
+	if num > max {
+		return max
+	}
+	return num
+}
+
+func rand_income(mean_income int, standard_dev int) int {
+	income := -1
+	for income < 1000 {
+		income = int(rand.NormFloat64()*float64(standard_dev)) + mean_income
+	}
+	return income
+}
+
+type Employee_pool map[int]*Employee
+
+func (c *Company) Get_employees_ids(employee_type Employee_type) []int {
+	return c.employee_pool.Get_employees_of_company(c.Id, employee_type)
+}
+
+func (employee_pool Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_ids_of_company []int) {
+	for id := range employee_pool {
+		if employee_pool[id].Employer == company_id {
+			if employee_type == Employee_type_all {
+				employees_ids_of_company = append(employees_ids_of_company, id)
+			} else if employee_type == employee_pool[id].Employee_type {
+				employees_ids_of_company = append(employees_ids_of_company, id)
+			}
+		}
+	}
+
+	return employees_ids_of_company
+}
+
+func (employee_pool Employee_pool) Get_avr_skill(company_id int, employee_type Employee_type) (avrg_skill float32) {
+	employees_ids := employee_pool.Get_employees_of_company(company_id, employee_type)
+	for _, id := range employees_ids {
+		avrg_skill += employee_pool[id].Skill
+	}
+
+	return avrg_skill / float32(len(employees_ids))
+}
+
+func (c *Company) Get_decisions() Decisions {
+	var decisions Decisions = Decisions{}
+	if len(c.Decision_history) >= 1 {
+		decisions = c.Decision_history[len(c.Decision_history)-1]
+	} else {
+		decisions = Decisions{
+			Marketing: Decisions_marketing{
+				Product: Decisions_product{
+					Materials: struct {
+						Quality          float32
+						Ecology          float32
+						Ethical_sourcing float32
+					}{
+						50,
+						50,
+						50,
+					},
+					Manufacturing: struct {
+						Quality             float32
+						Ecological_energy   float32
+						Material_efficiency float32
+						Durability          float32
+						Max_durability      int
+					}{
+						50,
+						50,
+						50,
+						50,
+						5,
+					},
+				},
+				Price: 350,
+			},
+			Research: Decisions_research{
+				Quality:         1000,
+				Durability:      1000,
+				Ecology:         1000,
+				Promotion:       1000,
+				Production_cost: 1000,
+			},
+			Production: struct {
+				Production_goal int
+				Machines        []Delta[Machine]
+				Logistics       []Delta[Warehouse]
+			}{
+				Production_goal: 20000,
+			},
+		}
+		fmt.Println("No decision history!")
+	}
+
+	//  make sure these are more than 0.1 (otherwise simulation breaks)
+	more_than_0 := []float32{
+		decisions.Marketing.Product.Materials.Quality,
+		decisions.Marketing.Product.Materials.Ecology,
+		decisions.Marketing.Product.Materials.Ethical_sourcing,
+
+		decisions.Marketing.Product.Manufacturing.Quality,
+		decisions.Marketing.Product.Manufacturing.Durability,
+		decisions.Marketing.Product.Manufacturing.Ecological_energy,
+		decisions.Marketing.Product.Manufacturing.Material_efficiency,
+	}
+
+	for i := range more_than_0 {
+		if more_than_0[i] < 0.1 {
+			more_than_0[i] = 0.1
+		}
+	}
+
+	decisions.Marketing.Product.Materials.Quality = more_than_0[0]
+	decisions.Marketing.Product.Materials.Ecology = more_than_0[1]
+	decisions.Marketing.Product.Materials.Ethical_sourcing = more_than_0[2]
+
+	decisions.Marketing.Product.Manufacturing.Quality = more_than_0[3]
+	decisions.Marketing.Product.Manufacturing.Durability = more_than_0[4]
+	decisions.Marketing.Product.Manufacturing.Ecological_energy = more_than_0[5]
+	decisions.Marketing.Product.Manufacturing.Material_efficiency = more_than_0[6]
+
+	if decisions.Marketing.Product.Manufacturing.Max_durability < 1 {
+		decisions.Marketing.Product.Manufacturing.Max_durability = 1
+	}
+
+	// initialise slices
+	decisions.Employees.Marketing_deltas = make([]Delta[Employee], 0)
+	decisions.Employees.Production_deltas = make([]Delta[Employee], 0)
+
+	decisions.Production.Logistics = make([]Delta[Warehouse], 0)
+	decisions.Production.Machines = make([]Delta[Machine], 0)
+
+	return decisions
+}
+
+func delete_by_index[V any](s []V, index ...int) []V {
+	to_be_deleted := make([]bool, len(s))
+	for _, i := range index {
+		to_be_deleted[i] = true
+	}
+
+	var out []V
+	for i, el := range s {
+		if !to_be_deleted[i] {
+			out = append(out, el)
+		}
+	}
+	return out
+}
+
+func delete_by_id[V interface{ get_id() int }](s []V, id ...int) []V {
+	var indexes_to_delete []int
+	for i := range s {
+		for ii := range id {
+			if s[i].get_id() == id[ii] {
+				indexes_to_delete = append(indexes_to_delete, i)
+			}
+		}
+	}
+
+	return delete_by_index(s, indexes_to_delete...)
+}
+
+func check_product(p Product) error {
+	errorString := ""
+	if p.Base_quality <= 0 {
+		errorString += "Base_quality <= 0;"
+	}
+	if p.Base_durability <= 0 {
+		errorString += "Base_durability <= 0;"
+	}
+	if p.Base_production_cost <= 0 {
+		errorString += "Invalid_product: Base_production_cost <= 0;"
+	}
+	if p.Base_ecology <= 0 {
+		errorString += "Base_ecology <= 0;"
+	}
+	if p.Base_material_use <= 0 {
+		errorString += "Base_material_use <= 0;"
+	}
+	if p.Production_cost <= 0 {
+		errorString += "Production_cost <= 0;"
+	}
+	if p.Weight <= 0 {
+		errorString += "Weight <= 0;"
+	}
+	if p.Material_use <= 0 {
+		errorString += "Material_use <= 0;"
+	}
+	if p.Durabilty < 0 {
+		errorString += "Durabilty < 0;"
+	}
+
+	if math.IsInf(float64(p.Production_cost), 1) {
+		errorString += "Production_cost == +Inf;"
+	}
+
+	if errorString != "" {
+		return errors.New("Invalid_product: " + errorString)
+	}
+	return nil
+}
+
+func avr[V Number](values []V) V {
+	var total V = 0
+
+	for _, n := range values {
+		total += n
+	}
+
+	return total / V(len(values))
+}
+
+func max[V Number](values ...V) V {
+	var max_val V = values[0]
+
+	for _, n := range values {
+		if max_val < n {
+			max_val = n
+		}
+	}
+
+	return max_val
+}
+
+func min[V Number](values ...V) V {
+	var min_val V = values[0]
+
+	for _, n := range values {
+		if min_val > n {
+			min_val = n
+		}
+	}
+
+	return min_val
+}
+
+func std_dev[V Number](values ...V) V {
+	avr := avr(values)
+
+	var Sigma V = 0
+	for _, n := range values {
+		Sigma += (n - avr) * (n - avr)
+	}
+
+	return V(math.Sqrt(float64(Sigma) / float64(len(values))))
+}
+
+func exponential(base, x, scale float64) float64 {
+	return math.Pow(base, x) * scale
+}
+
+func scalar_product32(a, b, result []float32) float32 {
+	var product float32
+
+	simd.MulFloat32(a, b, result)
+	for _, s := range result {
+		product += s
+	}
+	return product
+}

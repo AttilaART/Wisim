@@ -1,0 +1,234 @@
+{
+	"edges":[
+		{"fromNode":"5a5ef076bbdd7ef3","fromSide":"right","id":"366f89e34eccc5fa","toNode":"b17827257a7eaf47","toSide":"left"},
+		{"fromNode":"b17827257a7eaf47","fromSide":"right","id":"09e237d43ad974da","toNode":"6e3e6d65d540e226","toSide":"left"},
+		{"fromNode":"b17827257a7eaf47","fromSide":"right","id":"9711bbb69d1f02c8","toNode":"eb229943b7a1bbbc","toSide":"left"},
+		{"fromNode":"b17827257a7eaf47","fromSide":"right","id":"ab48e5026961a084","toNode":"ed4bc6e3276b27dd","toSide":"left"},
+		{"fromNode":"b17827257a7eaf47","fromSide":"right","id":"bd3a349f65a79a19","toNode":"1229d5bd3775cd86","toSide":"left"},
+		{"fromNode":"b17827257a7eaf47","fromSide":"right","id":"96c5c98ef81c1930","toNode":"a76713019afc15e3","toSide":"left"},
+		{"fromNode":"b17827257a7eaf47","fromSide":"right","id":"86e08bc7191d5407","toNode":"858832fb1bffa1f9","toSide":"left"},
+		{"fromNode":"6e3e6d65d540e226","fromSide":"right","id":"d44e15a8c6bc56ba","toNode":"8968ba39ec483dcb","toSide":"left"},
+		{"fromNode":"eb229943b7a1bbbc","fromSide":"right","id":"37868a8e4cbda54d","toNode":"8968ba39ec483dcb","toSide":"left"},
+		{"fromNode":"ed4bc6e3276b27dd","fromSide":"right","id":"d0e33147fdcaaf74","toNode":"8968ba39ec483dcb","toSide":"left"},
+		{"fromNode":"1229d5bd3775cd86","fromSide":"right","id":"4d4beb7edcf00761","toNode":"8968ba39ec483dcb","toSide":"left"},
+		{"fromNode":"858832fb1bffa1f9","fromSide":"right","id":"b54c2b4143c7dfdb","toNode":"8968ba39ec483dcb","toSide":"left"},
+		{"fromNode":"a76713019afc15e3","fromSide":"right","id":"dd6d3860b225ebe5","toNode":"8968ba39ec483dcb","toSide":"left"},
+		{"fromNode":"32356765e70eee7a","fromSide":"right","id":"d874e38d23aacd50","toNode":"b52c4b4ac97672b9","toSide":"left"},
+		{"fromNode":"2a1fde23fbe86a93","fromSide":"right","id":"809ae644000145d2","toNode":"b52c4b4ac97672b9","toSide":"top"},
+		{"color":"1","fromNode":"25ed2617b1370002","fromSide":"bottom","id":"184ac295bfa43662","toNode":"a76713019afc15e3","toSide":"right"},
+		{"fromNode":"a6f5a45bd82954e9","fromSide":"right","id":"4f0cd62d5ee3feec","label":"Starts the decision making process","toNode":"5a5ef076bbdd7ef3","toSide":"left"},
+		{"fromNode":"2a1fde23fbe86a93","fromSide":"left","id":"6c0ee611d8febda9","toNode":"f21b2506faf7f018","toSide":"right"},
+		{"fromNode":"f21b2506faf7f018","fromSide":"top","id":"9b26843d9e5d8768","label":"Creates need","toNode":"a6f5a45bd82954e9","toSide":"bottom"},
+		{"fromNode":"b8979abec70510ec","fromSide":"right","id":"cdd3027fd37787ed","toNode":"a6f5a45bd82954e9","toSide":"left"},
+		{"fromNode":"8968ba39ec483dcb","fromSide":"right","id":"378ccfb53be3720c","toNode":"25ed2617b1370002","toSide":"top"},
+		{"fromNode":"8968ba39ec483dcb","fromSide":"right","id":"ebf3cc15643bf61d","toNode":"bd34beafbf37aebb","toSide":"left"},
+		{"fromNode":"bd34beafbf37aebb","fromSide":"right","id":"f98eb0646d36824a","toNode":"2a33f484c9a87e91","toSide":"left"},
+		{"fromNode":"b52c4b4ac97672b9","fromSide":"right","id":"6f90f4619981c00d","toNode":"25ed2617b1370002","toSide":"left"}
+	],
+	"metadata":{
+		"frontmatter":{},
+		"version":"1.0-1.0"
+	},
+	"nodes":[
+		{
+			"height":2080,
+			"id":"cf2163370080d42a",
+			"label":"Preferences",
+			"styleAttributes":{},
+			"type":"group",
+			"width":560,
+			"x":-440,
+			"y":320
+		},
+		{
+			"height":260,
+			"id":"a6f5a45bd82954e9",
+			"styleAttributes":{},
+			"text":"# Need for a new product\nCustomers only consider buying a new product when they have a need for it.",
+			"type":"text",
+			"width":602,
+			"x":-3520,
+			"y":843
+		},
+		{
+			"height":273,
+			"id":"b17827257a7eaf47",
+			"styleAttributes":{},
+			"text":"# Known products\nThe customer is only able to be exposed to 3 products in one simulation time period.",
+			"type":"text",
+			"width":399,
+			"x":-1280,
+			"y":855
+		},
+		{
+			"height":260,
+			"id":"5a5ef076bbdd7ef3",
+			"styleAttributes":{},
+			"text":"# Marketing Quantity\nThe greater the quatity of the marketing, the higher the chance that a potential customer knows about it.",
+			"type":"text",
+			"width":516,
+			"x":-2160,
+			"y":860
+		},
+		{
+			"height":178,
+			"id":"f21b2506faf7f018",
+			"styleAttributes":{},
+			"text":"# Product breaks\nDepending on the durability, the product eventually breaks, creating a need to buy a new product.",
+			"type":"text",
+			"width":372,
+			"x":-3405,
+			"y":1300
+		},
+		{
+			"height":160,
+			"id":"b8979abec70510ec",
+			"styleAttributes":{},
+			"text":"# Base need\nHow many of the product the person wants at one time",
+			"type":"text",
+			"width":340,
+			"x":-3980,
+			"y":893
+		},
+		{
+			"height":118,
+			"id":"3f91cf42f2ca9263",
+			"styleAttributes":{},
+			"text":"# Customer",
+			"type":"text",
+			"width":330,
+			"x":-420,
+			"y":-20
+		},
+		{
+			"height":200,
+			"id":"32356765e70eee7a",
+			"styleAttributes":{},
+			"text":"###  Durabilty Preference\nProducts with higher durability are preferred.",
+			"type":"text",
+			"width":520,
+			"x":-420,
+			"y":1680
+		},
+		{
+			"height":260,
+			"id":"1229d5bd3775cd86",
+			"styleAttributes":{},
+			"text":"###  Coolness Preference\nHow trendy / cool the product is. Products that have high quality marketing are preferred. ",
+			"type":"text",
+			"width":520,
+			"x":-420,
+			"y":1120
+		},
+		{
+			"height":260,
+			"id":"858832fb1bffa1f9",
+			"styleAttributes":{},
+			"text":"###  Price / Quality Preference\nHow much people want to be able to get a \"good deal\". Products that are provide a lot of quality for a low price are prefered",
+			"type":"text",
+			"width":520,
+			"x":-420,
+			"y":1400
+		},
+		{
+			"height":180,
+			"id":"2a33f484c9a87e91",
+			"styleAttributes":{},
+			"text":"# Purchase of product",
+			"type":"text",
+			"width":250,
+			"x":1800,
+			"y":893
+		},
+		{
+			"height":340,
+			"id":"8968ba39ec483dcb",
+			"styleAttributes":{},
+			"text":"# Making choice\n## Decision factor\nThe calculated values for each factor are multiplied by the Preference value and summed up for each product.",
+			"type":"text",
+			"width":544,
+			"x":480,
+			"y":812
+		},
+		{
+			"height":255,
+			"id":"bd34beafbf37aebb",
+			"styleAttributes":{},
+			"text":"# Purchasing threshold \nIf the decision factor is above the purchasing threshold, the customer will purchase the product with the highest decision factor.",
+			"type":"text",
+			"width":346,
+			"x":1306,
+			"y":855
+		},
+		{
+			"height":480,
+			"id":"a76713019afc15e3",
+			"styleAttributes":{},
+			"text":"###  Loyalty Factor\nCustomers have a certain loyalty to a company. This is determined by their satisfaction. If their satisfaction is below a certain point, they lose loyalty and become open to become loyal to another company.\n\nCustomers have to be well satisfied by the product for multiple years. The longer they are satisfied, the higher the chance of loyalty.",
+			"type":"text",
+			"width":520,
+			"x":-420,
+			"y":1900
+		},
+		{
+			"height":92,
+			"id":"2a1fde23fbe86a93",
+			"styleAttributes":{},
+			"text":"## Product durability",
+			"type":"text",
+			"width":407,
+			"x":345,
+			"y":1334
+		},
+		{
+			"height":243,
+			"id":"ed4bc6e3276b27dd",
+			"styleAttributes":{},
+			"text":"### Price Preference\nThe price. Cheaper products are preferred",
+			"type":"text",
+			"width":520,
+			"x":-420,
+			"y":860
+		},
+		{
+			"height":243,
+			"id":"6e3e6d65d540e226",
+			"styleAttributes":{},
+			"text":"### Quality Preference\nThe absolute quality of product. Higher quality is preferred",
+			"type":"text",
+			"width":520,
+			"x":-420,
+			"y":340
+		},
+		{
+			"height":243,
+			"id":"eb229943b7a1bbbc",
+			"styleAttributes":{},
+			"text":"### Ecology Preference\nThe perceived ecology of the product. Products that are eco-friendly AND have corresponding marketing are preferred",
+			"type":"text",
+			"width":520,
+			"x":-420,
+			"y":600
+		},
+		{
+			"height":80,
+			"id":"b52c4b4ac97672b9",
+			"styleAttributes":{},
+			"text":"# Durabilty factor",
+			"type":"text",
+			"width":280,
+			"x":720,
+			"y":1740
+		},
+		{
+			"height":435,
+			"id":"25ed2617b1370002",
+			"styleAttributes":{},
+			"text":"# Satisfaction\n\nSatisfaction is a weighted average of the decision factor and the  durability factor.\n\nWhen the satisfaction is above a certain threshold, the customer have a chance of becoming loyal.",
+			"type":"text",
+			"width":572,
+			"x":1120,
+			"y":1563
+		}
+	]
+}
