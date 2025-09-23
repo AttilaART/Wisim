@@ -81,7 +81,7 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 	}
 
 	// Increase or decrease loans
-	increase_of_loans := decisions.Finances.Set_bank_loan - c.loan_quantity()
+	increase_of_loans := decisions.Finances.SetBankLoan - c.loan_quantity()
 	if increase_of_loans > 0 {
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_liabilities("Bank loan", loans, "", true, -float64(increase_of_loans))
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Income from bank loan", loans, "", true, float64(increase_of_loans))

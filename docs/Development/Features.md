@@ -7,22 +7,26 @@ kanban-plugin: board
 ## 
 
 - [ ] # Mulitplayer
-- [ ] # Complex research screen
 - [ ] # Warehouse
+- [ ] # Complex research screen
 - [ ] # Multi Machines on offer
+- [ ] # Revamp Product creation screen
+- [ ] Add Icons
+- [ ] # Brand loyalty
 
 
 ## In Progress
 
-- [ ] # Multi Products
 - [ ] # Production Screen
+- [ ] # Implement Marketing
 
 
 ## Done
 
+- [ ] # Multi Products
 
 
-## Need Reworl
+## Need Rework
 
 
 

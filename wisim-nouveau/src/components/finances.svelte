@@ -18,10 +18,10 @@
 		openInvoicesWindow
 	} = $props();
 
-	let financial_Report = $derived(
-		/** @returns {import("$lib/javascript/simulation").Financial_report?}*/ (() => {
-			if (!(clientState.company.Reports == null || clientState.company.Reports.length == 0)) {
-				return clientState.company.Reports[clientState.company.Reports.length - 1].Financial_report;
+	let financialReport = $derived(
+		/** @returns {import("$lib/javascript/simulation").FinancialReport?}*/ (() => {
+			if (!(clientState.Company.Reports == null || clientState.Company.Reports.length == 0)) {
+				return clientState.Company.Reports[clientState.Company.Reports.length - 1].FinancialReport;
 			}
 			return null;
 		})()
@@ -30,37 +30,39 @@
 
 <div class="dashboard">
 	<article class="dashboard-item">
-		{#if financial_Report}
+		{#if financialReport}
 			<div>
 				<h3><span data-tooltip="Income from all sources">Gross Profit</span></h3>
-				<h2>{format.currency(financial_Report?.Income.Gross_profit, true, 2)}</h2>
+				<h2>{format.currency(financialReport?.Income.GrossProfit, true, 2)}</h2>
 			</div>
 
 			<div>
 				<h3>Cost of Sales</h3>
 				<h2>
-					{format.currency(financial_Report?.Income.Cost_of_sales, true, 2)}
+					{format.currency(financialReport?.Income.CostOfSales, true, 2)}
 				</h2>
 			</div>
 
 			<div>
+				<!--
 				<h3>Profit per product sold</h3>
 				<h2>
 					{format.currency(
-						financial_Report
-							? financial_Report.Totals.Net_income /
-									clientState.company.Reports[clientState.company.Reports.length - 1].Sales_report
-										.Company_sales_statistics.Products_sold
+						financialReport
+							? financialReport.Totals.NetIncome /
+									clientState.Company.Reports[clientState.Company.Reports.length - 1].SalesReport
+										.CompanySalesStatistics.ProductsSold
 							: 0,
 						true,
 						2
 					)}
 				</h2>
+        -->
 			</div>
 
 			<div>
 				<h3>Net Income</h3>
-				<h2>{format.currency(financial_Report?.Totals.Net_income, true, 2)}</h2>
+				<h2>{format.currency(financialReport?.Totals.NetIncome, true, 2)}</h2>
 			</div>
 
 			<button onclick={openFinancialReportWindow}> See full report </button>
@@ -77,11 +79,10 @@
 				<h4>Monthly Intrest</h4>
 			</div>
 			<div class="grid">
-				<h2>{format.currency(clientState.decisions.Finances.Set_bank_loan, false, 0)}</h2>
+				<h2>{format.currency(clientState.Decisions.Finances.SetBankLoan, false, 0)}</h2>
 				<strong>
 					{format.currency(
-						-clientState.decisions.Finances.Set_bank_loan *
-							clientState.external_factors.Intrest_rate,
+						-clientState.Decisions.Finances.SetBankLoan * clientState.ExternalFactors.IntrestRate,
 						false,
 						2
 					)}
@@ -95,11 +96,10 @@
 				<h4>Monthly Intrest</h4>
 			</div>
 			<div class="grid">
-				<h2>{format.currency(clientState.company.Bridge_loans, false, 0)}</h2>
+				<h2>{format.currency(clientState.Company.BridgeLoans, false, 0)}</h2>
 				<strong>
 					{format.currency(
-						-clientState.company.Bridge_loans *
-							clientState.external_factors.Bridge_loans_intrest_rate,
+						-clientState.Company.BridgeLoans * clientState.ExternalFactors.BridgeLoansIntrestRate,
 						false,
 						2
 					)}

@@ -111,7 +111,7 @@ type Decisions struct {
 	}
 
 	Finances struct {
-		Set_bank_loan float64
+		SetBankLoan float64
 	}
 
 	Products map[string]Decisions_product

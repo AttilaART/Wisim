@@ -133,7 +133,7 @@
 							<td>Materials Use: {format.number(offer[1].Product.MaterialUse, false, 2)}</td>
 						</tr>
 						<tr>
-							<td>Ecology: {offer[1].Product.Ecology}</td>
+							<td>Ecology: {format.number(offer[1].Product.Ecology, false, 2)}</td>
 							<td>Ethics: {format.number(offer[1].Product.Ethics, false, 2)}</td>
 						</tr>
 					</tbody>
@@ -462,8 +462,8 @@
 	}
 
 	.productsGrid {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
+		display: flex;
+		flex-direction: column;
 		gap: var(--pico-spacing);
 	}
 </style>

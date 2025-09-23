@@ -1,936 +1,568 @@
 {
-  "edges": [
-    {
-      "color": "6",
-      "fromNode": "bcae4b89e697c37d",
-      "fromSide": "right",
-      "id": "08c1d71ea37a5632",
-      "label": "Verbessert",
-      "toNode": "db552c91480ea83a",
-      "toSide": "left"
-    },
-    {
-      "color": "6",
-      "fromNode": "db552c91480ea83a",
-      "fromSide": "bottom",
-      "id": "5025edd7f914b178",
-      "toNode": "e35ae01a31542b3a",
-      "toSide": "top"
-    },
-    {
-      "color": "6",
-      "fromNode": "61b4e1e56e94c743",
-      "fromSide": "right",
-      "id": "248bd8d570aa3d97",
-      "label": "Verbessert",
-      "toNode": "e35ae01a31542b3a",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "e304146c6e318c20",
-      "fromSide": "bottom",
-      "id": "c3393e28127f92f1",
-      "label": "Erfüllt Bestellungen",
-      "toNode": "b2a84acd3d476b67",
-      "toSide": "top"
-    },
-    {
-      "fromNode": "3b90867337ecdc33",
-      "fromSide": "right",
-      "id": "d6b736812e4942b9",
-      "label": "Füllt auf",
-      "toNode": "e304146c6e318c20",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "054f6f3a99b2285e",
-      "fromSide": "left",
-      "id": "dc8e339cd39eaa0e",
-      "label": "Verbessern",
-      "toNode": "df2cd0ccff793af6",
-      "toSide": "bottom"
-    },
-    {
-      "color": "1",
-      "fromNode": "6a21a07b6d2606c4",
-      "fromSide": "left",
-      "id": "f07c5a35b16430b9",
-      "toNode": "df2cd0ccff793af6",
-      "toSide": "right"
-    },
-    {
-      "fromNode": "1367f2400abb5fee",
-      "fromSide": "right",
-      "id": "bcbe5e674fa8e6c3",
-      "label": "Entwickeln",
-      "toNode": "bcae4b89e697c37d",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "cc100a08c211d969",
-      "fromSide": "right",
-      "id": "76ba6b6bd87df53b",
-      "label": "Organisieren",
-      "toNode": "054f6f3a99b2285e",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "408f9ea3946ce17b",
-      "fromSide": "right",
-      "id": "539f74f40fd80894",
-      "label": "Marketen",
-      "toNode": "61b4e1e56e94c743",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "b41d085aac9c26ee",
-      "fromSide": "right",
-      "id": "6160a41ee27f2875",
-      "label": "Arbeiten an Maschinen",
-      "toNode": "3b90867337ecdc33",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "3b90867337ecdc33",
-      "fromSide": "top",
-      "id": "63b4f2c0bf0fe0ca",
-      "label": "Verbrauchen",
-      "toNode": "9611f7af9e4e0cb1",
-      "toSide": "bottom"
-    },
-    {
-      "fromNode": "40f170f2be2f1421",
-      "fromSide": "left",
-      "id": "631c79a4e1f4746d",
-      "label": "Bestimmen",
-      "toNode": "5a76f69cd7a56859",
-      "toSide": "bottom"
-    },
-    {
-      "fromNode": "5a76f69cd7a56859",
-      "fromSide": "top",
-      "id": "07a9dd6e839de997",
-      "label": "Beeinflusst mitarbeiter",
-      "toNode": "df2cd0ccff793af6",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "8cf8899b0fcd3287",
-      "fromSide": "right",
-      "id": "cb99060297887393",
-      "label": "Verbessert",
-      "toNode": "3b90867337ecdc33",
-      "toSide": "bottom"
-    },
-    {
-      "color": "4",
-      "fromNode": "b2a84acd3d476b67",
-      "fromSide": "top",
-      "id": "5d10d7b79025f8e2",
-      "label": "Einkommen",
-      "toNode": "886b292441180288",
-      "toSide": "right"
-    },
-    {
-      "fromNode": "886b292441180288",
-      "fromSide": "left",
-      "id": "13bf2a050afb228f",
-      "toNode": "67ffe1d675edefe2",
-      "toSide": "bottom"
-    },
-    {
-      "fromNode": "67ffe1d675edefe2",
-      "fromSide": "bottom",
-      "id": "76dd04a3a46dbc8e",
-      "toNode": "5caaa66932d4cf50",
-      "toSide": "top"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "left",
-      "id": "05f120e82723cad8",
-      "label": "Zahlen",
-      "toNode": "6a21a07b6d2606c4",
-      "toSide": "right"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "bottom",
-      "id": "20f1b8d6bad97393",
-      "label": "Kostet",
-      "toNode": "8cf8899b0fcd3287",
-      "toSide": "right"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "bottom",
-      "id": "a8c8b264606c62cf",
-      "label": "Kostet",
-      "toNode": "bcae4b89e697c37d",
-      "toSide": "right"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "bottom",
-      "id": "1bb660a34846c6cf",
-      "label": "Kostet",
-      "toNode": "61b4e1e56e94c743",
-      "toSide": "right"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "bottom",
-      "id": "d9b0266479124e84",
-      "label": "Kostet",
-      "toNode": "054f6f3a99b2285e",
-      "toSide": "right"
-    },
-    {
-      "color": "6",
-      "fromNode": "3b90867337ecdc33",
-      "fromSide": "bottom",
-      "id": "4d0cb3bee8ef9c93",
-      "label": "Beeinflüsst",
-      "toNode": "db552c91480ea83a",
-      "toSide": "left"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "left",
-      "id": "b4ae0eb2492a16b7",
-      "label": "Kostet",
-      "toNode": "3b90867337ecdc33",
-      "toSide": "bottom"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "right",
-      "id": "a7bd30756acb753d",
-      "label": "Kostet",
-      "toNode": "2844d508a2510c85",
-      "toSide": "bottom"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "right",
-      "id": "031b3fa48197b18b",
-      "label": "Kostet viel",
-      "toNode": "b06e2f17bf1b54df",
-      "toSide": "bottom"
-    },
-    {
-      "fromNode": "2844d508a2510c85",
-      "fromSide": "bottom",
-      "id": "38b4736db62b66ea",
-      "label": "Falls voll, verbraucht",
-      "toNode": "b06e2f17bf1b54df",
-      "toSide": "top"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "bottom",
-      "id": "ccd2630289db87fc",
-      "label": "Zins",
-      "toNode": "046a148d34bbcd12",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "046a148d34bbcd12",
-      "fromSide": "right",
-      "id": "447dff659a078974",
-      "toNode": "e3de4dbca8ec60ab",
-      "toSide": "bottom"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "bottom",
-      "id": "ed98728bbe376054",
-      "label": "Abschreibungen",
-      "toNode": "e3de4dbca8ec60ab",
-      "toSide": "bottom"
-    },
-    {
-      "color": "1",
-      "fromNode": "5caaa66932d4cf50",
-      "fromSide": "bottom",
-      "id": "82fde01addb0092f",
-      "label": "Kostet",
-      "toNode": "09bf65b23715c195",
-      "toSide": "left"
-    },
-    {
-      "fromNode": "a209c0110b95d4a3",
-      "fromSide": "left",
-      "id": "997d22acd9b0e17f",
-      "toNode": "09bf65b23715c195",
-      "toSide": "right"
-    },
-    {
-      "fromNode": "3f0902ae36530dd2",
-      "fromSide": "bottom",
-      "id": "c281390774516da0",
-      "toNode": "7a6a8d1ba7cf6a6b",
-      "toSide": "right"
-    },
-    {
-      "fromNode": "3f0902ae36530dd2",
-      "fromSide": "left",
-      "id": "c20a979ab003baad",
-      "toNode": "201a34dd14660f84",
-      "toSide": "right"
-    },
-    {
-      "fromNode": "de861254b1000aed",
-      "fromSide": "top",
-      "id": "7112bd8611bc1f1e",
-      "toNode": "b2c7d8b00702c21f",
-      "toSide": "bottom"
-    },
-    {
-      "fromNode": "b2c7d8b00702c21f",
-      "fromSide": "bottom",
-      "id": "3f7505323dc5f745",
-      "toNode": "d82cde4c4a697ace",
-      "toSide": "top"
-    },
-    {
-      "fromNode": "e35ae01a31542b3a",
-      "fromSide": "bottom",
-      "id": "0dc2238a98535bca",
-      "label": "Beeinflusst Kaufentscheidungen",
-      "toNode": "7a6a8d1ba7cf6a6b",
-      "toSide": "top"
-    },
-    {
-      "fromNode": "d82cde4c4a697ace",
-      "fromSide": "bottom",
-      "id": "3f11b13073d613b4",
-      "label": "Beeinflusst Kaufentscheidungen",
-      "toNode": "7a6a8d1ba7cf6a6b",
-      "toSide": "top"
-    },
-    {
-      "fromNode": "7a6a8d1ba7cf6a6b",
-      "fromSide": "top",
-      "id": "f956ddc6fdd478e0",
-      "label": "Kaufen",
-      "toNode": "b2a84acd3d476b67",
-      "toSide": "bottom"
-    },
-    {
-      "fromNode": "7a6a8d1ba7cf6a6b",
-      "fromSide": "top",
-      "id": "a4a1ec9dde20ba37",
-      "label": "Kaufen",
-      "toNode": "de861254b1000aed",
-      "toSide": "bottom"
-    },
-    {
-      "color": "4",
-      "fromNode": "3e491e668e1b8d8b",
-      "fromSide": "left",
-      "id": "4f2be7f616b07799",
-      "label": "Subventionen",
-      "toNode": "886b292441180288",
-      "toSide": "right"
-    },
-    {
-      "color": "4",
-      "fromNode": "0bfab242c34a8186",
-      "fromSide": "left",
-      "id": "b32736851e7fad66",
-      "toNode": "886b292441180288",
-      "toSide": "right"
-    },
-    {
-      "fromNode": "ccf2caccffbb85f8",
-      "fromSide": "left",
-      "id": "d89215cf20f99fcb",
-      "label": "Anheuern / Entlassen",
-      "toNode": "df2cd0ccff793af6",
-      "toSide": "bottom"
-    }
-  ],
-  "nodes": [
-    {
-      "height": 2440,
-      "id": "201a34dd14660f84",
-      "label": "Firma",
-      "styleAttributes": {
-      },
-      "type": "group",
-      "width": 3720,
-      "x": -3760,
-      "y": -2040
-    },
-    {
-      "height": 1051,
-      "id": "3f0902ae36530dd2",
-      "label": "Umweltfaktoren",
-      "styleAttributes": {
-      },
-      "type": "group",
-      "width": 804,
-      "x": 1120,
-      "y": -931
-    },
-    {
-      "height": 1291,
-      "id": "df2cd0ccff793af6",
-      "label": "Personal",
-      "styleAttributes": {
-      },
-      "type": "group",
-      "width": 600,
-      "x": -3160,
-      "y": -1640
-    },
-    {
-      "height": 1080,
-      "id": "9add7aa1f38d420c",
-      "label": "Entscheidungen",
-      "styleAttributes": {
-      },
-      "type": "group",
-      "width": 710,
-      "x": -2420,
-      "y": -1000
-    },
-    {
-      "height": 300,
-      "id": "7a6a8d1ba7cf6a6b",
-      "label": "Mögliche Kunden (Marktpotenzial)",
-      "styleAttributes": {
-      },
-      "type": "group",
-      "width": 1967,
-      "x": -1387,
-      "y": 760
-    },
-    {
-      "height": 789,
-      "id": "cd0a2cf7d5a76252",
-      "styleAttributes": {
-      },
-      "type": "group",
-      "width": 689,
-      "x": -1480,
-      "y": -1358
-    },
-    {
-      "height": 298,
-      "id": "b2c7d8b00702c21f",
-      "label": "Konkurenz",
-      "styleAttributes": {
-      },
-      "type": "group",
-      "width": 940,
-      "x": 40,
-      "y": -180
-    },
-    {
-      "height": 420,
-      "id": "e304146c6e318c20",
-      "styleAttributes": {
-      },
-      "type": "group",
-      "width": 540,
-      "x": -640,
-      "y": -1740
-    },
-    {
-      "height": 258,
-      "id": "61b4e1e56e94c743",
-      "styleAttributes": {
-      },
-      "text": "## Marketing\n- Coolness\n- Qualiät\n- Werbeaufwand",
-      "type": "text",
-      "width": 411,
-      "x": -2371,
-      "y": -478
-    },
-    {
-      "height": 270,
-      "id": "db552c91480ea83a",
-      "styleAttributes": {
-      },
-      "text": "## Produkt\n- Qualität\n- Ökolgie\n- Sozial\n- Coolness",
-      "type": "text",
-      "width": 250,
-      "x": -1254,
-      "y": -200
-    },
-    {
-      "height": 60,
-      "id": "09bf65b23715c195",
-      "styleAttributes": {
-      },
-      "text": "#### Steuern",
-      "type": "text",
-      "width": 250,
-      "x": -1254,
-      "y": -680
-    },
-    {
-      "height": 100,
-      "id": "ccf2caccffbb85f8",
-      "styleAttributes": {
-      },
-      "text": "## Personal anheuern / entlassen",
-      "type": "text",
-      "width": 411,
-      "x": -2371,
-      "y": -200
-    },
-    {
-      "height": 60,
-      "id": "886b292441180288",
-      "styleAttributes": {
-      },
-      "text": "### Einkommen",
-      "type": "text",
-      "width": 270,
-      "x": -1080,
-      "y": -1080
-    },
-    {
-      "height": 194,
-      "id": "67ffe1d675edefe2",
-      "styleAttributes": {
-      },
-      "text": "## Finanzen",
-      "type": "text",
-      "width": 639,
-      "x": -1449,
-      "y": -1333
-    },
-    {
-      "height": 60,
-      "id": "5caaa66932d4cf50",
-      "styleAttributes": {
-      },
-      "text": "### Ausgaben",
-      "type": "text",
-      "width": 270,
-      "x": -1449,
-      "y": -1000
-    },
-    {
-      "height": 60,
-      "id": "046a148d34bbcd12",
-      "styleAttributes": {
-      },
-      "text": "#### Credite",
-      "type": "text",
-      "width": 250,
-      "x": -1254,
-      "y": -760
-    },
-    {
-      "height": 60,
-      "id": "e3de4dbca8ec60ab",
-      "styleAttributes": {
-      },
-      "text": "### Kapital",
-      "type": "text",
-      "width": 270,
-      "x": -1080,
-      "y": -1000
-    },
-    {
-      "height": 282,
-      "id": "40f170f2be2f1421",
-      "styleAttributes": {
-      },
-      "text": "### Geschäftsleitung\nDie Führung des Unternehmens bestimmt die Kultur.\n\nBestimmte Personen können firmenweite Wirkungen auslösen.",
-      "type": "text",
-      "width": 539,
-      "x": -3139,
-      "y": -982
-    },
-    {
-      "height": 80,
-      "id": "1367f2400abb5fee",
-      "styleAttributes": {
-      },
-      "text": "### Produktentwickelungspersonal",
-      "type": "text",
-      "width": 539,
-      "x": -3139,
-      "y": -680
-    },
-    {
-      "height": 82,
-      "id": "cc100a08c211d969",
-      "styleAttributes": {
-      },
-      "text": "### Administrative Personal",
-      "type": "text",
-      "width": 539,
-      "x": -3139,
-      "y": -478
-    },
-    {
-      "height": 85,
-      "id": "408f9ea3946ce17b",
-      "styleAttributes": {
-      },
-      "text": "### Marketingpersonal",
-      "type": "text",
-      "width": 539,
-      "x": -3139,
-      "y": -588
-    },
-    {
-      "height": 282,
-      "id": "8cf8899b0fcd3287",
-      "styleAttributes": {
-      },
-      "text": "### Kauf / Verkauf von Produktionsanlagen\nKapital, das die Produktionsumstände verändern (z. B. Maschinen)",
-      "type": "text",
-      "width": 411,
-      "x": -2371,
-      "y": -982
-    },
-    {
-      "height": 177,
-      "id": "bcae4b89e697c37d",
-      "styleAttributes": {
-      },
-      "text": "### Produktentwickelung\nVerbessert Qualität, Ökogie oder Coolness",
-      "type": "text",
-      "width": 411,
-      "x": -2371,
-      "y": -680
-    },
-    {
-      "height": 189,
-      "id": "6a21a07b6d2606c4",
-      "styleAttributes": {
-      },
-      "text": "### Löhne\nGute Löhne motivieren Mitarbeiter besser zu arbeiten",
-      "type": "text",
-      "width": 411,
-      "x": -2371,
-      "y": -1269
-    },
-    {
-      "height": 420,
-      "id": "3b90867337ecdc33",
-      "styleAttributes": {
-      },
-      "text": "## Herstellung\n",
-      "type": "text",
-      "width": 400,
-      "x": -2050,
-      "y": -1740
-    },
-    {
-      "height": 322,
-      "id": "6b4472a20931b668",
-      "styleAttributes": {
-      },
-      "text": "## Personal\nPersonal müssen bezahlt werden, sind aber notwendig für das Funktionieren des Unternehmens.\n\nMotivierte Personal arbeiten effizienter und wechseln weniger oft Firma.",
-      "type": "text",
-      "width": 539,
-      "x": -3139,
-      "y": -1620
-    },
-    {
-      "height": 278,
-      "id": "b41d085aac9c26ee",
-      "styleAttributes": {
-      },
-      "text": "### Produktionspersonal\nBestimmte Mengen Mitarbeiter sind notwendig, um Maschinen zu arbeiten.\n\nBesser ausgebildete Arbeiter können besser Arbeiten",
-      "type": "text",
-      "width": 539,
-      "x": -3139,
-      "y": -1278
-    },
-    {
-      "height": 180,
-      "id": "054f6f3a99b2285e",
-      "styleAttributes": {
-      },
-      "text": "## Weiterbildungen\nVerbessern die Qualität / Effizienz von mitarbeiter",
-      "type": "text",
-      "width": 411,
-      "x": -2371,
-      "y": -65
-    },
-    {
-      "height": 81,
-      "id": "9611f7af9e4e0cb1",
-      "styleAttributes": {
-      },
-      "text": "### Material",
-      "type": "text",
-      "width": 400,
-      "x": -2050,
-      "y": -1920
-    },
-    {
-      "height": 77,
-      "id": "5a76f69cd7a56859",
-      "styleAttributes": {
-      },
-      "text": "## Kultur",
-      "type": "text",
-      "width": 250,
-      "x": -3700,
-      "y": -935
-    },
-    {
-      "height": 80,
-      "id": "0bfab242c34a8186",
-      "styleAttributes": {
-      },
-      "text": "# Preise / Zuschüsse",
-      "type": "text",
-      "width": 560,
-      "x": 1164,
-      "y": -468
-    },
-    {
-      "height": 80,
-      "id": "3e491e668e1b8d8b",
-      "styleAttributes": {
-      },
-      "text": "# Subventionen",
-      "type": "text",
-      "width": 560,
-      "x": 1164,
-      "y": -368
-    },
-    {
-      "height": 80,
-      "id": "7189f3abf546e69f",
-      "styleAttributes": {
-      },
-      "text": "# Inflation",
-      "type": "text",
-      "width": 560,
-      "x": 1164,
-      "y": -808
-    },
-    {
-      "height": 60,
-      "id": "ea9f818eb8b2d79e",
-      "styleAttributes": {
-      },
-      "text": "# Firma *n*",
-      "type": "text",
-      "width": 250,
-      "x": 80,
-      "y": 29
-    },
-    {
-      "height": 130,
-      "id": "d82cde4c4a697ace",
-      "styleAttributes": {
-      },
-      "text": "# Angebot vom Konkurenz",
-      "type": "text",
-      "width": 430,
-      "x": 80,
-      "y": 210
-    },
-    {
-      "height": 130,
-      "id": "de861254b1000aed",
-      "styleAttributes": {
-      },
-      "text": "# Bestellungen von der Konkurenz",
-      "type": "text",
-      "width": 440,
-      "x": 540,
-      "y": 210
-    },
-    {
-      "height": 80,
-      "id": "97a96e2a5ced180f",
-      "styleAttributes": {
-      },
-      "text": "# Kultur ?",
-      "type": "text",
-      "width": 560,
-      "x": 1164,
-      "y": -239
-    },
-    {
-      "height": 80,
-      "id": "3915e107c5f0655d",
-      "styleAttributes": {
-      },
-      "text": "# Wirtschaftliche Situation",
-      "type": "text",
-      "width": 560,
-      "x": 1164,
-      "y": -109
-    },
-    {
-      "height": 80,
-      "id": "61fe6a4b38a79c0e",
-      "styleAttributes": {
-      },
-      "text": "# Marktwachstum",
-      "type": "text",
-      "width": 560,
-      "x": 1164,
-      "y": -588
-    },
-    {
-      "height": 88,
-      "id": "a209c0110b95d4a3",
-      "styleAttributes": {
-      },
-      "text": "# Steuerrate",
-      "type": "text",
-      "width": 560,
-      "x": 1164,
-      "y": -698
-    },
-    {
-      "height": 80,
-      "id": "694f56e682387ce1",
-      "styleAttributes": {
-      },
-      "text": "#      ...",
-      "type": "text",
-      "width": 96,
-      "x": 465,
-      "y": 870
-    },
-    {
-      "height": 60,
-      "id": "20824428890e0a3b",
-      "styleAttributes": {
-      },
-      "text": "# Firma 2",
-      "type": "text",
-      "width": 250,
-      "x": 80,
-      "y": -140
-    },
-    {
-      "height": 60,
-      "id": "a651f638d2e77857",
-      "styleAttributes": {
-      },
-      "text": "# Firma 3",
-      "type": "text",
-      "width": 250,
-      "x": 80,
-      "y": -54
-    },
-    {
-      "height": 210,
-      "id": "e35ae01a31542b3a",
-      "styleAttributes": {
-      },
-      "text": "# Angebot\nZusammensetzung aus Produkt, Marketing, etc.\n**Wirkt auf mögliche Kunden und beinflüsst Bestellungen**",
-      "type": "text",
-      "width": 516,
-      "x": -1387,
-      "y": 120
-    },
-    {
-      "height": 210,
-      "id": "b2a84acd3d476b67",
-      "styleAttributes": {
-      },
-      "text": "# Bestellungen",
-      "type": "text",
-      "width": 559,
-      "x": -800,
-      "y": 120
-    },
-    {
-      "height": 80,
-      "id": "5f7fa8603f7ae57b",
-      "styleAttributes": {
-      },
-      "text": "#      ...",
-      "type": "text",
-      "width": 97,
-      "x": -1368,
-      "y": 870
-    },
-    {
-      "height": 260,
-      "id": "abc2b5419f60fb24",
-      "styleAttributes": {
-      },
-      "text": "## Person\n- Präferenzen\n- Loyalität\n- etc.",
-      "type": "text",
-      "width": 388,
-      "x": -800,
-      "y": 780
-    },
-    {
-      "height": 260,
-      "id": "6e4dbb776a928fd1",
-      "styleAttributes": {
-      },
-      "text": "## Person\n- Präferenzen\n- Loyalität\n- etc.",
-      "type": "text",
-      "width": 388,
-      "x": -1220,
-      "y": 780
-    },
-    {
-      "height": 260,
-      "id": "42b9427e8423766c",
-      "styleAttributes": {
-      },
-      "text": "## Person\n- Präferenzen\n- Loyalität\n- etc.",
-      "type": "text",
-      "width": 388,
-      "x": -371,
-      "y": 780
-    },
-    {
-      "height": 260,
-      "id": "b4f7766a0d9a92aa",
-      "styleAttributes": {
-      },
-      "text": "## Person\n- Präferenzen\n- Loyalität\n- etc.",
-      "type": "text",
-      "width": 388,
-      "x": 45,
-      "y": 780
-    },
-    {
-      "height": 60,
-      "id": "b06e2f17bf1b54df",
-      "styleAttributes": {
-      },
-      "text": "#### Fremdlager",
-      "type": "text",
-      "width": 236,
-      "x": -375,
-      "y": -1408
-    },
-    {
-      "height": 204,
-      "id": "2844d508a2510c85",
-      "styleAttributes": {
-      },
-      "text": "## Lager",
-      "type": "text",
-      "width": 471,
-      "x": -611,
-      "y": -1704
-    }
-  ]
+	"edges":[
+		{"color":"6","fromNode":"bcae4b89e697c37d","fromSide":"right","id":"08c1d71ea37a5632","label":"Verbessert","toNode":"db552c91480ea83a","toSide":"left"},
+		{"color":"6","fromNode":"db552c91480ea83a","fromSide":"bottom","id":"5025edd7f914b178","toNode":"e35ae01a31542b3a","toSide":"top"},
+		{"color":"6","fromNode":"61b4e1e56e94c743","fromSide":"right","id":"248bd8d570aa3d97","label":"Verbessert","toNode":"e35ae01a31542b3a","toSide":"left"},
+		{"fromNode":"e304146c6e318c20","fromSide":"bottom","id":"c3393e28127f92f1","label":"Erfüllt Bestellungen","toNode":"b2a84acd3d476b67","toSide":"top"},
+		{"fromNode":"3b90867337ecdc33","fromSide":"right","id":"d6b736812e4942b9","label":"Füllt auf","toNode":"e304146c6e318c20","toSide":"left"},
+		{"fromNode":"054f6f3a99b2285e","fromSide":"left","id":"dc8e339cd39eaa0e","label":"Verbessern","toNode":"df2cd0ccff793af6","toSide":"bottom"},
+		{"color":"1","fromNode":"6a21a07b6d2606c4","fromSide":"left","id":"f07c5a35b16430b9","toNode":"df2cd0ccff793af6","toSide":"right"},
+		{"fromNode":"1367f2400abb5fee","fromSide":"right","id":"bcbe5e674fa8e6c3","label":"Entwickeln","toNode":"bcae4b89e697c37d","toSide":"left"},
+		{"fromNode":"cc100a08c211d969","fromSide":"right","id":"76ba6b6bd87df53b","label":"Organisieren","toNode":"054f6f3a99b2285e","toSide":"left"},
+		{"fromNode":"408f9ea3946ce17b","fromSide":"right","id":"539f74f40fd80894","label":"Marketen","toNode":"61b4e1e56e94c743","toSide":"left"},
+		{"fromNode":"b41d085aac9c26ee","fromSide":"right","id":"6160a41ee27f2875","label":"Arbeiten an Maschinen","toNode":"3b90867337ecdc33","toSide":"left"},
+		{"fromNode":"3b90867337ecdc33","fromSide":"top","id":"63b4f2c0bf0fe0ca","label":"Verbrauchen","toNode":"9611f7af9e4e0cb1","toSide":"bottom"},
+		{"fromNode":"40f170f2be2f1421","fromSide":"left","id":"631c79a4e1f4746d","label":"Bestimmen","toNode":"5a76f69cd7a56859","toSide":"bottom"},
+		{"fromNode":"5a76f69cd7a56859","fromSide":"top","id":"07a9dd6e839de997","label":"Beeinflusst mitarbeiter","toNode":"df2cd0ccff793af6","toSide":"left"},
+		{"fromNode":"8cf8899b0fcd3287","fromSide":"right","id":"cb99060297887393","label":"Verbessert","toNode":"3b90867337ecdc33","toSide":"bottom"},
+		{"color":"4","fromNode":"b2a84acd3d476b67","fromSide":"top","id":"5d10d7b79025f8e2","label":"Einkommen","toNode":"886b292441180288","toSide":"right"},
+		{"fromNode":"886b292441180288","fromSide":"left","id":"13bf2a050afb228f","toNode":"67ffe1d675edefe2","toSide":"bottom"},
+		{"fromNode":"67ffe1d675edefe2","fromSide":"bottom","id":"76dd04a3a46dbc8e","toNode":"5caaa66932d4cf50","toSide":"top"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"left","id":"05f120e82723cad8","label":"Zahlen","toNode":"6a21a07b6d2606c4","toSide":"right"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"bottom","id":"20f1b8d6bad97393","label":"Kostet","toNode":"8cf8899b0fcd3287","toSide":"right"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"bottom","id":"a8c8b264606c62cf","label":"Kostet","toNode":"bcae4b89e697c37d","toSide":"right"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"bottom","id":"1bb660a34846c6cf","label":"Kostet","toNode":"61b4e1e56e94c743","toSide":"right"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"bottom","id":"d9b0266479124e84","label":"Kostet","toNode":"054f6f3a99b2285e","toSide":"right"},
+		{"color":"6","fromNode":"3b90867337ecdc33","fromSide":"bottom","id":"4d0cb3bee8ef9c93","label":"Beeinflüsst","toNode":"db552c91480ea83a","toSide":"left"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"left","id":"b4ae0eb2492a16b7","label":"Kostet","toNode":"3b90867337ecdc33","toSide":"bottom"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"right","id":"a7bd30756acb753d","label":"Kostet","toNode":"2844d508a2510c85","toSide":"bottom"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"right","id":"031b3fa48197b18b","label":"Kostet viel","toNode":"b06e2f17bf1b54df","toSide":"bottom"},
+		{"fromNode":"2844d508a2510c85","fromSide":"bottom","id":"38b4736db62b66ea","label":"Falls voll, verbraucht","toNode":"b06e2f17bf1b54df","toSide":"top"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"bottom","id":"ccd2630289db87fc","label":"Zins","toNode":"046a148d34bbcd12","toSide":"left"},
+		{"fromNode":"046a148d34bbcd12","fromSide":"right","id":"447dff659a078974","toNode":"e3de4dbca8ec60ab","toSide":"bottom"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"bottom","id":"ed98728bbe376054","label":"Abschreibungen","toNode":"e3de4dbca8ec60ab","toSide":"bottom"},
+		{"color":"1","fromNode":"5caaa66932d4cf50","fromSide":"bottom","id":"82fde01addb0092f","label":"Kostet","toNode":"09bf65b23715c195","toSide":"left"},
+		{"fromNode":"a209c0110b95d4a3","fromSide":"left","id":"997d22acd9b0e17f","toNode":"09bf65b23715c195","toSide":"right"},
+		{"fromNode":"3f0902ae36530dd2","fromSide":"bottom","id":"c281390774516da0","toNode":"7a6a8d1ba7cf6a6b","toSide":"right"},
+		{"fromNode":"3f0902ae36530dd2","fromSide":"left","id":"c20a979ab003baad","toNode":"201a34dd14660f84","toSide":"right"},
+		{"fromNode":"de861254b1000aed","fromSide":"top","id":"7112bd8611bc1f1e","toNode":"b2c7d8b00702c21f","toSide":"bottom"},
+		{"fromNode":"b2c7d8b00702c21f","fromSide":"bottom","id":"3f7505323dc5f745","toNode":"d82cde4c4a697ace","toSide":"top"},
+		{"fromNode":"e35ae01a31542b3a","fromSide":"bottom","id":"0dc2238a98535bca","label":"Beeinflusst Kaufentscheidungen","toNode":"7a6a8d1ba7cf6a6b","toSide":"top"},
+		{"fromNode":"d82cde4c4a697ace","fromSide":"bottom","id":"3f11b13073d613b4","label":"Beeinflusst Kaufentscheidungen","toNode":"7a6a8d1ba7cf6a6b","toSide":"top"},
+		{"fromNode":"7a6a8d1ba7cf6a6b","fromSide":"top","id":"f956ddc6fdd478e0","label":"Kaufen","toNode":"b2a84acd3d476b67","toSide":"bottom"},
+		{"fromNode":"7a6a8d1ba7cf6a6b","fromSide":"top","id":"a4a1ec9dde20ba37","label":"Kaufen","toNode":"de861254b1000aed","toSide":"bottom"},
+		{"color":"4","fromNode":"3e491e668e1b8d8b","fromSide":"left","id":"4f2be7f616b07799","label":"Subventionen","toNode":"886b292441180288","toSide":"right"},
+		{"color":"4","fromNode":"0bfab242c34a8186","fromSide":"left","id":"b32736851e7fad66","toNode":"886b292441180288","toSide":"right"},
+		{"fromNode":"ccf2caccffbb85f8","fromSide":"left","id":"d89215cf20f99fcb","label":"Anheuern / Entlassen","toNode":"df2cd0ccff793af6","toSide":"bottom"}
+	],
+	"nodes":[
+		{
+			"height":2440,
+			"id":"201a34dd14660f84",
+			"label":"Firma",
+			"styleAttributes":{},
+			"type":"group",
+			"width":3720,
+			"x":-3760,
+			"y":-2040
+		},
+		{
+			"height":1051,
+			"id":"3f0902ae36530dd2",
+			"label":"Umweltfaktoren",
+			"styleAttributes":{},
+			"type":"group",
+			"width":804,
+			"x":1120,
+			"y":-931
+		},
+		{
+			"height":1291,
+			"id":"df2cd0ccff793af6",
+			"label":"Personal",
+			"styleAttributes":{},
+			"type":"group",
+			"width":600,
+			"x":-3160,
+			"y":-1640
+		},
+		{
+			"height":1080,
+			"id":"9add7aa1f38d420c",
+			"label":"Entscheidungen",
+			"styleAttributes":{},
+			"type":"group",
+			"width":710,
+			"x":-2420,
+			"y":-1000
+		},
+		{
+			"height":300,
+			"id":"7a6a8d1ba7cf6a6b",
+			"label":"Mögliche Kunden (Marktpotenzial)",
+			"styleAttributes":{},
+			"type":"group",
+			"width":1967,
+			"x":-1387,
+			"y":760
+		},
+		{
+			"height":789,
+			"id":"cd0a2cf7d5a76252",
+			"styleAttributes":{},
+			"type":"group",
+			"width":689,
+			"x":-1480,
+			"y":-1358
+		},
+		{
+			"height":298,
+			"id":"b2c7d8b00702c21f",
+			"label":"Konkurenz",
+			"styleAttributes":{},
+			"type":"group",
+			"width":940,
+			"x":40,
+			"y":-180
+		},
+		{
+			"height":420,
+			"id":"e304146c6e318c20",
+			"styleAttributes":{},
+			"type":"group",
+			"width":540,
+			"x":-640,
+			"y":-1740
+		},
+		{
+			"height":258,
+			"id":"61b4e1e56e94c743",
+			"styleAttributes":{},
+			"text":"## Marketing\n- Coolness\n- Qualiät\n- Werbeaufwand",
+			"type":"text",
+			"width":411,
+			"x":-2371,
+			"y":-478
+		},
+		{
+			"height":270,
+			"id":"db552c91480ea83a",
+			"styleAttributes":{},
+			"text":"## Produkt\n- Qualität\n- Ökolgie\n- Sozial\n- Coolness",
+			"type":"text",
+			"width":250,
+			"x":-1254,
+			"y":-200
+		},
+		{
+			"height":60,
+			"id":"09bf65b23715c195",
+			"styleAttributes":{},
+			"text":"#### Steuern",
+			"type":"text",
+			"width":250,
+			"x":-1254,
+			"y":-680
+		},
+		{
+			"height":100,
+			"id":"ccf2caccffbb85f8",
+			"styleAttributes":{},
+			"text":"## Personal anheuern / entlassen",
+			"type":"text",
+			"width":411,
+			"x":-2371,
+			"y":-200
+		},
+		{
+			"height":60,
+			"id":"886b292441180288",
+			"styleAttributes":{},
+			"text":"### Einkommen",
+			"type":"text",
+			"width":270,
+			"x":-1080,
+			"y":-1080
+		},
+		{
+			"height":194,
+			"id":"67ffe1d675edefe2",
+			"styleAttributes":{},
+			"text":"## Finanzen",
+			"type":"text",
+			"width":639,
+			"x":-1449,
+			"y":-1333
+		},
+		{
+			"height":60,
+			"id":"5caaa66932d4cf50",
+			"styleAttributes":{},
+			"text":"### Ausgaben",
+			"type":"text",
+			"width":270,
+			"x":-1449,
+			"y":-1000
+		},
+		{
+			"height":60,
+			"id":"046a148d34bbcd12",
+			"styleAttributes":{},
+			"text":"#### Credite",
+			"type":"text",
+			"width":250,
+			"x":-1254,
+			"y":-760
+		},
+		{
+			"height":60,
+			"id":"e3de4dbca8ec60ab",
+			"styleAttributes":{},
+			"text":"### Kapital",
+			"type":"text",
+			"width":270,
+			"x":-1080,
+			"y":-1000
+		},
+		{
+			"height":282,
+			"id":"40f170f2be2f1421",
+			"styleAttributes":{},
+			"text":"### Geschäftsleitung\nDie Führung des Unternehmens bestimmt die Kultur.\n\nBestimmte Personen können firmenweite Wirkungen auslösen.",
+			"type":"text",
+			"width":539,
+			"x":-3139,
+			"y":-982
+		},
+		{
+			"height":80,
+			"id":"1367f2400abb5fee",
+			"styleAttributes":{},
+			"text":"### Produktentwickelungspersonal",
+			"type":"text",
+			"width":539,
+			"x":-3139,
+			"y":-680
+		},
+		{
+			"height":82,
+			"id":"cc100a08c211d969",
+			"styleAttributes":{},
+			"text":"### Administrative Personal",
+			"type":"text",
+			"width":539,
+			"x":-3139,
+			"y":-478
+		},
+		{
+			"height":85,
+			"id":"408f9ea3946ce17b",
+			"styleAttributes":{},
+			"text":"### Marketingpersonal",
+			"type":"text",
+			"width":539,
+			"x":-3139,
+			"y":-588
+		},
+		{
+			"height":282,
+			"id":"8cf8899b0fcd3287",
+			"styleAttributes":{},
+			"text":"### Kauf / Verkauf von Produktionsanlagen\nKapital, das die Produktionsumstände verändern (z. B. Maschinen)",
+			"type":"text",
+			"width":411,
+			"x":-2371,
+			"y":-982
+		},
+		{
+			"height":177,
+			"id":"bcae4b89e697c37d",
+			"styleAttributes":{},
+			"text":"### Produktentwickelung\nVerbessert Qualität, Ökogie oder Coolness",
+			"type":"text",
+			"width":411,
+			"x":-2371,
+			"y":-680
+		},
+		{
+			"height":189,
+			"id":"6a21a07b6d2606c4",
+			"styleAttributes":{},
+			"text":"### Löhne\nGute Löhne motivieren Mitarbeiter besser zu arbeiten",
+			"type":"text",
+			"width":411,
+			"x":-2371,
+			"y":-1269
+		},
+		{
+			"height":420,
+			"id":"3b90867337ecdc33",
+			"styleAttributes":{},
+			"text":"## Herstellung\n",
+			"type":"text",
+			"width":400,
+			"x":-2050,
+			"y":-1740
+		},
+		{
+			"height":322,
+			"id":"6b4472a20931b668",
+			"styleAttributes":{},
+			"text":"## Personal\nPersonal müssen bezahlt werden, sind aber notwendig für das Funktionieren des Unternehmens.\n\nMotivierte Personal arbeiten effizienter und wechseln weniger oft Firma.",
+			"type":"text",
+			"width":539,
+			"x":-3139,
+			"y":-1620
+		},
+		{
+			"height":278,
+			"id":"b41d085aac9c26ee",
+			"styleAttributes":{},
+			"text":"### Produktionspersonal\nBestimmte Mengen Mitarbeiter sind notwendig, um Maschinen zu arbeiten.\n\nBesser ausgebildete Arbeiter können besser Arbeiten",
+			"type":"text",
+			"width":539,
+			"x":-3139,
+			"y":-1278
+		},
+		{
+			"height":180,
+			"id":"054f6f3a99b2285e",
+			"styleAttributes":{},
+			"text":"## Weiterbildungen\nVerbessern die Qualität / Effizienz von mitarbeiter",
+			"type":"text",
+			"width":411,
+			"x":-2371,
+			"y":-65
+		},
+		{
+			"height":81,
+			"id":"9611f7af9e4e0cb1",
+			"styleAttributes":{},
+			"text":"### Material",
+			"type":"text",
+			"width":400,
+			"x":-2050,
+			"y":-1920
+		},
+		{
+			"height":77,
+			"id":"5a76f69cd7a56859",
+			"styleAttributes":{},
+			"text":"## Kultur",
+			"type":"text",
+			"width":250,
+			"x":-3700,
+			"y":-935
+		},
+		{
+			"height":80,
+			"id":"0bfab242c34a8186",
+			"styleAttributes":{},
+			"text":"# Preise / Zuschüsse",
+			"type":"text",
+			"width":560,
+			"x":1164,
+			"y":-468
+		},
+		{
+			"height":80,
+			"id":"3e491e668e1b8d8b",
+			"styleAttributes":{},
+			"text":"# Subventionen",
+			"type":"text",
+			"width":560,
+			"x":1164,
+			"y":-368
+		},
+		{
+			"height":80,
+			"id":"7189f3abf546e69f",
+			"styleAttributes":{},
+			"text":"# Inflation",
+			"type":"text",
+			"width":560,
+			"x":1164,
+			"y":-808
+		},
+		{
+			"height":60,
+			"id":"ea9f818eb8b2d79e",
+			"styleAttributes":{},
+			"text":"# Firma *n*",
+			"type":"text",
+			"width":250,
+			"x":80,
+			"y":29
+		},
+		{
+			"height":130,
+			"id":"d82cde4c4a697ace",
+			"styleAttributes":{},
+			"text":"# Angebot vom Konkurenz",
+			"type":"text",
+			"width":430,
+			"x":80,
+			"y":210
+		},
+		{
+			"height":130,
+			"id":"de861254b1000aed",
+			"styleAttributes":{},
+			"text":"# Bestellungen von der Konkurenz",
+			"type":"text",
+			"width":440,
+			"x":540,
+			"y":210
+		},
+		{
+			"height":80,
+			"id":"97a96e2a5ced180f",
+			"styleAttributes":{},
+			"text":"# Kultur ?",
+			"type":"text",
+			"width":560,
+			"x":1164,
+			"y":-239
+		},
+		{
+			"height":80,
+			"id":"3915e107c5f0655d",
+			"styleAttributes":{},
+			"text":"# Wirtschaftliche Situation",
+			"type":"text",
+			"width":560,
+			"x":1164,
+			"y":-109
+		},
+		{
+			"height":80,
+			"id":"61fe6a4b38a79c0e",
+			"styleAttributes":{},
+			"text":"# Marktwachstum",
+			"type":"text",
+			"width":560,
+			"x":1164,
+			"y":-588
+		},
+		{
+			"height":88,
+			"id":"a209c0110b95d4a3",
+			"styleAttributes":{},
+			"text":"# Steuerrate",
+			"type":"text",
+			"width":560,
+			"x":1164,
+			"y":-698
+		},
+		{
+			"height":80,
+			"id":"694f56e682387ce1",
+			"styleAttributes":{},
+			"text":"#      ...",
+			"type":"text",
+			"width":96,
+			"x":465,
+			"y":870
+		},
+		{
+			"height":60,
+			"id":"20824428890e0a3b",
+			"styleAttributes":{},
+			"text":"# Firma 2",
+			"type":"text",
+			"width":250,
+			"x":80,
+			"y":-140
+		},
+		{
+			"height":60,
+			"id":"a651f638d2e77857",
+			"styleAttributes":{},
+			"text":"# Firma 3",
+			"type":"text",
+			"width":250,
+			"x":80,
+			"y":-54
+		},
+		{
+			"height":210,
+			"id":"e35ae01a31542b3a",
+			"styleAttributes":{},
+			"text":"# Angebot\nZusammensetzung aus Produkt, Marketing, etc.\n**Wirkt auf mögliche Kunden und beinflüsst Bestellungen**",
+			"type":"text",
+			"width":516,
+			"x":-1387,
+			"y":120
+		},
+		{
+			"height":210,
+			"id":"b2a84acd3d476b67",
+			"styleAttributes":{},
+			"text":"# Bestellungen",
+			"type":"text",
+			"width":559,
+			"x":-800,
+			"y":120
+		},
+		{
+			"height":80,
+			"id":"5f7fa8603f7ae57b",
+			"styleAttributes":{},
+			"text":"#      ...",
+			"type":"text",
+			"width":97,
+			"x":-1368,
+			"y":870
+		},
+		{
+			"height":260,
+			"id":"abc2b5419f60fb24",
+			"styleAttributes":{},
+			"text":"## Person\n- Präferenzen\n- Loyalität\n- etc.",
+			"type":"text",
+			"width":388,
+			"x":-800,
+			"y":780
+		},
+		{
+			"height":260,
+			"id":"6e4dbb776a928fd1",
+			"styleAttributes":{},
+			"text":"## Person\n- Präferenzen\n- Loyalität\n- etc.",
+			"type":"text",
+			"width":388,
+			"x":-1220,
+			"y":780
+		},
+		{
+			"height":260,
+			"id":"42b9427e8423766c",
+			"styleAttributes":{},
+			"text":"## Person\n- Präferenzen\n- Loyalität\n- etc.",
+			"type":"text",
+			"width":388,
+			"x":-371,
+			"y":780
+		},
+		{
+			"height":260,
+			"id":"b4f7766a0d9a92aa",
+			"styleAttributes":{},
+			"text":"## Person\n- Präferenzen\n- Loyalität\n- etc.",
+			"type":"text",
+			"width":388,
+			"x":45,
+			"y":780
+		},
+		{
+			"height":60,
+			"id":"b06e2f17bf1b54df",
+			"styleAttributes":{},
+			"text":"#### Fremdlager",
+			"type":"text",
+			"width":236,
+			"x":-375,
+			"y":-1408
+		},
+		{
+			"height":204,
+			"id":"2844d508a2510c85",
+			"styleAttributes":{},
+			"text":"## Lager",
+			"type":"text",
+			"width":471,
+			"x":-611,
+			"y":-1704
+		}
+	]
 }
