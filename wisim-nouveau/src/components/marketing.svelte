@@ -6,7 +6,7 @@
 <form
 	class="grid"
 	onchange={() => {
-		updateDecisions(clientState.decisions);
+		updateDecisions(clientState.Decisions);
 	}}
 >
 	<div>
@@ -14,7 +14,7 @@
 			<h2>Advertisment Budget</h2>
 			<input
 				id="quantity"
-				bind:value={clientState.decisions.Marketing.Promotion.Quantity}
+				bind:value={clientState.Decisions.Marketing.Promotion.Quantity}
 				type="number"
 			/>
 		</label>
@@ -24,7 +24,7 @@
 			>Quality
 			<input
 				id="PromotionQuality"
-				bind:value={clientState.decisions.Marketing.Promotion.Style_quality}
+				bind:value={clientState.Decisions.Marketing.Promotion.StyleQuality}
 				type="range"
 			/>
 		</label>
@@ -33,7 +33,7 @@
 			>Ecology
 			<input
 				id="PromotionEcology"
-				bind:value={clientState.decisions.Marketing.Promotion.Style_ecology}
+				bind:value={clientState.Decisions.Marketing.Promotion.StyleEcology}
 				type="range"
 			/>
 		</label>
@@ -42,7 +42,7 @@
 			>Ethics
 			<input
 				id="PromotionEthicals"
-				bind:value={clientState.decisions.Marketing.Promotion.Style_ethics}
+				bind:value={clientState.Decisions.Marketing.Promotion.StyleEthics}
 				type="range"
 			/>
 		</label>
@@ -51,7 +51,7 @@
 			>Durability
 			<input
 				id="PromotionDurability"
-				bind:value={clientState.decisions.Marketing.Promotion.Style_durability}
+				bind:value={clientState.Decisions.Marketing.Promotion.StyleDurability}
 				type="range"
 			/>
 		</label>

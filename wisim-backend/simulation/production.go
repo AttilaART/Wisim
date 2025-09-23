@@ -2,123 +2,95 @@ package simulation
 
 import (
 	"fmt"
+	"log"
 	"slices"
 )
 
-func (c *Company) simulate_company(decisions Decisions, external_factors External_factors) error {
-	c.Reports = append(c.Reports, Report{Month: external_factors.Month})
-	c.Decision_history = append(c.Decision_history, decisions)
-
-	// Personelle
-	println("Simulatig personelle")
-
-	err := c.simulate_employees(external_factors, decisions.Employees.Severance_pay, Employee_type_production)
-	if err != nil {
-		return err
-	}
-	err = c.simulate_employees(external_factors, decisions.Employees.Severance_pay, Employee_type_marketing)
-	if err != nil {
-		return err
-	}
-
-	// Offer
-	println("Calculating product stats")
-	c.Offer.Price = decisions.Marketing.Price
-
-	c.Base_marketing_strength += decisions.Research.Promotion / 1000 * c.Base_marketing_strength
-	c.Offer.Promotion_quality = promotion_quality(c.employee_pool, c.Base_marketing_strength, c.employee_pool.Get_employees_of_company(c.Id, Employee_type_marketing))
-
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement(
-		"Advertisement costs",
-		marketing,
-		"Cost of your ads (equals promotion quantity)",
-		true,
-		float64(-decisions.Marketing.Promotion.Quantity),
-	)
-	// Offer: Product
-
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Quality research", research, "", true, float64(-decisions.Research.Quality))
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Ecology research", research, "", true, float64(-decisions.Research.Ecology))
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Durability research", research, "", true, float64(-decisions.Research.Durability))
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Production cost research", research, "", true, float64(-decisions.Research.Production_cost))
-
-	c.Offer.Product, err = c.Calculate_product(decisions.Marketing.Product, decisions.Research)
-	if err != nil {
-		panic(err)
-	}
-
-	// Production
-	println("Calculating production")
-
-	c.calculate_production(decisions, external_factors)
-
-	// Logistics
-	c.Items_in_storage += c.Reports[len(c.Reports)-1].Production_report.Total_products_produced
-
-	println("Calculating logistics")
-	c.calculate_logistics(decisions)
-
-	// Finances
-	return nil
+func (c *Company) research(decisions Decisions) {
+	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Quality research", research, "", true, float64(-decisions.Research.Quality))
+	c.Tech.Quality += decisions.Research.Quality / 1000
+	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Ecology research", research, "", true, float64(-decisions.Research.Ecology))
+	c.Tech.Quality += decisions.Research.Ecology / 1000
+	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Durability research", research, "", true, float64(-decisions.Research.Durability))
+	c.Tech.Quality += decisions.Research.Durability / 1000
+	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Production cost research", research, "", true, float64(-decisions.Research.Production_cost))
+	c.Tech.Quality += decisions.Research.Production_cost / 1000
 }
 
 // Production functions
-func (c *Company) calculate_production(decisions Decisions, external_factors External_factors) {
-	production_personelle := c.employee_pool.Get_employees_of_company(c.Id, Employee_type_production)
-	if len(production_personelle) == 0 {
+func (c *Company) calculateProduction(decisions Decisions, externalFactors External_factors) {
+	productionPersonelle := c.employeePool.Get_employees_of_company(c.ID, Employee_type_production)
+	if len(productionPersonelle) == 0 {
 		println("Warning: no production employees!")
 	}
 
-	production_report := &c.Reports[len(c.Reports)-1].Production_report
+	production_report := &c.Reports[len(c.Reports)-1].ProductionReport
 
 	// Purchase Machines
 	println("Purchasing machines")
-	var machines_to_delete_id []int
+	var machinesToDeleteID []int
 	for _, m := range decisions.Production.Machines {
-		if m.Change == Delta_New {
-			production_report.Machines_purchased += 1
-			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Purchase of machine", production, "", true, -float64(m.Item.Value))
+		switch m.Change {
+		case Delta_New:
+			production_report.MachinesPurchased += 1
+			c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Purchase of machine", production, "", true, -float64(m.Item.Value))
 			c.Machines = append(c.Machines, m.Item)
-		} else if m.Change == Delta_Remove {
-			production_report.Machines_sold += 1
-			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Selling of machine", production, "", true, float64(m.Item.Value))
-			machines_to_delete_id = append(machines_to_delete_id, m.Item.Id)
+		case Delta_Remove:
+			production_report.MachinesSold += 1
+			c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Selling of machine", production, "", true, float64(m.Item.Value))
+			machinesToDeleteID = append(machinesToDeleteID, m.Item.ID)
 		}
 	}
 
-	c.Machines = delete_by_id(c.Machines, machines_to_delete_id...)
+	c.Machines = delete_by_id(c.Machines, machinesToDeleteID...)
 
 	calculate_machines_value(
 		&c.Machines,
-		&c.Reports[len(c.Reports)-1].Production_report,
-		&c.Reports[len(c.Reports)-1].Balance_sheet,
-		external_factors,
+		&c.Reports[len(c.Reports)-1].ProductionReport,
+		&c.Reports[len(c.Reports)-1].BalanceSheet,
+		externalFactors,
 	)
 	// Calculate machine upkeep
 	var machineUpkeep float32
 	for _, m := range c.Machines {
-		machineUpkeep += m.Maintanance_cost
+		machineUpkeep += m.MaintananceCost
 	}
-	c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Machine upkeep", production, "The upkeep of out production machines", true, float64(-machineUpkeep))
+	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Machine upkeep", production, "The upkeep of out production machines", true, float64(-machineUpkeep))
 
 	// Produce
 	println("Assigning workers")
-	c.Machines, production_report.Worker_surplus = assign_workers(
-		c.employee_pool,
+	c.Machines, production_report.WorkerSurplus = assign_workers(
+		c.employeePool,
 		c.Machines,
-		c.employee_pool.Get_employees_of_company(
-			c.Id, Employee_type_production),
+		c.employeePool.Get_employees_of_company(
+			c.ID, Employee_type_production),
 	)
 
 	println("Producing products")
+
+	productionGoals := make(map[string]int)
+	for productID := range decisions.Products {
+		productionGoals[productID] = decisions.Products[productID].ProductionGoal
+	}
+
+	production_report.ProductSpecificReport = make(map[string]struct {
+		TotalProduction       int
+		BaseProduction        int
+		BonusProduction       int
+		ExcessProduction      int
+		TotalProductsProduced int
+		BaseProductsProduced  int
+		BonusProductsProduced int
+	})
+
 	produce(
-		c.employee_pool,
+		c.employeePool,
 		c.Machines,
-		c.Offer.Product,
+		c.Offers,
+		productionGoals,
 		production_report,
-		&c.Reports[len(c.Reports)-1].Balance_sheet,
-		external_factors,
-		decisions.Production.Production_goal,
+		&c.Reports[len(c.Reports)-1].BalanceSheet,
+		externalFactors,
 	)
 }
 
@@ -129,7 +101,7 @@ func calculate_machines_value(
 	external_factors External_factors,
 ) {
 	for i, m := range *machines {
-		(*machines)[i].Value = float32(round(float64(m.Value*(1-external_factors.Machine_depreciation_rate)), 2))
+		(*machines)[i].Value = float32(round(float64(m.Value*(1-external_factors.MachineDepreciationRate)), 2))
 		balance_sheet.add_to_income_statement(
 			"Machine depreciation",
 			write_off,
@@ -163,8 +135,8 @@ func assign_workers(employee_pool Employee_pool, machines []Machine, workers_ids
 	}, func(a, b int) int {
 		e_a := employee_pool[a]
 		e_b := employee_pool[b]
-		vala := (e_a.Motivation * e_a.Skill * e_a.Working_hours)
-		valb := (e_b.Motivation * e_b.Skill * e_b.Working_hours)
+		vala := (e_a.Motivation * e_a.Skill * e_a.WorkingHours)
+		valb := (e_b.Motivation * e_b.Skill * e_b.WorkingHours)
 		if vala < valb {
 			return 1
 		} else if vala == valb {
@@ -180,9 +152,9 @@ func assign_workers(employee_pool Employee_pool, machines []Machine, workers_ids
 			}
 		}
 	}, func(a, b Machine) int {
-		if a.Production_capacity < b.Production_capacity {
+		if a.ProductionCapacity < b.ProductionCapacity {
 			return 1
-		} else if a.Production_capacity == b.Production_capacity {
+		} else if a.ProductionCapacity == b.ProductionCapacity {
 			return 0
 		}
 		return -1
@@ -191,16 +163,16 @@ func assign_workers(employee_pool Employee_pool, machines []Machine, workers_ids
 	var Worker_surplus int
 	ii := 0
 	for i := range machines {
-		machines[i].Assigned_workers_ids = make([]int, 0)
+		machines[i].AssignedWorkersIDs = make([]int, 0)
 
-		for range machines[i].Required_workers {
+		for range machines[i].RequiredWorkers {
 			if ii >= (len(workers_ids) - 1) {
 				break
 			}
-			machines[i].Assigned_workers_ids = append(machines[i].Assigned_workers_ids, workers_ids[ii])
+			machines[i].AssignedWorkersIDs = append(machines[i].AssignedWorkersIDs, workers_ids[ii])
 			ii++
 		}
-		Worker_surplus += len(machines[i].Assigned_workers_ids) - machines[i].Required_workers
+		Worker_surplus += len(machines[i].AssignedWorkersIDs) - machines[i].RequiredWorkers
 	}
 
 	if Worker_surplus >= 0 {
@@ -213,48 +185,54 @@ func assign_workers(employee_pool Employee_pool, machines []Machine, workers_ids
 func produce(
 	employee_pool Employee_pool,
 	machines []Machine,
-	product Product,
+	offers map[string]Offer,
+	productionGoal map[string]int,
 	production_report *Production_report,
 	balance_sheet *Balance_sheet,
 	external_factors External_factors,
-	productionGoal int,
 ) {
-	base_production := 0
-	bonus_production := 0
-
 	energy_use := 0.0
-	for _, m := range machines {
-		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(employee_pool, m, product.Production_cost)
-		base_production += base_prod_of_machine
-		bonus_production += bonus_prod_of_machine
 
-		energy_use += float64(m.Energy_use)
+	totalProduction := 0
+	for _, m := range machines {
+		base_prod_of_machine, bonus_prod_of_machine := calculate_machine_production(employee_pool, m, offers[m.AssignedProductID].Product.ProductionCost)
+		productSpecificReport := production_report.ProductSpecificReport[m.AssignedProductID]
+		productSpecificReport.BaseProduction += base_prod_of_machine
+		productSpecificReport.BonusProduction += bonus_prod_of_machine
+
+		production_report.ProductSpecificReport[m.AssignedProductID] = productSpecificReport
+
+		totalProduction = base_prod_of_machine + bonus_prod_of_machine
+		energy_use += float64(m.EnergyUse)
 	}
 
 	if len(machines) <= 0 {
 		println("Company owns no machines!")
 	}
 
-	production_report.Total_production = base_production + bonus_production
-	production_report.Base_production = base_production
-	production_report.Bonus_production = bonus_production
+	for productId := range offers {
+		productSpecificReport := production_report.ProductSpecificReport[productId]
 
-	production_report.Base_products_produced = min(int(float32(production_report.Base_production)/float32(product.Production_cost)), productionGoal)
-	production_report.Bonus_products_produced = min(int(float32(production_report.Bonus_production)/float32(product.Production_cost)), max(production_report.Base_products_produced-productionGoal, 0))
-	production_report.Total_products_produced = production_report.Base_products_produced + production_report.Bonus_products_produced
+		productSpecificReport.BaseProductsProduced = min(int(float32(productSpecificReport.BaseProduction)/float32(offers[productId].Product.ProductionCost)), (productionGoal[productId]))
+		productSpecificReport.BonusProductsProduced = min(int(float32(productSpecificReport.BonusProduction)/float32(offers[productId].Product.ProductionCost)), max(productSpecificReport.BaseProductsProduced-productionGoal[productId], 0))
+		productSpecificReport.TotalProductsProduced = productSpecificReport.BaseProductsProduced + productSpecificReport.BonusProductsProduced
 
-	production_report.Excess_production = production_report.Total_production - (int(product.Production_cost * float32(production_report.Total_products_produced)))
+		productSpecificReport.ExcessProduction = productSpecificReport.TotalProduction - (int(offers[productId].Product.ProductionCost * float32(productSpecificReport.TotalProductsProduced)))
 
-	production_report.Material_used = product.Material_use * float32(production_report.Total_products_produced)
-	production_report.Energy_used = float32(energy_use)
+		production_report.MaterialUsed += offers[productId].Product.MaterialUse * float32(productSpecificReport.TotalProductsProduced)
 
-	material_costs := -round(float64(external_factors.Material_price)*float64(production_report.Material_used), 2)
-	energy_costs := -round(float64(external_factors.Energy_price)*float64(production_report.Energy_used), 2)
+		production_report.ProductSpecificReport[productId] = productSpecificReport
+	}
 
-	balance_sheet.add_to_income_statement("Material costs", production, "The cost of materials used in your products", true, material_costs)
-	balance_sheet.add_to_income_statement("Energy costs", production, "The cost of energy used by machines in production", true, energy_costs)
+	production_report.EnergyUsed = float32(energy_use)
 
-	production_report.Avg_machine_productivity = float32(production_report.Total_production) / float32(len(machines))
+	materialCosts := -round(float64(external_factors.MaterialPrice)*float64(production_report.MaterialUsed), 2)
+	energyCosts := -round(float64(external_factors.EnergyPrice)*float64(production_report.EnergyUsed), 2)
+
+	balance_sheet.add_to_income_statement("Material costs", production, "The cost of materials used in your products", true, materialCosts)
+	balance_sheet.add_to_income_statement("Energy costs", production, "The cost of energy used by machines in production", true, energyCosts)
+
+	production_report.AvgMachineProductivity = float32(totalProduction) / float32(len(machines))
 }
 
 // return (base production, bonus production)
@@ -262,31 +240,30 @@ func calculate_machine_production(employee_pool Employee_pool, machine Machine, 
 	// calculate averages
 	var skill float32 = 0
 	var motivation float32 = 0
-	var working_hours float32 = 0
+	var workingHours float32 = 0
 
-	if machine.Minimum_workers <= 0 {
-		panic("machine.Minimum_workers <= 0")
+	if machine.MinimumWorkers <= 0 {
+		log.Println("machine.Minimum_workers <= 0")
 	}
 
-	if len(machine.Assigned_workers_ids) < machine.Minimum_workers {
-		fmt.Printf("Machine has too few workers: %d instead of %d+", len(machine.Assigned_workers_ids), machine.Minimum_workers)
+	if len(machine.AssignedWorkersIDs) < machine.MinimumWorkers {
+		fmt.Printf("Machine has too few workers: %d instead of %d+\n", len(machine.AssignedWorkersIDs), machine.MinimumWorkers)
 		return 0, 0
 	}
 
-	if len(machine.Assigned_workers_ids) < 0 {
+	if len(machine.AssignedWorkersIDs) == 0 {
 		return 0, 0
 	}
 
-	for _, e_id := range machine.Assigned_workers_ids {
-		skill += employee_pool[e_id].Skill
-		motivation += employee_pool[e_id].Motivation
-		working_hours += employee_pool[e_id].Working_hours
-
+	for _, ID := range machine.AssignedWorkersIDs {
+		skill += employee_pool[ID].Skill
+		motivation += employee_pool[ID].Motivation
+		workingHours += employee_pool[ID].WorkingHours
 	}
 
-	skill = skill / float32(len(machine.Assigned_workers_ids))
-	motivation = motivation / float32(len(machine.Assigned_workers_ids))
-	working_hours = working_hours / float32(len(machine.Assigned_workers_ids))
+	skill = skill / float32(len(machine.AssignedWorkersIDs))
+	motivation = motivation / float32(len(machine.AssignedWorkersIDs))
+	workingHours = workingHours / float32(len(machine.AssignedWorkersIDs))
 
 	if skill <= 0 {
 		panic("skill is 0 or less")
@@ -295,23 +272,20 @@ func calculate_machine_production(employee_pool Employee_pool, machine Machine, 
 		panic("motivation is 0 or less")
 	}
 
-	base_production := int(float32(machine.Production_capacity) * production_speed * (working_hours / 8))
-	bonus_production := int(float32(base_production)*skill*motivation - float32(base_production))
-	if bonus_production < 0 {
-		bonus_production = 0
-	}
+	baseProduction := int(float32(machine.ProductionCapacity) * production_speed * (workingHours / 8))
+	bonusProduction := max(int(float32(baseProduction)*skill*motivation-float32(baseProduction)), 0)
 
-	if base_production <= 0 {
-		panic(fmt.Sprintf("base_production is 0 or less (%d)", base_production))
+	if baseProduction < 0 {
+		panic(fmt.Sprintf("base_production is 0 or less (%d)", baseProduction))
 	}
 
 	fmt.Printf("------------\n")
-	fmt.Printf("machine base_production: %d\n", base_production)
-	fmt.Printf("machine bonus_production: %d\n", bonus_production)
+	fmt.Printf("machine base_production: %d\n", baseProduction)
+	fmt.Printf("machine bonus_production: %d\n", bonusProduction)
 	fmt.Printf("machine skill: %f\n", skill)
 	fmt.Printf("machine motivation: %f\n", skill)
 	fmt.Printf("machine working_hours: %f\n", skill)
-	fmt.Printf("Workers assigned: %d\n", len(machine.Assigned_workers_ids))
+	fmt.Printf("Workers assigned: %d\n", len(machine.AssignedWorkersIDs))
 
-	return base_production, bonus_production
+	return baseProduction, bonusProduction
 }

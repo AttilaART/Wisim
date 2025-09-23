@@ -34,79 +34,79 @@ func Load_sim_config(path string) (Sim_config, error) {
 	return sim_config, nil
 }
 
-func generate_population(
-	population_size int,
+func generatePopulation(
+	populationSize int,
 
-	min_base_need int,
-	max_base_need int,
+	minBaseNeed int,
+	maxBaseNeed int,
 
-	quality_bias float32, // "bias" parameters increase the mean of the normal distributions
-	quality_spread float32, // "spread" parameters increase the standard deviation of the normal distributions
-	ecology_bias float32,
-	ecology_spread float32,
-	ethics_bias float32,
-	ethics_spread float32,
-	coolness_bias float32,
-	coolness_spread float32,
-	price_bias float32,
-	price_spread float32,
-	bang_for_buck_bias float32,
-	bang_for_buck_spread float32,
-	durabilty_bias float32,
-	durability_spread float32,
-	purchasing_threshold_bias float32,
-	purchasing_threshold_spread float32,
-	base_market_price float32,
-	market_saturation float32,
+	qualityBias float32, // "bias" parameters increase the mean of the normal distributions
+	qualitySpread float32, // "spread" parameters increase the standard deviation of the normal distributions
+	ecologyBias float32,
+	ecologySpread float32,
+	ethicsBias float32,
+	ethicsSpread float32,
+	// coolnessBias float32,
+	// coolnessSpread float32,
+	priceBias float32,
+	priceSpread float32,
+	bangForBuckBias float32,
+	bangForBuckSpread float32,
+	durabiltyBias float32,
+	durabilitySpread float32,
+	purchasingThresholdBias float32,
+	purchasingThresholdSpread float32,
+	baseMarketPrice float32,
+	marketSaturation float32,
 
 	number_of_companies int,
 ) ([]Customer, []Properties, error) {
-	population := make([]Customer, population_size)
-	populationPreferences := make([]Properties, population_size)
+	population := make([]Customer, populationSize)
+	populationPreferences := make([]Properties, populationSize)
 
 	// Handle errors
-	if min_base_need <= 0 {
+	if minBaseNeed <= 0 {
 		return nil, nil, errors.New("min_base_need must be > 0")
 	}
-	if max_base_need < min_base_need {
+	if maxBaseNeed < minBaseNeed {
 		return nil, nil, errors.New("max_base_need must be >= min_base_need")
 	}
 
-	if bang_for_buck_bias <= 0 {
+	if bangForBuckBias <= 0 {
 		println("bang_for_buck_bias <= 0")
 	}
-	if bang_for_buck_spread <= 0 {
+	if bangForBuckSpread <= 0 {
 		println("bang_for_buck_spread <= 0")
 	}
 
 	avr_max_price := 0.0
 
 	var wg sync.WaitGroup
-	for _, interval := range split_load(runtime.NumCPU(), population_size) {
+	for _, interval := range split_load(runtime.NumCPU(), populationSize) {
 		wg.Add(1)
 		go func(wg *sync.WaitGroup, interval Interval) {
 			for i := interval.Start; i < interval.Stop_before; i++ {
 				population[i] = Customer{
-					Base_need: rand.Intn(max_base_need-min_base_need) + min_base_need,
+					Base_need: rand.Intn(maxBaseNeed-minBaseNeed) + minBaseNeed,
 
-					Purchashing_threshold: float32(PosNormFloat64())*purchasing_threshold_spread + purchasing_threshold_bias,
+					Purchashing_threshold: float32(posNormFloat64())*purchasingThresholdSpread + purchasingThresholdBias,
 					Loyalties:             make([]float32, number_of_companies),
 				}
-				populationPreferences[i][propertiesQuality] = float32(PosNormFloat64())*quality_spread + quality_bias
-				populationPreferences[i][propertiesEcology] = float32(PosNormFloat64())*ecology_spread + ecology_bias
-				populationPreferences[i][propertiesEthics] = float32(PosNormFloat64())*ethics_spread + ethics_bias
-				populationPreferences[i][propertiesPrice] = float32(PosNormFloat64())*price_spread + price_bias
-				populationPreferences[i][propertiesBangForBuck] = float32(PosNormFloat64())*bang_for_buck_spread + bang_for_buck_bias
-				populationPreferences[i][propertiesDurability] = float32(PosNormFloat64())*durability_spread + durabilty_bias
+				populationPreferences[i][propertiesQuality] = float32(posNormFloat64())*qualitySpread + qualityBias
+				populationPreferences[i][propertiesEcology] = float32(posNormFloat64())*ecologySpread + ecologyBias
+				populationPreferences[i][propertiesEthics] = float32(posNormFloat64())*ethicsSpread + ethicsBias
+				populationPreferences[i][propertiesPrice] = float32(posNormFloat64())*priceSpread + priceBias
+				populationPreferences[i][propertiesBangForBuck] = float32(posNormFloat64())*bangForBuckSpread + bangForBuckBias
+				populationPreferences[i][propertiesDurability] = float32(posNormFloat64())*durabilitySpread + durabiltyBias
 
-				number_of_owned_products := int(PosNormFloat64()*float64(population[i].Base_need) + float64(market_saturation))
+				number_of_owned_products := int(posNormFloat64()*float64(population[i].Base_need) + float64(marketSaturation))
 				for range number_of_owned_products {
 					population[i].Owned_products = append(population[i].Owned_products,
-						Owned_product{-1, int(PosNormFloat64()*float64(population[i].Base_need) +
-							float64(market_saturation))})
+						Owned_product{-1, int(posNormFloat64()*float64(population[i].Base_need) +
+							float64(marketSaturation))})
 				}
 
-				population[i].Max_price = ((base_market_price * 1.5) / populationPreferences[i][propertiesPrice]) * float32(PosNormFloat64()*100)
+				population[i].Max_price = ((baseMarketPrice * 1.5) / populationPreferences[i][propertiesPrice]) * float32(posNormFloat64())
 				avr_max_price += float64(population[i].Max_price)
 
 				// fmt.Printf("|%6d|%6d|\n", i, customer.income)
@@ -120,41 +120,58 @@ func generate_population(
 	return population, populationPreferences, nil
 }
 
-func PosNormFloat64() float64 {
-	var num float64
-	num = rand.NormFloat64()
+func posNormFloat64() float64 {
+	num := rand.NormFloat64()
 	if num < 0 {
 		return -num
 	}
 	return num
 }
 
-func (g *Game_state) Generate_new_employee_id() int {
-	randId := rand.Int()
+func (g *GameState) Generate_new_employee_id() int {
+	randID := rand.Int() % 9999999
 
-	if _, exists := g.Employees[randId]; exists {
+	if _, exists := g.Employees[randID]; exists {
 		return g.Generate_new_employee_id()
 	}
 
-	return randId
+	return randID
 }
 
-func (g *Game_state) Generate_employee(base_pay float32, working_hours float32, employee_type Employee_type, base_motivation float32) *Employee {
+func (g *GameState) Generate_employee(basePay float32, workingHours float32, employeeType Employee_type, baseMotivation float32) (int, *Employee) {
 	employeeeID := g.Generate_new_employee_id()
 
-	employee := Employee{
-		Id:            employeeeID,
-		Name:          randomName(employeeeID),
-		Employee_type: employee_type,
-		Motivation:    base_motivation,
-		Skill:         float32(rand.NormFloat64()*0.1 + 1),
-		Pay:           base_pay,
-		Working_hours: working_hours,
-		Employer:      Employee_employer_none,
-	}
-	g.Employees[employeeeID] = &employee
+	g.employeesArray = append(g.employeesArray, Employee{
+		ID:           employeeeID,
+		Name:         randomName(employeeeID),
+		EmployeeType: employeeType,
+		Motivation:   baseMotivation,
+		Skill:        float32(rand.NormFloat64()*0.1 + 1),
+		Pay:          basePay,
+		WorkingHours: workingHours,
+		Employer:     Employee_employer_none,
+	},
+	)
+	g.Employees[employeeeID] = &g.employeesArray[len(g.employeesArray)-1]
 
-	return g.Employees[employeeeID]
+	return employeeeID, &g.employeesArray[len(g.employeesArray)-1]
+}
+
+func (g *GameState) RefillUnemployed(wantedNumberOfEmployees int, basePay float32, workingHours float32, employeeType Employee_type, baseMotivation float32) {
+	numEmployees := 0
+	for _, e := range g.Employees {
+		if e.EmployeeType == employeeType && e.Employer == Employee_employer_none {
+			numEmployees += 1
+		}
+	}
+
+	if wantedNumberOfEmployees-numEmployees <= 0 {
+		return
+	}
+
+	for range wantedNumberOfEmployees - numEmployees {
+		g.Generate_employee(basePay, workingHours, employeeType, baseMotivation)
+	}
 }
 
 func randomName(seed int) string {
@@ -207,79 +224,82 @@ func randomName(seed int) string {
 	return firstNames[randomiser.Int()%len(firstNames)] + " " + lastNames[randomiser.Int()%len(lastNames)]
 }
 
-func (g *Game_state) generate_companies(
-	default_company Company,
-	number_of_companies int,
-	external_factors External_factors,
-	base_working_hours float32,
-	base_number_of_marketing_personelle int,
+func (g *GameState) generateCompanies(
+	defaultCompany Company,
+	numberOfCompanies int,
+	externalFactors External_factors,
+	baseWorkingHours float32,
+	baseNumberOfMarketingPersonelle int,
 ) []Company {
 	// Make each company according to defaults & preferences
-	companies := make([]Company, number_of_companies)
+	companies := make([]Company, numberOfCompanies)
 
-	for i := range number_of_companies {
-		companies[i] = default_company
-		companies[i].Id = i
+	for i := range numberOfCompanies {
+		companies[i] = defaultCompany
+		companies[i].ID = i
 		companies[i].Name = "Unnamed Company"
 		companies[i].Reports = make([]Report, 0)
-		companies[i].Decision_history = make([]Decisions, 0)
-		companies[i].employee_pool = g.Employees
+		companies[i].DecisionHistory = make([]Decisions, 0)
+		companies[i].employeePool = g.Employees
+		companies[i].Offers = make(map[string]Offer)
+		companies[i].ProductsInStorage = make(map[string]int)
 
-		required_production_personelle := 0
+		requiredProductionPersonelle := 1
 		for _, m := range companies[i].Machines {
-			required_production_personelle += m.Required_workers
+			requiredProductionPersonelle += m.RequiredWorkers
 		}
 
-		for range required_production_personelle {
-			g.Generate_employee(
-				external_factors.Production_minimum_wage,
-				base_working_hours,
+		for range requiredProductionPersonelle {
+			_, e := g.Generate_employee(
+				externalFactors.ProductionMinimumWage,
+				baseWorkingHours,
 				Employee_type_production,
 				1,
-			).Employer = i
+			)
+			e.Employer = i
 		}
-		for range base_number_of_marketing_personelle {
-			g.Generate_employee(
-				external_factors.Production_minimum_wage,
-				base_working_hours,
+		for range baseNumberOfMarketingPersonelle {
+			_, e := g.Generate_employee(
+				externalFactors.ProductionMinimumWage,
+				baseWorkingHours,
 				Employee_type_marketing,
 				1,
-			).Employer = i
+			)
+			e.Employer = i
 		}
 
 	}
 	return companies
 }
 
-func New_game(sim_config Sim_config, number_of_companies int, game_name string) Game_state {
-	var game_state Game_state
+func New_game(simConfig Sim_config, numberOfCompanies int, gameName string) GameState {
+	var game_state GameState
 
 	game_state.Step = 1
-	game_state.Game_name = game_name
+	game_state.GameName = gameName
 	game_state.Employees = make(Employee_pool)
 
-	game_state.External_factors = External_factors{
-		Inflation:                 0.005,
-		Economic_situation_index:  1,
-		Tax_rate:                  0.147,
-		Material_price:            3.5,
-		Energy_price:              96.2,
-		Machine_depreciation_rate: 0.1,
+	game_state.ExternalFactors = External_factors{
+		Inflation:               0.005,
+		EconomicSituationIndex:  1,
+		TaxRate:                 0.147,
+		MaterialPrice:           3.5,
+		EnergyPrice:             96.2,
+		MachineDepreciationRate: 0.1,
 
-		Intrest_rate:              0.04,
-		Bridge_loans_intrest_rate: 0.08,
+		IntrestRate:            0.04,
+		BridgeLoansIntrestRate: 0.08,
 
-		Turnover:                0.08,
-		Production_minimum_wage: 60000,
-		Marketing_minimum_wage:  80000,
+		ProductionMinimumWage: 60000 / 12,
+		MarketingMinimumWage:  80000 / 12,
 
-		Machine_on_offer: Machine{
-			Production_capacity: 1500,
-			Required_workers:    5,
-			Minimum_workers:     3,
-			Energy_use:          0.5,
-			Value:               100000,
-			Maintanance_cost:    15000,
+		MachineOnOffer: Machine{
+			ProductionCapacity: 150,
+			RequiredWorkers:    1,
+			MinimumWorkers:     1,
+			EnergyUse:          0.01,
+			Value:              5000,
+			MaintananceCost:    50,
 		},
 	}
 
@@ -302,84 +322,91 @@ func New_game(sim_config Sim_config, number_of_companies int, game_name string) 
 	// "purchasing_threshold_spread": 1
 
 	var err error
-	game_state.Population.Population, game_state.Population.Preferences, err = generate_population(
-		sim_config.Population_size,
-		sim_config.Min_base_need,
-		sim_config.Max_base_need,
-		sim_config.Quality_bias,
-		sim_config.Quality_spread,
-		sim_config.Ecology_bias,
-		sim_config.Ecology_spread,
-		sim_config.Ethics_bias,
-		sim_config.Ethics_spread,
-		sim_config.Coolness_bias,
-		sim_config.Coolness_spread,
-		sim_config.Price_bias,
-		sim_config.Price_spread,
-		sim_config.Bang_for_buck_bias,
-		sim_config.Bang_for_buck_spread,
-		sim_config.Durabilty_bias,
-		sim_config.Durability_spread,
-		sim_config.Purchasing_threshold_bias,
-		sim_config.Purchasing_threshold_spread,
-		sim_config.Base_market_price,
-		sim_config.Market_saturation,
+	game_state.Population.Population, game_state.Population.Preferences, err = generatePopulation(
+		simConfig.Population_size,
+		simConfig.Min_base_need,
+		simConfig.Max_base_need,
+		simConfig.Quality_bias,
+		simConfig.Quality_spread,
+		simConfig.Ecology_bias,
+		simConfig.Ecology_spread,
+		simConfig.Ethics_bias,
+		simConfig.Ethics_spread,
+		// sim_config.Coolness_bias,
+		// sim_config.Coolness_spread,
+		simConfig.Price_bias,
+		simConfig.Price_spread,
+		simConfig.Bang_for_buck_bias,
+		simConfig.Bang_for_buck_spread,
+		simConfig.Durabilty_bias,
+		simConfig.Durability_spread,
+		simConfig.Purchasing_threshold_bias,
+		simConfig.Purchasing_threshold_spread,
+		simConfig.Base_market_price,
+		simConfig.Market_saturation,
 
-		number_of_companies,
+		numberOfCompanies,
 	)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 
-	game_state.Companies = game_state.generate_companies(
-		sim_config.Default_company,
-		number_of_companies,
-		game_state.External_factors,
+	game_state.Companies = game_state.generateCompanies(
+		simConfig.Default_company,
+		numberOfCompanies,
+		game_state.ExternalFactors,
 		8,
 		1,
 	)
 
-	game_state.Current_decisions = make([]Decisions, number_of_companies)
+	game_state.CurrentDecisions = make([]Decisions, numberOfCompanies)
 
 	defaultDecisions := Decisions{
-		Marketing: Decisions_marketing{
-			Product: Decisions_product{
+		Products: map[string]Decisions_product{
+			"0": {
 				Materials: struct {
-					Quality          float32
-					Ecology          float32
-					Ethical_sourcing float32
+					Quality         float32
+					Ecology         float32
+					EthicalSourcing float32
 				}{
-					Quality:          1,
-					Ecology:          1,
-					Ethical_sourcing: 1,
+					Quality:         1,
+					Ecology:         1,
+					EthicalSourcing: 1,
 				},
 				Manufacturing: struct {
-					Quality             float32
-					Ecological_energy   float32
-					Material_efficiency float32
-					Durability          float32
-					Max_durability      int
+					Quality            float32
+					EcologicalEnergy   float32
+					MaterialEfficiency float32
+					Durability         float32
+					MaxDurability      int
 				}{
-					Quality:             1,
-					Ecological_energy:   1,
-					Material_efficiency: 1,
-					Durability:          1,
-					Max_durability:      1,
+					Quality:            1,
+					EcologicalEnergy:   1,
+					MaterialEfficiency: 1,
+					Durability:         1,
+					MaxDurability:      1,
 				},
 			},
 		},
+		Production: struct {
+			Machines  []Delta[Machine]
+			Logistics []Delta[Warehouse]
+		}{
+			make([]Delta[Machine], 0),
+			make([]Delta[Warehouse], 0),
+		},
 	}
 
-	for i := range game_state.Current_decisions {
-		game_state.Current_decisions[i] = defaultDecisions
+	for i := range game_state.CurrentDecisions {
+		game_state.CurrentDecisions[i] = defaultDecisions
 	}
 
-	game_state.Decisions_submitted = make([]bool, number_of_companies)
+	game_state.DecisionsSubmitted = make([]bool, numberOfCompanies)
 
 	return game_state
 }
 
-func Load_game(path string) (Game_state, error) {
+func Load_game(path string) (GameState, error) {
 	println("Loading game")
 
 	var save_file []byte
@@ -388,58 +415,60 @@ func Load_game(path string) (Game_state, error) {
 		println("Decompressing save")
 		r, err := zip.OpenReader(path)
 		if err != nil {
-			return Game_state{}, err
+			return GameState{}, err
 		}
 		defer r.Close()
 
 		save_file_reader, err := r.File[0].Open()
 		if err != nil {
-			return Game_state{}, err
+			return GameState{}, err
 		}
 		defer save_file_reader.Close()
 
 		save_file, err = io.ReadAll(save_file_reader)
 		if err != nil {
-			return Game_state{}, err
+			return GameState{}, err
 		}
 
 	} else {
 		println("Opening file")
 		file, err := os.Open(path)
 		if err != nil {
-			return Game_state{}, err
+			return GameState{}, err
 		}
 		save_file, err = io.ReadAll(file)
 		if err != nil {
-			return Game_state{}, err
+			return GameState{}, err
 		}
 	}
 
-	var save Save_game
+	var save SaveGame
 	err := json.Unmarshal(save_file, &save)
 	if err != nil {
-		return Game_state{}, err
+		return GameState{}, err
 	}
 
-	var game_state Game_state
+	var game_state GameState
 	population_buffer := bytes.NewBuffer(save.Population)
 	decoder := gob.NewDecoder(population_buffer)
 
 	var population Population
 	err = decoder.Decode(&population.Population)
 	if err != nil {
-		return Game_state{}, err
+		return GameState{}, err
 	}
 
-	game_state = save.Game_state
+	game_state = save.GameState
 
 	for i := range game_state.Companies {
 		// fix employee pointer stuff
-		game_state.Companies[i].employee_pool = game_state.Employees
+		game_state.Companies[i].employeePool = game_state.Employees
 
 		// check if each product is valid
-		if err := check_product(game_state.Companies[i].Offer.Product); err != nil {
-			return game_state, err
+		for _, offer := range game_state.Companies[i].Offers {
+			if err := check_product(offer.Product); err != "" {
+				return game_state, errors.New(err)
+			}
 		}
 	}
 
@@ -449,9 +478,9 @@ func Load_game(path string) (Game_state, error) {
 		return game_state, errors.New("Failed to load population")
 	}
 
-	println("Successfully opened ", game_state.Game_name)
+	println("Successfully opened ", game_state.GameName)
 
-	s, err := json.MarshalIndent(game_state.External_factors, "", "    ")
+	s, err := json.MarshalIndent(game_state.ExternalFactors, "", "    ")
 	if err != nil {
 		return game_state, err
 	}

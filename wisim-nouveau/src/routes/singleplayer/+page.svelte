@@ -15,6 +15,7 @@
 	import Finances from '../../components/finances.svelte';
 	import FinancialReport from '../../components/financialReport.svelte';
 	import Invoices from '../../components/invoices.svelte';
+	import Production from '../../components/production.svelte';
 
 	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
 	let windows = $state({});
@@ -109,39 +110,32 @@
 					}
 					break;
 				case Methods.Get_company:
-					clientState.company = dataJSON.Data;
+					clientState.Company = dataJSON.Data;
 					console.log('company updated');
 					break;
 				case Methods.Get_decisions:
-					clientState.decisions = dataJSON.Data;
-					clientState.decisions.Employees.Production_deltas = [];
-					clientState.decisions.Employees.Marketing_deltas = [];
+					clientState.Decisions = dataJSON.Data;
+					clientState.Decisions.Employees.Production_deltas = [];
+					clientState.Decisions.Employees.Marketing_deltas = [];
 					console.log('decisions updated');
-					connection.fProduct_stats(
-						clientState.decisions.Marketing.Product,
-						clientState.decisions.Research
-					);
-					connection.sDecisions(clientState.decisions);
+					connection.sDecisions(clientState.Decisions);
 					break;
 				case Methods.Get_external_factors:
-					clientState.external_factors = dataJSON.Data;
+					clientState.ExternalFactors = dataJSON.Data;
 					console.log('external_factors updated');
 					break;
-				case Methods.Func_calculate_product_stats:
-					clientState.company.Offer.Product = dataJSON.Data;
-					console.log('product Stats updated');
 				case Methods.Get_employees:
 					if (dataJSON.Data.Type == 'production') {
-						clientState.employees.production = dataJSON.Data.Employees;
+						clientState.Employees.production = dataJSON.Data.Employees;
 					} else if (dataJSON.Data.Type == 'marketing') {
-						clientState.employees.marketing = dataJSON.Data.Employees;
+						clientState.Employees.marketing = dataJSON.Data.Employees;
 					}
 					console.log('employees updated');
 				case Methods.Get_unemployed_employees:
 					if (dataJSON.Data.Type == 'production') {
-						clientState.unemployed.production = dataJSON.Data.Employees;
+						clientState.Unemployed.production = dataJSON.Data.Employees;
 					} else if (dataJSON.Data.Type == 'marketing') {
-						clientState.unemployed.marketing = dataJSON.Data.Employees;
+						clientState.Unemployed.marketing = dataJSON.Data.Employees;
 					}
 					console.log('unemployed updated');
 			}
@@ -228,7 +222,7 @@
 				}}
 			>
 				<strong>
-					{format.currency(clientState.company.Balance, true, 2)}
+					{format.currency(clientState.Company.Balance, true, 2)}
 				</strong>
 			</button>
 			<button
@@ -238,15 +232,14 @@
 			>
 			<button
 				onclick={() => {
-					newWindow(marketing);
-				}}>Marketing</button
-			>
-			<button
-				onclick={() => {
 					newWindow(employees);
 				}}>Employees</button
 			>
-			<button>Production</button>
+			<button
+				onclick={() => {
+					newWindow(production);
+				}}>Production</button
+			>
 			<button
 				onclick={() => {
 					newWindow(research);
@@ -323,10 +316,13 @@
 			bind:clientState
 			updateDecisions={(decisions) => {
 				connection.sDecisions(decisions);
-				connection.fProduct_stats(decisions.Marketing.Product, decisions.Research);
 			}}
-			bind:product={clientState.company.Offer.Product}
-			externalFactors={clientState.external_factors}
+			bind:offers={clientState.Company.Offers}
+			externalFactors={clientState.ExternalFactors}
+			{newWindow}
+			deleteWindow={(id) => {
+				deleteWindow(id);
+			}}
 		></Product>
 	</Window>
 {/snippet}
@@ -427,6 +423,22 @@
 				connection.sDecisions(decisions);
 			}}
 		></Employees>
+	</Window>
+{/snippet}
+
+{#snippet production(/** @type {Number} id */ id)}
+	<Window
+		title="Production"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<Production
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+		></Production>
 	</Window>
 {/snippet}
 

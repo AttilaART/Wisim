@@ -13,13 +13,23 @@ import (
 )
 
 // Economy functions
-func (population *Population) simulate_economy(companies *[]Company, external_factors External_factors) ([]FinanceReportEntry, []Purchasing_statistics, error) {
+// purchasingStatisticsMap is passed as argument to reduce unnececary garbage collection
+func (population *Population) simulateEconomy(companies *[]Company, externalFactors External_factors, purchasingStatisticsMap map[string]Purchasing_statistics) ([]FinanceReportEntry, error) {
 	// Get offers
-	offers := make([]Offer, len(*companies))
+	var offers []Offer
+	var productAvailability []int
+	var i int
+	for _, c := range *companies {
+		for productID, offer := range c.Offers {
+			println("1")
+			offers = append(offers, offer)
+			productAvailability = append(productAvailability, c.ProductsInStorage[productID])
+			i++
+		}
+	}
 
-	if external_factors.Economic_situation_index <= 0 {
+	if externalFactors.EconomicSituationIndex <= 0 {
 		return make([]FinanceReportEntry, len(*companies)),
-			make([]Purchasing_statistics, len(offers)+1),
 			errors.New("economic_situation_index cannot be 0")
 	}
 
@@ -41,6 +51,9 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	// Multithreading boilerplate
 	var wg sync.WaitGroup
 	numThreads := runtime.NumCPU()
+	if numThreads <= 0 {
+		panic("Thread count <= 0")
+	}
 
 	wg.Add(numThreads)
 
@@ -48,19 +61,14 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	offerDurabilities := make([]int, len(offers))
 	offersProperties := make([]Properties, len(offers))
 
-	productAvailability := make([]int, len(offersProperties))
-	for i, c := range *companies {
-		offers[i] = c.Offer
-		productAvailability[i] = c.Items_in_storage
-	}
 	for i, o := range offers {
 		offerPrices[i] = o.Price
 
-		offersProperties[i][propertiesQuality] = o.Product.Quality_factor
-		offersProperties[i][propertiesEcology] = o.Product.Ecology_factor
-		offersProperties[i][propertiesEthics] = o.Product.Ethics_factor
+		offersProperties[i][propertiesQuality] = o.Product.Quality
+		offersProperties[i][propertiesEcology] = o.Product.Ecology
+		offersProperties[i][propertiesEthics] = o.Product.Ethics
 		offersProperties[i][propertiesPrice] = isCheap(o, avgPrice)
-		offersProperties[i][propertiesBangForBuck] = o.Product.Quality_factor / o.Price
+		offersProperties[i][propertiesBangForBuck] = o.Product.Quality / o.Price
 		if o.Price <= 0 {
 			offersProperties[i][propertiesPrice] = 10
 			offersProperties[i][propertiesBangForBuck] = 10
@@ -77,7 +85,7 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 			offerPrices,
 			offerDurabilities,
 			productAvailability,
-			external_factors,
+			externalFactors,
 			purchasingStatistics)
 	}
 
@@ -96,32 +104,38 @@ func (population *Population) simulate_economy(companies *[]Company, external_fa
 	}
 
 	for i := range len(purchasingStatistics) - 1 {
-		purchasingStatistics[i].Avr_decision_factor /= float32(len(population.Population))
-		purchasingStatistics[i].Avr_purchasing_threshold /= float32(len(population.Population))
+		purchasingStatistics[i].AvrDecisionFactor /= float32(len(population.Population))
+		purchasingStatistics[i].AvrPurchasingThreshold /= float32(len(population.Population))
 
-		avrPurchasingFactors := purchasingStatistics[i].Avr_purchasing_factors
-		simd.DivFloat32(avrPurchasingFactors[:], divisionVector[:], purchasingStatistics[i].Avr_purchasing_factors[:])
+		avrPurchasingFactors := purchasingStatistics[i].AvrPurchasingFactors
+		simd.DivFloat32(avrPurchasingFactors[:], divisionVector[:], purchasingStatistics[i].AvrPurchasingFactors[:])
 
-		purchasingStatistics[len(purchasingStatistics)-1].Products_sold += purchasingStatistics[i].Products_sold
-		purchasingStatistics[len(purchasingStatistics)-1].Product_demand += purchasingStatistics[i].Product_demand
+		purchasingStatistics[len(purchasingStatistics)-1].ProductsSold += purchasingStatistics[i].ProductsSold
+		purchasingStatistics[len(purchasingStatistics)-1].ProductDemand += purchasingStatistics[i].ProductDemand
 
-		purchasingStatistics[len(purchasingStatistics)-1].Avr_decision_factor += purchasingStatistics[i].Avr_decision_factor
-		purchasingStatistics[len(purchasingStatistics)-1].Avr_purchasing_threshold += purchasingStatistics[i].Avr_purchasing_threshold
+		purchasingStatistics[len(purchasingStatistics)-1].AvrDecisionFactor += purchasingStatistics[i].AvrDecisionFactor
+		purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingThreshold += purchasingStatistics[i].AvrPurchasingThreshold
 
-		simd.AddFloat32(purchasingStatistics[len(purchasingStatistics)-1].Avr_purchasing_factors[:], purchasingStatistics[i].Avr_purchasing_factors[:], purchasingStatistics[len(purchasingStatistics)-1].Avr_purchasing_factors[:])
+		simd.AddFloat32(purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:], purchasingStatistics[i].AvrPurchasingFactors[:], purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:])
 	}
 
-	purchasingStatistics[len(purchasingStatistics)-1].Avr_decision_factor /= float32(len(purchasingStatistics) - 1)
-	purchasingStatistics[len(purchasingStatistics)-1].Avr_purchasing_threshold /= float32(len(purchasingStatistics) - 1)
+	purchasingStatistics[len(purchasingStatistics)-1].AvrDecisionFactor /= float32(len(purchasingStatistics) - 1)
+	purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingThreshold /= float32(len(purchasingStatistics) - 1)
 
-	simd.DivFloat32(purchasingStatistics[len(purchasingStatistics)-1].Avr_purchasing_factors[:], divisionVector[:], purchasingStatistics[len(purchasingStatistics)-1].Avr_purchasing_factors[:])
+	simd.DivFloat32(purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:], divisionVector[:], purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:])
 
 	results := make([]FinanceReportEntry, len(*companies))
 	for i := range results {
-		results[i] = FinanceReportEntry{"Products sold in stores", sales, fmt.Sprintf("%d products were sold in strores", purchasingStatistics[i].Products_sold), true, float64(purchasingStatistics[i].Products_sold * int(offers[i].Price))}
+		results[i] = FinanceReportEntry{"Products sold in stores", sales, fmt.Sprintf("%d products were sold in strores", purchasingStatistics[i].ProductsSold), true, float64(purchasingStatistics[i].ProductsSold * int(offers[i].Price))}
 	}
 
-	return results, purchasingStatistics, nil
+	for i, offer := range offers {
+		purchasingStatisticsMap[offer.Product.ID] = purchasingStatistics[i]
+	}
+
+	purchasingStatisticsMap["-1"] = purchasingStatistics[len(purchasingStatistics)-1]
+
+	return results, nil
 }
 
 func simulatePopulationSegment(
@@ -169,14 +183,14 @@ func simulatePopulationSegment(
 				productPurchasingFactorsComponents[0] +
 				customer.Brand_loyalty_factor*customer.Loyalties[ii]))
 
-			productPurchasingFactor *= externalFactors.Economic_situation_index
+			productPurchasingFactor *= externalFactors.EconomicSituationIndex
 
 			productsPurchasingFactors[ii] = productPurchasingFactor
 
-			simd.AddFloat32(productPurchasingFactorsComponents[:], purchasingStatistics[ii].Avr_purchasing_factors[:], purchasingStatistics[ii].Avr_purchasing_factors[:])
+			simd.AddFloat32(productPurchasingFactorsComponents[:], purchasingStatistics[ii].AvrPurchasingFactors[:], purchasingStatistics[ii].AvrPurchasingFactors[:])
 
-			purchasingStatistics[ii].Avr_decision_factor += productPurchasingFactor
-			purchasingStatistics[ii].Avr_purchasing_threshold += populationSegment[i].Purchashing_threshold
+			purchasingStatistics[ii].AvrDecisionFactor += productPurchasingFactor
+			purchasingStatistics[ii].AvrPurchasingThreshold += populationSegment[i].Purchashing_threshold
 		}
 
 		const noProductChosen = -1
@@ -185,7 +199,7 @@ func simulatePopulationSegment(
 		choice := chooseProduct(productsPurchasingFactors, populationSegment[i].Purchashing_threshold)
 
 		if choice != noProductChosen {
-			purchasingStatistics[choice].Product_demand += customer.Base_need - len(customer.Owned_products)
+			purchasingStatistics[choice].ProductDemand += customer.Base_need - len(customer.Owned_products)
 			numberOfProductsPurchased := 0
 			for range customer.Base_need - len(customer.Owned_products) {
 				if productAvailability[choice] > 0 {
@@ -196,32 +210,32 @@ func simulatePopulationSegment(
 					break
 				}
 			}
-			purchasingStatistics[choice].Products_sold += numberOfProductsPurchased
+			purchasingStatistics[choice].ProductsSold += numberOfProductsPurchased
 		}
 		populationSegment[i] = customer
 	}
 	wg.Done()
 }
 
-func isCheap(offer Offer, avr_price float32) float32 {
-	if offer.Price == avr_price {
+func isCheap(offer Offer, avrPrice float32) float32 {
+	if offer.Price == avrPrice {
 		return 0.5
 	}
 
-	return 0.5 + (avr_price - offer.Price)
+	return 0.5 + (avrPrice - offer.Price)
 }
 
-func chooseProduct(decision_factors []float32, purchasing_threshold float32) int {
+func chooseProduct(decisionFactors []float32, purchasingThreshold float32) int {
 	topProductsIndex := []int{}
 
-	for i, p := range decision_factors {
-		if p < purchasing_threshold {
+	for i, p := range decisionFactors {
+		if p < purchasingThreshold {
 			continue
 		} else if len(topProductsIndex) == 0 {
 			topProductsIndex = []int{i}
-		} else if p > decision_factors[topProductsIndex[0]] {
+		} else if p > decisionFactors[topProductsIndex[0]] {
 			topProductsIndex = []int{i}
-		} else if p == decision_factors[topProductsIndex[0]] {
+		} else if p == decisionFactors[topProductsIndex[0]] {
 			topProductsIndex = append(topProductsIndex, i)
 		}
 	}

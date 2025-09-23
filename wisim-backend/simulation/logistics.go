@@ -11,17 +11,17 @@ func (c *Company) calculate_logistics(decisions Decisions) {
 	var warehouses_to_delete_id []int
 	for _, w := range decisions.Production.Logistics {
 		if w.Change == Delta_New {
-			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Purchase of warehouse", production, "", true, -float64(w.Item.Value))
+			c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Purchase of warehouse", production, "", true, -float64(w.Item.Value))
 			c.Warehouses = append(c.Warehouses, w.Item)
 		} else if w.Change == Delta_Remove {
-			c.Reports[len(c.Reports)-1].Balance_sheet.add_to_income_statement("Selling of warehouse", production, "", true, float64(w.Item.Value))
-			warehouses_to_delete_id = append(warehouses_to_delete_id, w.Item.Id)
+			c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Selling of warehouse", production, "", true, float64(w.Item.Value))
+			warehouses_to_delete_id = append(warehouses_to_delete_id, w.Item.ID)
 		}
 	}
 
 	c.Warehouses = delete_by_id(c.Warehouses, warehouses_to_delete_id...)
 
 	for _, w := range c.Warehouses {
-		c.Reports[len(c.Reports)-1].Balance_sheet.add_to_equity("Warehouse", logistics, "", false, float64(w.Value))
+		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_equity("Warehouse", logistics, "", false, float64(w.Value))
 	}
 }

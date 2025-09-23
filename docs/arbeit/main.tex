@@ -1,0 +1,73 @@
+\documentclass{scrartcl}
+
+\usepackage{fontspec}
+\usepackage{lipsum}
+\usepackage[linktoc=all]{hyperref}
+\hypersetup{
+    colorlinks,
+    citecolor=black,
+    filecolor=black,
+    linkcolor=black,
+    urlcolor=black
+}
+
+\setmainfont[
+  BoldFont={SFNSText-Bold.otf}, 
+  ItalicFont={SFNSText-RegularItalic.otf},
+  BoldItalicFont={SFNSText-BoldItalic.otf}
+]{SFNSText-Regular.otf}
+
+\newfontfamily\ClashGroteskBold{ClashGrotesk-Bold.ttf}
+\newfontfamily\ClashGroteskSemibold{ClashGrotesk-Semibold.ttf}
+
+\setkomafont{title}{\ClashGroteskSemibold}
+\addtokomafont{section}{\ClashGroteskSemibold}
+
+\setkomafont{sectionentry}{\sffamily}
+\setkomafont{partentry}{\sffamily}
+\setkomafont{sectionentry}{\sffamily}
+
+\setlength{\parindent}{0pt}
+
+\title{}
+\author{Attila Pinter}
+\date{}
+
+\begin{document}
+
+\begin{titlepage}
+	Kantonsschule im Lee Winterthur \\
+	Maturitätsarbeit HS 2025/26 \\
+
+	{\Huge \ClashGroteskSemibold Making a playable simulation of markets and organisations}\\
+
+	Attila Pinter, 4a \\
+	Patrik Hknilcka \\
+
+	\today
+
+\end{titlepage}
+
+\tableofcontents
+
+\input{motivation.tex}
+
+\input{goals.tex}
+
+\section{Technology}
+
+\lipsum[1]
+
+\section{Iteration}
+
+\lipsum[1]
+
+\section{Economic model}
+
+\lipsum[1]
+
+\section{Actually making it fun}
+
+\lipsum[1]
+
+\end{document}

@@ -1,88 +1,31 @@
 {
   "Default_company": {
-    "Offer": {
-      "Product": {
-        "Name": "Unnamed Product",
-        "Weight": 1,
-        "Base_material_use": 1,
-        "Base_quality": 1,
-        "Base_ecology": 1,
-        "Base_durability": 1,
-        "Base_production_cost": 1,
-        "Durabilty": 1
-      }
-    },
     "Warehouses": [
       {
         "Capacity": 1000,
         "Operating_costs": 100
       }
     ],
-    "Items_in_storage": 100000000,
+    "Tech": {
+      "Quality": 1,
+      "Ecology": 1,
+      "Durability": 1,
+      "ProductionCost": 1,
+      "MaterialUse": 1
+    },
     "Machines": [
       {
-        "Production_capacity": 150,
-        "Required_workers": 1,
-        "Minimum_workers": 1,
-        "Energy_use": 0.01,
+        "ProductionCapacity": 150,
+        "RequiredWorkers": 1,
+        "MinimumWorkers": 1,
+        "EnergyUse": 0.01,
         "Value": 5000,
-        "Maintanance_cost": 50
+        "MaintananceCost": 50
       }
     ],
-    "Balance": 50000,
-    "Decision_history": [
-      {
-        "Predictions": {
-          "Sales_prediction": 100000
-        },
-        "Finances": {
-          "Set_bank_loan": 10000
-        },
-        "Marketing": {
-          "Price": 100,
-          "Product": {
-            "Materials": {
-              "Quality": 1,
-              "Ecology": 1,
-              "Ethical_sourcing": 1
-            },
-            "Manufacturing": {
-              "Quality": 1,
-              "Ecological_energy": 1,
-              "Material_efficiency": 1,
-              "Durability": 1,
-              "Max_durability": 1
-            }
-          },
-          "Promotion": {
-            "Quantity": 1,
-            "Style_quality": 1,
-            "Style_ecology": 1,
-            "Style_ethics": 1,
-            "Style_durability": 1
-          }
-        },
-        "Employees": {
-          "Production_actions": null,
-          "Marketing_actions": null,
-          "Severance_pay": 10000
-        },
-        "Production": {
-          "Production_goal": 20000,
-          "Machines": null,
-          "Logistics": null
-        },
-        "Research": {
-          "Quality": 0,
-          "Durability": 0,
-          "Ecology": 0,
-          "Promotion": 0,
-          "Speed": 0
-        }
-      }
-    ]
+    "Balance": 50000
   },
-  "Population_size": 10000000,
+  "Population_size": 10000,
   "Min_base_need": 1,
   "Max_base_need": 4,
   "Quality_bias": 1,

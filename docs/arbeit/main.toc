@@ -1,0 +1,7 @@
+\contentsline {section}{\numberline {1}Motivation}{2}{section.1}%
+\contentsline {section}{\numberline {2}Goals}{2}{section.2}%
+\contentsline {section}{\numberline {3}Technology}{3}{section.3}%
+\contentsline {section}{\numberline {4}Iteration}{3}{section.4}%
+\contentsline {section}{\numberline {5}Economic model}{3}{section.5}%
+\contentsline {section}{\numberline {6}Actually making it fun}{4}{section.6}%
+\providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

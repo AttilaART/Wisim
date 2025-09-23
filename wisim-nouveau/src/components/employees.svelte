@@ -1,5 +1,6 @@
 <script>
 	import { format } from '$lib/javascript/format';
+	import { delta } from '$lib/javascript/simulation';
 	/** @type {{clientState: import("$lib/javascript/simulation").clientState, updateDecisions: (decisions: import("$lib/javascript/simulation").Decisions)=>void}} */
 	let { clientState = $bindable(), updateDecisions } = $props();
 
@@ -10,14 +11,6 @@
 	 * @property {import("$lib/javascript/simulation").Change} Delta.Delta_Change
 	 * @property {import("$lib/javascript/simulation").Change} Delta.Delta_Remove
 	 */
-	/**
-	 * @type {Delta}
-	 */
-	const delta = {
-		Delta_New: 0,
-		Delta_Change: 1,
-		Delta_Remove: 2
-	};
 	/**
 	 * @param {import("$lib/javascript/simulation").Change} delta
 	 * @param {import("$lib/javascript/simulation").Employee} employee
@@ -36,13 +29,13 @@
 		let deltasList = [];
 
 		if (employeeType == 'production')
-			deltasList = clientState.decisions.Employees.Production_deltas;
+			deltasList = clientState.Decisions.Employees.Production_deltas;
 		else if (employeeType == 'marketing')
-			deltasList = clientState.decisions.Employees.Marketing_deltas;
+			deltasList = clientState.Decisions.Employees.Marketing_deltas;
 		else throw `invalid employeeType: ${employeeType}`;
 
 		for (/** @type {number} i */ let i in deltasList) {
-			if (deltasList[i].Item.Id == employee.Id) {
+			if (deltasList[i].Item.ID == employee.ID) {
 				deltasList[i].Change = delta;
 				deltasList[i].Item = employee;
 				return;
@@ -57,8 +50,8 @@
 	 * @returns {boolean}
 	 */
 	function isFired(id, type) {
-		for (let e of clientState.decisions.Employees[format.capitaliseFirstLetter(type) + '_deltas']) {
-			if (e.Item.Id == id) {
+		for (let e of clientState.Decisions.Employees[format.capitaliseFirstLetter(type) + '_deltas']) {
+			if (e.Item.ID == id) {
 				if (e.Change == delta.Delta_Remove) {
 					return true;
 				}
@@ -73,8 +66,8 @@
 	 * @returns {boolean}
 	 */
 	function isHired(id, type) {
-		for (let e of clientState.decisions.Employees[format.capitaliseFirstLetter(type) + '_deltas']) {
-			if (e.Item.Id == id) {
+		for (let e of clientState.Decisions.Employees[format.capitaliseFirstLetter(type) + '_deltas']) {
+			if (e.Item.ID == id) {
 				if (e.Change == delta.Delta_New) {
 					return true;
 				}
@@ -88,9 +81,9 @@
 	 * @param {number} index
 	 */
 	function onModifyEmployee(type, index) {
-		modifyEmployee(delta.Delta_Change, clientState.employees[type][index], type);
-		console.log($state.snapshot(clientState.decisions));
-		updateDecisions(clientState.decisions);
+		modifyEmployee(delta.Delta_Change, clientState.Employees[type][index], type);
+		console.log($state.snapshot(clientState.Decisions));
+		updateDecisions(clientState.Decisions);
 	}
 </script>
 
@@ -148,37 +141,37 @@
 			<tbody>
 				{#if menuState[0] == 'production'}
 					{#if menuState[1] == 'hired'}
-						{#each clientState.employees.production as e, index (e.Id)}
+						{#each clientState.Employees.production as e, index (e.ID)}
 							{@render employee(index, 'production')}
 						{/each}
 					{:else}
-						{#each clientState.unemployed.production as e, index (e.Id)}
+						{#each clientState.Unemployed.production as e, index (e.ID)}
 							{@render prospective(index, 'production')}
 						{/each}
 					{/if}
 				{:else if menuState[0] == 'marketing'}
 					{#if menuState[1] == 'hired'}
-						{#each clientState.employees.marketing as e, index (e.Id)}
+						{#each clientState.Employees.marketing as e, index (e.ID)}
 							{@render employee(index, 'marketing')}
 						{/each}
 					{:else}
-						{#each clientState.unemployed.marketing as e, index (e.Id)}
+						{#each clientState.Unemployed.marketing as e, index (e.ID)}
 							{@render prospective(index, 'marketing')}
 						{/each}
 					{/if}
 				{:else if menuState[0] == 'all'}
 					{#if menuState[1] == 'hired'}
-						{#each clientState.employees.marketing as e, index (e.Id)}
+						{#each clientState.Employees.marketing as e, index (e.ID)}
 							{@render employee(index, 'marketing')}
 						{/each}
-						{#each clientState.employees.production as e, index (e.Id)}
+						{#each clientState.Employees.production as e, index (e.ID)}
 							{@render employee(index, 'production')}
 						{/each}
 					{:else}
-						{#each clientState.unemployed.marketing as e, index (e.Id)}
+						{#each clientState.Unemployed.marketing as e, index (e.ID)}
 							{@render prospective(index, 'marketing')}
 						{/each}
-						{#each clientState.unemployed.production as e, index (e.Id)}
+						{#each clientState.Unemployed.production as e, index (e.ID)}
 							{@render prospective(index, 'production')}
 						{/each}
 					{/if}
@@ -189,23 +182,23 @@
 </section>
 
 {#snippet employee(/** @type {Number} */ index, /** @type {String} */ type)}
-	<tr style="opacity: {isFired(clientState.employees[type][index].Id, type) ? '0.5' : '1'};">
+	<tr style="opacity: {isFired(clientState.Employees[type][index].ID, type) ? '0.5' : '1'};">
 		<td>
-			{clientState.employees[type][index].Name}
+			{clientState.Employees[type][index].Name}
 		</td>
 		<td>
-			<progress value={clientState.employees[type][index].Skill - 0.5} max="1"></progress>
+			<progress value={clientState.Employees[type][index].Skill - 0.5} max="1"></progress>
 		</td>
 		<td>
-			<progress value={clientState.employees[type][index].Motivation - 0.5} max="1"></progress>
+			<progress value={clientState.Employees[type][index].Motivation - 0.5} max="1"></progress>
 		</td>
 		<td>
 			<div style="display: inline-block;">
-				{clientState.employees[type][index].Working_hours}h
+				{clientState.Employees[type][index].Working_hours}h
 			</div>
 			<input
 				style="display: inline-block;"
-				bind:value={clientState.employees[type][index].Working_hours}
+				bind:value={clientState.Employees[type][index].Working_hours}
 				type="range"
 				min="1"
 				max="12"
@@ -222,26 +215,26 @@
 				}}
 			>
 				<input
-					bind:value={clientState.employees[type][index].Pay}
+					bind:value={clientState.Employees[type][index].Pay}
 					type="number"
-					min={clientState.external_factors[format.capitaliseFirstLetter(type) + '_minimum_wage']}
+					min={clientState.ExternalFactors[format.capitaliseFirstLetter(type) + '_minimum_wage']}
 					step="1000"
 				/>
 			</label>
 		</td>
 		<td>
-			{#if !isFired(clientState.employees[type][index].Id, type)}
+			{#if !isFired(clientState.Employees[type][index].ID, type)}
 				<button
 					onclick={() => {
-						modifyEmployee(delta.Delta_Remove, clientState.employees[type][index], type);
-						updateDecisions(clientState.decisions);
+						modifyEmployee(delta.Delta_Remove, clientState.Employees[type][index], type);
+						updateDecisions(clientState.Decisions);
 					}}>FIRE</button
 				>
 			{:else}
 				<button
 					onclick={() => {
-						modifyEmployee(delta.Delta_Change, clientState.employees[type][index], type);
-						updateDecisions(clientState.decisions);
+						modifyEmployee(delta.Delta_Change, clientState.Employees[type][index], type);
+						updateDecisions(clientState.Decisions);
 					}}>Rehire</button
 				>
 			{/if}
@@ -250,30 +243,30 @@
 {/snippet}
 
 {#snippet prospective(/** @type {Number} */ index, /** @type {String} */ type)}
-	<tr style="opacity: {isFired(clientState.employees[type][index].Id, type) ? '0.5' : '1'};">
+	<tr style="opacity: {isFired(clientState.Unemployed[type][index].ID, type) ? '0.5' : '1'};">
 		<td>
-			{clientState.unemployed[type][index].Name}
+			{clientState.Unemployed[type][index].Name}
 		</td>
 		<td>
-			<progress value={clientState.unemployed[type][index].Skill - 0.5} max="1"></progress>
+			<progress value={clientState.Unemployed[type][index].Skill - 0.5} max="1"></progress>
 		</td>
 		<td>
-			{format.currency(clientState.unemployed[type][index].Pay, false, 0)} / Mon
+			{format.currency(clientState.Unemployed[type][index].Pay, false, 0)} / Mon
 		</td>
 		<td>
-			{#if !isHired(clientState.unemployed[type][index].Id, type)}
+			{#if !isHired(clientState.Unemployed[type][index].ID, type)}
 				<button
 					onclick={() => {
-						modifyEmployee(delta.Delta_New, clientState.unemployed[type][index], type);
-						updateDecisions(clientState.decisions);
+						modifyEmployee(delta.Delta_New, clientState.Unemployed[type][index], type);
+						updateDecisions(clientState.Decisions);
 					}}>Send Offer</button
 				>
 			{:else}
 				<button
 					class="secondary"
 					onclick={() => {
-						modifyEmployee(delta.Delta_Remove, clientState.unemployed[type][index], type);
-						updateDecisions(clientState.decisions);
+						modifyEmployee(delta.Delta_Remove, clientState.Unemployed[type][index], type);
+						updateDecisions(clientState.Decisions);
 					}}>Rescind Offer</button
 				>
 			{/if}

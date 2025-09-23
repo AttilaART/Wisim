@@ -29,51 +29,28 @@ export const Methods = {
 
 /** @type {import('./simulation').clientState}*/
 export const baseState = {
-	company: {
-		Id: 0,
+	Company: {
+		ID: 0,
 		Name: '',
 		Balance: 0,
 		Loans: 0,
-		Bridge_loans: 0,
-		Decision_history: [],
+		BridgeLoans: 0,
+		DecisionHistory: [],
 		Reports: [],
-		Global_quality_factor: 0,
-		Base_marketing_strength: 0,
-		Offer: {
-			Price: 0,
-			Promotion_quality: 0,
-			Promotion_goal: {
-				Style_quality: 0,
-				Style_durability: 0,
-				Style_ecology: 0,
-				Style_ethics: 0,
-				Quantity: 0
-			},
-			Product: {
-				Id: 0,
-				Name: '',
-				Weight: 0,
-				Material_use: 0,
-				Production_cost: 0,
-
-				Base_material_use: 0,
-				Base_production_cost: 0,
-				Base_quality: 0,
-				Base_ecology: 0,
-				Base_durability: 0,
-
-				Ethics_factor: 0,
-				Quality_factor: 0,
-				Ecology_factor: 0,
-				Durabilty: 0
-			}
-		}, // placeholder for Offer
-		Orders: 0,
+		Tech: {
+			Quality: 1,
+			MaterialUse: 1,
+			ProductionCost: 1,
+			Ecology: 1,
+			Durability: 1
+		},
+		BaseMarketingStrength: 0,
+		Offers: {}, // placeholder for Offer
 		Warehouses: [],
-		Items_in_storage: 0,
+		ProductsInStorage: {},
 		Machines: []
 	},
-	decisions: {
+	Decisions: {
 		Predictions: {
 			Sales_prediction: 0
 		},
@@ -81,27 +58,13 @@ export const baseState = {
 			Set_bank_loan: 0
 		},
 		Marketing: {
-			Price: 0,
-			Product: {
-				Materials: {
-					Quality: 0,
-					Ecology: 0,
-					Ethical_sourcing: 0
-				},
-				Manufacturing: {
-					Quality: 0,
-					Ecological_energy: 0,
-					Material_efficiency: 0,
-					Durability: 0,
-					Max_durability: 0
-				}
-			}, // Decisions_product object
+			Products: {}, // Decisions_product object
 			Promotion: {
 				Quantity: 0,
-				Style_quality: 0,
-				Style_ecology: 0,
-				Style_ethics: 0,
-				Style_durability: 0
+				StyleQuality: 0,
+				StyleEcology: 0,
+				StyleEthics: 0,
+				StyleDurability: 0
 			}
 		},
 		Employees: {
@@ -122,27 +85,36 @@ export const baseState = {
 			Production_cost: 0
 		}
 	},
-	external_factors: {
+	ExternalFactors: {
 		Month: 0,
 		Inflation: 0,
-		Intrest_rate: 0,
-		Bridge_loans_intrest_rate: 0,
-		Economic_situation_index: 0,
-		Tax_rate: 0,
-		Turnover: 0,
-		Production_minimum_wage: 0,
-		Marketing_minimum_wage: 0,
-		Machine_on_offer: undefined, // placeholder for a Machine object
-		External_storage_price: 0,
-		Energy_price: 0,
-		Material_price: 0,
-		Machine_depreciation_rate: 0
+		IntrestRate: 0,
+		BridgeLoansIntrestRate: 0,
+		EconomicSituationIndex: 0,
+		TaxRate: 0,
+		ProductionMinimumWage: 0,
+		MarketingMinimumWage: 0,
+		MachineOnOffer: {
+			ID: -1,
+			ProductionCapacity: 0,
+			RequiredWorkers: 1,
+			MinimumWorkers: 1,
+			AssignedWorkersIds: [],
+			EnergyUse: 0,
+			Value: 1,
+			MaintananceCost: 1,
+			AssignedProductID: -1
+		}, // placeholder for a Machine object
+		ExternalStoragePrice: 0,
+		EnergyPrice: 0,
+		MaterialPrice: 0,
+		MachineDepreciationRate: 0
 	},
-	employees: {
+	Employees: {
 		production: [],
 		marketing: []
 	},
-	unemployed: {
+	Unemployed: {
 		production: [],
 		marketing: []
 	}

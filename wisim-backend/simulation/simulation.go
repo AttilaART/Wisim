@@ -8,27 +8,29 @@ import (
 	"errors"
 	"fmt"
 	"os"
+	"slices"
 
 	"golang.org/x/text/language"
 	"golang.org/x/text/message"
 )
 
-type Save_game struct {
+type SaveGame struct {
 	Population []byte // Binary
-	Game_state Game_state
+	GameState  GameState
 }
 
-type Game_state struct {
-	Step      int
-	Game_name string
+type GameState struct {
+	Step     int
+	GameName string
 
-	Population              Population
-	Employees               Employee_pool
-	Companies               []Company
-	Current_decisions       []Decisions
-	Decisions_submitted     []bool
-	Market_sales_statistics []Sales_statistics
-	External_factors        External_factors
+	Population            Population
+	Employees             Employee_pool
+	employeesArray        []Employee
+	Companies             []Company
+	CurrentDecisions      []Decisions
+	DecisionsSubmitted    []bool
+	MarketSalesStatistics []Sales_statistics
+	ExternalFactors       External_factors
 }
 
 type Sim_config struct {
@@ -69,44 +71,50 @@ type Sim_config struct {
 
 type Company struct {
 	// General
-	Id            int
-	Name          string
-	Balance       float64
-	Loans         float64
-	Bridge_loans  float64
-	employee_pool Employee_pool
+	ID           int
+	Name         string
+	Balance      float64
+	Loans        float64
+	BridgeLoans  float64
+	employeePool Employee_pool
 	// Global_effects   []Effect
-	Decision_history []Decisions
+	DecisionHistory []Decisions
 
 	Reports []Report
 	// Research and development
-	Global_quality_factor   float32
-	Base_marketing_strength float32
+	BaseMarketingStrength float32
+	Tech                  TechLevels
 
 	// Product
-	Offer  Offer
-	Orders int
+	Offers map[string]Offer
 
 	// Fulfillment
-	Warehouses       []Warehouse
-	Items_in_storage int
+	Warehouses        []Warehouse
+	ProductsInStorage map[string]int
 
 	// Production
 	Machines []Machine
 }
 
-// NOTE: Employees themselves keep track of their employers
+// NOTE: Employees keep track of their employers, not the companies
+type TechLevels struct {
+	Quality        float32
+	Ecology        float32
+	Durability     float32
+	ProductionCost float32
+	MaterialUse    float32
+}
 
 type Decisions struct {
 	Predictions struct {
-		Sales_prediction int
+		SalesPrediction int
 	}
 
 	Finances struct {
 		Set_bank_loan float64
 	}
 
-	Marketing Decisions_marketing
+	Products map[string]Decisions_product
 
 	Employees struct {
 		Production_deltas []Delta[Employee]
@@ -116,41 +124,38 @@ type Decisions struct {
 	}
 
 	Production struct {
-		Production_goal int
-		Machines        []Delta[Machine]
-		Logistics       []Delta[Warehouse]
+		Machines  []Delta[Machine]
+		Logistics []Delta[Warehouse]
 	}
 
 	Research Decisions_research
 }
 
-type Decisions_marketing struct {
-	Price float32
-
-	Product Decisions_product
-
-	Promotion struct {
-		Quantity         float64
-		Style_quality    float32
-		Style_ecology    float32
-		Style_ethics     float32
-		Style_durability float32
-	}
-}
-
 type Decisions_product struct {
+	Price          float32
+	Name           string
+	ProductionGoal int
+
 	Materials struct {
-		Quality          float32
-		Ecology          float32
-		Ethical_sourcing float32
+		Quality         float32
+		Ecology         float32
+		EthicalSourcing float32
 	}
 
 	Manufacturing struct {
-		Quality             float32
-		Ecological_energy   float32
-		Material_efficiency float32
-		Durability          float32
-		Max_durability      int
+		Quality            float32
+		EcologicalEnergy   float32
+		MaterialEfficiency float32
+		Durability         float32
+		MaxDurability      int
+	}
+
+	Promotion struct {
+		Quantity        float64
+		StyleQuality    float32
+		StyleEcology    float32
+		StyleEthics     float32
+		StyleDurability float32
 	}
 }
 
@@ -174,82 +179,79 @@ const (
 )
 
 type Offer struct {
-	Product           Product
-	Price             float32
-	Promotion_quality float32
-	Promotion_goal    struct {
-		Quantity         float64
-		Style_quality    float32
-		Style_ecology    float32
-		Style_ethics     float32
-		Style_durability float32
+	Status           string
+	Product          Product
+	Price            float32
+	PromotionQuality float32
+	PromotionGoal    struct {
+		Quantity        float64
+		StyleQuality    float32
+		StyleEcology    float32
+		StyleEthics     float32
+		StyleDurability float32
 	}
 }
 
 type Product struct {
-	Id              int
-	Name            string
-	Weight          float32
-	Material_use    float32
-	Production_cost float32
+	ID             string
+	Name           string
+	Weight         float32
+	MaterialUse    float32
+	ProductionCost float32
 
-	Base_material_use    float32
-	Base_production_cost float32
-	Base_quality         float32
-	Base_ecology         float32
-	Base_durability      float32
-
-	Ethics_factor  float32 // TODO: Implement Ethicss Factor
-	Quality_factor float32
-	Ecology_factor float32
+	Ethics  float32 // TODO: Implement Ethicss Factor
+	Quality float32
+	Ecology float32
 	// Coolness_factor float32
 
 	Durabilty int
 }
 
 type Machine struct {
-	Id int
+	ID int
 
-	Production_capacity  int
-	Required_workers     int
-	Minimum_workers      int
-	Assigned_workers_ids []int
-	Energy_use           float32
-	Value                float32
-	Maintanance_cost     float32 // Monthly
+	ProductionCapacity int
+	RequiredWorkers    int
+	MinimumWorkers     int
+	AssignedWorkersIDs []int
+	EnergyUse          float32
+	Value              float32
+	MaintananceCost    float32 // Monthly
+	AssignedProductID  string
 }
 
 func (m Machine) get_id() int {
-	return m.Id
+	return m.ID
 }
 
 type Warehouse struct {
-	Id              int
-	Capacity        int
-	Operating_costs float32
-	Value           float32
+	ID             int
+	Capacity       int
+	OperatingCosts float32
+	Value          float32
 }
 
 func (w Warehouse) get_id() int {
-	return w.Id
+	return w.ID
 }
 
 type Employee struct {
-	Id       int
-	Name     string
-	Employer int
+	ID              int
+	Name            string
+	Employer        int
+	MonthsAtCompany int
 
-	Employee_type Employee_type
+	EmployeeType Employee_type
 
-	Motivation     float32
-	Skill          float32
-	Extra_training float32
+	Motivation    float32
+	Skill         float32
+	ExtraTraining float32
 
 	// Global_effect *Effect
 
-	Pay           float32
-	Bonus         float32
-	Working_hours float32
+	Pay          float32
+	Bonus        float32
+	WorkingHours float32
 }
 
 type Employee_type int
@@ -265,19 +267,8 @@ const (
 	Employee_employer_none = -1
 )
 
-func (e_type Employee_type) to_string() string {
-	employee_types := []string{"production", "marketing", "executive"}
-
-	if int(e_type) > len(employee_types)-1 {
-		return "unknown"
-	} else if e_type < 0 {
-		return "unknown"
-	}
-	return employee_types[e_type]
-}
-
 type Effect struct {
-	Id          int
+	ID          int
 	Name        string
 	Description string
 	// Effect_function *Effect_Function
@@ -288,48 +279,48 @@ type Effect_Function func(int)
 type Report struct {
 	Month int
 
-	Financial_report  Financial_report
-	Balance_sheet     Balance_sheet
-	Personelle_report Personelle_report
-	Production_report Production_report
-	Sales_report      Sales_report
+	FinancialReport  Financial_report
+	BalanceSheet     Balance_sheet
+	PersonelleReport Personelle_report
+	ProductionReport Production_report
+	SalesReport      map[string]Sales_report
 }
 
 type Financial_report struct {
 	// Income
 	Income struct {
-		Gross_sales   float64
-		Other_income  float64
-		Cost_of_sales float64
-		Gross_profit  float64
+		GrossSales  float64
+		OtherIncome float64
+		CostOfSales float64
+		GrossProfit float64
 	}
-	Operating_expenses struct {
-		Advertising              float64
-		Facilities_and_logistics float64
-		Research_and_development float64
+	OperatingExpenses struct {
+		Advertising            float64
+		FacilitiesAndLogistics float64
+		ResearchAndDevelopment float64
 	}
-	Non_operating_expenses struct {
-		Write_offs            float64
-		Loan_interest         float64
-		Loan_repayment        float64
-		Bridge_loan_intrest   float64
-		Bridge_loan_repayment float64
-		Other                 float64
-		Taxes                 float64
+	NonOperatingExpenses struct {
+		WriteOffs           float64
+		LoanInterest        float64
+		LoanRepayment       float64
+		BridgeLoanIntrest   float64
+		BridgeLoanRepayment float64
+		Other               float64
+		Taxes               float64
 	}
 	Totals struct {
-		Total_operating_expenses     float64
-		Total_non_operating_expenses float64
-		Income_before_tax            float64
-		Net_income                   float64
-		Cashflow                     float64
+		TotalOperatingExpenses    float64
+		TotalNonOperatingExpenses float64
+		IncomeBeforeTax           float64
+		NetIncome                 float64
+		Cashflow                  float64
 	}
 }
 
 func (f *Balance_sheet) add_to_income_statement(name string, group int, info string, cash_cost bool, value float64) *FinanceReportEntry {
 	entry := FinanceReportEntry{name, group, info, cash_cost, value}
-	f.Invoice_log = append(f.Invoice_log, entry)
-	return &f.Invoice_log[len(f.Invoice_log)-1]
+	f.InvoiceLog = append(f.InvoiceLog, entry)
+	return &f.InvoiceLog[len(f.InvoiceLog)-1]
 }
 
 func (f *Balance_sheet) add_to_equity(name string, group int, info string, cash_cost bool, value float64) *FinanceReportEntry {
@@ -347,17 +338,17 @@ func (f *Balance_sheet) add_to_liabilities(name string, group int, info string, 
 type Balance_sheet struct {
 	Bank_balance float64
 
-	Invoice_log []FinanceReportEntry
+	InvoiceLog []FinanceReportEntry
 
 	Assets      []FinanceReportEntry
 	Liabilities []FinanceReportEntry
 }
 
 type FinanceReportEntry struct {
-	Name      string
-	Group     int
-	Info      string
-	Cash_cost bool
+	Name     string
+	Group    int
+	Info     string
+	CashCost bool
 
 	Value float64
 }
@@ -420,114 +411,109 @@ type Personelle_report struct {
 }
 
 type Personelle_sub_report struct {
-	Number_of_employees  int
-	Number_of_hires      int
-	Number_of_departures int
+	NumberOfEmployees  int
+	NumberOfHires      int
+	NumberOfDepartures int
 
-	Avg_pay          float32
-	Minimum_pay      float32
-	Maximum_pay      float32
-	Standard_dev_pay float32
+	AvgPay         float32
+	MinimumPay     float32
+	MaximumPay     float32
+	StandardDevPay float32
 
-	Minimum_skill      float32
-	Maximum_skill      float32
-	Avg_skill          float32
-	Standard_dev_skill float32
+	MinimumSkill     float32
+	MaximumSkill     float32
+	AvgSkill         float32
+	StandardDevSkill float32
 
-	Minimum_motivation      float32
-	Maximum_motivation      float32
-	Avg_motivation          float32
-	Standard_dev_motivation float32
+	MinimumMotivation     float32
+	MaximumMotivation     float32
+	AvgMotivation         float32
+	StandardDevMotivation float32
 
-	Minimum_productivity      float32
-	Maximum_productivity      float32
-	Avg_productivity          float32
-	Standard_dev_productivity float32
+	MinimumProductivity     float32
+	MaximumProductivity     float32
+	AvgProductivity         float32
+	StandardDevProductivity float32
 }
 
 type Production_report struct {
-	Machines_purchased       int
-	Machines_sold            int
-	Worker_surplus           int
-	Avg_machine_productivity float32
+	MachinesPurchased      int
+	MachinesSold           int
+	WorkerSurplus          int
+	AvgMachineProductivity float32
 	// Max_machine_productivity float32
 	// Min_machine_productivity float32
 
-	Total_production  int
-	Base_production   int
-	Bonus_production  int
-	Excess_production int
+	ProductSpecificReport map[string]struct {
+		TotalProduction  int
+		BaseProduction   int
+		BonusProduction  int
+		ExcessProduction int
 
-	Total_products_produced int
-	Base_products_produced  int
-	Bonus_products_produced int
+		TotalProductsProduced int
+		BaseProductsProduced  int
+		BonusProductsProduced int
+	}
 
-	Material_used float32
-	Energy_used   float32
+	MaterialUsed float32
+	EnergyUsed   float32
 
-	Warehouses_bought int
+	WarehousesBought int
 }
 
 type Sales_report struct {
-	Product_statistics       Product_statistics
-	Company_sales_statistics Sales_statistics
-	Marketing_statistics     Marketing_statistics
+	ProductSalesStatistics Sales_statistics
+	MarketingStatistics    Marketing_statistics
 }
 
 type Purchasing_statistics struct {
-	Product_number               int
-	Products_sold                int
-	Difference_to_previous_month int
-	Product_demand               int
+	ProductNumber int
+	ProductsSold  int
+	ProductDemand int
 
-	Avr_decision_factor      float32
-	Avr_purchasing_threshold float32
+	AvrDecisionFactor      float32
+	AvrPurchasingThreshold float32
 
-	Avr_purchasing_factors Properties
+	AvrPurchasingFactors Properties
 }
 
 type Research_statistics struct {
-	Quality_development_investment                  float64
-	Quality_development_investment_effectiveness    float64
-	Durability_development_investment               float64
-	Durability_development_investment_effectiveness float64
-	Ecological_production_investment                float32 // Decreases material use
-	Ecological_production_investment_effectiveness  float32 // Decreases material use
+	QualityDevelopmentInvestment                 float64
+	QualityDevelopmentInvestmentEffectiveness    float64
+	DurabilityDevelopmentInvestment              float64
+	DurabilityDevelopmentInvestmentEffectiveness float64
+	EcologicalProductionInvestment               float32 // Decreases material use
+	EcologicalProductionInvestmentEffectiveness  float32 // Decreases material use
 }
 
 type Sales_statistics struct {
-	Products_sold                int
-	Difference_to_previous_month int
-	Product_demand               int
-	Market_share                 float32
+	Products_sold  int
+	Product_demand int
+	Market_share   float32
 
-	Avr_decision_factor      float32
-	Avr_purchasing_threshold float32
+	AvrDecisionFactor      float32
+	AvrPurchasingThreshold float32
 
-	Avr_quality_factor    float32
-	Avr_durability_factor float32
-	Avr_ecology_factor    float32
-	Avr_price_factor      float32
-	Avr_ethics_factor     float32
+	AvrQualityFactor    float32
+	AvrDurabilityFactor float32
+	AvrEcologyFactor    float32
+	AvrPriceFactor      float32
+	AvrEthicsFactor     float32
 	/// Avr_coolness_factor      float32
-	Avr_bang_for_buck_factor float32
+	AvrBangForBuckFactor float32
 }
 
 type Marketing_statistics struct {
-	Product            Product_statistics
-	Price              float64
-	Bang_for_buck      float64
-	Promotion_quantity float64
-	Promotion_quality  float64
-	// Place
-}
-
-type Product_statistics struct {
 	Quality   float32
 	Durabilty int
 	// Coolness  float32
-	Ethics  float32
-	Ecology float32
+	Ethics            float32
+	Ecology           float32
+	Price             float64
+	BangForBuck       float64
+	PromotionQuantity float64
+	PromotionQuality  float64
+	// Place
 }
 
 type Customer struct {
@@ -574,24 +560,23 @@ type Satisfaction struct {
 type External_factors struct {
 	Month int
 	// Economy
-	Inflation                 float32
-	Intrest_rate              float32
-	Bridge_loans_intrest_rate float32
-	Economic_situation_index  float32
-	Tax_rate                  float32 // as decimal
+	Inflation              float32
+	IntrestRate            float32
+	BridgeLoansIntrestRate float32
+	EconomicSituationIndex float32
+	TaxRate                float32 // as decimal
 
 	// Personelle
-	Turnover                float32
-	Production_minimum_wage float32
-	Marketing_minimum_wage  float32
+	ProductionMinimumWage float32
+	MarketingMinimumWage  float32
 
 	// Prdoction
-	Machine_on_offer       Machine
-	External_storage_price float32 // per item
-	Energy_price           float32 // per unit of energy
-	Material_price         float32 // per unit of material
+	MachineOnOffer       Machine
+	ExternalStoragePrice float32 // per item
+	EnergyPrice          float32 // per unit of energy
+	MaterialPrice        float32 // per unit of material
 
-	Machine_depreciation_rate float32 // in decimal
+	MachineDepreciationRate float32 // in decimal
 }
 
 // #####################################################################################################
@@ -603,6 +588,7 @@ type External_factors struct {
 // ########## \__,_| \__,_| \__|\__,_|   |_|   \__,_||_| |_| \___| \__||_| \___/ |_| |_||___/ ##########
 // #####################################################################################################
 
+/*
 func (c Company) Mock_simulate_step(decisions Decisions, external_factors External_factors) Report {
 	results := FinanceReportEntry{"Predicted sales", predictions, "The amount of you predict you'll make", true, float64(decisions.Predictions.Sales_prediction) * float64(decisions.Marketing.Price)}
 	c.compile_reports(
@@ -614,14 +600,16 @@ func (c Company) Mock_simulate_step(decisions Decisions, external_factors Extern
 	)
 	return c.Reports[len(c.Reports)-1]
 }
+*/
 
 // Gameloop functions
-func (game_state *Game_state) Simulate_step() error {
+
+func (game_state *GameState) SimulateStep() error {
 	game_state.Step += 1
 
-	game_state.External_factors.Month = game_state.Step
+	game_state.ExternalFactors.Month = game_state.Step
 
-	if len(game_state.Companies) != len(game_state.Current_decisions) {
+	if len(game_state.Companies) != len(game_state.CurrentDecisions) {
 		return errors.New("amount of decisions does not match number of companies")
 	}
 	println("============ Simulating Hiring / Firing ===========")
@@ -629,20 +617,56 @@ func (game_state *Game_state) Simulate_step() error {
 
 	println("=============== Simulating companies ==============")
 	for i := range game_state.Companies {
-		game_state.Companies[i].employee_pool = game_state.Employees
+		c := &game_state.Companies[i]
+		c.Reports = append(c.Reports, Report{Month: game_state.ExternalFactors.Month})
+		c.DecisionHistory = append(c.DecisionHistory, game_state.CurrentDecisions[i])
+
 		fmt.Printf("--------------- Simulating company %d -------------- \n", i)
-		err := game_state.Companies[i].simulate_company(game_state.Current_decisions[i], game_state.External_factors)
-		if err != nil {
-			return err
+
+		c.employeePool = game_state.Employees
+
+		// Add new products
+		println("Developing Products...")
+
+		b, _ := json.MarshalIndent(c.Offers, "", "    ")
+		fmt.Printf("%s\n", b)
+
+		b, _ = json.MarshalIndent(game_state.CurrentDecisions[i].Products, "", "    ")
+		fmt.Printf("%s\n", b)
+		for ID, decisions := range game_state.CurrentDecisions[i].Products {
+			if _, exists := c.Offers[ID]; !exists {
+				c.Offers[ID] = c.newProduct(ID, decisions.Name, game_state.CurrentDecisions[i].Products[ID])
+			}
 		}
+
+		println("Overworking employees...")
+		c.simulateEmployees(game_state.ExternalFactors)
+
+		println("Posting advertisments...")
+		c.calculatePromotion(game_state.CurrentDecisions[i])
+
+		println("Researching...")
+		c.research(game_state.CurrentDecisions[i])
+
+		println("Producing...")
+		c.calculateProduction(game_state.CurrentDecisions[i], game_state.ExternalFactors)
+		for productID := range c.Offers {
+			c.ProductsInStorage[productID] += c.Reports[len(c.Reports)-1].ProductionReport.ProductSpecificReport[productID].TotalProductsProduced
+		}
+
+		println("Shipping...")
+		c.calculate_logistics(game_state.CurrentDecisions[i])
 	}
 
 	println("Simulating companies done!")
 
 	println("---------------- Simulatig economy ----------------")
-	Results, purchasing_statistics, err := game_state.Population.simulate_economy(
+
+	purchasingStatistics := make(map[string]Purchasing_statistics)
+	Results, err := game_state.Population.simulateEconomy(
 		&game_state.Companies,
-		game_state.External_factors,
+		game_state.ExternalFactors,
+		purchasingStatistics,
 	)
 	if err != nil {
 		return err
@@ -651,26 +675,21 @@ func (game_state *Game_state) Simulate_step() error {
 
 	println("================ Compiling reports =============== ")
 
-	game_state.Market_sales_statistics = append(game_state.Market_sales_statistics, Sales_statistics{})
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Products_sold = purchasing_statistics[len(purchasing_statistics)-1].Products_sold
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Product_demand = purchasing_statistics[len(purchasing_statistics)-1].Product_demand
-	if len(game_state.Market_sales_statistics) >= 2 {
-		game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Difference_to_previous_month = purchasing_statistics[len(purchasing_statistics)-1].Products_sold - game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-2].Products_sold
-	} else {
-		game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Difference_to_previous_month = purchasing_statistics[len(purchasing_statistics)-1].Products_sold
-	}
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Market_share = 100
+	game_state.MarketSalesStatistics = append(game_state.MarketSalesStatistics, Sales_statistics{})
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].Products_sold = purchasingStatistics["-1"].ProductsSold
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].Product_demand = purchasingStatistics["-1"].ProductDemand
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].Market_share = 100
 
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_decision_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_decision_factor
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_purchasing_threshold = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_threshold
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrDecisionFactor = purchasingStatistics["-1"].AvrDecisionFactor
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrPurchasingThreshold = purchasingStatistics["-1"].AvrPurchasingThreshold
 
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_quality_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesQuality]
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_durability_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesDurability]
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ecology_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesEcology]
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_price_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesPrice]
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_ethics_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesEthics]
-	// game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_coolness_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_coolness_factor
-	game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_bang_for_buck_factor = purchasing_statistics[len(purchasing_statistics)-1].Avr_purchasing_factors[propertiesBangForBuck]
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrQualityFactor = purchasingStatistics["-1"].AvrPurchasingFactors[propertiesQuality]
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrDurabilityFactor = purchasingStatistics["-1"].AvrPurchasingFactors[propertiesDurability]
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrEcologyFactor = purchasingStatistics["-1"].AvrPurchasingFactors[propertiesEcology]
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrPriceFactor = purchasingStatistics["-1"].AvrPurchasingFactors[propertiesPrice]
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrEthicsFactor = purchasingStatistics["-1"].AvrPurchasingFactors[propertiesEthics]
+	// game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1].Avr_coolness_factor = purchasingStatistics["-1"].Avr_coolness_factor
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrBangForBuckFactor = purchasingStatistics["-1"].AvrPurchasingFactors[propertiesBangForBuck]
 
 	//for range game_state.Market_sales_statistics {
 	//	println("----------")
@@ -687,18 +706,18 @@ func (game_state *Game_state) Simulate_step() error {
 
 	for i := range game_state.Companies {
 		fmt.Printf("Compiling reports for company %d\n", i)
-		game_state.Companies[i].compile_reports(
-			game_state.Current_decisions[i],
+		game_state.Companies[i].compileReports(
+			game_state.CurrentDecisions[i],
 			Results[i],
-			purchasing_statistics[i],
-			&game_state.Market_sales_statistics[len(game_state.Market_sales_statistics)-1],
-			game_state.External_factors,
+			purchasingStatistics,
+			&game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1],
+			game_state.ExternalFactors,
 		)
 
 	}
 
-	for i := range game_state.Decisions_submitted {
-		game_state.Decisions_submitted[i] = false
+	for i := range game_state.DecisionsSubmitted {
+		game_state.DecisionsSubmitted[i] = false
 	}
 	println("=================================================== ")
 	println("               Simulation step done!\n")
@@ -706,39 +725,43 @@ func (game_state *Game_state) Simulate_step() error {
 	println("Month: ", game_state.Step)
 
 	printer := message.NewPrinter(language.Swedish)
-	for i, c := range game_state.Companies {
-		printer.Printf("Company %d: %s:\n", i, c.Name)
-		printer.Printf("Total Production: %d\n", c.Reports[len(c.Reports)-1].Production_report.Total_production)
-		printer.Printf("Excess Production: %d\n", c.Reports[len(c.Reports)-1].Production_report.Excess_production)
-		printer.Printf("Total Products Produced: %d\n", c.Reports[len(c.Reports)-1].Production_report.Total_products_produced)
-		printer.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold)
-		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].Financial_report.Totals.Net_income)
-		println("")
-		printer.Printf("Number of employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Number_of_employees)
-		printer.Printf("Number of production employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.Production.Number_of_employees)
-		printer.Printf("Number of marketing employees: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.Marketing.Number_of_employees)
-		printer.Printf("Number of hires: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Number_of_hires)
-		printer.Printf("Number of departures: %d\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Number_of_departures)
-		printer.Printf("Avr Pay: %.2f\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Avg_pay)
-		printer.Printf("Avr Skill: %.2f\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Avg_skill)
-		printer.Printf("Avr Motivation: %.2f\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Avg_motivation)
-		printer.Printf("Avr Productivity: %.2f\n", c.Reports[len(c.Reports)-1].Personelle_report.General.Avg_productivity)
-		println("")
-	}
-
-	total_products_sold := 0
 	for _, c := range game_state.Companies {
-		total_products_sold += c.Reports[len(c.Reports)-1].Sales_report.Company_sales_statistics.Products_sold
+		/*
+			printer.Printf("Company %d: %s:\n", i, c.Name)
+			printer.Printf("Total Production: %d\n", c.Reports[len(c.Reports)-1].Production_report..Total_production)
+			printer.Printf("Excess Production: %d\n", c.Reports[len(c.Reports)-1].Production_report.Excess_production)
+			printer.Printf("Total Products Produced: %d\n", c.Reports[len(c.Reports)-1].Production_report.Total_products_produced)
+			printer.Printf("Products sold: %d\n", c.Reports[len(c.Reports)-1].Sales_report.Product_sales_statistics.Products_sold)
+		*/
+		printer.Printf("--> Net profit: %.2f", c.Reports[len(c.Reports)-1].FinancialReport.Totals.NetIncome)
+		println("")
+		printer.Printf("Number of employees: %d\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.NumberOfEmployees)
+		printer.Printf("Number of production employees: %d\n", c.Reports[len(c.Reports)-1].PersonelleReport.Production.NumberOfEmployees)
+		printer.Printf("Number of marketing employees: %d\n", c.Reports[len(c.Reports)-1].PersonelleReport.Marketing.NumberOfEmployees)
+		printer.Printf("Number of hires: %d\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.NumberOfHires)
+		printer.Printf("Number of departures: %d\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.NumberOfDepartures)
+		printer.Printf("Avr Pay: %.2f\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.AvgPay)
+		printer.Printf("Avr Skill: %.2f\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.AvgSkill)
+		printer.Printf("Avr Motivation: %.2f\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.AvgMotivation)
+		printer.Printf("Avr Productivity: %.2f\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.AvgProductivity)
+		println("")
 	}
 
-	println("Total products sold: ", total_products_sold)
+	totalProductsSold := 0
+	for _, c := range game_state.Companies {
+		for _, salesReport := range c.Reports[len(c.Reports)-1].SalesReport {
+			totalProductsSold += salesReport.ProductSalesStatistics.Products_sold
+		}
+	}
 
-	missing_products := 0
+	println("Total products sold: ", totalProductsSold)
+
+	missingProducts := 0
 	for _, p := range game_state.Population.Population {
-		missing_products += p.Base_need - len(p.Owned_products)
+		missingProducts += p.Base_need - len(p.Owned_products)
 	}
-	avr_missing_products := float64(missing_products) / float64(len(game_state.Population.Population))
-	fmt.Printf("avr missing products: %f\n", avr_missing_products)
+	avrMissingProducts := float64(missingProducts) / float64(len(game_state.Population.Population))
+	fmt.Printf("avr missing products: %f\n", avrMissingProducts)
 
 	// println("============== Purchasing statistics ============== ")
 	//
@@ -752,31 +775,35 @@ func (game_state *Game_state) Simulate_step() error {
 	return nil
 }
 
-func (company *Company) compile_reports(
+func (company *Company) compileReports(
 	decisions Decisions,
 	results FinanceReportEntry,
-	company_purchasing_statistcs Purchasing_statistics,
-	market_purchasing_statistics *Sales_statistics,
-	external_factors External_factors,
+	companyPurchasingStatistcs map[string]Purchasing_statistics,
+	marketPurchasingStatistics *Sales_statistics,
+	externalFactors External_factors,
 ) error {
-	products_sold := company_purchasing_statistcs.Products_sold
+	company.Reports[len(company.Reports)-1].SalesReport = make(map[string]Sales_report)
 
-	company.Reports[len(company.Reports)-1].Sales_report = company.compile_sales_report(
-		company_purchasing_statistcs,
-		market_purchasing_statistics.Products_sold,
-	)
+	for productID := range company.Offers {
+		company.compile_sales_report(
+			companyPurchasingStatistcs,
+			marketPurchasingStatistics.Products_sold,
+			company.Reports[len(company.Reports)-1].SalesReport,
+		)
 
-	company.Items_in_storage -= products_sold
-	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = append(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log, results)
+		company.ProductsInStorage[productID] -= marketPurchasingStatistics.Products_sold
+	}
+
+	company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog = append(company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog, results)
 
 	// Finance
-	company.calculate_budget(decisions, external_factors)
-	company.Reports[len(company.Reports)-1].Balance_sheet.Assets = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].Balance_sheet.Assets)
-	company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].Balance_sheet.Invoice_log)
-	company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].Balance_sheet.Liabilities)
+	company.calculate_budget(decisions, externalFactors)
+	company.Reports[len(company.Reports)-1].BalanceSheet.Assets = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.Assets)
+	company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog)
+	company.Reports[len(company.Reports)-1].BalanceSheet.Liabilities = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.Liabilities)
 
 	// Personelle
-	company.Reports[len(company.Reports)-1].Personelle_report = company.compile_personelle_report(decisions)
+	company.Reports[len(company.Reports)-1].PersonelleReport = company.compile_personelle_report(decisions)
 
 	return nil
 }
@@ -793,9 +820,9 @@ func (c *Company) compile_personelle_report(decisions Decisions) Personelle_repo
 
 func (c *Company) compile_personelle_subreport(decisions Decisions, employee_type Employee_type) Personelle_sub_report {
 	var sub_report Personelle_sub_report
-	employee_ids := c.employee_pool.Get_employees_of_company(c.Id, employee_type)
+	employee_ids := c.employeePool.Get_employees_of_company(c.ID, employee_type)
 
-	sub_report.Number_of_employees = len(employee_ids)
+	sub_report.NumberOfEmployees = len(employee_ids)
 
 	var employee_deltas []Delta[Employee] // We can trust that the employees exist because we checked this when "simulating employees"
 	if employee_type == Employee_type_marketing {
@@ -809,9 +836,9 @@ func (c *Company) compile_personelle_subreport(decisions Decisions, employee_typ
 
 	for _, e_delta := range employee_deltas {
 		if e_delta.Change == Delta_New {
-			sub_report.Number_of_hires += 1
+			sub_report.NumberOfHires += 1
 		} else if e_delta.Change == Delta_Remove {
-			sub_report.Number_of_departures += 1
+			sub_report.NumberOfDepartures += 1
 		}
 	}
 
@@ -820,83 +847,73 @@ func (c *Company) compile_personelle_subreport(decisions Decisions, employee_typ
 	motivation := make([]float32, len(employee_ids))
 	productivity := make([]float32, len(employee_ids))
 	for i, e := range employee_ids {
-		pay[i] = c.employee_pool[e].Pay
-		skill[i] = c.employee_pool[e].Skill
-		motivation[i] = c.employee_pool[e].Motivation
-		productivity[i] = c.employee_pool[e].Motivation * c.employee_pool[e].Skill * c.employee_pool[e].Working_hours // TODO: Make sure this is actually accurate
+		pay[i] = c.employeePool[e].Pay
+		skill[i] = c.employeePool[e].Skill
+		motivation[i] = c.employeePool[e].Motivation
+		productivity[i] = c.employeePool[e].Motivation * c.employeePool[e].Skill * c.employeePool[e].WorkingHours // TODO: Make sure this is actually accurate
 	}
 
-	sub_report.Avg_pay = avr(pay)
-	sub_report.Maximum_pay = max(pay...)
-	sub_report.Minimum_pay = min(pay...)
-	sub_report.Standard_dev_pay = std_dev(pay...)
+	sub_report.AvgPay = avr(pay)
+	sub_report.MaximumPay = slices.Max(pay)
+	sub_report.MinimumPay = slices.Min(pay)
+	sub_report.StandardDevPay = std_dev(pay...)
 
-	sub_report.Avg_skill = avr(skill)
-	sub_report.Maximum_skill = max(skill...)
-	sub_report.Minimum_skill = min(skill...)
-	sub_report.Standard_dev_skill = std_dev(skill...)
+	sub_report.AvgSkill = avr(skill)
+	sub_report.MaximumSkill = slices.Max(skill)
+	sub_report.MinimumSkill = slices.Min(skill)
+	sub_report.StandardDevSkill = std_dev(skill...)
 
-	sub_report.Avg_motivation = avr(motivation)
-	sub_report.Maximum_motivation = max(motivation...)
-	sub_report.Minimum_motivation = min(motivation...)
-	sub_report.Standard_dev_motivation = std_dev(motivation...)
+	sub_report.AvgMotivation = avr(motivation)
+	sub_report.MaximumMotivation = slices.Max(motivation)
+	sub_report.MinimumMotivation = slices.Min(motivation)
+	sub_report.StandardDevMotivation = std_dev(motivation...)
 
-	sub_report.Avg_productivity = avr(productivity)
-	sub_report.Maximum_productivity = max(productivity...)
-	sub_report.Minimum_productivity = min(productivity...)
-	sub_report.Standard_dev_productivity = std_dev(productivity...)
+	sub_report.AvgProductivity = avr(productivity)
+	sub_report.MaximumProductivity = slices.Max(productivity)
+	sub_report.MinimumProductivity = slices.Min(productivity)
+	sub_report.StandardDevProductivity = std_dev(productivity...)
 
 	return sub_report
 }
 
-func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics, Market_products_sold int) Sales_report {
-	report := Sales_report{}
-
-	report.Product_statistics.Quality = c.Offer.Product.Quality_factor
-	report.Product_statistics.Durabilty = c.Offer.Product.Durabilty
-	report.Product_statistics.Ecology = c.Offer.Product.Ecology_factor
-	report.Product_statistics.Ethics = c.Offer.Product.Ethics_factor
-	// report.Product_statistics.Coolness = c.Offer.Product.Coolness_factor
-
+func (c *Company) compile_sales_report(purchasing_statiscs map[string]Purchasing_statistics, Market_products_sold int, salesReportsMap map[string]Sales_report) {
 	// ----------------
 
-	report.Company_sales_statistics.Products_sold = purchasing_statiscs.Products_sold
-	if len(c.Reports) >= 2 {
-		report.Company_sales_statistics.Difference_to_previous_month = purchasing_statiscs.Products_sold - c.Reports[len(c.Reports)-2].Sales_report.Company_sales_statistics.Products_sold
-	} else {
-		report.Company_sales_statistics.Difference_to_previous_month = purchasing_statiscs.Products_sold
+	for productId, productSpecificPurchasing_statiscs := range purchasing_statiscs {
+		salesReport := Sales_statistics{}
+
+		salesReport.Products_sold = productSpecificPurchasing_statiscs.ProductsSold
+		salesReport.Product_demand = productSpecificPurchasing_statiscs.ProductDemand
+		if Market_products_sold != 0 {
+			salesReport.Market_share = (float32(productSpecificPurchasing_statiscs.ProductsSold) / float32(Market_products_sold))
+		} else {
+			salesReport.Market_share = 0
+		}
+
+		salesReport.AvrDecisionFactor = productSpecificPurchasing_statiscs.AvrDecisionFactor
+		salesReport.AvrPurchasingThreshold = productSpecificPurchasing_statiscs.AvrPurchasingThreshold
+
+		salesReport.AvrQualityFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesQuality]
+		salesReport.AvrDurabilityFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesDurability]
+		salesReport.AvrEcologyFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesEcology]
+		salesReport.AvrPriceFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesPrice]
+		salesReport.AvrEthicsFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesEthics]
+		// salesReport.Company_sales_statistics.Avr_coolness_factor = productSpecificPurchasing_statiscs.Avr_coolness_factor
+		salesReport.AvrBangForBuckFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesBangForBuck]
+
+		marketingStatistics := Marketing_statistics{}
+		marketingStatistics.Quality = c.Offers[productId].Product.Quality
+		marketingStatistics.Durabilty = c.Offers[productId].Product.Durabilty
+		marketingStatistics.Ethics = c.Offers[productId].Product.Ethics
+		// reportMarketingStatistics.Coolness = offer.Product.Coolness_factor
+		marketingStatistics.Ecology = c.Offers[productId].Product.Ecology
+
+		marketingStatistics.Price = float64(c.Offers[productId].Price)
+		marketingStatistics.PromotionQuantity = c.Offers[productId].PromotionGoal.Quantity
+		marketingStatistics.PromotionQuality = float64(c.Offers[productId].PromotionQuality)
+
+		salesReportsMap[productId] = Sales_report{salesReport, marketingStatistics}
 	}
-	report.Company_sales_statistics.Product_demand = purchasing_statiscs.Product_demand
-	if Market_products_sold != 0 {
-		report.Company_sales_statistics.Market_share = (float32(purchasing_statiscs.Products_sold) / float32(Market_products_sold))
-	} else {
-		report.Company_sales_statistics.Market_share = 0
-	}
-
-	report.Company_sales_statistics.Avr_decision_factor = purchasing_statiscs.Avr_decision_factor
-	report.Company_sales_statistics.Avr_purchasing_threshold = purchasing_statiscs.Avr_purchasing_threshold
-
-	report.Company_sales_statistics.Avr_quality_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesQuality]
-	report.Company_sales_statistics.Avr_durability_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesDurability]
-	report.Company_sales_statistics.Avr_ecology_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesEcology]
-	report.Company_sales_statistics.Avr_price_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesPrice]
-	report.Company_sales_statistics.Avr_ethics_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesEthics]
-	// report.Company_sales_statistics.Avr_coolness_factor = purchasing_statiscs.Avr_coolness_factor
-	report.Company_sales_statistics.Avr_bang_for_buck_factor = purchasing_statiscs.Avr_purchasing_factors[propertiesBangForBuck]
-
-	// ----------------
-
-	report.Marketing_statistics.Product.Quality = c.Offer.Product.Quality_factor
-	report.Marketing_statistics.Product.Durabilty = c.Offer.Product.Durabilty
-	report.Marketing_statistics.Product.Ethics = c.Offer.Product.Ethics_factor
-	// report.Marketing_statistics.Product.Coolness = c.Offer.Product.Coolness_factor
-	report.Marketing_statistics.Product.Ecology = c.Offer.Product.Ecology_factor
-
-	report.Marketing_statistics.Price = float64(c.Offer.Price)
-	report.Marketing_statistics.Promotion_quantity = c.Offer.Promotion_goal.Quantity
-	report.Marketing_statistics.Promotion_quality = float64(c.Offer.Promotion_quality)
-
-	return report
 }
 
 // ##################################################
@@ -908,10 +925,10 @@ func (c *Company) compile_sales_report(purchasing_statiscs Purchasing_statistics
 // ########## |_| |_| |_| \__,_||_||_| |_| ##########
 // ##################################################
 
-func Get_decisions_from_file(save_location string, number_of_companies int) ([]Decisions, error) {
-	decisions := make([]Decisions, number_of_companies)
+func Get_decisions_from_file(saveLocation string, numberOfCompanies int) ([]Decisions, error) {
+	decisions := make([]Decisions, numberOfCompanies)
 	for i := range decisions {
-		decisions_json, err := os.ReadFile(fmt.Sprintf("%s/decisions_company_%d.json", save_location, i))
+		decisions_json, err := os.ReadFile(fmt.Sprintf("%s/decisions_company_%d.json", saveLocation, i))
 		// println(string(decisions_json))
 		if err != nil {
 			return decisions, err
@@ -926,27 +943,27 @@ func Get_decisions_from_file(save_location string, number_of_companies int) ([]D
 	return decisions, nil
 }
 
-func (game_state Game_state) Save_game(location string, compress bool) error {
+func (game_state GameState) Save_game(location string, compress bool) error {
 	filename := fmt.Sprintf(
 		"%s-%d.json",
-		game_state.Game_name,
+		game_state.GameName,
 		game_state.Step,
 	)
 
-	var save Save_game
+	var save SaveGame
 
-	var population_buffer bytes.Buffer
-	encoder := gob.NewEncoder(&population_buffer)
+	var populationBuffer bytes.Buffer
+	encoder := gob.NewEncoder(&populationBuffer)
 	err := encoder.Encode(game_state.Population.Population)
 	if err != nil {
 		return err
 	}
-	save.Population = population_buffer.Bytes()
+	save.Population = populationBuffer.Bytes()
 	game_state.Population = Population{}
 
-	save.Game_state = game_state
+	save.GameState = game_state
 
-	save_file, err := json.MarshalIndent(save, "", "    ")
+	saveFile, err := json.MarshalIndent(save, "", "    ")
 	if err != nil {
 		return err
 	}
@@ -956,16 +973,16 @@ func (game_state Game_state) Save_game(location string, compress bool) error {
 
 	if compress {
 
-		zip_file_buffer := new(bytes.Buffer)
+		zipFileBuffer := new(bytes.Buffer)
 
-		w := zip.NewWriter(zip_file_buffer)
+		w := zip.NewWriter(zipFileBuffer)
 
 		file, err := w.Create(filename)
 		if err != nil {
 			return err
 		}
 
-		_, err = file.Write(save_file)
+		_, err = file.Write(saveFile)
 		if err != nil {
 			return err
 		}
@@ -975,7 +992,7 @@ func (game_state Game_state) Save_game(location string, compress bool) error {
 			return err
 		}
 
-		err = os.WriteFile(fmt.Sprint(location, "/", filename, ".zip"), zip_file_buffer.Bytes(), 0644)
+		err = os.WriteFile(fmt.Sprint(location, "/", filename, ".zip"), zipFileBuffer.Bytes(), 0644)
 		if err != nil {
 			return err
 		}
@@ -983,7 +1000,7 @@ func (game_state Game_state) Save_game(location string, compress bool) error {
 		return nil
 	} // else if !compress {
 
-	err = os.WriteFile(fmt.Sprint(location, "/", filename), save_file, 0644)
+	err = os.WriteFile(fmt.Sprint(location, "/", filename), saveFile, 0644)
 	if err != nil {
 		return err
 	}

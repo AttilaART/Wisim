@@ -2,6 +2,7 @@ package main
 
 import (
 	"WiSim/simulation"
+	"encoding/json"
 	"fmt"
 	"log"
 	"math"
@@ -119,7 +120,7 @@ var (
 
 var (
 	sim_config simulation.Sim_config
-	gamestate  simulation.Game_state
+	gamestate  simulation.GameState
 )
 
 var upgrader = websocket.Upgrader{
@@ -171,17 +172,9 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 		reply.Error = errorInvalidCompany
 		return
 	}
-	// Make sure product stats are up to date
-	var err error
-	gamestate.Companies[s.conns[ws].Company].Offer.Product, err = gamestate.Companies[s.conns[ws].Company].
-		Calculate_product(gamestate.Current_decisions[s.conns[ws].Company].Marketing.Product,
-			gamestate.Current_decisions[s.conns[ws].Company].Research)
-	if err != nil {
-		reply.Error = err.Error()
-	}
 	company := gamestate.Companies[s.conns[ws].Company]
 
-	company = removeProductNaNInf(company)
+	// company = removeProductNaNInf(company)
 	reply.Data = &company
 
 	fmt.Printf("%+v\n", company)
@@ -196,7 +189,7 @@ func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
 		}
 	}()
 
-	externalFactors := gamestate.External_factors
+	externalFactors := gamestate.ExternalFactors
 	reply.Data = &externalFactors
 }
 
@@ -285,50 +278,32 @@ func getUnemployedEmployees(s *Server, ws *websocket.Conn, message Message[any])
 	reply.Data = &data
 
 	// update unemployed
-	unemployedCountProduction := 0
-	unemployedCountMarketing := 0
+	gamestate.RefillUnemployed(10,
+		gamestate.ExternalFactors.ProductionMinimumWage,
+		8,
+		simulation.Employee_type_production,
+		1)
+	gamestate.RefillUnemployed(10,
+		gamestate.ExternalFactors.MarketingMinimumWage,
+		8,
+		simulation.Employee_type_marketing,
+		1)
+
 	for _, e := range gamestate.Employees {
-		if e.Employer < 0 {
-			switch e.Employee_type {
-			case simulation.Employee_type_marketing:
-				unemployedCountMarketing += 1
-			case simulation.Employee_type_production:
-				unemployedCountProduction += 1
-			}
-		}
-	}
-
-	requiredUnemployedMarketing := 5 - unemployedCountMarketing
-	for ; requiredUnemployedMarketing > 0; requiredUnemployedMarketing-- {
-		gamestate.Generate_employee(gamestate.External_factors.Marketing_minimum_wage,
-			8,
-			simulation.Employee_type_marketing,
-			1)
-	}
-
-	requiredUnemployedProduction := 10 - unemployedCountProduction
-	for ; requiredUnemployedProduction > 0; requiredUnemployedProduction-- {
-		gamestate.Generate_employee(gamestate.External_factors.Production_minimum_wage,
-			8,
-			simulation.Employee_type_production,
-			1)
-	}
-
-	for id, e := range gamestate.Employees {
 		if e.Employer >= 0 {
 			continue
 		}
 		switch reply.Data.Type {
 		case "production":
-			if e.Employee_type == simulation.Employee_type_production {
-				reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
+			if e.EmployeeType == simulation.Employee_type_production {
+				reply.Data.Employees = append(reply.Data.Employees, e)
 			}
 		case "marketing":
-			if e.Employee_type == simulation.Employee_type_marketing {
-				reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
+			if e.EmployeeType == simulation.Employee_type_marketing {
+				reply.Data.Employees = append(reply.Data.Employees, e)
 			}
 		default:
-			reply.Data.Employees = append(reply.Data.Employees, gamestate.Employees[id])
+			reply.Data.Employees = append(reply.Data.Employees, e)
 		}
 	}
 }
@@ -403,7 +378,10 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 		return
 	}
 
-	gamestate.Current_decisions[s.conns[ws].Company] = decisions
+	gamestate.CurrentDecisions[s.conns[ws].Company] = decisions
+
+	b, _ := json.MarshalIndent(decisions, "", "   ")
+	fmt.Printf("%s\n", b)
 }
 
 func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
@@ -467,16 +445,21 @@ func SimulateStep(s *Server) {
 		}
 	}()
 
-	defer func() {
-		if r := recover(); r != nil {
-			simDoneMessage.Error = fmt.Sprint("Critical Simulation Error: ", r)
-		}
-	}()
+	/*
+		defer func() {
+			if r := recover(); r != nil {
+				simDoneMessage.Error = fmt.Sprint("Critical Simulation Error: ", r)
+				println(simDoneMessage.Error)
+			}
+		}()
+	*/
 
-	println("Simulation Done!")
-	err := gamestate.Simulate_step()
+	err := gamestate.SimulateStep()
 	if err != nil {
 		simDoneMessage.Error = err.Error()
+		println("Simulation Done with error: \n", err.Error())
+	} else {
+		println("Simulation Done!")
 	}
 }
 
@@ -504,7 +487,7 @@ func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
 }
 
 func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) {
-	reply := Message[simulation.Product]{Method: message.Method, IsResponse: true}
+	reply := Message[map[string]simulation.Product]{Method: message.Method, IsResponse: true}
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
@@ -527,14 +510,17 @@ func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) 
 		return
 	}
 
-	product, err := gamestate.Companies[s.conns[ws].Company].
-		Calculate_product(decisions.Product, decisions.Research)
-	if err != nil {
-		reply.Error = err.Error()
+	products := make(map[string]simulation.Product)
+
+	for productID, offer := range gamestate.Companies[s.conns[ws].Company].Offers {
+		product := gamestate.Companies[s.conns[ws].Company].
+			Calculate_product(offer.Product, decisions.Product)
+
+		product = removeProductNaNInf(product)
+		products[productID] = product
 	}
 
-	product = removeProductNaNInf(product)
-	reply.Data = &product
+	reply.Data = &products
 }
 
 func removeProductNaNInf[v simulation.Product | simulation.Company](p v) v {

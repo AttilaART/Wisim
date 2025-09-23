@@ -1,10 +1,10 @@
 package simulation
 
 import (
-	"errors"
 	"fmt"
 	"math"
 	"math/rand"
+	"reflect"
 
 	"github.com/pehringer/simd"
 )
@@ -64,7 +64,7 @@ func rand_income(mean_income int, standard_dev int) int {
 type Employee_pool map[int]*Employee
 
 func (c *Company) Get_employees_ids(employee_type Employee_type) []int {
-	return c.employee_pool.Get_employees_of_company(c.Id, employee_type)
+	return c.employeePool.Get_employees_of_company(c.ID, employee_type)
 }
 
 func (employee_pool Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_ids_of_company []int) {
@@ -72,7 +72,7 @@ func (employee_pool Employee_pool) Get_employees_of_company(company_id int, empl
 		if employee_pool[id].Employer == company_id {
 			if employee_type == Employee_type_all {
 				employees_ids_of_company = append(employees_ids_of_company, id)
-			} else if employee_type == employee_pool[id].Employee_type {
+			} else if employee_type == employee_pool[id].EmployeeType {
 				employees_ids_of_company = append(employees_ids_of_company, id)
 			}
 		}
@@ -92,37 +92,11 @@ func (employee_pool Employee_pool) Get_avr_skill(company_id int, employee_type E
 
 func (c *Company) Get_decisions() Decisions {
 	var decisions Decisions = Decisions{}
-	if len(c.Decision_history) >= 1 {
-		decisions = c.Decision_history[len(c.Decision_history)-1]
+	if len(c.DecisionHistory) >= 1 {
+		decisions = c.DecisionHistory[len(c.DecisionHistory)-1]
 	} else {
 		decisions = Decisions{
-			Marketing: Decisions_marketing{
-				Product: Decisions_product{
-					Materials: struct {
-						Quality          float32
-						Ecology          float32
-						Ethical_sourcing float32
-					}{
-						50,
-						50,
-						50,
-					},
-					Manufacturing: struct {
-						Quality             float32
-						Ecological_energy   float32
-						Material_efficiency float32
-						Durability          float32
-						Max_durability      int
-					}{
-						50,
-						50,
-						50,
-						50,
-						5,
-					},
-				},
-				Price: 350,
-			},
+			Products: make(map[string]Decisions_product),
 			Research: Decisions_research{
 				Quality:         1000,
 				Durability:      1000,
@@ -131,45 +105,60 @@ func (c *Company) Get_decisions() Decisions {
 				Production_cost: 1000,
 			},
 			Production: struct {
-				Production_goal int
-				Machines        []Delta[Machine]
-				Logistics       []Delta[Warehouse]
-			}{
-				Production_goal: 20000,
-			},
+				Machines  []Delta[Machine]
+				Logistics []Delta[Warehouse]
+			}{},
 		}
+
+		for productId := range c.Offers {
+			decisions.Products[productId] = Decisions_product{
+				Price: 350,
+				Materials: struct {
+					Quality         float32
+					Ecology         float32
+					EthicalSourcing float32
+				}{
+					50,
+					50,
+					50,
+				},
+				Manufacturing: struct {
+					Quality            float32
+					EcologicalEnergy   float32
+					MaterialEfficiency float32
+					Durability         float32
+					MaxDurability      int
+				}{
+					50,
+					50,
+					50,
+					50,
+					5,
+				},
+			}
+		}
+
 		fmt.Println("No decision history!")
 	}
 
 	//  make sure these are more than 0.1 (otherwise simulation breaks)
-	more_than_0 := []float32{
-		decisions.Marketing.Product.Materials.Quality,
-		decisions.Marketing.Product.Materials.Ecology,
-		decisions.Marketing.Product.Materials.Ethical_sourcing,
-
-		decisions.Marketing.Product.Manufacturing.Quality,
-		decisions.Marketing.Product.Manufacturing.Durability,
-		decisions.Marketing.Product.Manufacturing.Ecological_energy,
-		decisions.Marketing.Product.Manufacturing.Material_efficiency,
-	}
-
-	for i := range more_than_0 {
-		if more_than_0[i] < 0.1 {
-			more_than_0[i] = 0.1
+	for id := range decisions.Products {
+		ProductDecisions := decisions.Products[id]
+		manufacturingReflect := reflect.ValueOf(&ProductDecisions.Manufacturing)
+		for i := range manufacturingReflect.NumField() {
+			field := manufacturingReflect.Field(i)
+			if field.CanFloat() {
+				field.SetFloat(max(field.Float(), 0.1))
+			}
 		}
-	}
 
-	decisions.Marketing.Product.Materials.Quality = more_than_0[0]
-	decisions.Marketing.Product.Materials.Ecology = more_than_0[1]
-	decisions.Marketing.Product.Materials.Ethical_sourcing = more_than_0[2]
-
-	decisions.Marketing.Product.Manufacturing.Quality = more_than_0[3]
-	decisions.Marketing.Product.Manufacturing.Durability = more_than_0[4]
-	decisions.Marketing.Product.Manufacturing.Ecological_energy = more_than_0[5]
-	decisions.Marketing.Product.Manufacturing.Material_efficiency = more_than_0[6]
-
-	if decisions.Marketing.Product.Manufacturing.Max_durability < 1 {
-		decisions.Marketing.Product.Manufacturing.Max_durability = 1
+		materialsReflect := reflect.ValueOf(&ProductDecisions.Materials)
+		for i := range materialsReflect.NumField() {
+			field := materialsReflect.Field(i)
+			if field.CanFloat() {
+				field.SetFloat(max(field.Float(), 0.1))
+			}
+		}
 	}
 
 	// initialise slices
@@ -210,44 +199,32 @@ func delete_by_id[V interface{ get_id() int }](s []V, id ...int) []V {
 	return delete_by_index(s, indexes_to_delete...)
 }
 
-func check_product(p Product) error {
+func check_product(p Product) string {
 	errorString := ""
-	if p.Base_quality <= 0 {
-		errorString += "Base_quality <= 0;"
-	}
-	if p.Base_durability <= 0 {
-		errorString += "Base_durability <= 0;"
-	}
-	if p.Base_production_cost <= 0 {
-		errorString += "Invalid_product: Base_production_cost <= 0;"
-	}
-	if p.Base_ecology <= 0 {
-		errorString += "Base_ecology <= 0;"
-	}
-	if p.Base_material_use <= 0 {
-		errorString += "Base_material_use <= 0;"
-	}
-	if p.Production_cost <= 0 {
+	if p.ProductionCost <= 0 {
 		errorString += "Production_cost <= 0;"
+		p.ProductionCost = 0.01
 	}
 	if p.Weight <= 0 {
 		errorString += "Weight <= 0;"
+		p.Weight = 0.01
 	}
-	if p.Material_use <= 0 {
+	if p.MaterialUse <= 0 {
 		errorString += "Material_use <= 0;"
+		p.MaterialUse = 0
 	}
 	if p.Durabilty < 0 {
 		errorString += "Durabilty < 0;"
 	}
 
-	if math.IsInf(float64(p.Production_cost), 1) {
+	if math.IsInf(float64(p.ProductionCost), 1) {
 		errorString += "Production_cost == +Inf;"
 	}
 
 	if errorString != "" {
-		return errors.New("Invalid_product: " + errorString)
+		return "Invalid_product: " + errorString
 	}
-	return nil
+	return ""
 }
 
 func avr[V Number](values []V) V {
@@ -260,6 +237,7 @@ func avr[V Number](values []V) V {
 	return total / V(len(values))
 }
 
+/*
 func max[V Number](values ...V) V {
 	var max_val V = values[0]
 
@@ -271,7 +249,9 @@ func max[V Number](values ...V) V {
 
 	return max_val
 }
+*/
 
+/*
 func min[V Number](values ...V) V {
 	var min_val V = values[0]
 
@@ -283,6 +263,7 @@ func min[V Number](values ...V) V {
 
 	return min_val
 }
+*/
 
 func std_dev[V Number](values ...V) V {
 	avr := avr(values)
