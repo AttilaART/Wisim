@@ -7,7 +7,7 @@ import (
 
 // Employee functions
 
-func (c *Company) simulateEmployees(externalFactors External_factors) {
+func (c *Company) simulateEmployees(externalFactors ExternalFactors) {
 	employeeIDs := c.Get_employees_ids(Employee_type_all)
 	c.turnover(employeeIDs)
 

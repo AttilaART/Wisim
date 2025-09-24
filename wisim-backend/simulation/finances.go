@@ -6,14 +6,14 @@ import (
 )
 
 // Finances
-func (c *Company) calculate_budget(decisions Decisions, external_factors External_factors) {
+func (c *Company) calculateBudget(decisions Decisions, externalFactors ExternalFactors) {
 	// using a pointer to avoid refactiong :)
-	financial_report := &c.Reports[len(c.Reports)-1].FinancialReport
+	financialReport := &c.Reports[len(c.Reports)-1].FinancialReport
 
 	localStorageCapacity := 0
-	local_storage_costs := 0.0
+	localStorageCosts := 0.0
 	for _, w := range c.Warehouses {
-		local_storage_costs += float64(-w.OperatingCosts)
+		localStorageCosts += float64(-w.OperatingCosts)
 		localStorageCapacity += w.Capacity
 	}
 	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
@@ -21,11 +21,11 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 		logistics,
 		"The operating costs of our own warehouses",
 		true,
-		local_storage_costs)
+		localStorageCosts)
 
 	totalProductsInStorage := 0
-	for productId := range c.ProductsInStorage {
-		totalProductsInStorage += c.ProductsInStorage[productId]
+	for productID := range c.ProductsInStorage {
+		totalProductsInStorage += c.ProductsInStorage[productID]
 	}
 
 	itemsInExternalStorage := (totalProductsInStorage - localStorageCapacity)
@@ -36,7 +36,7 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 			logistics,
 			"The cost of storing products in external warehouses, this happens when our own are full",
 			true,
-			-(float64(external_factors.ExternalStoragePrice) * float64(itemsInExternalStorage)))
+			-(float64(externalFactors.ExternalStoragePrice) * float64(itemsInExternalStorage)))
 	}
 
 	// Loans
@@ -57,7 +57,7 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 			loan += e.Value
 		}
 	}
-	intrest := loan * float64(external_factors.IntrestRate)
+	intrest := loan * float64(externalFactors.IntrestRate)
 	// update company
 	c.Loans = loan
 
@@ -72,64 +72,64 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 		}
 	}
 
-	bl_intrest := bl * float64(external_factors.BridgeLoansIntrestRate)
+	blIntrest := bl * float64(externalFactors.BridgeLoansIntrestRate)
 	// update company
 	c.BridgeLoans = bl
 
-	if bl_intrest > 0 {
+	if blIntrest > 0 {
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Bridge loan intrest payments", bridge_loans, "", true, intrest)
 	}
 
 	// Increase or decrease loans
-	increase_of_loans := decisions.Finances.SetBankLoan - c.loan_quantity()
-	if increase_of_loans > 0 {
-		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_liabilities("Bank loan", loans, "", true, -float64(increase_of_loans))
-		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Income from bank loan", loans, "", true, float64(increase_of_loans))
-	} else if increase_of_loans < 0 {
-		money_remaining := float64(-increase_of_loans)
-		var loans_to_delete []int
+	increaseOfLoans := decisions.Finances.SetBankLoan - c.loanQuantity()
+	if increaseOfLoans > 0 {
+		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_liabilities("Bank loan", loans, "", true, -float64(increaseOfLoans))
+		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Income from bank loan", loans, "", true, float64(increaseOfLoans))
+	} else if increaseOfLoans < 0 {
+		moneyRemaining := float64(-increaseOfLoans)
+		var loansToFelete []int
 		for i, e := range c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities {
 			if e.Group == 1 {
-				if money_remaining >= e.Value {
-					loans_to_delete = append(loans_to_delete, i)
-					money_remaining -= e.Value
+				if moneyRemaining >= e.Value {
+					loansToFelete = append(loansToFelete, i)
+					moneyRemaining -= e.Value
 					c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Payement of loan", loans, "", true, -e.Value)
-				} else if money_remaining < e.Value {
-					c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities[i].Value -= money_remaining
-					c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Payement of loan", loans, "", true, -money_remaining)
-					money_remaining = 0
+				} else if moneyRemaining < e.Value {
+					c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities[i].Value -= moneyRemaining
+					c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Payement of loan", loans, "", true, -moneyRemaining)
+					moneyRemaining = 0
 					break
 				}
 			}
 		}
 
 		seq := func(yield func(int) bool) {
-			for i := range loans_to_delete {
+			for i := range loansToFelete {
 				if !yield(i) {
 					return
 				}
 			}
 		}
-		loans_to_delete = slices.SortedFunc(seq, func(a, b int) int { return cmp.Compare(b, a) })
+		loansToFelete = slices.SortedFunc(seq, func(a, b int) int { return cmp.Compare(b, a) })
 
-		for _, i := range loans_to_delete {
+		for _, i := range loansToFelete {
 			c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities = slices.Delete(c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities, i, i)
 		}
 	}
 
 	// Totals
-	insert_in_finance_report := func(e FinanceReportEntry) {
+	insertInFinanceReport := func(e FinanceReportEntry) {
 		if e.CashCost {
-			financial_report.Totals.Cashflow += e.Value
+			financialReport.Totals.Cashflow += e.Value
 		}
 
 		if e.Value > 0 {
 			if e.Group == sales { // Gross sales
-				financial_report.Income.GrossSales += e.Value
-				financial_report.Income.GrossProfit += e.Value
+				financialReport.Income.GrossSales += e.Value
+				financialReport.Income.GrossProfit += e.Value
 			} else { // Other income
-				financial_report.Income.OtherIncome += e.Value
-				financial_report.Income.GrossProfit += e.Value
+				financialReport.Income.OtherIncome += e.Value
+				financialReport.Income.GrossProfit += e.Value
 
 				println("Other income: " + e.Name + e.Info)
 			}
@@ -138,117 +138,117 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 			// gross profit
 			// operating expenses
 			case production_personelle, production, materials, energy: // Cost of sales
-				financial_report.Income.CostOfSales += e.Value
-				financial_report.Income.GrossProfit += e.Value
+				financialReport.Income.CostOfSales += e.Value
+				financialReport.Income.GrossProfit += e.Value
 
 			case marketing, marketing_personelle: // advertising
-				financial_report.OperatingExpenses.Advertising += e.Value
-				financial_report.Totals.TotalOperatingExpenses += e.Value
+				financialReport.OperatingExpenses.Advertising += e.Value
+				financialReport.Totals.TotalOperatingExpenses += e.Value
 			case logistics, facilities: // facilities and logistics
-				financial_report.OperatingExpenses.FacilitiesAndLogistics += e.Value
-				financial_report.Totals.TotalOperatingExpenses += e.Value
+				financialReport.OperatingExpenses.FacilitiesAndLogistics += e.Value
+				financialReport.Totals.TotalOperatingExpenses += e.Value
 			case research: // research & development
-				financial_report.OperatingExpenses.ResearchAndDevelopment += e.Value
-				financial_report.Totals.TotalOperatingExpenses += e.Value
+				financialReport.OperatingExpenses.ResearchAndDevelopment += e.Value
+				financialReport.Totals.TotalOperatingExpenses += e.Value
 
 			// non operating expenses
 			case write_off: // write offs
-				financial_report.NonOperatingExpenses.WriteOffs += e.Value
-				financial_report.Totals.TotalNonOperatingExpenses += e.Value
+				financialReport.NonOperatingExpenses.WriteOffs += e.Value
+				financialReport.Totals.TotalNonOperatingExpenses += e.Value
 			case loan_intrest: // loan interest
-				financial_report.NonOperatingExpenses.LoanInterest += e.Value
-				financial_report.Totals.TotalNonOperatingExpenses += e.Value
+				financialReport.NonOperatingExpenses.LoanInterest += e.Value
+				financialReport.Totals.TotalNonOperatingExpenses += e.Value
 			case loans: // loan repayment
-				financial_report.NonOperatingExpenses.LoanRepayment += e.Value
-				financial_report.Totals.TotalNonOperatingExpenses += e.Value
+				financialReport.NonOperatingExpenses.LoanRepayment += e.Value
+				financialReport.Totals.TotalNonOperatingExpenses += e.Value
 			case bridge_loan_intrest:
-				financial_report.NonOperatingExpenses.BridgeLoanIntrest += e.Value
-				financial_report.Totals.TotalNonOperatingExpenses += e.Value
+				financialReport.NonOperatingExpenses.BridgeLoanIntrest += e.Value
+				financialReport.Totals.TotalNonOperatingExpenses += e.Value
 			case bridge_loans:
-				financial_report.NonOperatingExpenses.BridgeLoanRepayment += e.Value
-				financial_report.Totals.TotalNonOperatingExpenses += e.Value
+				financialReport.NonOperatingExpenses.BridgeLoanRepayment += e.Value
+				financialReport.Totals.TotalNonOperatingExpenses += e.Value
 			case taxes:
-				financial_report.NonOperatingExpenses.Taxes += e.Value
+				financialReport.NonOperatingExpenses.Taxes += e.Value
 			default:
-				financial_report.NonOperatingExpenses.Other += e.Value
-				financial_report.Totals.TotalNonOperatingExpenses += e.Value
+				financialReport.NonOperatingExpenses.Other += e.Value
+				financialReport.Totals.TotalNonOperatingExpenses += e.Value
 				// totals
 				// case taxes:
 				//	financial_report.Non_operating_expenses.Taxes += e.Value
 			}
 		}
-		financial_report.Totals.IncomeBeforeTax += e.Value
+		financialReport.Totals.IncomeBeforeTax += e.Value
 	}
 
 	for _, e := range c.Reports[len(c.Reports)-1].BalanceSheet.InvoiceLog {
-		insert_in_finance_report(e)
+		insertInFinanceReport(e)
 	}
 
-	financial_report.Totals.Cashflow += financial_report.NonOperatingExpenses.Taxes
-	ptr_taxes_entry := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
+	financialReport.Totals.Cashflow += financialReport.NonOperatingExpenses.Taxes
+	ptrTaxesEntry := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
 		"Taxes",
 		taxes,
 		"Taxes paid on our profit",
 		true,
-		tax(financial_report.Totals.IncomeBeforeTax, external_factors))
-	insert_in_finance_report(*ptr_taxes_entry)
+		tax(financialReport.Totals.IncomeBeforeTax, externalFactors))
+	insertInFinanceReport(*ptrTaxesEntry)
 
-	financial_report.Totals.NetIncome = financial_report.Totals.IncomeBeforeTax + financial_report.NonOperatingExpenses.Taxes
+	financialReport.Totals.NetIncome = financialReport.Totals.IncomeBeforeTax + financialReport.NonOperatingExpenses.Taxes
 	// Calculate bridge loans
 
 	// try to pay off existing bridge loans
-	if c.Balance+financial_report.Totals.Cashflow > 0 {
-		var loans_to_delete []int
+	if c.Balance+financialReport.Totals.Cashflow > 0 {
+		var loansToDelete []int
 		for i, e := range c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities {
 			if e.Group != bridge_loans {
 				continue
 			}
-			if c.Balance+financial_report.Totals.Cashflow >= e.Value {
-				ptr_repayment := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Payment of bridge loan", bridge_loans, "", true, -e.Value)
-				insert_in_finance_report(*ptr_repayment)
+			if c.Balance+financialReport.Totals.Cashflow >= e.Value {
+				ptrRepayment := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Payment of bridge loan", bridge_loans, "", true, -e.Value)
+				insertInFinanceReport(*ptrRepayment)
 
-				loans_to_delete = append(loans_to_delete, i)
-			} else if c.Balance+financial_report.Totals.Cashflow < e.Value {
-				c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities[i].Value = e.Value - (c.Balance + financial_report.Totals.Cashflow)
-				ptr_repayment := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Payement of bridge loan", bridge_loans, "", true, -c.Balance)
-				insert_in_finance_report(*ptr_repayment)
+				loansToDelete = append(loansToDelete, i)
+			} else if c.Balance+financialReport.Totals.Cashflow < e.Value {
+				c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities[i].Value = e.Value - (c.Balance + financialReport.Totals.Cashflow)
+				ptrRepayment := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Payement of bridge loan", bridge_loans, "", true, -c.Balance)
+				insertInFinanceReport(*ptrRepayment)
 
 				break
 			}
 		}
 
-		c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities = delete_by_index(c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities, loans_to_delete...)
+		c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities = delete_by_index(c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities, loansToDelete...)
 
-	} else if c.Balance+financial_report.Totals.Cashflow < 0 {
+	} else if c.Balance+financialReport.Totals.Cashflow < 0 {
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
 			"Bridge loan",
 			bridge_loans,
 			"You are automatically lent out bridge loans when your balance goes beneath 0",
 			true,
-			-(c.Balance + financial_report.Totals.Cashflow))
-		ptr_bridge_loan := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_liabilities(
+			-(c.Balance + financialReport.Totals.Cashflow))
+		ptrBridgeLoan := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_liabilities(
 			"Bridge loan",
 			bridge_loans,
 			"You are automatically lent out bridge loans when your balance goes beneath 0",
 			true,
 			-c.Balance)
 
-		insert_in_finance_report(*ptr_bridge_loan)
+		insertInFinanceReport(*ptrBridgeLoan)
 	}
 
-	c.Balance += financial_report.Totals.Cashflow
+	c.Balance += financialReport.Totals.Cashflow
 
 	// calculate Liabilities
-	total_assets := 0.0
+	totalAssets := 0.0
 	for _, e := range c.Reports[len(c.Reports)-1].BalanceSheet.Assets {
-		total_assets += e.Value
+		totalAssets += e.Value
 	}
-	total_liabilities := 0.0
+	totalLiabilities := 0.0
 	for _, e := range c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities {
-		total_liabilities += e.Value
+		totalLiabilities += e.Value
 	}
 
-	equity := total_assets - total_liabilities
+	equity := totalAssets - totalLiabilities
 	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_liabilities(
 		"Private equity",
 		other,
@@ -257,24 +257,24 @@ func (c *Company) calculate_budget(decisions Decisions, external_factors Externa
 		equity)
 }
 
-func tax(EBIT float64, external_factors External_factors) float64 {
+func tax(EBIT float64, externalFactors ExternalFactors) float64 {
 	if EBIT > 0 {
-		return -round(EBIT*float64(external_factors.TaxRate), 2)
+		return -round(EBIT*float64(externalFactors.TaxRate), 2)
 	}
 	return 0
 }
 
-func (c *Company) loan_quantity() (loan_value float64) {
+func (c *Company) loanQuantity() (loanValue float64) {
 	for _, e := range c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities {
 		if e.Group == loans {
-			loan_value -= e.Value
+			loanValue -= e.Value
 		}
 	}
 
-	return loan_value
+	return loanValue
 }
 
-func clean_up_financeReportEntries(entries []FinanceReportEntry) []FinanceReportEntry {
+func cleanUpFinanceReportEntries(entries []FinanceReportEntry) []FinanceReportEntry {
 	for i := len(entries) - 1; i >= 0; i-- {
 		if entries[i].Value == 0 {
 			entries = delete_by_index(entries, i)

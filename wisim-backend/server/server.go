@@ -181,7 +181,7 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 }
 
 func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
-	reply := Message[simulation.External_factors]{Method: message.Method, IsResponse: true}
+	reply := Message[simulation.ExternalFactors]{Method: message.Method, IsResponse: true}
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {

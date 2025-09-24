@@ -36,7 +36,7 @@ func (a *App) Initial_app_load() error { //
 	return nil
 }
 
-func (a *App) New_simulation(num_companies int) (simulation.External_factors, error) {
+func (a *App) New_simulation(num_companies int) (simulation.ExternalFactors, error) {
 	game_state.state = simulation.New_game(game_state.config, num_companies, "Test_ui")
 	game_state.is_loaded = true
 	return game_state.state.External_factors, nil
@@ -75,7 +75,7 @@ func (a *App) Get_company(company int) (simulation.Company, error) {
 	return game_state.state.Companies[company], nil
 }
 
-func (a *App) Get_external_factors() (simulation.External_factors, error) {
+func (a *App) Get_external_factors() (simulation.ExternalFactors, error) {
 	return game_state.state.External_factors, nil
 }
 
@@ -142,7 +142,7 @@ func (a *App) Submit_decisions(company int, decisions simulation.Decisions) erro
 	return nil
 }
 
-func (a *App) Trigger_simulation(force bool) (exteral_factors simulation.External_factors, err error) {
+func (a *App) Trigger_simulation(force bool) (exteral_factors simulation.ExternalFactors, err error) {
 	if !game_state.is_loaded {
 		return exteral_factors, errors.New("game hasn't loaded yet")
 	}

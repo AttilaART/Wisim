@@ -14,23 +14,29 @@ import (
 
 // Economy functions
 // purchasingStatisticsMap is passed as argument to reduce unnececary garbage collection
-func (population *Population) simulateEconomy(companies *[]Company, externalFactors External_factors, purchasingStatisticsMap map[string]Purchasing_statistics) ([]FinanceReportEntry, error) {
+func (population *Population) simulateEconomy(companies []Company, externalFactors ExternalFactors, purchasingStatisticsMap map[string]Purchasing_statistics) error {
 	// Get offers
 	var offers []Offer
+	var offerIDs []struct {
+		ID      string
+		Company int
+	}
 	var productAvailability []int
 	var i int
-	for _, c := range *companies {
+	for _, c := range companies {
 		for productID, offer := range c.Offers {
-			println("1")
 			offers = append(offers, offer)
+			offerIDs = append(offerIDs, struct {
+				ID      string
+				Company int
+			}{offer.Product.ID, c.ID})
 			productAvailability = append(productAvailability, c.ProductsInStorage[productID])
 			i++
 		}
 	}
 
 	if externalFactors.EconomicSituationIndex <= 0 {
-		return make([]FinanceReportEntry, len(*companies)),
-			errors.New("economic_situation_index cannot be 0")
+		return errors.New("economic_situation_index cannot be 0")
 	}
 
 	// Calculate purchases
@@ -82,11 +88,13 @@ func (population *Population) simulateEconomy(companies *[]Company, externalFact
 			population.Population[interval.Start:interval.Stop_before],
 			population.Preferences[interval.Start:interval.Stop_before],
 			offersProperties,
+			offers,
 			offerPrices,
 			offerDurabilities,
 			productAvailability,
 			externalFactors,
-			purchasingStatistics)
+			purchasingStatistics,
+			len(population.Population))
 	}
 
 	wg.Wait()
@@ -124,9 +132,8 @@ func (population *Population) simulateEconomy(companies *[]Company, externalFact
 
 	simd.DivFloat32(purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:], divisionVector[:], purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:])
 
-	results := make([]FinanceReportEntry, len(*companies))
-	for i := range results {
-		results[i] = FinanceReportEntry{"Products sold in stores", sales, fmt.Sprintf("%d products were sold in strores", purchasingStatistics[i].ProductsSold), true, float64(purchasingStatistics[i].ProductsSold * int(offers[i].Price))}
+	for i, o := range offerIDs {
+		companies[o.Company].Reports[len(companies[o.Company].Reports)-1].BalanceSheet.add_to_income_statement("Sales of "+offers[i].Product.Name, sales, fmt.Sprintf("%d %ss were sold in strores", purchasingStatistics[i].ProductsSold, offers[i].Product.Name), true, float64(purchasingStatistics[i].ProductsSold*int(offers[i].Price)))
 	}
 
 	for i, offer := range offers {
@@ -135,7 +142,7 @@ func (population *Population) simulateEconomy(companies *[]Company, externalFact
 
 	purchasingStatisticsMap["-1"] = purchasingStatistics[len(purchasingStatistics)-1]
 
-	return results, nil
+	return nil
 }
 
 func simulatePopulationSegment(
@@ -143,11 +150,13 @@ func simulatePopulationSegment(
 	populationSegment []Customer,
 	populationSegmentPreferences []Properties,
 	offersProperties []Properties,
+	offers []Offer,
 	offerPrices []float32,
 	offerDurabilities []int,
 	productAvailability []int,
-	externalFactors External_factors,
+	externalFactors ExternalFactors,
 	purchasingStatistics []Purchasing_statistics,
+	populationSize int,
 ) {
 	productsPurchasingFactors := make([]float32, len(offersProperties))
 
@@ -155,8 +164,8 @@ func simulatePopulationSegment(
 		customer.Max_price *= 1 + externalFactors.Inflation
 
 		for i := range customer.Owned_products {
-			customer.Owned_products[i].Remaining_durabilty -= 1
-			if customer.Owned_products[i].Remaining_durabilty > 0 {
+			customer.Owned_products[i].RemainingDurabilty -= 1
+			if customer.Owned_products[i].RemainingDurabilty > 0 {
 				customer.Owned_products = slices.Delete(customer.Owned_products, i, i)
 			}
 		}
@@ -181,7 +190,7 @@ func simulatePopulationSegment(
 				productPurchasingFactorsComponents[2] +
 				productPurchasingFactorsComponents[1] +
 				productPurchasingFactorsComponents[0] +
-				customer.Brand_loyalty_factor*customer.Loyalties[ii]))
+				customer.Brand_loyalty_factor*customer.Loyalties[offers[ii].Product.CompanyID]))
 
 			productPurchasingFactor *= externalFactors.EconomicSituationIndex
 
@@ -193,6 +202,27 @@ func simulatePopulationSegment(
 			purchasingStatistics[ii].AvrPurchasingThreshold += populationSegment[i].Purchashing_threshold
 		}
 
+		// calculate promotion
+		for ii, o := range offers {
+			marketingReach := (o.Promotion.Quantity / float32(populationSize)) * rand.Float32()
+
+			productsPurchasingFactors[ii] *= (customer.Loyalties[o.Product.CompanyID] * customer.Brand_loyalty_factor)
+
+			if customer.Purchashing_threshold <= marketingReach {
+				marketingStickingFactor := (populationSegmentPreferences[i][propertiesQuality]*o.Promotion.StyleQuality +
+					populationSegmentPreferences[i][propertiesEcology]*o.Promotion.StyleEcology +
+					populationSegmentPreferences[i][propertiesEthics]*o.Promotion.StyleEthics +
+					populationSegmentPreferences[i][propertiesPrice]*o.Promotion.StylePrice +
+					populationSegmentPreferences[i][propertiesDurability]*o.Promotion.StyleDurability) *
+					o.Promotion.Quality
+
+				productsPurchasingFactors[ii] *= marketingStickingFactor
+			} else if customer.Loyalties[o.Product.CompanyID] <= 0.5 {
+				productsPurchasingFactors[ii] = 0
+			}
+
+		}
+
 		const noProductChosen = -1
 
 		// Select product using weighted die
@@ -200,10 +230,11 @@ func simulatePopulationSegment(
 
 		if choice != noProductChosen {
 			purchasingStatistics[choice].ProductDemand += customer.Base_need - len(customer.Owned_products)
+			populationSegment[i].Loyalties[offers[choice].Product.CompanyID] += productsPurchasingFactors[choice] / 10
 			numberOfProductsPurchased := 0
 			for range customer.Base_need - len(customer.Owned_products) {
 				if productAvailability[choice] > 0 {
-					populationSegment[i].Owned_products = append(customer.Owned_products, Owned_product{choice, offerDurabilities[choice]})
+					populationSegment[i].Owned_products = append(customer.Owned_products, OwnedProduct{choice, offerDurabilities[choice]})
 					productAvailability[choice] -= 1
 					numberOfProductsPurchased += 1
 				} else {
