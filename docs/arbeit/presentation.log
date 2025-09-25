@@ -1,9 +1,9 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (MiKTeX 22.1) (preloaded format=xelatex 2025.8.21)  25 SEP 2025 10:28
+This is XeTeX, Version 3.141592653-2.6-0.999993 (MiKTeX 22.1) (preloaded format=xelatex 2025.8.21)  25 SEP 2025 09:16
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
-**./main.tex
-(main.tex
+**./presentation.tex
+(presentation.tex
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-03-26>
 
@@ -182,6 +182,43 @@ Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
 )
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/fontspec/fontspec.cfg)))
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
+ric/babel/babel.sty
+Package: babel 2025/03/27 v25.6 The multilingual framework for pdfLaTeX, LuaLaT
+eX and XeLaTeX
+\babel@savecnt=\count282
+\U@D=\dimen150
+\l@unhyphenated=\language79
+
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
+ric/babel/xebabel.def)
+\bbl@readstream=\read2
+\bbl@dirlevel=\count283
+
+*************************************
+* Local config file bblopts.cfg used
+*
+
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/arabi/bblopts.cfg
+File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
+ babel
+)
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/babel-english/english.ldf
+Language: english 2017/06/06 v3.3r English support from the babel system
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
+(babel)             (\language73). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
+(babel)             (\language73). Reported on input line 108.
+))
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
+ric/babel/locale/en/babel-english.tex
+Package babel Info: Importing font and identification data for english
+(babel)             from babel-en.ini. Reported on input line 11.
+)
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/lipsum/lipsum.sty
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
@@ -189,20 +226,43 @@ x/l3packages/l3keys2e/l3keys2e.sty
 Package: l3keys2e 2024-08-16 LaTeX2e option processing using LaTeX3 keys
 )
 Package: lipsum 2021-09-20 v2.7 150 paragraphs of Lorem Ipsum dummy text
-\g__lipsum_par_int=\count282
-\l__lipsum_a_int=\count283
-\l__lipsum_b_int=\count284
+\g__lipsum_par_int=\count284
+\l__lipsum_a_int=\count285
+\l__lipsum_b_int=\count286
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/lipsum/lipsum.ltd.tex))
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/hyperref/hyperref.sty
-Package: hyperref 2024-11-05 v7.01l Hypertext links for LaTeX
+x/geometry/geometry.sty
+Package: geometry 2020/01/02 v5.9 Page Geometry
+
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
+ric/iftex/ifvtex.sty
+Package: ifvtex 2019/10/25 v1.7 ifvtex legacy package. Use iftex instead.
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
 ric/iftex/iftex.sty
 Package: iftex 2024/12/12 v1.0g TeX engine tests
-)
+))
+\Gm@cnth=\count287
+\Gm@cntv=\count288
+\c@Gm@tempcnt=\count289
+\Gm@bindingoffset=\dimen151
+\Gm@wd@mp=\dimen152
+\Gm@odd@mp=\dimen153
+\Gm@even@mp=\dimen154
+\Gm@layoutwidth=\dimen155
+\Gm@layoutheight=\dimen156
+\Gm@layouthoffset=\dimen157
+\Gm@layoutvoffset=\dimen158
+\Gm@dimlist=\toks18
+
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/geometry/geometry.cfg))
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/hyperref/hyperref.sty
+Package: hyperref 2024-11-05 v7.01l Hypertext links for LaTeX
+
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/kvsetkeys/kvsetkeys.sty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
@@ -252,21 +312,21 @@ Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
 x/kvoptions/kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count285
+\c@section@level=\count290
 )
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/etoolbox/etoolbox.sty
 Package: etoolbox 2025/02/11 v2.5l e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count286
+\etb@tempcnta=\count291
 )
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
 ric/stringenc/stringenc.sty
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
-\@linkdim=\dimen150
-\Hy@linkcounter=\count287
-\Hy@pagecounter=\count288
+\@linkdim=\dimen159
+\Hy@linkcounter=\count292
+\Hy@pagecounter=\count293
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/hyperref/pd1enc.def
@@ -276,7 +336,7 @@ File: pd1enc.def 2024-11-05 v7.01l Hyperref: PDFDocEncoding definition (HO)
 ric/intcalc/intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count289
+\Hy@SavedSpaceFactor=\count294
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/hyperref/puenc.def
@@ -289,7 +349,7 @@ Package hyperref Info: Plain pages OFF on input line 4172.
 Package hyperref Info: Backreferencing OFF on input line 4177.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
 Package hyperref Info: Bookmarks ON on input line 4424.
-\c@Hy@tempcnt=\count290
+\c@Hy@tempcnt=\count295
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/url/url.sty
@@ -297,7 +357,7 @@ x/url/url.sty
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
 LaTeX Info: Redefining \url on input line 4763.
-\XeTeXLinkMargin=\dimen151
+\XeTeXLinkMargin=\dimen160
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
 ric/bitset/bitset.sty
@@ -308,9 +368,9 @@ ric/bigintcalc/bigintcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count291
-\Field@Width=\dimen152
-\Fld@charsize=\dimen153
+\Fld@menulength=\count296
+\Field@Width=\dimen161
+\Fld@charsize=\dimen162
 Package hyperref Info: Hyper figures OFF on input line 6042.
 Package hyperref Info: Link nesting OFF on input line 6047.
 Package hyperref Info: Hyper index ON on input line 6050.
@@ -324,9 +384,9 @@ x/base/atbegshi-ltx.sty
 Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
 package with kernel methods
 )
-\Hy@abspage=\count292
-\c@Item=\count293
-\c@Hfootnote=\count294
+\Hy@abspage=\count297
+\c@Item=\count298
+\c@Hfootnote=\count299
 )
 Package hyperref Info: Driver (autodetected): hxetex.
 
@@ -334,10 +394,10 @@ Package hyperref Info: Driver (autodetected): hxetex.
 x/hyperref/hxetex.def
 File: hxetex.def 2024-11-05 v7.01l Hyperref driver for XeTeX
 \pdfm@box=\box55
-\c@Hy@AnnotLevel=\count295
-\HyField@AnnotCount=\count296
-\Fld@listcount=\count297
-\c@bookmark@seq@number=\count298
+\c@Hy@AnnotLevel=\count300
+\HyField@AnnotCount=\count301
+\Fld@listcount=\count302
+\c@bookmark@seq@number=\count303
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/rerunfilecheck/rerunfilecheck.sty
@@ -352,7 +412,32 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip65
 )
-Package hyperref Info: Option `colorlinks' set `true' on input line 12.
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/graphics/graphicx.sty
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/graphics/graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/graphics/trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+)
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: xetex.def on input line 106.
+
+(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
+x/graphics-def/xetex.def
+File: xetex.def 2022/09/22 v5.0n Graphics/color driver for xetex
+))
+\Gin@req@height=\dimen163
+\Gin@req@width=\dimen164
+)
+Package hyperref Info: Option `colorlinks' set `true' on input line 15.
 
 Package fontspec Info: 
 (fontspec)             Font family 'SFNSText-Regular.otf(0)' created for font
@@ -407,7 +492,7 @@ Class scrartcl Info: loading recommended package `bookmark'.
 (scrartcl)           `bookmarkpackage=false' before \begin{document} and
 (scrartcl)           you can avoid this message adding:
 (scrartcl)             \usepackage{bookmark}
-(scrartcl)           before \begin{document} on input line 35.
+(scrartcl)           before \begin{document} on input line 54.
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/bookmark/bookmark.sty
@@ -416,39 +501,39 @@ Package: bookmark 2023-12-10 v1.31 PDF bookmarks (HO)
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/bookmark/bkm-dvipdfm.def
 File: bkm-dvipdfm.def 2023-12-10 v1.31 bookmark driver for dvipdfm (HO)
-\BKM@id=\count299
-)) (main.aux)
-\openout1 = `main.aux'.
+\BKM@id=\count304
+)) (presentation.aux)
+\openout1 = `presentation.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-Package scrbase Info: activating english \abstractname on input line 35.
-Package scrbase Info: activating english \partname on input line 35.
-Package scrbase Info: activating english \figurename on input line 35.
-Package scrbase Info: activating english \tablename on input line 35.
-Package scrbase Info: activating english \contentsname on input line 35.
-Package scrbase Info: activating english \listfigurename on input line 35.
-Package scrbase Info: activating english \listtablename on input line 35.
-Package scrbase Info: activating english \refname on input line 35.
-Package scrbase Info: activating english \indexname on input line 35.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 54.
+LaTeX Font Info:    ... okay on input line 54.
+Package scrbase Info: activating english \abstractname on input line 54.
+Package scrbase Info: activating english \partname on input line 54.
+Package scrbase Info: activating english \figurename on input line 54.
+Package scrbase Info: activating english \tablename on input line 54.
+Package scrbase Info: activating english \contentsname on input line 54.
+Package scrbase Info: activating english \listfigurename on input line 54.
+Package scrbase Info: activating english \listtablename on input line 54.
+Package scrbase Info: activating english \refname on input line 54.
+Package scrbase Info: activating english \indexname on input line 54.
 
 Package fontspec Info: 
 (fontspec)             Adjusting the maths setup (use [no-math] to avoid
@@ -456,64 +541,99 @@ Package fontspec Info:
 
 \symlegacymaths=\mathgroup4
 LaTeX Font Info:    Overwriting symbol font `legacymaths' in version `bold'
-(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 35.
-LaTeX Font Info:    Redeclaring math accent \acute on input line 35.
-LaTeX Font Info:    Redeclaring math accent \grave on input line 35.
-LaTeX Font Info:    Redeclaring math accent \ddot on input line 35.
-LaTeX Font Info:    Redeclaring math accent \tilde on input line 35.
-LaTeX Font Info:    Redeclaring math accent \bar on input line 35.
-LaTeX Font Info:    Redeclaring math accent \breve on input line 35.
-LaTeX Font Info:    Redeclaring math accent \check on input line 35.
-LaTeX Font Info:    Redeclaring math accent \hat on input line 35.
-LaTeX Font Info:    Redeclaring math accent \dot on input line 35.
-LaTeX Font Info:    Redeclaring math accent \mathring on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \colon on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Delta on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Theta on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Xi on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Pi on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Phi on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Psi on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Omega on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 35.
-LaTeX Font Info:    Redeclaring symbol font `operators' on input line 35.
+(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 54.
+LaTeX Font Info:    Redeclaring math accent \acute on input line 54.
+LaTeX Font Info:    Redeclaring math accent \grave on input line 54.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 54.
+LaTeX Font Info:    Redeclaring math accent \tilde on input line 54.
+LaTeX Font Info:    Redeclaring math accent \bar on input line 54.
+LaTeX Font Info:    Redeclaring math accent \breve on input line 54.
+LaTeX Font Info:    Redeclaring math accent \check on input line 54.
+LaTeX Font Info:    Redeclaring math accent \hat on input line 54.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 54.
+LaTeX Font Info:    Redeclaring math accent \mathring on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \colon on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Delta on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Theta on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Xi on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Pi on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Phi on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Psi on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \Omega on input line 54.
+LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 54.
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 54.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 35.
+(Font)              `operators' in the math version `normal' on input line 54.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/cmr/m/n --> TU/SFNSText-Regular.otf(0)/m/n on input
- line 35.
+ line 54.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 35.
+(Font)              `operators' in the math version `bold' on input line 54.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  OT1/cmr/bx/n --> TU/SFNSText-Regular.otf(0)/m/n on inpu
-t line 35.
+t line 54.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  TU/SFNSText-Regular.otf(0)/m/n --> TU/SFNSText-Regular.
-otf(0)/m/n on input line 35.
+otf(0)/m/n on input line 54.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
 (Font)                  OT1/cmr/m/it --> TU/SFNSText-Regular.otf(0)/m/it on inp
-ut line 35.
+ut line 54.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
 (Font)                  OT1/cmr/bx/n --> TU/SFNSText-Regular.otf(0)/b/n on inpu
-t line 35.
+t line 54.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 35.
+(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 54.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 35.
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 54.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  TU/SFNSText-Regular.otf(0)/m/n --> TU/SFNSText-Regular.
-otf(0)/b/n on input line 35.
+otf(0)/b/n on input line 54.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
 (Font)                  OT1/cmr/bx/it --> TU/SFNSText-Regular.otf(0)/b/it on in
-put line 35.
+put line 54.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 35.
+(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 54.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 35.
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 54.
+
+*geometry* driver: auto-detecting
+*geometry* detected driver: xetex
+*geometry* verbose mode - [ preamble ] result:
+* driver: xetex
+* paper: custom
+* layout: <same size as paper>
+* layoutoffset:(h,v)=(0.0pt,0.0pt)
+* modes: landscape 
+* h-part:(L,W,R)=(173.44977pt, 809.42046pt, 173.44977pt)
+* v-part:(T,H,B)=(78.0524pt, 455.299pt, 117.0786pt)
+* \paperwidth=1156.31999pt
+* \paperheight=650.43pt
+* \textwidth=809.42046pt
+* \textheight=455.299pt
+* \oddsidemargin=101.17978pt
+* \evensidemargin=101.17978pt
+* \topmargin=-31.6176pt
+* \headheight=17.0pt
+* \headsep=20.40001pt
+* \topskip=11.0pt
+* \footskip=47.6pt
+* \marginparwidth=59.7508pt
+* \marginparsep=12.8401pt
+* \columnsep=10.0pt
+* \skip\footins=10.0pt plus 4.0pt minus 2.0pt
+* \hoffset=0.0pt
+* \voffset=0.0pt
+* \mag=1000
+* \@twocolumnfalse
+* \@twosidefalse
+* \@mparswitchfalse
+* \@reversemarginfalse
+* (1in=72.27pt=25.4mm, 1cm=28.453pt)
+
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/graphics/color.sty
@@ -526,33 +646,24 @@ File: color.cfg 2016/01/02 v1.6 sample color configuration
 Package color Info: Driver file: xetex.def on input line 149.
 
 (/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/graphics-def/xetex.def
-File: xetex.def 2022/09/22 v5.0n Graphics/color driver for xetex
-)
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
 x/graphics/mathcolor.ltx))
-Package hyperref Info: Link coloring ON on input line 35.
+Package hyperref Info: Link coloring ON on input line 54.
 
-Underfull \hbox (badness 10000) in paragraph at lines 38--40
-
- []
-
-
-Overfull \hbox (33.52393pt too wide) in paragraph at lines 41--42
-[]\TU/ClashGrotesk-Semibold.ttf(0)/m/n/24.88 Developing a playable simulation o
-f mar-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 41--42
+Underfull \hbox (badness 10000) in paragraph at lines 75--75
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 43--45
+Underfull \hbox (badness 10000) in paragraph at lines 75--75
 
  []
 
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 75.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 75.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 75.
 
 
 [1
@@ -562,30 +673,60 @@ Underfull \hbox (badness 10000) in paragraph at lines 43--45
 LaTeX Font Warning: Font shape `TU/ClashGrotesk-Semibold.ttf(0)/bx/n' undefined
 
 (Font)              using `TU/ClashGrotesk-Semibold.ttf(0)/m/n' instead on inpu
-t line 50.
-
-(main.toc
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 4.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 4.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 4.
-)
-\tf@toc=\write3
-\openout3 = `main.toc'.
+t line 85.
 
 
 
-[2] (motivation.tex) (goals.tex) (concept.tex
+[2]
+File: Google-Logo-3014348739.png Graphic file (type bmp)
+<Google-Logo-3014348739.png>
 
-[3])
+
+[3]
+File: EA_logo_Signature-1645937650.jpg Graphic file (type bmp)
+<EA_logo_Signature-1645937650.jpg>
+
 
 [4]
+File: Nestle-Emblema-3312328101.png Graphic file (type bmp)
+<Nestle-Emblema-3312328101.png>
+
 
 [5]
 
-[6] (main.aux)
+[6]
+
+[7]
+
+[8]
+
+[9]
+
+[10]
+Underfull \hbox (badness 10000) in paragraph at lines 137--137
+
+ []
+
+
+
+[11]
+File: conceptualStructure.png Graphic file (type bmp)
+<conceptualStructure.png>
+
+Underfull \hbox (badness 10000) in paragraph at lines 141--142
+
+ []
+
+
+
+[12]
+Underfull \hbox (badness 10000) in paragraph at lines 160--160
+
+ []
+
+
+
+[13] (presentation.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-03-26>
@@ -596,12 +737,12 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 14102 strings out of 405079
- 304265 string characters out of 5494885
- 928516 words of memory out of 5000000
- 40591 multiletter control sequences out of 15000+600000
- 630148 words of font info for 78 fonts, out of 8000000 for 9000
+ 15877 strings out of 405079
+ 335447 string characters out of 5494885
+ 969787 words of memory out of 5000000
+ 42338 multiletter control sequences out of 15000+600000
+ 630137 words of font info for 77 fonts, out of 8000000 for 9000
  1348 hyphenation exceptions out of 8191
- 108i,7n,107p,11209b,345s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 108i,7n,107p,11217b,364s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (6 pages).
+Output written on presentation.pdf (13 pages).
