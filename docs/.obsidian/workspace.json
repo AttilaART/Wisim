@@ -23,25 +23,28 @@
             "id": "9ce5902d3ff386a2",
             "type": "leaf",
             "state": {
-              "type": "kanban",
+              "type": "excalidraw",
               "state": {
-                "file": "Development/Features.md",
-                "kanbanViewState": {
-                  "kanban-plugin": "board",
-                  "list-collapse": [
-                    false,
-                    false,
-                    false,
-                    false
-                  ]
-                }
+                "file": "Development/UI/UI Prototype 3.md"
               },
-              "icon": "lucide-trello",
-              "title": "Features"
+              "icon": "excalidraw-icon",
+              "title": "UI Prototype 3"
             }
           },
           {
             "id": "ad956264030300b0",
+            "type": "leaf",
+            "state": {
+              "type": "excalidraw",
+              "state": {
+                "file": "Development/UI/Product Screen.md"
+              },
+              "icon": "excalidraw-icon",
+              "title": "Product Screen"
+            }
+          },
+          {
+            "id": "2d4fb8504cdeb123",
             "type": "leaf",
             "state": {
               "type": "kanban",
@@ -119,7 +122,8 @@
       }
     ],
     "direction": "horizontal",
-    "width": 300
+    "width": 300,
+    "collapsed": true
   },
   "right": {
     "id": "e8b572bfaebaa5f6",
@@ -135,7 +139,7 @@
             "state": {
               "type": "backlink",
               "state": {
-                "file": "Development/UI Prototype.md",
+                "file": "Development/UI/Product Screen.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -145,7 +149,7 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "Backlinks for UI Prototype"
+              "title": "Backlinks for Product Screen"
             }
           },
           {
@@ -176,21 +180,6 @@
               "icon": "lucide-tags",
               "title": "Tags"
             }
-          },
-          {
-            "id": "326dd55cfe5fc7fc",
-            "type": "leaf",
-            "state": {
-              "type": "outline",
-              "state": {
-                "file": "Development/UI Prototype.md",
-                "followCursor": false,
-                "showSearch": false,
-                "searchQuery": ""
-              },
-              "icon": "lucide-list",
-              "title": "Outline of UI Prototype"
-            }
           }
         ]
       }
@@ -214,6 +203,17 @@
   },
   "active": "ad956264030300b0",
   "lastOpenFiles": [
+    "Development/UI/UI Prototype 3.md",
+    "Development/UI/Product Screen.md",
+    "Development/Features.md",
+    "Excalidraw/Scripts/Downloaded/Boolean Operations.svg",
+    "Excalidraw/Scripts/Downloaded/Boolean Operations.md",
+    "Excalidraw/Scripts/Downloaded/Box Each Selected Groups.svg",
+    "Excalidraw/Scripts/Downloaded/Box Each Selected Groups.md",
+    "Excalidraw/Scripts/Downloaded",
+    "Excalidraw/Scripts",
+    "Excalidraw",
+    "attachments/Pasted Image 20250924100122_504.png",
     "Development/From 1 product to Many.md",
     "Development/Todo list.md",
     "Development/Taxes.md",
@@ -225,10 +225,6 @@
     "arbeit/SFNSText-BoldItalic.otf",
     "arbeit/SFNSText-RegularItalic.otf",
     "arbeit/SFNSText-Regular.otf",
-    "arbeit/SFNSText-Bold.otf",
-    "arbeit/SFNSDisplay-Regular.otf",
-    "arbeit/fonts/SFNSText-Semibold.otf",
-    "Development/Features.md",
     "Development/Normalverteilung Diagramm.md",
     "Simd.md",
     "Development/Untitled.md",
@@ -244,7 +240,6 @@
     "Pasted Image 20250313220644_176.png.md",
     "Development/Technical Info/Json CommsProtocol.md",
     "Development/Technical Info/Random income function.md",
-    "Development/UI/UI Prototype 3.md",
     "Development/Outdated/Development log.md",
     "Development/Data Flow Whole program-archlinux-safeBackup-0001.md",
     "Development/Outdated/Data Flow Whole program.md",
@@ -254,12 +249,6 @@
     "attachments/Pasted Image 20250706030725_183.png",
     "Development/UI/UI Prototype.md",
     "Development/UI/UI Prototype 2.md",
-    "attachments/Pasted Image 20250605180215_977.png",
-    "attachments/Pasted image 20250820173943.png",
-    "attachments/Pasted Image 20250820173857_883.png",
-    "attachments/Pasted Image 20250313220644_176.png",
-    "Pasted.md",
-    "Pasted image 20250313220444.png.md",
-    "Development/Outdated/CommsProtocol (OLD).md"
+    "attachments/Pasted Image 20250605180215_977.png"
   ]
 }
