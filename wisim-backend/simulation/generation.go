@@ -56,6 +56,8 @@ func generatePopulation(
 	durabilitySpread float32,
 	purchasingThresholdBias float32,
 	purchasingThresholdSpread float32,
+	savvynessSpread float32,
+	savvynessBias float32,
 	baseMarketPrice float32,
 	marketSaturation float32,
 
@@ -91,6 +93,8 @@ func generatePopulation(
 
 					Purchashing_threshold: float32(posNormFloat64())*purchasingThresholdSpread + purchasingThresholdBias,
 					Loyalties:             make([]float32, number_of_companies),
+
+					Savyness: float32(posNormFloat64())*savvynessSpread + savvynessBias,
 				}
 				populationPreferences[i][propertiesQuality] = float32(posNormFloat64())*qualitySpread + qualityBias
 				populationPreferences[i][propertiesEcology] = float32(posNormFloat64())*ecologySpread + ecologyBias
@@ -332,8 +336,6 @@ func New_game(simConfig Sim_config, numberOfCompanies int, gameName string) Game
 		simConfig.Ecology_spread,
 		simConfig.Ethics_bias,
 		simConfig.Ethics_spread,
-		// sim_config.Coolness_bias,
-		// sim_config.Coolness_spread,
 		simConfig.Price_bias,
 		simConfig.Price_spread,
 		simConfig.Bang_for_buck_bias,
@@ -342,6 +344,8 @@ func New_game(simConfig Sim_config, numberOfCompanies int, gameName string) Game
 		simConfig.Durability_spread,
 		simConfig.Purchasing_threshold_bias,
 		simConfig.Purchasing_threshold_spread,
+		simConfig.SavvynessSpread,
+		simConfig.SavvynessBias,
 		simConfig.Base_market_price,
 		simConfig.Market_saturation,
 

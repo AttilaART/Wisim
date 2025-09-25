@@ -6,7 +6,7 @@
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
 	 * @property {Object.<string, import("$lib/javascript/simulation").Offer>} offers,
-	 * @property {import("$lib/javascript/simulation").External_factors} externalFactors,
+	 * @property {import("$lib/javascript/simulation").ExternalFactors} externalFactors,
 	 * @property {(contents: import("svelte").Snippet<[number]>)=>number} newWindow,
 	 * @property {(windowId: number)=>void} deleteWindow,
 	 */
@@ -32,7 +32,6 @@
 	const baseProductDecisions = {
 		Price: 150,
 		Name: 'Unnambed Product',
-		ProductionGoal: 1000,
 
 		Materials: {
 			Quality: 1,
@@ -49,7 +48,7 @@
 		},
 
 		Promotion: {
-			Quantity: 100,
+			Quantity: 10000,
 			StyleQuality: 0.25,
 			StyleEcology: 0.25,
 			StyleEthics: 0.25,
@@ -61,6 +60,7 @@
 		clientState.Company,
 		{
 			ID: -1,
+			CompanyID: clientState.Company.ID,
 			Name: 'Unnambed Product',
 			Weight: 1,
 			MaterialUse: 1,
@@ -94,7 +94,7 @@
 			clientState.Company.Offers[newProductID] = {
 				Product: JSON.parse(JSON.stringify(baseProduct)),
 				Price: 150,
-				PromotionGoal: {
+				Promotion: {
 					Quantity: 0,
 					StyleQuality: 0,
 					StyleDurability: 0,
@@ -270,6 +270,7 @@
 						type="number"
 					/>
 				</label>
+				<!--
 				<label for="maxProduction"
 					>Product goal
 					<input
@@ -277,7 +278,7 @@
 						bind:value={clientState.Decisions.Products[newProductID].ProductionGoal}
 						type="number"
 					/>
-				</label>
+				</label>-->
 
 				<h2>Materials</h2>
 				<label for="quality"

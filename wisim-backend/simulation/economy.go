@@ -22,16 +22,15 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 		Company int
 	}
 	var productAvailability []int
-	var i int
 	for _, c := range companies {
 		for productID, offer := range c.Offers {
+			println(offer.Product.Name)
 			offers = append(offers, offer)
 			offerIDs = append(offerIDs, struct {
 				ID      string
 				Company int
 			}{offer.Product.ID, c.ID})
 			productAvailability = append(productAvailability, c.ProductsInStorage[productID])
-			i++
 		}
 	}
 
@@ -43,10 +42,6 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 	var avgPrice float32
 	for _, o := range offers {
 		avgPrice += o.Price
-	}
-
-	if len(offers) == 0 {
-		panic("len(offers) == 0; there are no offers!")
 	}
 
 	avgPrice = avgPrice / float32(len(offers))
@@ -66,6 +61,7 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 	offerPrices := make([]float32, len(offers))
 	offerDurabilities := make([]int, len(offers))
 	offersProperties := make([]Properties, len(offers))
+	offerMutexes := make([]sync.Mutex, len(offers))
 
 	for i, o := range offers {
 		offerPrices[i] = o.Price
@@ -91,6 +87,7 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 			offers,
 			offerPrices,
 			offerDurabilities,
+			offerMutexes,
 			productAvailability,
 			externalFactors,
 			purchasingStatistics,
@@ -153,14 +150,14 @@ func simulatePopulationSegment(
 	offers []Offer,
 	offerPrices []float32,
 	offerDurabilities []int,
+	offerMutexes []sync.Mutex,
 	productAvailability []int,
 	externalFactors ExternalFactors,
 	purchasingStatistics []Purchasing_statistics,
 	populationSize int,
 ) {
-	productsPurchasingFactors := make([]float32, len(offersProperties))
-
 	for i, customer := range populationSegment {
+		productsPurchasingFactors := make([]float32, len(offersProperties))
 		customer.Max_price *= 1 + externalFactors.Inflation
 
 		for i := range customer.Owned_products {
@@ -204,11 +201,18 @@ func simulatePopulationSegment(
 
 		// calculate promotion
 		for ii, o := range offers {
-			marketingReach := (o.Promotion.Quantity / float32(populationSize)) * rand.Float32()
+			marketingReach := (o.Promotion.Quantity / float32(populationSize)) * rand.Float32() * 10
+			debugString := "marketingReach %s (%s) %.4f "
+			if marketingReach > customer.Savyness {
+				debugString += "> "
+			} else {
+				debugString += "< "
+			}
+			debugString += "customer.Savyness (%.2f); threshold(%.2f): %t (%.2f)\n"
 
-			productsPurchasingFactors[ii] *= (customer.Loyalties[o.Product.CompanyID] * customer.Brand_loyalty_factor)
+			productsPurchasingFactors[ii] += productsPurchasingFactors[ii] * (customer.Loyalties[o.Product.CompanyID] * customer.Brand_loyalty_factor)
 
-			if customer.Purchashing_threshold <= marketingReach {
+			if customer.Savyness <= marketingReach {
 				marketingStickingFactor := (populationSegmentPreferences[i][propertiesQuality]*o.Promotion.StyleQuality +
 					populationSegmentPreferences[i][propertiesEcology]*o.Promotion.StyleEcology +
 					populationSegmentPreferences[i][propertiesEthics]*o.Promotion.StyleEthics +
@@ -216,10 +220,12 @@ func simulatePopulationSegment(
 					populationSegmentPreferences[i][propertiesDurability]*o.Promotion.StyleDurability) *
 					o.Promotion.Quality
 
-				productsPurchasingFactors[ii] *= marketingStickingFactor
-			} else if customer.Loyalties[o.Product.CompanyID] <= 0.5 {
-				productsPurchasingFactors[ii] = 0
+				productsPurchasingFactors[ii] += productsPurchasingFactors[ii] + marketingStickingFactor
+			} else if customer.Loyalties[o.Product.CompanyID] < 0.5 {
+				productsPurchasingFactors[ii] *= 0.75
 			}
+
+			// fmt.Printf(debugString, o.Product.Name, o.Product.ID, marketingReach, customer.Savyness, customer.Purchashing_threshold, productsPurchasingFactors[ii] >= customer.Purchashing_threshold, productsPurchasingFactors[ii])
 
 		}
 
@@ -231,17 +237,19 @@ func simulatePopulationSegment(
 		if choice != noProductChosen {
 			purchasingStatistics[choice].ProductDemand += customer.Base_need - len(customer.Owned_products)
 			populationSegment[i].Loyalties[offers[choice].Product.CompanyID] += productsPurchasingFactors[choice] / 10
-			numberOfProductsPurchased := 0
 			for range customer.Base_need - len(customer.Owned_products) {
+				offerMutexes[choice].Lock()
 				if productAvailability[choice] > 0 {
-					populationSegment[i].Owned_products = append(customer.Owned_products, OwnedProduct{choice, offerDurabilities[choice]})
 					productAvailability[choice] -= 1
-					numberOfProductsPurchased += 1
+					purchasingStatistics[choice].ProductsSold++
+					offerMutexes[choice].Unlock()
+					populationSegment[i].Owned_products = append(customer.Owned_products, OwnedProduct{choice, offerDurabilities[choice]})
 				} else {
+					offerMutexes[choice].Unlock()
 					break
 				}
 			}
-			purchasingStatistics[choice].ProductsSold += numberOfProductsPurchased
+
 		}
 		populationSegment[i] = customer
 	}

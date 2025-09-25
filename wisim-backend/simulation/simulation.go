@@ -56,6 +56,8 @@ type Sim_config struct {
 	Durability_spread           float32
 	Purchasing_threshold_bias   float32
 	Purchasing_threshold_spread float32
+	SavvynessBias               float32
+	SavvynessSpread             float32
 	Base_market_price           float32
 	Market_saturation           float32
 }
@@ -150,7 +152,7 @@ type Decisions_product struct {
 	}
 
 	Promotion struct {
-		Quantity        float64
+		Quantity        float32
 		StyleQuality    float32
 		StyleEcology    float32
 		StyleEthics     float32
@@ -525,7 +527,8 @@ type Customer struct {
 
 	Purchashing_threshold float32
 	Max_price             float32
-	Satisfaction          []Satisfaction
+	Savyness              float32
+	brandSatisfaction     []Satisfaction
 
 	Brand_loyalty_factor float32
 	Loyalties            []float32
@@ -629,11 +632,6 @@ func (game_state *GameState) SimulateStep() error {
 		// Add new products
 		println("Developing Products...")
 
-		b, _ := json.MarshalIndent(c.Offers, "", "    ")
-		fmt.Printf("%s\n", b)
-
-		b, _ = json.MarshalIndent(game_state.CurrentDecisions[i].Products, "", "    ")
-		fmt.Printf("%s\n", b)
 		for ID, decisions := range game_state.CurrentDecisions[i].Products {
 			if _, exists := c.Offers[ID]; !exists {
 				c.Offers[ID] = c.newProduct(ID, i, decisions.Name, game_state.CurrentDecisions[i].Products[ID])
@@ -795,13 +793,13 @@ func (company *Company) compileReports(
 	company.Reports[len(company.Reports)-1].SalesReport = make(map[string]Sales_report)
 
 	for productID := range company.Offers {
-		company.compile_sales_report(
+		company.compileSalesReport(
 			companyPurchasingStatistcs,
 			marketPurchasingStatistics.Products_sold,
 			company.Reports[len(company.Reports)-1].SalesReport,
 		)
 
-		company.ProductsInStorage[productID] -= marketPurchasingStatistics.Products_sold
+		company.ProductsInStorage[productID] -= company.Reports[len(company.Reports)-1].SalesReport[productID].ProductSalesStatistics.Products_sold
 	}
 
 	// Finance
@@ -886,43 +884,48 @@ func (c *Company) compile_personelle_subreport(decisions Decisions, employee_typ
 	return subReport
 }
 
-func (c *Company) compile_sales_report(purchasing_statiscs map[string]Purchasing_statistics, Market_products_sold int, salesReportsMap map[string]Sales_report) {
+func (c *Company) compileSalesReport(purchasingStatiscs map[string]Purchasing_statistics, MarketProductsSold int, salesReportsMap map[string]Sales_report) {
 	// ----------------
 
-	for productId, productSpecificPurchasing_statiscs := range purchasing_statiscs {
-		salesReport := Sales_statistics{}
-
-		salesReport.Products_sold = productSpecificPurchasing_statiscs.ProductsSold
-		salesReport.Product_demand = productSpecificPurchasing_statiscs.ProductDemand
-		if Market_products_sold != 0 {
-			salesReport.Market_share = (float32(productSpecificPurchasing_statiscs.ProductsSold) / float32(Market_products_sold))
-		} else {
-			salesReport.Market_share = 0
+	for productID, productSpecificPurchasingStatiscs := range purchasingStatiscs {
+		if _, isCompaniesProducts := c.Offers[productID]; !isCompaniesProducts {
+			continue
 		}
 
-		salesReport.AvrDecisionFactor = productSpecificPurchasing_statiscs.AvrDecisionFactor
-		salesReport.AvrPurchasingThreshold = productSpecificPurchasing_statiscs.AvrPurchasingThreshold
+		salesStatistics := Sales_statistics{}
 
-		salesReport.AvrQualityFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesQuality]
-		salesReport.AvrDurabilityFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesDurability]
-		salesReport.AvrEcologyFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesEcology]
-		salesReport.AvrPriceFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesPrice]
-		salesReport.AvrEthicsFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesEthics]
+		salesStatistics.Products_sold = productSpecificPurchasingStatiscs.ProductsSold
+		println("salesStatistics.ProductsSold: ", salesStatistics.Products_sold, productID)
+		salesStatistics.Product_demand = productSpecificPurchasingStatiscs.ProductDemand
+		if MarketProductsSold != 0 {
+			salesStatistics.Market_share = (float32(productSpecificPurchasingStatiscs.ProductsSold) / float32(MarketProductsSold))
+		} else {
+			salesStatistics.Market_share = 0
+		}
+
+		salesStatistics.AvrDecisionFactor = productSpecificPurchasingStatiscs.AvrDecisionFactor
+		salesStatistics.AvrPurchasingThreshold = productSpecificPurchasingStatiscs.AvrPurchasingThreshold
+
+		salesStatistics.AvrQualityFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesQuality]
+		salesStatistics.AvrDurabilityFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesDurability]
+		salesStatistics.AvrEcologyFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesEcology]
+		salesStatistics.AvrPriceFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesPrice]
+		salesStatistics.AvrEthicsFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesEthics]
 		// salesReport.Company_sales_statistics.Avr_coolness_factor = productSpecificPurchasing_statiscs.Avr_coolness_factor
-		salesReport.AvrBangForBuckFactor = productSpecificPurchasing_statiscs.AvrPurchasingFactors[propertiesBangForBuck]
+		salesStatistics.AvrBangForBuckFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesBangForBuck]
 
 		marketingStatistics := Marketing_statistics{}
-		marketingStatistics.Quality = c.Offers[productId].Product.Quality
-		marketingStatistics.Durabilty = c.Offers[productId].Product.Durabilty
-		marketingStatistics.Ethics = c.Offers[productId].Product.Ethics
+		marketingStatistics.Quality = c.Offers[productID].Product.Quality
+		marketingStatistics.Durabilty = c.Offers[productID].Product.Durabilty
+		marketingStatistics.Ethics = c.Offers[productID].Product.Ethics
 		// reportMarketingStatistics.Coolness = offer.Product.Coolness_factor
-		marketingStatistics.Ecology = c.Offers[productId].Product.Ecology
+		marketingStatistics.Ecology = c.Offers[productID].Product.Ecology
 
-		marketingStatistics.Price = float64(c.Offers[productId].Price)
-		marketingStatistics.PromotionQuantity = float64(c.Offers[productId].Promotion.Quantity)
-		marketingStatistics.PromotionQuality = float64(c.Offers[productId].Promotion.Quantity)
+		marketingStatistics.Price = float64(c.Offers[productID].Price)
+		marketingStatistics.PromotionQuantity = float64(c.Offers[productID].Promotion.Quantity)
+		marketingStatistics.PromotionQuality = float64(c.Offers[productID].Promotion.Quantity)
 
-		salesReportsMap[productId] = Sales_report{salesReport, marketingStatistics}
+		salesReportsMap[productID] = Sales_report{salesStatistics, marketingStatistics}
 	}
 }
 

@@ -40,8 +40,10 @@
   "Bang_for_buck_spread": 1,
   "Durabilty_bias": 1,
   "Durability_spread": 1,
-  "Purchasing_threshold_bias": 30,
-  "Purchasing_threshold_spread": 10,
+  "Purchasing_threshold_bias": 3,
+  "Purchasing_threshold_spread": 30,
+  "SavvynessBias": 1,
+  "SavvynessSpread": 1,
   "Base_market_price": 400,
   "Market_saturation": 0.6
 }

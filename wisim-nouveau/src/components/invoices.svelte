@@ -14,10 +14,10 @@
   /** @type {groupedInvoices} */
 	let invoices = $derived(
 		/** @returns {groupedInvoices}*/ (() => {
-			if (!(clientState.company.Reports == null || clientState.company.Reports.length == 0)) {
+			if (!(clientState.Company.Reports == null || clientState.Company.Reports.length == 0)) {
 				let rawInvoices =
-					clientState.company.Reports[clientState.company.Reports.length - 1].Balance_sheet
-						.Invoice_log;
+					clientState.Company.Reports[clientState.Company.Reports.length - 1].BalanceSheet
+						.InvoiceLog;
 
 				/** @type {groupedInvoices} */
 				let groupedInvoices = {};

@@ -108,22 +108,22 @@ func (c *Company) Get_decisions() Decisions {
 				Machines  []Delta[Machine]
 				Logistics []Delta[Warehouse]
 			}{
-				make([]Delta[Machine], 0),
-				make([]Delta[Warehouse], 0),
+				nil,
+				nil,
 			},
 			Employees: struct {
 				Production_deltas []Delta[Employee]
 				Marketing_deltas  []Delta[Employee]
 				Severance_pay     float32
 			}{
-				make([]Delta[Employee], 0),
-				make([]Delta[Employee], 0),
+				nil,
+				nil,
 				10000,
 			},
 		}
 
-		for productId := range c.Offers {
-			decisions.Products[productId] = Decisions_product{
+		for productID := range c.Offers {
+			decisions.Products[productID] = Decisions_product{
 				Price: 350,
 				Materials: struct {
 					Quality         float32
@@ -157,16 +157,16 @@ func (c *Company) Get_decisions() Decisions {
 	for id := range decisions.Products {
 		ProductDecisions := decisions.Products[id]
 		manufacturingReflect := reflect.ValueOf(&ProductDecisions.Manufacturing)
-		for i := range manufacturingReflect.NumField() {
-			field := manufacturingReflect.Field(i)
+		for i := range manufacturingReflect.Elem().NumField() {
+			field := manufacturingReflect.Elem().Field(i)
 			if field.CanFloat() {
 				field.SetFloat(max(field.Float(), 0.1))
 			}
 		}
 
 		materialsReflect := reflect.ValueOf(&ProductDecisions.Materials)
-		for i := range materialsReflect.NumField() {
-			field := materialsReflect.Field(i)
+		for i := range materialsReflect.Elem().NumField() {
+			field := materialsReflect.Elem().Field(i)
 			if field.CanFloat() {
 				field.SetFloat(max(field.Float(), 0.1))
 			}

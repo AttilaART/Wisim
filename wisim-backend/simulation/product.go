@@ -114,7 +114,9 @@ func (c *Company) calculatePromotion(decisions Decisions) {
 
 	for productID, offer := range c.Offers {
 		offer.Promotion.Quality = promotionQuality
+		offer.Promotion.Quantity = decisions.Products[productID].Promotion.Quantity
 		offer.Price = decisions.Products[productID].Price
+		offer.Product.Name = decisions.Products[productID].Name
 
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
 			"Advertisement costs",

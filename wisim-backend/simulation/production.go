@@ -203,6 +203,7 @@ func produce(
 		productSpecificReport := productionReport.ProductSpecificReport[m.AssignedProductID]
 		productSpecificReport.BaseProduction += baseProductionOfMachine
 		productSpecificReport.BonusProduction += bonusProductionOfMachine
+		productSpecificReport.TotalProduction += bonusProductionOfMachine + baseProductionOfMachine
 
 		productionReport.ProductSpecificReport[m.AssignedProductID] = productSpecificReport
 

@@ -6,7 +6,7 @@
 <article {@attach draggable([controls({ allow: ControlFrom.selector('header') })])}>
 	<header>
 		<button onclick={closeWindow} rel="prev" aria-label="Close"></button><center
-			style="user-select: none;">{title}</center
+			style="user-select: none; pointer-events: none;">{title}</center
 		>
 	</header>
 	<div style="overflow: scroll; max-height: calc(100vh - 136px - 58px - var(--pico-spacing)*2);">
@@ -48,6 +48,9 @@
 				padding: 0;
 				float: right;
 			}
+		}
+		div {
+			resize: both;
 		}
 	}
 </style>
