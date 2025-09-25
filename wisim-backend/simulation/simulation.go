@@ -30,7 +30,7 @@ type GameState struct {
 	CurrentDecisions      []Decisions
 	DecisionsSubmitted    []bool
 	MarketSalesStatistics []Sales_statistics
-	ExternalFactors       External_factors
+	ExternalFactors       ExternalFactors
 }
 
 type Sim_config struct {
@@ -132,9 +132,8 @@ type Decisions struct {
 }
 
 type Decisions_product struct {
-	Price          float32
-	Name           string
-	ProductionGoal int
+	Price float32
+	Name  string
 
 	Materials struct {
 		Quality         float32
@@ -179,13 +178,14 @@ const (
 )
 
 type Offer struct {
-	Status           string
-	Product          Product
-	Price            float32
-	PromotionQuality float32
-	PromotionGoal    struct {
-		Quantity        float64
+	Status    string
+	Product   Product
+	Price     float32
+	Promotion struct {
+		Quantity        float32
+		Quality         float32
 		StyleQuality    float32
+		StylePrice      float32
 		StyleEcology    float32
 		StyleEthics     float32
 		StyleDurability float32
@@ -194,6 +194,7 @@ type Offer struct {
 
 type Product struct {
 	ID             string
+	CompanyID      int
 	Name           string
 	Weight         float32
 	MaterialUse    float32
@@ -518,7 +519,7 @@ type Marketing_statistics struct {
 
 type Customer struct {
 	Base_need      int
-	Owned_products []Owned_product
+	Owned_products []OwnedProduct
 
 	// Preferences moved to sepeate array in gamestate
 
@@ -546,18 +547,18 @@ type Population struct {
 	Preferences []Properties
 }
 
-type Owned_product struct {
-	Id                  int
-	Remaining_durabilty int
+type OwnedProduct struct {
+	ID                 int
+	RemainingDurabilty int
 }
 
 type Satisfaction struct {
-	Product_id      int
-	Decision_factor float32
-	Satisfaction    float32
+	ProductID      int
+	DecisionFactor float32
+	Satisfaction   float32
 }
 
-type External_factors struct {
+type ExternalFactors struct {
 	Month int
 	// Economy
 	Inflation              float32
@@ -635,7 +636,7 @@ func (game_state *GameState) SimulateStep() error {
 		fmt.Printf("%s\n", b)
 		for ID, decisions := range game_state.CurrentDecisions[i].Products {
 			if _, exists := c.Offers[ID]; !exists {
-				c.Offers[ID] = c.newProduct(ID, decisions.Name, game_state.CurrentDecisions[i].Products[ID])
+				c.Offers[ID] = c.newProduct(ID, i, decisions.Name, game_state.CurrentDecisions[i].Products[ID])
 			}
 		}
 
@@ -663,8 +664,8 @@ func (game_state *GameState) SimulateStep() error {
 	println("---------------- Simulatig economy ----------------")
 
 	purchasingStatistics := make(map[string]Purchasing_statistics)
-	Results, err := game_state.Population.simulateEconomy(
-		&game_state.Companies,
+	err := game_state.Population.simulateEconomy(
+		game_state.Companies,
 		game_state.ExternalFactors,
 		purchasingStatistics,
 	)
@@ -708,7 +709,6 @@ func (game_state *GameState) SimulateStep() error {
 		fmt.Printf("Compiling reports for company %d\n", i)
 		game_state.Companies[i].compileReports(
 			game_state.CurrentDecisions[i],
-			Results[i],
 			purchasingStatistics,
 			&game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1],
 			game_state.ExternalFactors,
@@ -745,6 +745,17 @@ func (game_state *GameState) SimulateStep() error {
 		printer.Printf("Avr Motivation: %.2f\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.AvgMotivation)
 		printer.Printf("Avr Productivity: %.2f\n", c.Reports[len(c.Reports)-1].PersonelleReport.General.AvgProductivity)
 		println("")
+
+		totalProduction := 0
+		totalProductsProducted := 0
+
+		for _, r := range c.Reports[len(c.Reports)-1].ProductionReport.ProductSpecificReport {
+			totalProduction += r.TotalProduction
+			totalProductsProducted += r.TotalProductsProduced
+		}
+
+		printer.Printf("Total producton: %d\n", totalProduction)
+		printer.Printf("Total products produced: %d\n", totalProductsProducted)
 	}
 
 	totalProductsSold := 0
@@ -777,10 +788,9 @@ func (game_state *GameState) SimulateStep() error {
 
 func (company *Company) compileReports(
 	decisions Decisions,
-	results FinanceReportEntry,
 	companyPurchasingStatistcs map[string]Purchasing_statistics,
 	marketPurchasingStatistics *Sales_statistics,
-	externalFactors External_factors,
+	externalFactors ExternalFactors,
 ) error {
 	company.Reports[len(company.Reports)-1].SalesReport = make(map[string]Sales_report)
 
@@ -794,21 +804,19 @@ func (company *Company) compileReports(
 		company.ProductsInStorage[productID] -= marketPurchasingStatistics.Products_sold
 	}
 
-	company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog = append(company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog, results)
-
 	// Finance
-	company.calculate_budget(decisions, externalFactors)
-	company.Reports[len(company.Reports)-1].BalanceSheet.Assets = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.Assets)
-	company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog)
-	company.Reports[len(company.Reports)-1].BalanceSheet.Liabilities = clean_up_financeReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.Liabilities)
+	company.calculateBudget(decisions, externalFactors)
+	company.Reports[len(company.Reports)-1].BalanceSheet.Assets = cleanUpFinanceReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.Assets)
+	company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog = cleanUpFinanceReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.InvoiceLog)
+	company.Reports[len(company.Reports)-1].BalanceSheet.Liabilities = cleanUpFinanceReportEntries(company.Reports[len(company.Reports)-1].BalanceSheet.Liabilities)
 
 	// Personelle
-	company.Reports[len(company.Reports)-1].PersonelleReport = company.compile_personelle_report(decisions)
+	company.Reports[len(company.Reports)-1].PersonelleReport = company.compilePersonelleReport(decisions)
 
 	return nil
 }
 
-func (c *Company) compile_personelle_report(decisions Decisions) Personelle_report {
+func (c *Company) compilePersonelleReport(decisions Decisions) Personelle_report {
 	personelle_report := Personelle_report{}
 
 	personelle_report.General = c.compile_personelle_subreport(decisions, Employee_type_all)
@@ -819,61 +827,63 @@ func (c *Company) compile_personelle_report(decisions Decisions) Personelle_repo
 }
 
 func (c *Company) compile_personelle_subreport(decisions Decisions, employee_type Employee_type) Personelle_sub_report {
-	var sub_report Personelle_sub_report
-	employee_ids := c.employeePool.Get_employees_of_company(c.ID, employee_type)
+	var subReport Personelle_sub_report
+	employeeIDs := c.employeePool.Get_employees_of_company(c.ID, employee_type)
 
-	sub_report.NumberOfEmployees = len(employee_ids)
+	subReport.NumberOfEmployees = len(employeeIDs)
 
-	var employee_deltas []Delta[Employee] // We can trust that the employees exist because we checked this when "simulating employees"
-	if employee_type == Employee_type_marketing {
-		employee_deltas = decisions.Employees.Marketing_deltas
-	} else if employee_type == Employee_type_production {
-		employee_deltas = decisions.Employees.Production_deltas
-	} else if employee_type == Employee_type_all {
-		employee_deltas = decisions.Employees.Production_deltas
-		employee_deltas = append(employee_deltas, decisions.Employees.Marketing_deltas...)
+	var employeeDeltas []Delta[Employee] // We can trust that the employees exist because we checked this when "simulating employees"
+	switch employee_type {
+	case Employee_type_marketing:
+		employeeDeltas = decisions.Employees.Marketing_deltas
+	case Employee_type_production:
+		employeeDeltas = decisions.Employees.Production_deltas
+	case Employee_type_all:
+		employeeDeltas = decisions.Employees.Production_deltas
+		employeeDeltas = append(employeeDeltas, decisions.Employees.Marketing_deltas...)
 	}
 
-	for _, e_delta := range employee_deltas {
-		if e_delta.Change == Delta_New {
-			sub_report.NumberOfHires += 1
-		} else if e_delta.Change == Delta_Remove {
-			sub_report.NumberOfDepartures += 1
+	for _, eDelta := range employeeDeltas {
+		switch eDelta.Change {
+		case Delta_New:
+			subReport.NumberOfHires += 1
+		case Delta_Remove:
+			subReport.NumberOfDepartures += 1
 		}
 	}
 
-	pay := make([]float32, len(employee_ids))
-	skill := make([]float32, len(employee_ids))
-	motivation := make([]float32, len(employee_ids))
-	productivity := make([]float32, len(employee_ids))
-	for i, e := range employee_ids {
+	pay := make([]float32, len(employeeIDs))
+	skill := make([]float32, len(employeeIDs))
+	motivation := make([]float32, len(employeeIDs))
+	productivity := make([]float32, len(employeeIDs))
+	for i, e := range employeeIDs {
 		pay[i] = c.employeePool[e].Pay
 		skill[i] = c.employeePool[e].Skill
 		motivation[i] = c.employeePool[e].Motivation
 		productivity[i] = c.employeePool[e].Motivation * c.employeePool[e].Skill * c.employeePool[e].WorkingHours // TODO: Make sure this is actually accurate
 	}
 
-	sub_report.AvgPay = avr(pay)
-	sub_report.MaximumPay = slices.Max(pay)
-	sub_report.MinimumPay = slices.Min(pay)
-	sub_report.StandardDevPay = std_dev(pay...)
+	subReport.AvgPay = avr(pay)
+	subReport.MaximumPay = slices.Max(pay)
+	subReport.MinimumPay = slices.Min(pay)
+	subReport.StandardDevPay = std_dev(pay...)
 
-	sub_report.AvgSkill = avr(skill)
-	sub_report.MaximumSkill = slices.Max(skill)
-	sub_report.MinimumSkill = slices.Min(skill)
-	sub_report.StandardDevSkill = std_dev(skill...)
+	subReport.AvgSkill = avr(skill)
+	subReport.MaximumSkill = slices.Max(skill)
+	subReport.MinimumSkill = slices.Min(skill)
+	subReport.StandardDevSkill = std_dev(skill...)
 
-	sub_report.AvgMotivation = avr(motivation)
-	sub_report.MaximumMotivation = slices.Max(motivation)
-	sub_report.MinimumMotivation = slices.Min(motivation)
-	sub_report.StandardDevMotivation = std_dev(motivation...)
+	subReport.AvgMotivation = avr(motivation)
+	subReport.MaximumMotivation = slices.Max(motivation)
+	subReport.MinimumMotivation = slices.Min(motivation)
+	subReport.StandardDevMotivation = std_dev(motivation...)
 
-	sub_report.AvgProductivity = avr(productivity)
-	sub_report.MaximumProductivity = slices.Max(productivity)
-	sub_report.MinimumProductivity = slices.Min(productivity)
-	sub_report.StandardDevProductivity = std_dev(productivity...)
+	subReport.AvgProductivity = avr(productivity)
+	subReport.MaximumProductivity = slices.Max(productivity)
+	subReport.MinimumProductivity = slices.Min(productivity)
+	subReport.StandardDevProductivity = std_dev(productivity...)
 
-	return sub_report
+	return subReport
 }
 
 func (c *Company) compile_sales_report(purchasing_statiscs map[string]Purchasing_statistics, Market_products_sold int, salesReportsMap map[string]Sales_report) {
@@ -909,8 +919,8 @@ func (c *Company) compile_sales_report(purchasing_statiscs map[string]Purchasing
 		marketingStatistics.Ecology = c.Offers[productId].Product.Ecology
 
 		marketingStatistics.Price = float64(c.Offers[productId].Price)
-		marketingStatistics.PromotionQuantity = c.Offers[productId].PromotionGoal.Quantity
-		marketingStatistics.PromotionQuality = float64(c.Offers[productId].PromotionQuality)
+		marketingStatistics.PromotionQuantity = float64(c.Offers[productId].Promotion.Quantity)
+		marketingStatistics.PromotionQuality = float64(c.Offers[productId].Promotion.Quantity)
 
 		salesReportsMap[productId] = Sales_report{salesReport, marketingStatistics}
 	}

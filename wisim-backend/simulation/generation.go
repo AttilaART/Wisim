@@ -102,7 +102,7 @@ func generatePopulation(
 				number_of_owned_products := int(posNormFloat64()*float64(population[i].Base_need) + float64(marketSaturation))
 				for range number_of_owned_products {
 					population[i].Owned_products = append(population[i].Owned_products,
-						Owned_product{-1, int(posNormFloat64()*float64(population[i].Base_need) +
+						OwnedProduct{-1, int(posNormFloat64()*float64(population[i].Base_need) +
 							float64(marketSaturation))})
 				}
 
@@ -227,7 +227,7 @@ func randomName(seed int) string {
 func (g *GameState) generateCompanies(
 	defaultCompany Company,
 	numberOfCompanies int,
-	externalFactors External_factors,
+	externalFactors ExternalFactors,
 	baseWorkingHours float32,
 	baseNumberOfMarketingPersonelle int,
 ) []Company {
@@ -279,7 +279,7 @@ func New_game(simConfig Sim_config, numberOfCompanies int, gameName string) Game
 	game_state.GameName = gameName
 	game_state.Employees = make(Employee_pool)
 
-	game_state.ExternalFactors = External_factors{
+	game_state.ExternalFactors = ExternalFactors{
 		Inflation:               0.005,
 		EconomicSituationIndex:  1,
 		TaxRate:                 0.147,

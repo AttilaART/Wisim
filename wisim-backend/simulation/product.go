@@ -6,8 +6,8 @@ import (
 	"math"
 )
 
-func (c *Company) newProduct(productID, productName string, productDecisions Decisions_product) Offer {
-	offer := Offer{Status: "current", Product: c.Calculate_product(Product{ID: productID, Name: productName}, productDecisions)}
+func (c *Company) newProduct(productID string, companyID int, productName string, productDecisions Decisions_product) Offer {
+	offer := Offer{Status: "current", Product: c.Calculate_product(Product{ID: productID, CompanyID: companyID, Name: productName}, productDecisions)}
 
 	return offer
 }
@@ -113,7 +113,7 @@ func (c *Company) calculatePromotion(decisions Decisions) {
 	promotionQuality := promotionQuality(c.employeePool, c.BaseMarketingStrength, c.employeePool.Get_employees_of_company(c.ID, Employee_type_marketing))
 
 	for productID, offer := range c.Offers {
-		offer.PromotionQuality = promotionQuality
+		offer.Promotion.Quality = promotionQuality
 		offer.Price = decisions.Products[productID].Price
 
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(

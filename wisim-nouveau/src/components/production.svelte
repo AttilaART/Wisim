@@ -12,10 +12,45 @@
 
 	/** @param {import("$lib/javascript/simulation").Machine} machine */
 	function newMachine(machine) {
-		machine.ID = clientState.Decisions.Production.Machines.length;
-		clientState.Decisions.Production.Machines.push({ Change: delta.Delta_New, Item: machine });
-		clientState.Company.Machines.push(JSON.parse(JSON.stringify(machine)));
+		console.log(clientState);
+		machine = JSON.parse(JSON.stringify(machine));
+		machine.ID = clientState.Company.Machines.length;
+		clientState.Company.Machines.push(machine);
 		clientState.Company.Balance -= machine.Value;
+		updateMachineDecision(machine, delta.Delta_New);
+	}
+
+	/**
+	 * @param {import("$lib/javascript/simulation").Machine} machine
+	 * @param {number} change
+	 */
+	function updateMachineDecision(machine, change) {
+		let deltaIndex = -1;
+		try {
+			for (let i in clientState.Decisions.Production.Machines) {
+				if (clientState.Decisions.Production.Machines[i].Item.ID == machine.ID) {
+					deltaIndex = Number(i);
+					break;
+				}
+			}
+		} catch (e) {
+			if (e instanceof TypeError) {
+				clientState.Decisions.Production.Machines = [];
+			} else {
+				throw e;
+			}
+		}
+
+		if (deltaIndex != -1) {
+			if (clientState.Decisions.Production.Machines[deltaIndex].Change > change) {
+				// Follow change higherarchy (new -> change -> remove)
+				clientState.Decisions.Production.Machines[deltaIndex].Change = change;
+			}
+			clientState.Decisions.Production.Machines[deltaIndex].Item = machine;
+		} else {
+			clientState.Decisions.Production.Machines.push({ Change: change, Item: machine });
+		}
+
 		updateDecisions(clientState.Decisions);
 	}
 </script>
@@ -42,7 +77,12 @@
 					<h2>{m.RequiredWorkers}</h2>
 				</td>
 				<td>
-					<select>
+					<select
+						bind:value={m.AssignedProductID}
+						onchange={() => {
+							updateMachineDecision(m, delta.Delta_Change);
+						}}
+					>
 						{#if m.AssignedProductID && clientState.Company.Offers[m.AssignedProductID]}{clientState
 								.Company.Offers[m.AssignedProductID].Product.Name}{:else}None{/if}
 						{#each Object.entries(clientState.Company.Offers) as offer}

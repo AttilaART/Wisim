@@ -10,7 +10,7 @@ export const delta = {
  * @typedef {Object} clientState
  * @property {Company} Company
  * @property {Decisions} Decisions
- * @property {External_factors} ExternalFactors
+ * @property {ExternalFactors} ExternalFactors
  * @property {{marketing: Employee[], production: Employee[]}} Employees
  * @property {{marketing: Employee[], production: Employee[]}} Unemployed
  */
@@ -29,7 +29,6 @@ export const delta = {
  * @typedef {Object} Decisions_product
  * @property {number} Price
  * @property {string} Name
- * @property {number} ProductionGoal
  *
  * @property {Object} Materials - Material-related decisions
  * @property {number} Materials.Quality - Material quality
@@ -142,6 +141,7 @@ export const delta = {
 /**
  * @typedef {Object} Product
  * @property {number} ID
+ * @property {number} CompanyID
  * @property {string} Name
  * @property {number} Weight
  * @property {number} MaterialUse
@@ -158,12 +158,12 @@ export const delta = {
  * @property {Product} Product - The product being offered
  * @property {number} Price
  * @property {number} PromotionQuality
- * @property {Object} PromotionGoal - Promotion goals
- * @property {number} PromotionGoal.Quantity
- * @property {number} PromotionGoal.StyleQuality
- * @property {number} PromotionGoal.StyleEcology
- * @property {number} PromotionGoal.StyleEthics
- * @property {number} PromotionGoal.StyleDurability
+ * @property {Object} Promotion - Promotion goals
+ * @property {number} Promotion.Quantity
+ * @property {number} Promotion.StyleQuality
+ * @property {number} Promotion.StyleEcology
+ * @property {number} Promotion.StyleEthics
+ * @property {number} Promotion.StyleDurability
  */
 
 /**
@@ -400,7 +400,7 @@ export const financeReportCategories = {
  */
 
 /**
- * @typedef {Object} External_factors
+ * @typedef {Object} ExternalFactors
  * @property {number} Month
  * @property {number} Inflation
  * @property {number} IntrestRate

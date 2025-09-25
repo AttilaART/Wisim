@@ -107,7 +107,19 @@ func (c *Company) Get_decisions() Decisions {
 			Production: struct {
 				Machines  []Delta[Machine]
 				Logistics []Delta[Warehouse]
-			}{},
+			}{
+				make([]Delta[Machine], 0),
+				make([]Delta[Warehouse], 0),
+			},
+			Employees: struct {
+				Production_deltas []Delta[Employee]
+				Marketing_deltas  []Delta[Employee]
+				Severance_pay     float32
+			}{
+				make([]Delta[Employee], 0),
+				make([]Delta[Employee], 0),
+				10000,
+			},
 		}
 
 		for productId := range c.Offers {
