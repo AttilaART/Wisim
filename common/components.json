@@ -1,0 +1,273 @@
+{
+  "FormFactor": {
+    "FormFactorLarge": {
+      "Name": "Large",
+      "MiscSlots": 4,
+      "ProductionCost": 8,
+      "MaterialUse": 10,
+      "Ecology": 2,
+      "Ethics": 0,
+      "Durability": 2,
+      "ProductionLineCost": 400,
+      "Image": "Products/Base_blueprint/coffee_large.svg"
+    },
+    "FormFactorMedium": {
+      "Name": "Medium",
+      "MiscSlots": 3,
+      "ProductionCost": 5,
+      "MaterialUse": 6,
+      "Ecology": 4,
+      "Ethics": 0,
+      "Durability": 2,
+      "ProductionLineCost": 200,
+      "Image": "Products/Base_blueprint/coffee_medium.svg"
+    },
+    "FormFactorSmall": {
+      "Name": "Compact",
+      "MiscSlots": 1,
+      "ProductionCost": 3,
+      "MaterialUse": 4,
+      "Ecology": 5,
+      "Ethics": 0,
+      "Durability": 1,
+      "ProductionLineCost": 100,
+      "Image": "Products/Base_blueprint/coffee_small.svg"
+    }
+  },
+  "Frame": {
+    "FramePrinted": {
+      "Name": "3D Printed Frame",
+      "MiscSlots": 0,
+      "ProductionCost": 6,
+      "MaterialUse": 2,
+      "Ecology": 3,
+      "Ethics": 2,
+      "Quality": 4,
+      "Durability": 0,
+      "ProductionLineCost": 4000,
+      "Image": ""
+    },
+    "FrameMolded": {
+      "Name": "Injection Molded Frame",
+      "MiscSlots": 0,
+      "ProductionCost": 3,
+      "MaterialUse": 1,
+      "Ecology": 3,
+      "Ethics": 2,
+      "Durability": 1,
+      "Quality": 6,
+      "ProductionLineCost": 50000,
+      "Image": ""
+    },
+    "FrameSheetAlu": {
+      "Name": "Sheet Aluminium Frame",
+      "MiscSlots": 0,
+      "ProductionCost": 4,
+      "MaterialUse": 2,
+      "Ecology": 3,
+      "Ethics": 1,
+      "Quality": 10,
+      "Durability": 1,
+      "ProductionLineCost": 10000,
+      "Image": ""
+    },
+    "FrameSheetSteel": {
+      "Name": "Sheet Aluminium Frame",
+      "MiscSlots": 0,
+      "ProductionCost": 4,
+      "MaterialUse": 3,
+      "Ecology": 3,
+      "Ethics": 1,
+      "Quality": 12,
+      "Durability": 1.5,
+      "ProductionLineCost": 10000,
+      "Image": ""
+    },
+    "FrameCastIron": {
+      "Name": "Cast Iron Frame",
+      "MiscSlots": 0,
+      "ProductionCost": 10,
+      "MaterialUse": 7,
+      "Ecology": 4,
+      "Ethics": 1,
+      "Quality": 16,
+      "Durability": 2,
+      "ProductionLineCost": 15000,
+      "Image": ""
+    }
+  },
+  "Body": {
+    "BodyPrinted": {
+      "Name": "3D Printed Body",
+      "MiscSlots": 0,
+      "ProductionCost": 6,
+      "MaterialUse": 4,
+      "Ecology": 1,
+      "Ethics": 1,
+      "Quality": 1,
+      "Durability": 0,
+      "ProductionLineCost": 1000,
+      "Image": ""
+    },
+    "BodyPlastic": {
+      "Name": "Plastic Body",
+      "MiscSlots": 0,
+      "ProductionCost": 3,
+      "MaterialUse": 3,
+      "Ecology": 1,
+      "Ethics": 1,
+      "Quality": 3,
+      "Durability": 1,
+      "ProductionLineCost": 10000,
+      "Image": ""
+    },
+    "BodyAluPlastic": {
+      "Name": "Aluminium and Plastic Body",
+      "MiscSlots": 0,
+      "ProductionCost": 5,
+      "MaterialUse": 5,
+      "Ecology": 4,
+      "Ethics": 1,
+      "Quality": 5,
+      "Durability": 1.5,
+      "ProductionLineCost": 15000,
+      "Image": ""
+    },
+    "BodyBrushed": {
+      "Name": "Brushed aluminium body",
+      "MiscSlots": 0,
+      "ProductionCost": 7,
+      "MaterialUse": 6,
+      "Ecology": 2,
+      "Ethics": 1,
+      "Quality": 7,
+      "Durability": 2,
+      "ProductionLineCost": 18000,
+      "Image": ""
+    },
+    "BodyWood": {
+      "Name": "Wooden Body",
+      "MiscSlots": 0,
+      "ProductionCost": 6.5,
+      "MaterialUse": 4,
+      "Ecology": 4,
+      "Ethics": 1,
+      "Quality": 7,
+      "Durability": 2,
+      "ProductionLineCost": 5000,
+      "Image": ""
+    }
+  },
+  "Mechanism": {
+    "MechBeanToCup": {
+      "Name": "Bean to Cup",
+      "MiscSlots": -1,
+      "ProductionCost": 10,
+      "MaterialUse": 8,
+      "Ecology": 5,
+      "Ethics": 2,
+      "Quality": 10,
+      "Durability": -1,
+      "ProductionLineCost": 10000,
+      "Image": ""
+    },
+    "MechEspresso": {
+      "Name": "Espresso",
+      "MiscSlots": 0,
+      "ProductionCost": 6,
+      "MaterialUse": 4,
+      "Ecology": 1,
+      "Ethics": 2,
+      "Quality": 4,
+      "Durability": 1,
+      "ProductionLineCost": 5000,
+      "Image": ""
+    },
+    "MechFilter": {
+      "Name": "Filter",
+      "MiscSlots": 0,
+      "ProductionCost": 2,
+      "MaterialUse": 1,
+      "Ecology": 2,
+      "Ethics": 2,
+      "Quality": 1,
+      "Durability": 1,
+      "ProductionLineCost": 4000,
+      "Image": ""
+    },
+    "MechPod": {
+      "Name": "Pod",
+      "MiscSlots": 0,
+      "ProductionCost": 4,
+      "MaterialUse": 2.5,
+      "Ecology": -3,
+      "Ethics": 0,
+      "Quality": 2,
+      "Durability": 1,
+      "ProductionLineCost": 7000,
+      "Image": ""
+    }
+  },
+  "Misc": {
+    "MiscRecycled": {
+      "Name": "Recycled materials",
+      "MiscSlots": 0,
+      "ProductionCost": 1,
+      "MaterialUse": 2.5,
+      "Ecology": 4,
+      "Ethics": 2,
+      "Quality": 0,
+      "Durability": -0.5,
+      "ProductionLineCost": 0,
+      "Image": ""
+    },
+    "MiscSelfCleaning": {
+      "Name": "Self Cleaning Nozzels",
+      "MiscSlots": 0,
+      "ProductionCost": 6,
+      "MaterialUse": 4,
+      "Ecology": 0,
+      "Ethics": 0,
+      "Quality": 4,
+      "Durability": 1,
+      "ProductionLineCost": 7000,
+      "Image": ""
+    },
+    "MiscExtraCoffeStorage": {
+      "Name": "Extra Coffee Storage",
+      "MiscSlots": 0,
+      "ProductionCost": 6,
+      "MaterialUse": 4,
+      "Ecology": 0,
+      "Ethics": 0,
+      "Quality": 1,
+      "Durability": 0,
+      "ProductionLineCost": 1000,
+      "Image": ""
+    },
+    "MiscEfficient": {
+      "Name": "Efficient Coffee Brewing",
+      "MiscSlots": 0,
+      "ProductionCost": 2,
+      "MaterialUse": 1,
+      "Ecology": 2,
+      "Ethics": 0,
+      "Quality": 0.5,
+      "Durability": 0,
+      "ProductionLineCost": 1000,
+      "Image": ""
+    },
+    "MiscCreamer": {
+      "Name": "Creamer Module",
+      "MiscSlots": 0,
+      "ProductionCost": 3,
+      "MaterialUse": 2,
+      "Ecology": 0,
+      "Ethics": 0,
+      "Quality": 2,
+      "Durability": -0.5,
+      "ProductionLineCost": 5000,
+      "Image": ""
+    }
+  }
+}
