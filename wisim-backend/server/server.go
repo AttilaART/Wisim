@@ -5,11 +5,9 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
-	"math"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
-	"reflect"
 	"strconv"
 	"sync"
 
@@ -225,22 +223,22 @@ func getEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
 
 	reply.Data = &data
 
-	employee_type := -1
+	employeeType := -1
 
 	switch reply.Data.Type {
 	case "production":
-		employee_type = simulation.Employee_type_production
+		employeeType = simulation.Employee_type_production
 	case "marketing":
-		employee_type = simulation.Employee_type_marketing
+		employeeType = simulation.Employee_type_marketing
 	default:
 		reply.Error = "Invalid Employee type"
 	}
 
-	if employee_type != -1 {
-		employee_ids := gamestate.Companies[s.conns[ws].Company].Get_employees_ids(simulation.Employee_type(employee_type))
-		reply.Data.Employees = make([]*simulation.Employee, len(employee_ids))
+	if employeeType != -1 {
+		employeeIDs := gamestate.Companies[s.conns[ws].Company].Get_employees_ids(simulation.Employee_type(employeeType))
+		reply.Data.Employees = make([]*simulation.Employee, len(employeeIDs))
 
-		for i, id := range employee_ids {
+		for i, id := range employeeIDs {
 			reply.Data.Employees[i] = gamestate.Employees[id]
 		}
 	}
@@ -484,62 +482,6 @@ func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
 	println("Company ", player.Company, "unready!")
 }
 
-func calculateProductStats(s *Server, ws *websocket.Conn, message Message[any]) {
-	reply := Message[map[string]simulation.Product]{Method: message.Method, IsResponse: true}
-	defer func() {
-		err := ws.WriteJSON(reply)
-		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
-		}
-	}()
-
-	decisions := struct {
-		Product  simulation.Decisions_product
-		Research simulation.Decisions_research
-	}{}
-	err := mapstructure.Decode(*message.Data, &decisions)
-	if err != nil {
-		reply.Error = err.Error()
-		return
-	}
-
-	if len(gamestate.Companies) <= s.conns[ws].Company {
-		reply.Error = errorInvalidCompany
-		return
-	}
-
-	products := make(map[string]simulation.Product)
-
-	for productID, offer := range gamestate.Companies[s.conns[ws].Company].Offers {
-		product := gamestate.Companies[s.conns[ws].Company].
-			Calculate_product(offer.Product, decisions.Product)
-
-		product = removeProductNaNInf(product)
-		products[productID] = product
-	}
-
-	reply.Data = &products
-}
-
-func removeProductNaNInf[v simulation.Product | simulation.Company](p v) v {
-	reflectProduct := reflect.ValueOf(&p)
-	numFields := reflectProduct.Elem().NumField()
-
-	for i := range numFields {
-		if reflectProduct.Elem().Field(i).Kind() == reflect.Float32 {
-			if math.IsNaN(reflectProduct.Elem().Field(i).Float()) {
-				reflectProduct.Elem().Field(i).SetFloat(0)
-			} else if math.IsInf(reflectProduct.Elem().Field(i).Float(), 1) {
-				reflectProduct.Elem().Field(i).SetFloat(math.MaxFloat32)
-			} else if math.IsInf(reflectProduct.Elem().Field(i).Float(), -1) {
-				reflectProduct.Elem().Field(i).SetFloat(-math.MaxFloat32)
-			}
-		}
-	}
-
-	return p
-}
-
 func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply := Message[struct {
 		Message string
@@ -582,7 +524,7 @@ func main() {
 		log.Fatalf("Error: %s \n", err.Error())
 	}
 
-	gamestate = simulation.New_game(sim_config, PLAYER_COUNT, "TempGameName")
+	gamestate = simulation.NewGame(sim_config, PLAYER_COUNT, "TempGameName")
 
 	// Prepare server
 
@@ -598,8 +540,6 @@ func main() {
 	server.addMethod("sDecisions", setDecisions)
 	server.addMethod("sReady", setReady)
 	server.addMethod("sUnready", setUnReady)
-
-	server.addMethod("fProduct_stats", calculateProductStats)
 
 	server.addMethod("bChat", sendChat)
 

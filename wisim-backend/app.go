@@ -37,7 +37,7 @@ func (a *App) Initial_app_load() error { //
 }
 
 func (a *App) New_simulation(num_companies int) (simulation.ExternalFactors, error) {
-	game_state.state = simulation.New_game(game_state.config, num_companies, "Test_ui")
+	game_state.state = simulation.NewGame(game_state.config, num_companies, "Test_ui")
 	game_state.is_loaded = true
 	return game_state.state.External_factors, nil
 }

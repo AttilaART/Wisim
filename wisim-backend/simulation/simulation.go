@@ -31,6 +31,7 @@ type GameState struct {
 	DecisionsSubmitted    []bool
 	MarketSalesStatistics []Sales_statistics
 	ExternalFactors       ExternalFactors
+	ProductComponents     ProductComponents
 }
 
 type Sim_config struct {
@@ -73,12 +74,13 @@ type Sim_config struct {
 
 type Company struct {
 	// General
-	ID           int
-	Name         string
-	Balance      float64
-	Loans        float64
-	BridgeLoans  float64
-	employeePool Employee_pool
+	ID                int
+	Name              string
+	Balance           float64
+	Loans             float64
+	BridgeLoans       float64
+	employeePool      Employee_pool
+	productComponents *ProductComponents
 	// Global_effects   []Effect
 	DecisionHistory []Decisions
 
@@ -134,30 +136,18 @@ type Decisions struct {
 }
 
 type Decisions_product struct {
-	Price float32
-	Name  string
-
-	Materials struct {
-		Quality         float32
-		Ecology         float32
-		EthicalSourcing float32
-	}
-
-	Manufacturing struct {
-		Quality            float32
-		EcologicalEnergy   float32
-		MaterialEfficiency float32
-		Durability         float32
-		MaxDurability      int
-	}
-
+	Price     float32
+	Name      string
 	Promotion struct {
-		Quantity        float32
-		StyleQuality    float32
-		StyleEcology    float32
-		StyleEthics     float32
-		StyleDurability float32
+		Quantity   float32
+		Price      float32
+		Quality    float32
+		Ecology    float32
+		Ethics     float32
+		Durability float32
 	}
+
+	Product Product
 }
 
 type Decisions_research struct {
@@ -180,10 +170,11 @@ const (
 )
 
 type Offer struct {
-	Status    string
-	Product   Product
-	Price     float32
-	Promotion struct {
+	Status       string
+	Product      Product
+	productStats ProductStats
+	Price        float32
+	Promotion    struct {
 		Quantity        float32
 		Quality         float32
 		StyleQuality    float32
@@ -195,19 +186,31 @@ type Offer struct {
 }
 
 type Product struct {
-	ID             string
-	CompanyID      int
-	Name           string
-	Weight         float32
-	MaterialUse    float32
+	ID        string
+	CompanyID int
+	Name      string
+
+	Components struct {
+		FormFactor string
+		Frame      string
+		Body       string
+		Mechanism  string
+		Misc       []string
+	}
+
+	MaterialQuality int
+	ExtraDurabilit  int
+	ExtraQuality    int
+}
+
+type ProductStats struct {
 	ProductionCost float32
+	MaterialUse    float32
 
-	Ethics  float32 // TODO: Implement Ethicss Factor
-	Quality float32
-	Ecology float32
-	// Coolness_factor float32
-
-	Durabilty int
+	Quality    float32
+	Ecology    float32
+	Ethics     float32
+	Durability float32
 }
 
 type Machine struct {
@@ -583,6 +586,27 @@ type ExternalFactors struct {
 	MachineDepreciationRate float32 // in decimal
 }
 
+type ProductComponents struct {
+	FormFactor map[string]Component
+	Frame      map[string]Component
+	Body       map[string]Component
+	Mechanism  map[string]Component
+	Misc       map[string]Component
+}
+
+type Component struct {
+	Name               string
+	MiscSlots          int
+	ProductionCost     float32
+	MaterialUse        float32
+	Ecology            float32
+	Ethics             float32
+	Quality            float32
+	Durability         float32
+	ProductionLineCost float32
+	Image              string
+}
+
 // #####################################################################################################
 // ##########     _         _              __                      _    _                     ##########
 // ##########    | |       | |            / _|                    | |  (_)                    ##########
@@ -629,6 +653,9 @@ func (game_state *GameState) SimulateStep() error {
 
 		c.employeePool = game_state.Employees
 
+		println("Overworking employees...")
+		c.simulateEmployees(game_state.ExternalFactors)
+
 		// Add new products
 		println("Developing Products...")
 
@@ -637,9 +664,6 @@ func (game_state *GameState) SimulateStep() error {
 				c.Offers[ID] = c.newProduct(ID, i, decisions.Name, game_state.CurrentDecisions[i].Products[ID])
 			}
 		}
-
-		println("Overworking employees...")
-		c.simulateEmployees(game_state.ExternalFactors)
 
 		println("Posting advertisments...")
 		c.calculatePromotion(game_state.CurrentDecisions[i])
@@ -915,11 +939,11 @@ func (c *Company) compileSalesReport(purchasingStatiscs map[string]Purchasing_st
 		salesStatistics.AvrBangForBuckFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesBangForBuck]
 
 		marketingStatistics := Marketing_statistics{}
-		marketingStatistics.Quality = c.Offers[productID].Product.Quality
-		marketingStatistics.Durabilty = c.Offers[productID].Product.Durabilty
-		marketingStatistics.Ethics = c.Offers[productID].Product.Ethics
+		marketingStatistics.Quality = c.Offers[productID].productStats.Quality
+		marketingStatistics.Durabilty = int(c.Offers[productID].productStats.Durability)
+		marketingStatistics.Ethics = c.Offers[productID].productStats.Ethics
 		// reportMarketingStatistics.Coolness = offer.Product.Coolness_factor
-		marketingStatistics.Ecology = c.Offers[productID].Product.Ecology
+		marketingStatistics.Ecology = c.Offers[productID].productStats.Ecology
 
 		marketingStatistics.Price = float64(c.Offers[productID].Price)
 		marketingStatistics.PromotionQuantity = float64(c.Offers[productID].Promotion.Quantity)

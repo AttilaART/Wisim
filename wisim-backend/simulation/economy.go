@@ -66,16 +66,16 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 	for i, o := range offers {
 		offerPrices[i] = o.Price
 
-		offersProperties[i][propertiesQuality] = o.Product.Quality
-		offersProperties[i][propertiesEcology] = o.Product.Ecology
-		offersProperties[i][propertiesEthics] = o.Product.Ethics
+		offersProperties[i][propertiesQuality] = o.productStats.Quality
+		offersProperties[i][propertiesEcology] = o.productStats.Ecology
+		offersProperties[i][propertiesEthics] = o.productStats.Ethics
 		offersProperties[i][propertiesPrice] = isCheap(o, avgPrice)
-		offersProperties[i][propertiesBangForBuck] = o.Product.Quality / o.Price
+		offersProperties[i][propertiesBangForBuck] = o.productStats.Quality / o.Price
 		if o.Price <= 0 {
 			offersProperties[i][propertiesPrice] = 10
 			offersProperties[i][propertiesBangForBuck] = 10
 		}
-		offersProperties[i][propertiesDurability] = float32(o.Product.Durabilty)
+		offersProperties[i][propertiesDurability] = float32(o.productStats.Durability)
 
 		offerDurabilities[i] = int(offersProperties[i][propertiesDurability])
 	}

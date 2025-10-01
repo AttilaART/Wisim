@@ -29,25 +29,14 @@ export const delta = {
  * @typedef {Object} Decisions_product
  * @property {number} Price
  * @property {string} Name
- *
- * @property {Object} Materials - Material-related decisions
- * @property {number} Materials.Quality - Material quality
- * @property {number} Materials.Ecology - Ecological impact of materials
- * @property {number} Materials.EthicalSourcing - Ethical sourcing emphasis
- *
- * @property {Object} Manufacturing - Manufacturing-related decisions
- * @property {number} Manufacturing.Quality - Manufacturing quality
- * @property {number} Manufacturing.EcologicalEnergy - Use of ecological energy
- * @property {number} Manufacturing.MaterialEfficiency - Efficiency of material usage
- * @property {number} Manufacturing.Durability - Product durability
- * @property {number} Manufacturing.MaxDurability - Maximum possible durability
- *
- * @property {Object} Promotion - Promotion decisions
- * @property {number} Promotion.Quantity - Promotion quantity
- * @property {number} Promotion.StyleQuality - Quality style emphasis
- * @property {number} Promotion.StyleEcology - Ecology style emphasis
- * @property {number} Promotion.StyleEthics - Ethics style emphasis
- * @property {number} Promotion.StyleDurability - Durability style emphasis
+ * @property {Object} Promotion
+ * @property {number} Promotion.Quantity
+ * @property {number} Promotion.Price
+ * @property {number} Promotion.Quality
+ * @property {number} Promotion.Ecology
+ * @property {number} Promotion.Ethics
+ * @property {number} Promotion.Durability
+ * @property {Product} Product
  */
 
 /**
@@ -140,17 +129,21 @@ export const delta = {
 
 /**
  * @typedef {Object} Product
- * @property {number} ID
- * @property {number} CompanyID
- * @property {string} Name
- * @property {number} Weight
- * @property {number} MaterialUse
- * @property {number} ProductionCost
- *
- * @property {number} Ethics
- * @property {number} Quality
- * @property {number} Ecology
- * @property {number} Durabilty
+	* @property {string} ID
+	* @property {number} CompanyID
+	* @property {string} Name
+
+	* @property {object} Components
+  * @property {string} Components.FormFactor
+  * @property {string} Components.Frame
+  * @property {string} Components.Body
+  * @property {string} Components.Mechanism
+  * @property {string[]} Components.Misc
+
+	* @property {number} MaterialQuality
+	* @property {number} ExtraDurabilit
+	* @property {number} ExtraQuality
+}
  */
 
 /**

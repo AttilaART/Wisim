@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"math"
 	"math/rand"
-	"reflect"
 
 	"github.com/pehringer/simd"
 )
@@ -125,52 +124,10 @@ func (c *Company) Get_decisions() Decisions {
 		for productID := range c.Offers {
 			decisions.Products[productID] = Decisions_product{
 				Price: 350,
-				Materials: struct {
-					Quality         float32
-					Ecology         float32
-					EthicalSourcing float32
-				}{
-					50,
-					50,
-					50,
-				},
-				Manufacturing: struct {
-					Quality            float32
-					EcologicalEnergy   float32
-					MaterialEfficiency float32
-					Durability         float32
-					MaxDurability      int
-				}{
-					50,
-					50,
-					50,
-					50,
-					5,
-				},
 			}
 		}
 
 		fmt.Println("No decision history!")
-	}
-
-	//  make sure these are more than 0.1 (otherwise simulation breaks)
-	for id := range decisions.Products {
-		ProductDecisions := decisions.Products[id]
-		manufacturingReflect := reflect.ValueOf(&ProductDecisions.Manufacturing)
-		for i := range manufacturingReflect.Elem().NumField() {
-			field := manufacturingReflect.Elem().Field(i)
-			if field.CanFloat() {
-				field.SetFloat(max(field.Float(), 0.1))
-			}
-		}
-
-		materialsReflect := reflect.ValueOf(&ProductDecisions.Materials)
-		for i := range materialsReflect.Elem().NumField() {
-			field := materialsReflect.Elem().Field(i)
-			if field.CanFloat() {
-				field.SetFloat(max(field.Float(), 0.1))
-			}
-		}
 	}
 
 	// initialise slices
@@ -209,34 +166,6 @@ func delete_by_id[V interface{ get_id() int }](s []V, id ...int) []V {
 	}
 
 	return delete_by_index(s, indexes_to_delete...)
-}
-
-func check_product(p Product) string {
-	errorString := ""
-	if p.ProductionCost <= 0 {
-		errorString += "Production_cost <= 0;"
-		p.ProductionCost = 0.01
-	}
-	if p.Weight <= 0 {
-		errorString += "Weight <= 0;"
-		p.Weight = 0.01
-	}
-	if p.MaterialUse <= 0 {
-		errorString += "Material_use <= 0;"
-		p.MaterialUse = 0
-	}
-	if p.Durabilty < 0 {
-		errorString += "Durabilty < 0;"
-	}
-
-	if math.IsInf(float64(p.ProductionCost), 1) {
-		errorString += "Production_cost == +Inf;"
-	}
-
-	if errorString != "" {
-		return "Invalid_product: " + errorString
-	}
-	return ""
 }
 
 func avr[V Number](values []V) V {

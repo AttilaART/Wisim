@@ -245,6 +245,7 @@ func (g *GameState) generateCompanies(
 		companies[i].Reports = make([]Report, 0)
 		companies[i].DecisionHistory = make([]Decisions, 0)
 		companies[i].employeePool = g.Employees
+		companies[i].productComponents = &g.ProductComponents
 		companies[i].Offers = make(map[string]Offer)
 		companies[i].ProductsInStorage = make(map[string]int)
 
@@ -276,14 +277,14 @@ func (g *GameState) generateCompanies(
 	return companies
 }
 
-func New_game(simConfig Sim_config, numberOfCompanies int, gameName string) GameState {
-	var game_state GameState
+func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameState {
+	var gameState GameState
 
-	game_state.Step = 1
-	game_state.GameName = gameName
-	game_state.Employees = make(Employee_pool)
+	gameState.Step = 1
+	gameState.GameName = gameName
+	gameState.Employees = make(Employee_pool)
 
-	game_state.ExternalFactors = ExternalFactors{
+	gameState.ExternalFactors = ExternalFactors{
 		Inflation:               0.005,
 		EconomicSituationIndex:  1,
 		TaxRate:                 0.147,
@@ -307,26 +308,18 @@ func New_game(simConfig Sim_config, numberOfCompanies int, gameName string) Game
 		},
 	}
 
-	// "Population_size": 1000000,
-	// "min_base_need": 0,
-	// "max_base_need": 4,
-	// "quality_bias": 1,
-	// "quality_spread": 1,
-	// "ecology_bias": 1,
-	// "ecology_spread": 1,
-	// "coolness_bias": 1,
-	// "coolness_spread": 1,
-	// "price_bias": 1,
-	// "price_spread": 1,
-	// "bang_for_buck_bias": 1,
-	// "bang_for_buck_spread": 1,
-	// "durabilty_bias": 1,
-	// "durability_spread": 1,
-	// "purchasing_threshold_bias": 1,
-	// "purchasing_threshold_spread": 1
+	// Load product components
+	bComponents, err := os.ReadFile("../../common/components.json")
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	var err error
-	game_state.Population.Population, game_state.Population.Preferences, err = generatePopulation(
+	err = json.Unmarshal(bComponents, &gameState.ProductComponents)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	gameState.Population.Population, gameState.Population.Preferences, err = generatePopulation(
 		simConfig.Population_size,
 		simConfig.Min_base_need,
 		simConfig.Max_base_need,
@@ -352,43 +345,38 @@ func New_game(simConfig Sim_config, numberOfCompanies int, gameName string) Game
 		numberOfCompanies,
 	)
 	if err != nil {
-		log.Fatal(err.Error())
+		log.Fatal(err)
 	}
 
-	game_state.Companies = game_state.generateCompanies(
+	gameState.Companies = gameState.generateCompanies(
 		simConfig.Default_company,
 		numberOfCompanies,
-		game_state.ExternalFactors,
+		gameState.ExternalFactors,
 		8,
 		1,
 	)
 
-	game_state.CurrentDecisions = make([]Decisions, numberOfCompanies)
+	gameState.CurrentDecisions = make([]Decisions, numberOfCompanies)
 
 	defaultDecisions := Decisions{
 		Products: map[string]Decisions_product{
 			"0": {
-				Materials: struct {
-					Quality         float32
-					Ecology         float32
-					EthicalSourcing float32
+				Price: 150,
+				Name:  "Unnamed Product",
+				Promotion: struct {
+					Quantity   float32
+					Price      float32
+					Quality    float32
+					Ecology    float32
+					Ethics     float32
+					Durability float32
 				}{
-					Quality:         1,
-					Ecology:         1,
-					EthicalSourcing: 1,
-				},
-				Manufacturing: struct {
-					Quality            float32
-					EcologicalEnergy   float32
-					MaterialEfficiency float32
-					Durability         float32
-					MaxDurability      int
-				}{
-					Quality:            1,
-					EcologicalEnergy:   1,
-					MaterialEfficiency: 1,
-					Durability:         1,
-					MaxDurability:      1,
+					Quantity:   10000,
+					Price:      0.2,
+					Quality:    0.2,
+					Ecology:    0.2,
+					Ethics:     0.2,
+					Durability: 0.2,
 				},
 			},
 		},
@@ -401,13 +389,13 @@ func New_game(simConfig Sim_config, numberOfCompanies int, gameName string) Game
 		},
 	}
 
-	for i := range game_state.CurrentDecisions {
-		game_state.CurrentDecisions[i] = defaultDecisions
+	for i := range gameState.CurrentDecisions {
+		gameState.CurrentDecisions[i] = defaultDecisions
 	}
 
-	game_state.DecisionsSubmitted = make([]bool, numberOfCompanies)
+	gameState.DecisionsSubmitted = make([]bool, numberOfCompanies)
 
-	return game_state
+	return gameState
 }
 
 func Load_game(path string) (GameState, error) {
@@ -467,13 +455,6 @@ func Load_game(path string) (GameState, error) {
 	for i := range game_state.Companies {
 		// fix employee pointer stuff
 		game_state.Companies[i].employeePool = game_state.Employees
-
-		// check if each product is valid
-		for _, offer := range game_state.Companies[i].Offers {
-			if err := check_product(offer.Product); err != "" {
-				return game_state, errors.New(err)
-			}
-		}
 	}
 
 	game_state.Population = population
