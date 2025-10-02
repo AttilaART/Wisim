@@ -23,6 +23,11 @@
 		deleteWindow
 	} = $props();
 
+	const images = import.meta.glob(['$lib/images/Products/Base_blueprint/*.svg'], {
+		eager: true,
+		as: 'url'
+	});
+
 	let newProductID = $state(`${Math.trunc(Math.random() * 100000000)}`);
 	let newProductWindowID = $state(0);
 	/** @type {Object.<string, string>} Key: wi:windowndowID, Value: ProductID*/
@@ -63,7 +68,14 @@
 	};
 
 	/** @type {Object.<string, number>} */
-	let productionLineCosts = {};
+	let productionLineCosts = $state({});
+	/** @type {import("svelte").Snippet? } */
+	let currentComponentSnippet = $state(null);
+
+	/** @param {HTMLElement} el */
+	function focusElement(el) {
+		el.focus();
+	}
 
 	function generateProductID() {
 		let id = 0;
@@ -166,86 +178,8 @@
 			deleteWindow(id);
 		}}
 	>
-		<div>
-			<table>
-				<thead>
-					<tr>
-						<th colspan="2"> <h3>Product Stats</h3> </th>
-						<th colspan="2"> <h3>Production Stats</h3> </th>
-					</tr>
-				</thead>
-				<tbody>
-					<tr>
-						<td>Quality: </td>
-						<td
-							>{format.number(
-								clientState.Company.Offers[newProductID].productStats.Quality,
-								false,
-								1
-							)}</td
-						>
-						<td>Production Cost:</td>
-						<td
-							>{format.number(
-								clientState.Company.Offers[newProductID].productStats.ProductionCost,
-								false,
-								1
-							)}</td
-						>
-					</tr>
-					<tr>
-						<td>Ecology: </td>
-						<td
-							>{format.number(
-								clientState.Company.Offers[newProductID].productStats.Ecology,
-								false,
-								1
-							)}</td
-						>
-						<td>Material use:</td>
-						<td
-							>{format.number(
-								clientState.Company.Offers[newProductID].productStats.MaterialUse,
-								false,
-								1
-							)}</td
-						>
-					</tr>
-					<tr>
-						<td>Ethics: </td>
-						<td
-							>{format.number(
-								clientState.Company.Offers[newProductID].productStats.Ethics,
-								false,
-								1
-							)}</td
-						>
-						<td>Material cost:</td>
-						<td
-							>{format.number(
-								clientState.Company.Offers[newProductID].productStats.MaterialUse *
-									externalFactors.MaterialPrice,
-								false,
-								1
-							)}</td
-						>
-					</tr>
-					<tr>
-						<td>Durability: </td>
-						<td>{clientState.Company.Offers[newProductID].productStats.Durability}</td>
-						<td>Weight:</td>
-						<td
-							><!--{format.number(
-								clientState.Company.Offers[newProductID].productStats.Weight,
-								false,
-								1
-							)}--></td
-						>
-					</tr>
-				</tbody>
-			</table>
-		</div>
 		<form
+			class="main-product-div"
 			onchange={() => {
 				updateDecisions(clientState.Decisions);
 				let { productStats, productionLineCost } = calculateProductStats(
@@ -258,23 +192,97 @@
 			}}
 		>
 			<div>
-				<h2>General</h2>
-				<label for="name"
-					>Name
-					<input
-						id="name"
-						bind:value={clientState.Decisions.Products[newProductID].Name}
-						type="text"
-					/>
-				</label>
-				<label for="price"
-					>Price
-					<input
-						id="price"
-						bind:value={clientState.Decisions.Products[newProductID].Price}
-						type="number"
-					/>
-				</label>
+				<div>
+					<h2>
+						<input
+							id="name"
+							bind:value={clientState.Decisions.Products[newProductID].Name}
+							type="text"
+						/>
+					</h2>
+				</div>
+				<div class="productDesignerGrid">
+					<button
+						onclick={() => {
+							currentComponentSnippet = productFormFactor;
+						}}
+					>
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.FormFactor}
+							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
+						{:else}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.FormFactor[
+											`${clientState.Decisions.Products[newProductID].Product.Components.FormFactor}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; max-height: 1.5rem;"
+								alt=""
+							/>
+							{console.log(
+								clientState.Decisions.Products[newProductID].Product.Components.FormFactor
+							)}
+						{/if}
+					</button>
+					<button
+						onclick={() => {
+							currentComponentSnippet = productFormFactor;
+						}}
+					>
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.FormFactor}
+							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
+						{:else}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.FormFactor[
+											`${clientState.Decisions.Products[newProductID].Product.Components.FormFactor}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; max-height: 1.5rem;"
+								alt=""
+							/>
+						{/if}
+					</button>
+					<div>+</div>
+					<div>+</div>
+
+					{#if currentComponentSnippet == null}
+						<div
+							style="grid-column: 1 /span 4; grid-row: 2  /span 5; height: 100%; background: #4A6DE5;"
+						>
+							<center>
+								<img
+									src={images[
+										'/src/lib/images/' +
+											clientState.productComponents.FormFactor[
+												`${clientState.Decisions.Products[newProductID].Product.Components.FormFactor}`
+											]?.Image
+									]}
+									style="mix-blend-mode: lighten; max-height: 10rem;"
+									alt=""
+								/>
+							</center>
+						</div>
+					{:else}
+						<div
+							tabindex="-1"
+							use:focusElement
+							style="grid-column: 1 /span 4; grid-row: 2  /span 5; height: 100%;"
+							onfocus={() => {
+								console.log('aasd');
+							}}
+						>
+							{@render currentComponentSnippet()}
+						</div>
+					{/if}
+
+					<div>+</div>
+					<div>+</div>
+					<div>+</div>
+					<div>+</div>
+				</div>
 				<!--
 				<label for="maxProduction"
 					>Product goal
@@ -284,49 +292,152 @@
 						type="number"
 					/>
 				</label>-->
-				<label for="ProductMaterialQuality"
-					>Material Quality
-					<input
-						id="ProductMaterialQuality"
-						bind:value={clientState.Decisions.Products[newProductID].Product.MaterialQuality}
-						type="range"
-					/>
-				</label>
+				<fieldset role="group">
+					<label for="ProductMaterialQuality"
+						>Material Quality
+						<input
+							id="ProductMaterialQuality"
+							bind:value={clientState.Decisions.Products[newProductID].Product.MaterialQuality}
+							type="number"
+						/>
+					</label>
 
-				<label for="ProductDurability"
-					>Durability
-					<input
-						id="ProductDurability"
-						bind:value={clientState.Decisions.Products[newProductID].Product.ExtraDurability}
-						type="range"
-					/>
-				</label>
+					<label for="ProductDurability"
+						>Durability
+						<input
+							id="ProductDurability"
+							bind:value={clientState.Decisions.Products[newProductID].Product.ExtraDurability}
+							type="number"
+						/>
+					</label>
 
-				<label for="quality"
-					>Quality
+					<label for="quality"
+						>Quality
+						<input
+							id="Quality"
+							bind:value={clientState.Decisions.Products[newProductID].Product.ExtraQuality}
+							type="number"
+						/>
+					</label>
+				</fieldset>
+			</div>
+			<div>
+				<table>
+					<thead>
+						<tr>
+							<th colspan="2"> <h3>Manufacturing Stats</h3> </th>
+							<th colspan="2"> <h3>Product Stats</h3> </th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr>
+							<td>Production Cost:</td>
+							<td
+								>{format.number(
+									clientState.Company.Offers[newProductID].productStats.ProductionCost,
+									false,
+									1
+								)}</td
+							>
+							<td>Quality: </td>
+							<td
+								>{format.number(
+									clientState.Company.Offers[newProductID].productStats.Quality,
+									false,
+									1
+								)}</td
+							>
+						</tr>
+						<tr>
+							<td>Material use:</td>
+							<td
+								>{format.number(
+									clientState.Company.Offers[newProductID].productStats.MaterialUse,
+									false,
+									1
+								)}</td
+							>
+							<td>Ecology: </td>
+							<td
+								>{format.number(
+									clientState.Company.Offers[newProductID].productStats.Ecology,
+									false,
+									1
+								)}</td
+							>
+						</tr>
+						<tr>
+							<td>Material cost:</td>
+							<td
+								>{format.number(
+									clientState.Company.Offers[newProductID].productStats.MaterialUse *
+										externalFactors.MaterialPrice,
+									false,
+									1
+								)}</td
+							>
+							<td>Ethics: </td>
+							<td
+								>{format.number(
+									clientState.Company.Offers[newProductID].productStats.Ethics,
+									false,
+									1
+								)}</td
+							>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td>Durability: </td>
+							<td>{clientState.Company.Offers[newProductID].productStats.Durability}</td>
+						</tr>
+						<tr>
+							<td></td>
+							<td></td>
+							<td>Weight:</td>
+							<td
+								><!--{format.number(
+								clientState.Company.Offers[newProductID].productStats.Weight,
+								false,
+								1
+							)}--></td
+							>
+						</tr>
+					</tbody>
+				</table>
+
+				<label for="price"
+					>Price
 					<input
-						id="Quality"
-						bind:value={clientState.Decisions.Products[newProductID].Product.ExtraQuality}
-						type="range"
+						id="price"
+						bind:value={clientState.Decisions.Products[newProductID].Price}
+						type="number"
 					/>
 				</label>
 			</div>
-			<input
-				type="submit"
-				value="Cancel"
-				onclick={() => {
-					delete clientState.Decisions.Products[newProductID];
-					deleteWindow(newProductWindowID);
-				}}
-			/>
-			<input
-				type="submit"
-				onclick={() => {
-					updateDecisions(clientState.Decisions);
-					deleteWindow(newProductWindowID);
-				}}
-				value="Confirm"
-			/>
+			<footer>
+				<input
+					type="submit"
+					value="Cancel"
+					onclick={() => {
+						delete clientState.Decisions.Products[newProductID];
+						delete clientState.Company.Offers[newProductID];
+						deleteWindow(newProductWindowID);
+					}}
+				/>
+				<div id="spacer" style="flex: 1 1 0;"></div>
+				<div>
+					Production cost 🔧 {clientState.Company.Offers[newProductID].productStats.ProductionCost}
+				</div>
+				<input
+					type="submit"
+					onclick={() => {
+						updateDecisions(clientState.Decisions);
+						deleteWindow(newProductWindowID);
+					}}
+					value="Confirm"
+				/>
+			</footer>
 		</form>
 	</Window>
 {/snippet}
@@ -403,11 +514,65 @@
 	</Window>
 {/snippet}
 
+{#snippet productFormFactor()}
+	<div class="productComponentSelector">
+		{#each Object.entries(clientState.productComponents.FormFactor) as c}
+			<button
+				onclick={() => {
+					clientState.Company.Offers[newProductID].Product.Components.FormFactor = c[0];
+					clientState.Decisions.Products[newProductID].Product.Components.FormFactor = c[0];
+					currentComponentSnippet = null;
+				}}
+			>
+				<img
+					style="mix-blend-mode: lighten;"
+					src={images['/src/lib/images/' + c[1].Image]}
+					alt=""
+				/>
+				{c[1].Name}
+			</button>
+		{/each}
+	</div>
+{/snippet}
+
 <style>
-	form {
+	.main-product-div {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: var(--pico-spacing);
+		footer {
+			grid-column: 1 / span 2;
+			display: flex;
+			flex-direction: row;
+			justify-content: flex-end;
+			gap: var(--pico-spacing);
+			* {
+				flex: 0 0;
+			}
+		}
+	}
+
+	.productDesignerGrid {
+		width: 100%;
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		grid-template-rows: repeat(6, 1fr);
+	}
+
+	.productDesignerGrid > button {
+		text-align: center;
+		text-justify: center;
+		padding: 3px;
+		height: 2.5rem;
+	}
+
+	.productComponentSelector {
+		display: grid;
+		padding: var(--pico-spacing);
+		gap: var(--pico-spacing);
+		grid-template-columns: 1fr 1fr 1fr;
+		overflow: scroll;
+		height: 100% !important;
 	}
 
 	#price::after {
