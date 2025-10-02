@@ -13,16 +13,26 @@ export const delta = {
  * @property {ExternalFactors} ExternalFactors
  * @property {{marketing: Employee[], production: Employee[]}} Employees
  * @property {{marketing: Employee[], production: Employee[]}} Unemployed
+ * @property {ProductComponents} productComponents
  */
 
 /**
  * @typedef {Object} Decisions
- * @property {{Sales_prediction: number}} Predictions
+ * @property {{SalesPrediction: number}} Predictions
  * @property {{SetBankLoan: number}} Finances
  * @property {Object.<string ,Decisions_product>} Products
- * @property {{Production_deltas: Delta<Employee>[], Marketing_deltas: Delta<Employee>[], Severance_pay: number}} Employees
+ * @property {{ProductionDeltas: Delta<Employee>[], MarketingDeltas: Delta<Employee>[], SeverancePay: number}} Employees
  * @property {{Production_goal: number, Machines: Delta<Machine>[], Logistics: Delta<Warehouse>[]}} Production
  * @property {Decisions_research} Research
+ */
+
+/**
+ * @typedef {Object} ProductComponents
+ * @property {Object.<string, Component>} FormFactor
+ * @property {Object.<string, Component>} Frame
+ * @property {Object.<string, Component>} Body
+ * @property {Object.<string, Component>} Mechanism
+ * @property {Object.<string, Component>} Misc
  */
 
 /**
@@ -134,22 +144,48 @@ export const delta = {
 	* @property {string} Name
 
 	* @property {object} Components
-  * @property {string} Components.FormFactor
-  * @property {string} Components.Frame
-  * @property {string} Components.Body
-  * @property {string} Components.Mechanism
+  * @property {string?} Components.FormFactor
+  * @property {string?} Components.Frame
+  * @property {string?} Components.Body
+  * @property {string?} Components.Mechanism
   * @property {string[]} Components.Misc
 
 	* @property {number} MaterialQuality
-	* @property {number} ExtraDurabilit
+	* @property {number} ExtraDurability
 	* @property {number} ExtraQuality
 }
+ */
+
+/**
+ * @typedef {Object} ProductStats
+  * @property {number} ProductionCost
+  * @property {number} MaterialUse
+
+  * @property {number} Quality
+  * @property {number} Ecology
+  * @property {number} Ethics
+  * @property {number} Durability
+*/
+
+/**
+ * @typedef {Object} Component
+ * @property {string} Name
+ * @property {number} MiscSlots
+ * @property {number} ProductionCost
+ * @property {number} MaterialUse
+ * @property {number} Ecology
+ * @property {number} Ethics
+ * @property {number} Quality
+ * @property {number} Durability
+ * @property {number} ProductionLineCost
+ * @property {string} Image
  */
 
 /**
  * @typedef {Object} Offer
  * @property {Product} Product - The product being offered
  * @property {number} Price
+ * @property {ProductStats} productStats
  * @property {number} PromotionQuality
  * @property {Object} Promotion - Promotion goals
  * @property {number} Promotion.Quantity

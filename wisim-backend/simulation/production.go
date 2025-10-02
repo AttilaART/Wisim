@@ -44,7 +44,7 @@ func (c *Company) calculateProduction(decisions Decisions, externalFactors Exter
 		}
 	}
 
-	c.Machines = delete_by_id(c.Machines, machinesToDeleteID...)
+	c.Machines = deleteByID(c.Machines, machinesToDeleteID...)
 
 	calculate_machines_value(
 		&c.Machines,

@@ -157,6 +157,18 @@ func getDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply.Data = &decisions
 }
 
+func getProductComponents(_ *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[simulation.ProductComponents]{Method: message.Method, IsResponse: true}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	reply.Data = &gamestate.ProductComponents
+}
+
 func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply := Message[simulation.Company]{Method: message.Method, IsResponse: true}
 	defer func() {
@@ -535,6 +547,7 @@ func main() {
 	server.addMethod("gExternal_factors", getExternalFactors)
 	server.addMethod("gEmployees", getEmployees)
 	server.addMethod("gUnemployedEmployees", getUnemployedEmployees)
+	server.addMethod("gProductComponents", getProductComponents)
 
 	server.addMethod("sCompany", setCompany)
 	server.addMethod("sDecisions", setDecisions)

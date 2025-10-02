@@ -217,7 +217,7 @@ func (c *Company) calculateBudget(decisions Decisions, externalFactors ExternalF
 			}
 		}
 
-		c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities = delete_by_index(c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities, loansToDelete...)
+		c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities = deleteByIndex(c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities, loansToDelete...)
 
 	} else if c.Balance+financialReport.Totals.Cashflow < 0 {
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
@@ -277,7 +277,7 @@ func (c *Company) loanQuantity() (loanValue float64) {
 func cleanUpFinanceReportEntries(entries []FinanceReportEntry) []FinanceReportEntry {
 	for i := len(entries) - 1; i >= 0; i-- {
 		if entries[i].Value == 0 {
-			entries = delete_by_index(entries, i)
+			entries = deleteByIndex(entries, i)
 		}
 	}
 

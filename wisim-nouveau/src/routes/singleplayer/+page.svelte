@@ -115,8 +115,8 @@
 					break;
 				case Methods.Get_decisions:
 					clientState.Decisions = dataJSON.Data;
-					clientState.Decisions.Employees.Production_deltas = [];
-					clientState.Decisions.Employees.Marketing_deltas = [];
+					clientState.Decisions.Employees.ProductionDeltas = [];
+					clientState.Decisions.Employees.MarketingDeltas = [];
 					console.log('decisions updated');
 					connection.sDecisions(clientState.Decisions);
 					break;
@@ -138,6 +138,8 @@
 						clientState.Unemployed.marketing = dataJSON.Data.Employees;
 					}
 					console.log('unemployed updated');
+				case Methods.Get_product_components:
+					clientState.productComponents = dataJSON.Data;
 			}
 		} else {
 			switch (dataJSON.Method) {
@@ -168,6 +170,7 @@
 		connection.gEmployees('marketing');
 		connection.gUnemployedEmployees('production');
 		connection.gUnemployedEmployees('marketing');
+		connection.gProductComponents();
 	}
 </script>
 

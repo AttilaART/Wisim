@@ -121,10 +121,10 @@ type Decisions struct {
 	Products map[string]Decisions_product
 
 	Employees struct {
-		Production_deltas []Delta[Employee]
-		Marketing_deltas  []Delta[Employee]
+		ProductionDeltas []Delta[Employee]
+		MarketingDeltas  []Delta[Employee]
 
-		Severance_pay float32
+		SeverancePay float32
 	}
 
 	Production struct {
@@ -199,7 +199,7 @@ type Product struct {
 	}
 
 	MaterialQuality int
-	ExtraDurabilit  int
+	ExtraDurability int
 	ExtraQuality    int
 }
 
@@ -857,12 +857,12 @@ func (c *Company) compile_personelle_subreport(decisions Decisions, employee_typ
 	var employeeDeltas []Delta[Employee] // We can trust that the employees exist because we checked this when "simulating employees"
 	switch employee_type {
 	case Employee_type_marketing:
-		employeeDeltas = decisions.Employees.Marketing_deltas
+		employeeDeltas = decisions.Employees.MarketingDeltas
 	case Employee_type_production:
-		employeeDeltas = decisions.Employees.Production_deltas
+		employeeDeltas = decisions.Employees.ProductionDeltas
 	case Employee_type_all:
-		employeeDeltas = decisions.Employees.Production_deltas
-		employeeDeltas = append(employeeDeltas, decisions.Employees.Marketing_deltas...)
+		employeeDeltas = decisions.Employees.ProductionDeltas
+		employeeDeltas = append(employeeDeltas, decisions.Employees.MarketingDeltas...)
 	}
 
 	for _, eDelta := range employeeDeltas {

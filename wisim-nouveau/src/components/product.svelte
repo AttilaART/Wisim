@@ -1,6 +1,6 @@
 <script>
 	import { format } from '$lib/javascript/format';
-	import { Calculate_product } from '../calculateProduct';
+	import { calculateProductStats } from '../calculateProduct';
 	import Window from './window.svelte';
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
@@ -23,57 +23,47 @@
 		deleteWindow
 	} = $props();
 
-	let newProductID = $state(Math.trunc(Math.random() * 100000000));
+	let newProductID = $state(`${Math.trunc(Math.random() * 100000000)}`);
 	let newProductWindowID = $state(0);
-	/** @type {Object.<string, string>} Key: windowID, Value: ProductID*/
+	/** @type {Object.<string, string>} Key: wi:windowndowID, Value: ProductID*/
 	let productConfugureWindows = $state({});
+
+	/** @type {import("$lib/javascript/simulation").Product} */
+	const baseProduct = {
+		ID: '-1',
+		CompanyID: clientState.Company.ID,
+		Name: 'Unnamed Product',
+
+		Components: {
+			FormFactor: null,
+			Frame: null,
+			Body: null,
+			Mechanism: null,
+			Misc: []
+		},
+
+		MaterialQuality: 0,
+		ExtraDurability: 0,
+		ExtraQuality: 0
+	};
 
 	/** @type {import("$lib/javascript/simulation").Decisions_product} */
 	const baseProductDecisions = {
 		Price: 150,
-		Name: 'Unnambed Product',
-
-		Materials: {
-			Quality: 1,
-			Ecology: 1,
-			EthicalSourcing: 1
-		},
-
-		Manufacturing: {
-			Quality: 1,
-			EcologicalEnergy: 1,
-			MaterialEfficiency: 1,
-			Durability: 1,
-			MaxDurability: 1
-		},
-
+		Name: baseProduct.Name,
 		Promotion: {
 			Quantity: 10000,
-			StyleQuality: 0.25,
-			StyleEcology: 0.25,
-			StyleEthics: 0.25,
-			StyleDurability: 0.25
-		}
+			Quality: 0.2,
+			Durability: 0.2,
+			Price: 0.2,
+			Ecology: 0.2,
+			Ethics: 0.2
+		},
+		Product: baseProduct
 	};
 
-	const baseProduct = Calculate_product(
-		clientState.Company,
-		{
-			ID: -1,
-			CompanyID: clientState.Company.ID,
-			Name: 'Unnambed Product',
-			Weight: 1,
-			MaterialUse: 1,
-			ProductionCost: 1,
-
-			Ethics: 1,
-			Quality: 1,
-			Ecology: 1,
-			Durabilty: 1
-		},
-		baseProductDecisions,
-		clientState.Employees.production
-	);
+	/** @type {Object.<string, number>} */
+	let productionLineCosts = {};
 
 	function generateProductID() {
 		let id = 0;
@@ -82,7 +72,7 @@
 		while (clientState.Company.Offers[id] ? true : false) {
 			id = Math.trunc(Math.random() * 10000000000);
 		}
-		return id;
+		return String(id);
 	}
 </script>
 
@@ -93,6 +83,14 @@
 			newProductID = generateProductID();
 			clientState.Company.Offers[newProductID] = {
 				Product: JSON.parse(JSON.stringify(baseProduct)),
+				productStats: (() => {
+					/** @type {{productStats: import("$lib/javascript/simulation").ProductStats, productionLineCost: number}}*/ let {
+						productStats,
+						productionLineCost
+					} = calculateProductStats(baseProduct, clientState.productComponents);
+					return productStats;
+				})(),
+
 				Price: 150,
 				Promotion: {
 					Quantity: 0,
@@ -125,16 +123,22 @@
 				<table>
 					<tbody>
 						<tr>
-							<td>Quality: {format.number(offer[1].Product.Quality, false, 2)}</td>
-							<td>Production Cost: {format.number(offer[1].Product.ProductionCost, false, 2)}</td>
+							<td>Quality: {format.number(offer[1].productStats.Quality, false, 2)}</td>
+							<td
+								>Production Cost: {format.number(
+									offer[1].productStats.ProductionCost,
+									false,
+									2
+								)}</td
+							>
 						</tr>
 						<tr>
-							<td>Durability: {format.number(offer[1].Product.Durabilty, false, 2)}</td>
-							<td>Materials Use: {format.number(offer[1].Product.MaterialUse, false, 2)}</td>
+							<td>Durability: {format.number(offer[1].productStats.Durability, false, 2)}</td>
+							<td>Materials Use: {format.number(offer[1].productStats.MaterialUse, false, 2)}</td>
 						</tr>
 						<tr>
-							<td>Ecology: {format.number(offer[1].Product.Ecology, false, 2)}</td>
-							<td>Ethics: {format.number(offer[1].Product.Ethics, false, 2)}</td>
+							<td>Ecology: {format.number(offer[1].productStats.Ecology, false, 2)}</td>
+							<td>Ethics: {format.number(offer[1].productStats.Ethics, false, 2)}</td>
 						</tr>
 					</tbody>
 				</table>
@@ -175,7 +179,7 @@
 						<td>Quality: </td>
 						<td
 							>{format.number(
-								clientState.Company.Offers[newProductID].Product.Quality,
+								clientState.Company.Offers[newProductID].productStats.Quality,
 								false,
 								1
 							)}</td
@@ -183,7 +187,7 @@
 						<td>Production Cost:</td>
 						<td
 							>{format.number(
-								clientState.Company.Offers[newProductID].Product.ProductionCost,
+								clientState.Company.Offers[newProductID].productStats.ProductionCost,
 								false,
 								1
 							)}</td
@@ -193,7 +197,7 @@
 						<td>Ecology: </td>
 						<td
 							>{format.number(
-								clientState.Company.Offers[newProductID].Product.Ecology,
+								clientState.Company.Offers[newProductID].productStats.Ecology,
 								false,
 								1
 							)}</td
@@ -201,7 +205,7 @@
 						<td>Material use:</td>
 						<td
 							>{format.number(
-								clientState.Company.Offers[newProductID].Product.MaterialUse,
+								clientState.Company.Offers[newProductID].productStats.MaterialUse,
 								false,
 								1
 							)}</td
@@ -211,7 +215,7 @@
 						<td>Ethics: </td>
 						<td
 							>{format.number(
-								clientState.Company.Offers[newProductID].Product.Ethics,
+								clientState.Company.Offers[newProductID].productStats.Ethics,
 								false,
 								1
 							)}</td
@@ -219,7 +223,7 @@
 						<td>Material cost:</td>
 						<td
 							>{format.number(
-								clientState.Company.Offers[newProductID].Product.MaterialUse *
+								clientState.Company.Offers[newProductID].productStats.MaterialUse *
 									externalFactors.MaterialPrice,
 								false,
 								1
@@ -228,14 +232,14 @@
 					</tr>
 					<tr>
 						<td>Durability: </td>
-						<td>{clientState.Company.Offers[newProductID].Product.Durabilty}</td>
+						<td>{clientState.Company.Offers[newProductID].productStats.Durability}</td>
 						<td>Weight:</td>
 						<td
-							>{format.number(
-								clientState.Company.Offers[newProductID].Product.Weight,
+							><!--{format.number(
+								clientState.Company.Offers[newProductID].productStats.Weight,
 								false,
 								1
-							)}</td
+							)}--></td
 						>
 					</tr>
 				</tbody>
@@ -244,12 +248,13 @@
 		<form
 			onchange={() => {
 				updateDecisions(clientState.Decisions);
-				clientState.Company.Offers[newProductID].Product = Calculate_product(
-					clientState.Company,
+				let { productStats, productionLineCost } = calculateProductStats(
 					clientState.Company.Offers[newProductID].Product,
-					clientState.Decisions.Products[newProductID],
-					clientState.Employees.production
+					clientState.productComponents
 				);
+
+				clientState.Company.Offers[newProductID].productStats = productStats;
+				productionLineCosts[newProductID] = productionLineCost;
 			}}
 		>
 			<div>
@@ -279,63 +284,11 @@
 						type="number"
 					/>
 				</label>-->
-
-				<h2>Materials</h2>
-				<label for="quality"
-					>Quality
+				<label for="ProductMaterialQuality"
+					>Material Quality
 					<input
-						id="Quality"
-						bind:value={clientState.Decisions.Products[newProductID].Materials.Quality}
-						type="range"
-					/>
-				</label>
-
-				<label for="ProductEcology"
-					>Ecology
-					<input
-						id="ProductEcology"
-						bind:value={clientState.Decisions.Products[newProductID].Materials.Ecology}
-						type="range"
-					/>
-				</label>
-
-				<label for="ProductEthicalSourcing"
-					>Ethical Sourcing
-					<input
-						id="ProductEthicalSourcing"
-						bind:value={clientState.Decisions.Products[newProductID].Materials.EthicalSourcing}
-						type="range"
-					/>
-				</label>
-			</div>
-
-			<div>
-				<h2>Manufacturing</h2>
-				<label for="ProductQuality"
-					>Quality
-					<input
-						id="ProductQuality"
-						bind:value={clientState.Decisions.Products[newProductID].Manufacturing.Quality}
-						type="range"
-					/>
-				</label>
-
-				<label for="ProductMaterialEfficiency"
-					>Material Efficiency
-					<input
-						id="ProductMaterialEfficiency"
-						bind:value={
-							clientState.Decisions.Products[newProductID].Manufacturing.MaterialEfficiency
-						}
-						type="range"
-					/>
-				</label>
-
-				<label for="ProductEcoEnergy"
-					>Eco-Energy
-					<input
-						id="ProductEcoEnergy"
-						bind:value={clientState.Decisions.Products[newProductID].Manufacturing.EcologicalEnergy}
+						id="ProductMaterialQuality"
+						bind:value={clientState.Decisions.Products[newProductID].Product.MaterialQuality}
 						type="range"
 					/>
 				</label>
@@ -344,17 +297,17 @@
 					>Durability
 					<input
 						id="ProductDurability"
-						bind:value={clientState.Decisions.Products[newProductID].Manufacturing.Durability}
+						bind:value={clientState.Decisions.Products[newProductID].Product.ExtraDurability}
 						type="range"
 					/>
 				</label>
 
-				<label for="ProductMaxDurability"
-					>Max Durability
+				<label for="quality"
+					>Quality
 					<input
-						id="ProductMaxDurability"
-						bind:value={clientState.Decisions.Products[newProductID].Manufacturing.MaxDurability}
-						type="number"
+						id="Quality"
+						bind:value={clientState.Decisions.Products[newProductID].Product.ExtraQuality}
+						type="range"
 					/>
 				</label>
 			</div>
@@ -408,7 +361,7 @@
 				<input
 					id="PromotionQuality"
 					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.StyleQuality
+						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Quality
 					}
 					type="range"
 				/>
@@ -419,7 +372,7 @@
 				<input
 					id="PromotionEcology"
 					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.StyleEcology
+						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Ecology
 					}
 					type="range"
 				/>
@@ -430,7 +383,7 @@
 				<input
 					id="PromotionEthicals"
 					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.StyleEthics
+						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Ethics
 					}
 					type="range"
 				/>
@@ -441,8 +394,7 @@
 				<input
 					id="PromotionDurability"
 					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion
-							.StyleDurability
+						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Durability
 					}
 					type="range"
 				/>

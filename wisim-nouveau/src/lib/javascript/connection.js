@@ -19,8 +19,8 @@ export const Methods = {
 	Set_decisions: 'sDecisions',
 	Set_ready: 'sReady',
 	Set_unready: 'sUnready',
+	Get_product_components: 'gProductComponents',
 
-	Func_calculate_product_stats: 'fProduct_stats',
 	Broadcast_chat: 'bChat',
 
 	Sim_starting: 'bSim_starting',
@@ -52,25 +52,16 @@ export const baseState = {
 	},
 	Decisions: {
 		Predictions: {
-			Sales_prediction: 0
+			SalesPrediction: 0
 		},
 		Finances: {
-			Set_bank_loan: 0
+			SetBankLoan: 0
 		},
-		Marketing: {
-			Products: {}, // Decisions_product object
-			Promotion: {
-				Quantity: 0,
-				StyleQuality: 0,
-				StyleEcology: 0,
-				StyleEthics: 0,
-				StyleDurability: 0
-			}
-		},
+		Products: {}, // Decisions_product object
 		Employees: {
-			Production_deltas: [], // array of Delta<Employee>
-			Marketing_deltas: [], // array of Delta<Employee>
-			Severance_pay: 0
+			ProductionDeltas: [], // array of Delta<Employee>
+			MarketingDeltas: [], // array of Delta<Employee>
+			SeverancePay: 0
 		},
 		Production: {
 			Production_goal: 0,
@@ -103,7 +94,7 @@ export const baseState = {
 			EnergyUse: 0,
 			Value: 1,
 			MaintananceCost: 1,
-			AssignedProductID: -1
+			AssignedProductID: '-1'
 		}, // placeholder for a Machine object
 		ExternalStoragePrice: 0,
 		EnergyPrice: 0,
@@ -117,6 +108,13 @@ export const baseState = {
 	Unemployed: {
 		production: [],
 		marketing: []
+	},
+	productComponents: {
+		FormFactor: {},
+		Frame: {},
+		Body: {},
+		Mechanism: {},
+		Misc: {}
 	}
 };
 
@@ -130,13 +128,13 @@ export const baseState = {
  * @property {()=>void} Connection.gExternal_factors
  * @property {(Type: employeeType)=>void} Connection.gEmployees
  * @property {(Type: employeeType)=>void} Connection.gUnemployedEmployees
+ * @property {()=>void} Connection.gProductComponents
  *
  * @property {(ID: number)=>void} Connection.sCompany
  * @property {(decisions: import('./simulation').Decisions)=>void} Connection.sDecisions
  * @property {()=>void} Connection.sReady
  * @property {()=>void} Connection.sUnready
  *
- * @property {(decisions: import('./simulation').Decisions_product, research: import('./simulation').Decisions_research)=>void} Connection.fProduct_stats
  * @property {(chat: string)=>void} Connection.bChat
  *
  */
@@ -226,6 +224,17 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 			};
 			websocket.send(JSON.stringify(message));
 		},
+
+		gProductComponents: () => {
+			let message = {
+				Method: Methods.Get_product_components,
+				IsResponse: false,
+				Error: '',
+				Data: null
+			};
+
+			websocket.send(JSON.stringify(message));
+		},
 		/**
 		 * @param {number} ID
 		 */
@@ -276,26 +285,6 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 				IsResponse: false,
 				Error: '',
 				Data: ''
-			};
-			websocket.send(JSON.stringify(message));
-		},
-
-		/**
-		 * @param {import('./simulation').Decisions_product} decisions
-		 * @param {import('./simulation').Decisions_research} research
-		 */
-		fProduct_stats: function (decisions, research) {
-			/**
-			 * @type {Message}
-			 */
-			let message = {
-				Method: Methods.Func_calculate_product_stats,
-				IsResponse: false,
-				Error: '',
-				Data: {
-					Product: decisions,
-					Research: research
-				}
 			};
 			websocket.send(JSON.stringify(message));
 		},

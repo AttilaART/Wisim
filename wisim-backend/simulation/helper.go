@@ -80,13 +80,13 @@ func (employee_pool Employee_pool) Get_employees_of_company(company_id int, empl
 	return employees_ids_of_company
 }
 
-func (employee_pool Employee_pool) Get_avr_skill(company_id int, employee_type Employee_type) (avrg_skill float32) {
-	employees_ids := employee_pool.Get_employees_of_company(company_id, employee_type)
-	for _, id := range employees_ids {
-		avrg_skill += employee_pool[id].Skill
+func (employee_pool Employee_pool) Get_avr_skill(companyID int, employeeType Employee_type) (avgSkill float32) {
+	employeesIDs := employee_pool.Get_employees_of_company(companyID, employeeType)
+	for _, id := range employeesIDs {
+		avgSkill += employee_pool[id].Skill
 	}
 
-	return avrg_skill / float32(len(employees_ids))
+	return avgSkill / float32(len(employeesIDs))
 }
 
 func (c *Company) Get_decisions() Decisions {
@@ -111,9 +111,9 @@ func (c *Company) Get_decisions() Decisions {
 				nil,
 			},
 			Employees: struct {
-				Production_deltas []Delta[Employee]
-				Marketing_deltas  []Delta[Employee]
-				Severance_pay     float32
+				ProductionDeltas []Delta[Employee]
+				MarketingDeltas  []Delta[Employee]
+				SeverancePay     float32
 			}{
 				nil,
 				nil,
@@ -131,8 +131,8 @@ func (c *Company) Get_decisions() Decisions {
 	}
 
 	// initialise slices
-	decisions.Employees.Marketing_deltas = make([]Delta[Employee], 0)
-	decisions.Employees.Production_deltas = make([]Delta[Employee], 0)
+	decisions.Employees.MarketingDeltas = make([]Delta[Employee], 0)
+	decisions.Employees.ProductionDeltas = make([]Delta[Employee], 0)
 
 	decisions.Production.Logistics = make([]Delta[Warehouse], 0)
 	decisions.Production.Machines = make([]Delta[Machine], 0)
@@ -140,32 +140,32 @@ func (c *Company) Get_decisions() Decisions {
 	return decisions
 }
 
-func delete_by_index[V any](s []V, index ...int) []V {
-	to_be_deleted := make([]bool, len(s))
+func deleteByIndex[V any](s []V, index ...int) []V {
+	toBeDeleted := make([]bool, len(s))
 	for _, i := range index {
-		to_be_deleted[i] = true
+		toBeDeleted[i] = true
 	}
 
 	var out []V
 	for i, el := range s {
-		if !to_be_deleted[i] {
+		if !toBeDeleted[i] {
 			out = append(out, el)
 		}
 	}
 	return out
 }
 
-func delete_by_id[V interface{ get_id() int }](s []V, id ...int) []V {
-	var indexes_to_delete []int
+func deleteByID[V interface{ get_id() int }](s []V, id ...int) []V {
+	var IDsToDelete []int
 	for i := range s {
 		for ii := range id {
 			if s[i].get_id() == id[ii] {
-				indexes_to_delete = append(indexes_to_delete, i)
+				IDsToDelete = append(IDsToDelete, i)
 			}
 		}
 	}
 
-	return delete_by_index(s, indexes_to_delete...)
+	return deleteByIndex(s, IDsToDelete...)
 }
 
 func avr[V Number](values []V) V {

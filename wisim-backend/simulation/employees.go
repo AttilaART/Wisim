@@ -125,7 +125,7 @@ func layoff(employees []Employee, size_of_layoff int) ([]Employee, int) {
 func (g *GameState) handleEmployeeDeltas() {
 	// Handle Changes & fires
 	for _, decisions := range g.CurrentDecisions {
-		for _, e := range decisions.Employees.Marketing_deltas {
+		for _, e := range decisions.Employees.MarketingDeltas {
 			switch e.Change {
 			case Delta_Change:
 				*g.Employees[e.Item.ID] = e.Item
@@ -140,12 +140,12 @@ func (g *GameState) handleEmployeeDeltas() {
 	newHires := make(map[int][]int)
 
 	for i, decisions := range g.CurrentDecisions {
-		for _, delta := range decisions.Employees.Marketing_deltas {
+		for _, delta := range decisions.Employees.MarketingDeltas {
 			if delta.Change == Delta_New {
 				newHires[delta.Item.ID] = append(newHires[delta.Item.ID], i)
 			}
 		}
-		for _, delta := range decisions.Employees.Production_deltas {
+		for _, delta := range decisions.Employees.ProductionDeltas {
 			if delta.Change == Delta_New {
 				if _, exists := newHires[delta.Item.ID]; exists {
 					hire := newHires[delta.Item.ID]

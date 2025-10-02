@@ -19,7 +19,7 @@ func (c *Company) calculate_logistics(decisions Decisions) {
 		}
 	}
 
-	c.Warehouses = delete_by_id(c.Warehouses, warehouses_to_delete_id...)
+	c.Warehouses = deleteByID(c.Warehouses, warehouses_to_delete_id...)
 
 	for _, w := range c.Warehouses {
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_equity("Warehouse", logistics, "", false, float64(w.Value))
