@@ -1,6 +1,7 @@
 <script>
 	import { format } from '$lib/javascript/format';
 	import { calculateProductStats } from '../calculateProduct';
+	import Increment from './increment.svelte';
 	import Window from './window.svelte';
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
@@ -40,7 +41,7 @@
 		Name: 'Unnamed Product',
 
 		Components: {
-			FormFactor: null,
+			FormFactor: 'FormFactorMedium',
 			Frame: null,
 			Body: null,
 			Mechanism: null,
@@ -202,6 +203,7 @@
 				</div>
 				<div class="productDesignerGrid">
 					<button
+						class="outline contrast"
 						onclick={() => {
 							currentComponentSnippet = productFormFactor;
 						}}
@@ -222,6 +224,7 @@
 						{/if}
 					</button>
 					<button
+						class="outline contrast"
 						onclick={() => {
 							currentComponentSnippet = productFrame;
 						}}
@@ -242,6 +245,7 @@
 						{/if}
 					</button>
 					<button
+						class="outline contrast"
 						onclick={() => {
 							currentComponentSnippet = productBody;
 						}}
@@ -262,6 +266,7 @@
 						{/if}
 					</button>
 					<button
+						class="outline contrast"
 						onclick={() => {
 							currentComponentSnippet = productCoffeeMechanism;
 						}}
@@ -282,34 +287,29 @@
 						{/if}
 					</button>
 
-					{#if currentComponentSnippet == null}
-						<div
-							style="grid-column: 1 /span 4; grid-row: 2  /span 5; height: 100%; background: #4A6DE5;"
-						>
-							<center>
-								<img
-									src={images[
-										'/src/lib/images/' +
-											clientState.productComponents.FormFactor[
-												`${clientState.Decisions.Products[newProductID].Product.Components.FormFactor}`
-											]?.Image
-									]}
-									style="mix-blend-mode: lighten; max-height: 10rem;"
-									alt=""
-								/>
-							</center>
-						</div>
-					{:else}
-						<div
-							tabindex="-1"
-							use:focusElement
-							style="grid-column: 1 /span 4; grid-row: 2  /span 5; height: 100%;"
-						>
+					<div
+						style="grid-column: 1 /span 4; grid-row: 2  /span 5; position: relative;"
+						use:focusElement
+						tabindex="-1"
+					>
+						{#if currentComponentSnippet == null}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.FormFactor[
+											`${clientState.Decisions.Products[newProductID].Product.Components.FormFactor}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; width: 100%; height: 10em; object-fit: contain; position: relative; left: 50%; top: 50%; translate: -50% -50%;"
+								alt=""
+							/>
+						{:else}
 							{@render currentComponentSnippet()}
-						</div>
-					{/if}
+						{/if}
+					</div>
 
 					<button
+						class="outline contrast"
 						onclick={() => {
 							currentComponentSnippet = productMisc0;
 						}}
@@ -330,6 +330,7 @@
 						{/if}
 					</button>
 					<button
+						class="outline contrast"
 						onclick={() => {
 							currentComponentSnippet = productMisc1;
 						}}
@@ -350,6 +351,7 @@
 						{/if}
 					</button>
 					<button
+						class="outline contrast"
 						onclick={() => {
 							currentComponentSnippet = productMisc2;
 						}}
@@ -370,6 +372,7 @@
 						{/if}
 					</button>
 					<button
+						class="outline contrast"
 						onclick={() => {
 							currentComponentSnippet = productMisc3;
 						}}
@@ -399,34 +402,29 @@
 						type="number"
 					/>
 				</label>-->
-				<fieldset role="group">
-					<label for="ProductMaterialQuality"
-						>Material Quality
-						<input
-							id="ProductMaterialQuality"
-							bind:value={clientState.Decisions.Products[newProductID].Product.MaterialQuality}
-							type="number"
-						/>
-					</label>
+				<!--<Increment
+					bind:value={clientState.Decisions.Products[newProductID].Product.MaterialQuality}
+					label="Material Quality"
+					min={0}
+					max={99}
+					onclick={onProductChange}
+				/>-->
 
-					<label for="ProductDurability"
-						>Durability
-						<input
-							id="ProductDurability"
-							bind:value={clientState.Decisions.Products[newProductID].Product.ExtraDurability}
-							type="number"
-						/>
-					</label>
+				<Increment
+					bind:value={clientState.Decisions.Products[newProductID].Product.ExtraDurability}
+					label="Durability"
+					min={0}
+					max={99}
+					onclick={onProductChange}
+				/>
 
-					<label for="quality"
-						>Quality
-						<input
-							id="Quality"
-							bind:value={clientState.Decisions.Products[newProductID].Product.ExtraQuality}
-							type="number"
-						/>
-					</label>
-				</fieldset>
+				<Increment
+					bind:value={clientState.Decisions.Products[newProductID].Product.ExtraQuality}
+					label="Quality"
+					min={0}
+					max={99}
+					onclick={onProductChange}
+				/>
 			</div>
 			<div>
 				<table>
@@ -775,6 +773,7 @@
 		text-justify: center;
 		padding: 3px;
 		height: 2.5rem;
+		border-radius: 0;
 	}
 
 	.productComponentSelector {

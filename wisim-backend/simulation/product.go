@@ -43,6 +43,12 @@ func (c Company) calculateProductStats(
 
 	productStats.Durability = float32(math.Round(float64(productStats.Durability)))
 
+	productStats.Durability += float32(product.ExtraDurability)
+	productStats.ProductionCost += float32(5 * product.ExtraDurability)
+
+	productStats.Quality += float32(product.ExtraQuality)
+	productStats.ProductionCost += float32(5 * product.ExtraDurability)
+
 	return productStats, productionLineCost
 }
 
