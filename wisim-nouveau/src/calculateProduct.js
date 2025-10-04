@@ -23,24 +23,23 @@ export function calculateProductStats(product, productComponents) {
 	/** @type {import("$lib/javascript/simulation").Component[]} */
 	let parts = [];
 
-	product.Components.FormFactor
-		? parts.push(productComponents.FormFactor[product.Components.FormFactor])
-		: undefined;
-	product.Components.Frame
-		? parts.push(productComponents.FormFactor[product.Components.Frame])
-		: undefined;
-	product.Components.Body
-		? parts.push(productComponents.FormFactor[product.Components.Body])
-		: undefined;
-	product.Components.Mechanism
-		? parts.push(productComponents.FormFactor[product.Components.Mechanism])
-		: undefined;
+	parts.push(productComponents.FormFactor[`${product.Components.FormFactor}`]);
+	parts.push(productComponents.Frame[`${product.Components.Frame}`]);
+	parts.push(productComponents.Body[`${product.Components.Body}`]);
+	parts.push(productComponents.Mechanism[`${product.Components.Mechanism}`]);
+
+	console.log(product.Components.Mechanism);
+	console.log(productComponents.Mechanism[`${product.Components.Mechanism}`]);
 
 	for (let component of product.Components.Misc) {
-		parts.push(productComponents.Misc[component]);
+		parts.push(productComponents.Misc[`${component}`]);
 	}
 
+	console.log(parts);
 	for (let part of parts) {
+		if (part === undefined) {
+			continue;
+		}
 		productStats.ProductionCost += part.ProductionCost;
 		productStats.MaterialUse += part.MaterialUse;
 
@@ -52,6 +51,7 @@ export function calculateProductStats(product, productComponents) {
 	}
 
 	productStats.Durability = Math.round(productStats.Durability);
+	console.log(productStats);
 
 	return { productStats, productionLineCost };
 }

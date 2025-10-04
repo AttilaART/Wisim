@@ -28,10 +28,9 @@
 
 		let deltasList = [];
 
-		if (employeeType == 'production')
-			deltasList = clientState.Decisions.Employees.Production_deltas;
+		if (employeeType == 'production') deltasList = clientState.Decisions.Employees.ProductionDeltas;
 		else if (employeeType == 'marketing')
-			deltasList = clientState.Decisions.Employees.Marketing_deltas;
+			deltasList = clientState.Decisions.Employees.MarketingDeltas;
 		else throw `invalid employeeType: ${employeeType}`;
 
 		for (/** @type {number} i */ let i in deltasList) {
@@ -50,7 +49,7 @@
 	 * @returns {boolean}
 	 */
 	function isFired(id, type) {
-		for (let e of clientState.Decisions.Employees[format.capitaliseFirstLetter(type) + '_deltas']) {
+		for (let e of clientState.Decisions.Employees[format.capitaliseFirstLetter(type) + 'Deltas']) {
 			if (e.Item.ID == id) {
 				if (e.Change == delta.Delta_Remove) {
 					return true;
@@ -66,7 +65,7 @@
 	 * @returns {boolean}
 	 */
 	function isHired(id, type) {
-		for (let e of clientState.Decisions.Employees[format.capitaliseFirstLetter(type) + '_deltas']) {
+		for (let e of clientState.Decisions.Employees[format.capitaliseFirstLetter(type) + 'Deltas']) {
 			if (e.Item.ID == id) {
 				if (e.Change == delta.Delta_New) {
 					return true;
@@ -217,7 +216,7 @@
 				<input
 					bind:value={clientState.Employees[type][index].Pay}
 					type="number"
-					min={clientState.ExternalFactors[format.capitaliseFirstLetter(type) + '_minimum_wage']}
+					min={clientState.ExternalFactors[format.capitaliseFirstLetter(type) + 'MinimumWage']}
 					step="1000"
 				/>
 			</label>

@@ -86,6 +86,17 @@
 		}
 		return String(id);
 	}
+
+	function onProductChange() {
+		updateDecisions(clientState.Decisions);
+		let { productStats, productionLineCost } = calculateProductStats(
+			clientState.Company.Offers[newProductID].Product,
+			$state.snapshot(clientState.productComponents)
+		);
+
+		clientState.Company.Offers[newProductID].productStats = productStats;
+		productionLineCosts[newProductID] = productionLineCost;
+	}
 </script>
 
 <div class="productsGrid">
@@ -178,19 +189,7 @@
 			deleteWindow(id);
 		}}
 	>
-		<form
-			class="main-product-div"
-			onchange={() => {
-				updateDecisions(clientState.Decisions);
-				let { productStats, productionLineCost } = calculateProductStats(
-					clientState.Company.Offers[newProductID].Product,
-					clientState.productComponents
-				);
-
-				clientState.Company.Offers[newProductID].productStats = productStats;
-				productionLineCosts[newProductID] = productionLineCost;
-			}}
-		>
+		<form class="main-product-div" onchange={onProductChange}>
 			<div>
 				<div>
 					<h2>
@@ -220,24 +219,21 @@
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
 								alt=""
 							/>
-							{console.log(
-								clientState.Decisions.Products[newProductID].Product.Components.FormFactor
-							)}
 						{/if}
 					</button>
 					<button
 						onclick={() => {
-							currentComponentSnippet = productFormFactor;
+							currentComponentSnippet = productFrame;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.FormFactor}
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.Frame}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
 								src={images[
 									'/src/lib/images/' +
-										clientState.productComponents.FormFactor[
-											`${clientState.Decisions.Products[newProductID].Product.Components.FormFactor}`
+										clientState.productComponents.Frame[
+											`${clientState.Decisions.Products[newProductID].Product.Components.Frame}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
@@ -245,8 +241,46 @@
 							/>
 						{/if}
 					</button>
-					<div>+</div>
-					<div>+</div>
+					<button
+						onclick={() => {
+							currentComponentSnippet = productBody;
+						}}
+					>
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.Body}
+							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
+						{:else}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.Body[
+											`${clientState.Decisions.Products[newProductID].Product.Components.Body}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; max-height: 1.5rem;"
+								alt=""
+							/>
+						{/if}
+					</button>
+					<button
+						onclick={() => {
+							currentComponentSnippet = productCoffeeMechanism;
+						}}
+					>
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.Mechanism}
+							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
+						{:else}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.Mechanism[
+											`${clientState.Decisions.Products[newProductID].Product.Components.Mechanism}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; max-height: 1.5rem;"
+								alt=""
+							/>
+						{/if}
+					</button>
 
 					{#if currentComponentSnippet == null}
 						<div
@@ -270,18 +304,91 @@
 							tabindex="-1"
 							use:focusElement
 							style="grid-column: 1 /span 4; grid-row: 2  /span 5; height: 100%;"
-							onfocus={() => {
-								console.log('aasd');
-							}}
 						>
 							{@render currentComponentSnippet()}
 						</div>
 					{/if}
 
-					<div>+</div>
-					<div>+</div>
-					<div>+</div>
-					<div>+</div>
+					<button
+						onclick={() => {
+							currentComponentSnippet = productMisc0;
+						}}
+					>
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.Misc[0]}
+							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
+						{:else}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.Misc[
+											`${clientState.Decisions.Products[newProductID].Product.Components.Misc[0]}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; max-height: 1.5rem;"
+								alt=""
+							/>
+						{/if}
+					</button>
+					<button
+						onclick={() => {
+							currentComponentSnippet = productMisc1;
+						}}
+					>
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.Misc[1]}
+							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
+						{:else}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.Misc[
+											`${clientState.Decisions.Products[newProductID].Product.Components.Misc[1]}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; max-height: 1.5rem;"
+								alt=""
+							/>
+						{/if}
+					</button>
+					<button
+						onclick={() => {
+							currentComponentSnippet = productMisc2;
+						}}
+					>
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.Misc[2]}
+							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
+						{:else}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.Misc[
+											`${clientState.Decisions.Products[newProductID].Product.Components.Misc[2]}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; max-height: 1.5rem;"
+								alt=""
+							/>
+						{/if}
+					</button>
+					<button
+						onclick={() => {
+							currentComponentSnippet = productMisc3;
+						}}
+					>
+						{#if !clientState.Decisions.Products[newProductID].Product.Components.Misc[3]}
+							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
+						{:else}
+							<img
+								src={images[
+									'/src/lib/images/' +
+										clientState.productComponents.Misc[
+											`${clientState.Decisions.Products[newProductID].Product.Components.Misc[3]}`
+										]?.Image
+								]}
+								style="mix-blend-mode: lighten; max-height: 1.5rem;"
+								alt=""
+							/>
+						{/if}
+					</button>
 				</div>
 				<!--
 				<label for="maxProduction"
@@ -533,6 +640,110 @@
 			</button>
 		{/each}
 	</div>
+{/snippet}
+
+{#snippet productFrame()}
+	<div class="productComponentSelector">
+		{#each Object.entries(clientState.productComponents.Frame) as c}
+			<button
+				onclick={() => {
+					clientState.Company.Offers[newProductID].Product.Components.Frame = c[0];
+					clientState.Decisions.Products[newProductID].Product.Components.Frame = c[0];
+					onProductChange();
+					currentComponentSnippet = null;
+				}}
+			>
+				<img
+					style="mix-blend-mode: lighten;"
+					src={images['/src/lib/images/' + c[1].Image]}
+					alt=""
+				/>
+				{c[1].Name}
+			</button>
+		{/each}
+	</div>
+{/snippet}
+
+{#snippet productBody()}
+	<div class="productComponentSelector">
+		{#each Object.entries(clientState.productComponents.Body) as c}
+			<button
+				onclick={() => {
+					clientState.Company.Offers[newProductID].Product.Components.Body = c[0];
+					clientState.Decisions.Products[newProductID].Product.Components.Body = c[0];
+					onProductChange();
+					currentComponentSnippet = null;
+				}}
+			>
+				<img
+					style="mix-blend-mode: lighten;"
+					src={images['/src/lib/images/' + c[1].Image]}
+					alt=""
+				/>
+				{c[1].Name}
+			</button>
+		{/each}
+	</div>
+{/snippet}
+
+{#snippet productCoffeeMechanism()}
+	<div class="productComponentSelector">
+		{#each Object.entries(clientState.productComponents.Mechanism) as c}
+			<button
+				onclick={() => {
+					clientState.Company.Offers[newProductID].Product.Components.Mechanism = c[0];
+					clientState.Decisions.Products[newProductID].Product.Components.Mechanism = c[0];
+					onProductChange();
+					currentComponentSnippet = null;
+				}}
+			>
+				<img
+					style="mix-blend-mode: lighten;"
+					src={images['/src/lib/images/' + c[1].Image]}
+					alt=""
+				/>
+				{c[1].Name}
+			</button>
+		{/each}
+	</div>
+{/snippet}
+
+{#snippet productMisc(/** @type {number} }*/ miscSlot)}
+	<div class="productComponentSelector">
+		{#each Object.entries(clientState.productComponents.Misc) as c}
+			<button
+				onclick={() => {
+					clientState.Company.Offers[newProductID].Product.Components.Misc[miscSlot] = c[0];
+					clientState.Decisions.Products[newProductID].Product.Components.Misc[miscSlot] = c[0];
+					onProductChange();
+					currentComponentSnippet = null;
+				}}
+			>
+				<img
+					style="mix-blend-mode: lighten;"
+					src={images['/src/lib/images/' + c[1].Image]}
+					alt=""
+				/>
+				{c[1].Name}
+			</button>
+		{/each}
+	</div>
+{/snippet}
+
+{#snippet productMisc0()}
+	{@render productMisc(0)}
+{/snippet}
+
+{#snippet productMisc1()}
+	{@render productMisc(1)}
+{/snippet}
+
+{#snippet productMisc2()}
+	{@render productMisc(2)}
+{/snippet}
+
+{#snippet productMisc3()}
+	{@render productMisc(3)}
 {/snippet}
 
 <style>
