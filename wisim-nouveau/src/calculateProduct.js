@@ -54,7 +54,10 @@ export function calculateProductStats(product, productComponents) {
 	productStats.ProductionCost += 5 * product.ExtraDurability;
 
 	productStats.Quality += product.ExtraQuality;
-	productStats.ProductionCost += 5 * product.ExtraDurability;
+	productStats.ProductionCost += 5 * product.ExtraQuality;
+
+	productStats.Quality += product.MaterialQuality;
+	productStats.MaterialUse += 5 * product.MaterialQuality;
 
 	productStats.Durability = Math.round(productStats.Durability);
 	console.log(productStats);

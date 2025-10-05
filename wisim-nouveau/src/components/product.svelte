@@ -70,6 +70,23 @@
 
 	/** @type {Object.<string, number>} */
 	let productionLineCosts = $state({});
+
+	/** @type {import("$lib/javascript/simulation").Product} */
+	let currentProductHover = $state(JSON.parse(JSON.stringify(baseProduct)));
+	/** @type {import("$lib/javascript/simulation").ProductStats} */
+	let currentProductStatsHoverStats = $derived(
+		(() => {
+			return calculateProductStats(currentProductHover, clientState.productComponents).productStats;
+		})()
+	);
+	/** @type {number} */
+	let currentProductProductionLineCostsHover = $derived(
+		(() => {
+			return calculateProductStats(currentProductHover, clientState.productComponents)
+				.productionLineCost;
+		})()
+	);
+
 	/** @type {import("svelte").Snippet? } */
 	let currentComponentSnippet = $state(null);
 
@@ -90,13 +107,27 @@
 
 	function onProductChange() {
 		updateDecisions(clientState.Decisions);
+
+		currentProductHover = JSON.parse(
+			JSON.stringify(clientState.Decisions.Products[newProductID].Product)
+		);
+		clientState.Company.Offers[newProductID].Product = JSON.parse(
+			JSON.stringify(clientState.Decisions.Products[newProductID].Product)
+		);
+
 		let { productStats, productionLineCost } = calculateProductStats(
-			clientState.Company.Offers[newProductID].Product,
+			clientState.Decisions.Products[newProductID].Product,
 			$state.snapshot(clientState.productComponents)
 		);
 
 		clientState.Company.Offers[newProductID].productStats = productStats;
 		productionLineCosts[newProductID] = productionLineCost;
+	}
+
+	function resetHoverProduct() {
+		currentProductHover = JSON.parse(
+			JSON.stringify(clientState.Decisions.Products[newProductID].Product)
+		);
 	}
 </script>
 
@@ -438,63 +469,101 @@
 						<tr>
 							<td>Production Cost:</td>
 							<td
-								>{format.number(
+								>{format.number(currentProductStatsHoverStats.ProductionCost, false, 1)}
+								{@render showHoverDifference(
 									clientState.Company.Offers[newProductID].productStats.ProductionCost,
-									false,
-									1
-								)}</td
-							>
+									currentProductStatsHoverStats.ProductionCost,
+									(value) => {
+										return format.number(value, true, 1);
+									},
+									true
+								)}
+							</td>
 							<td>Quality: </td>
 							<td
-								>{format.number(
+								>{format.number(currentProductStatsHoverStats.Quality, false, 1)}
+								{@render showHoverDifference(
 									clientState.Company.Offers[newProductID].productStats.Quality,
-									false,
-									1
-								)}</td
-							>
+									currentProductStatsHoverStats.Quality,
+									(value) => {
+										return format.number(value, true, 1);
+									},
+									false
+								)}
+							</td>
 						</tr>
 						<tr>
 							<td>Material use:</td>
 							<td
-								>{format.number(
+								>{format.number(currentProductStatsHoverStats.MaterialUse, false, 1)}
+								{@render showHoverDifference(
 									clientState.Company.Offers[newProductID].productStats.MaterialUse,
-									false,
-									1
-								)}</td
-							>
+									currentProductStatsHoverStats.MaterialUse,
+									(value) => {
+										return format.number(value, true, 1);
+									},
+									false
+								)}
+							</td>
 							<td>Ecology: </td>
 							<td
-								>{format.number(
+								>{format.number(currentProductStatsHoverStats.Ecology, false, 1)}
+								{@render showHoverDifference(
 									clientState.Company.Offers[newProductID].productStats.Ecology,
-									false,
-									1
-								)}</td
-							>
+									currentProductStatsHoverStats.Ecology,
+									(value) => {
+										return format.number(value, true, 1);
+									},
+									false
+								)}
+							</td>
 						</tr>
 						<tr>
 							<td>Material cost:</td>
 							<td
 								>{format.number(
+									currentProductStatsHoverStats.MaterialUse * externalFactors.MaterialPrice,
+									false,
+									1
+								)}
+								{@render showHoverDifference(
 									clientState.Company.Offers[newProductID].productStats.MaterialUse *
 										externalFactors.MaterialPrice,
-									false,
-									1
-								)}</td
-							>
+									currentProductStatsHoverStats.MaterialUse * externalFactors.MaterialPrice,
+									(value) => {
+										return format.number(value, true, 1);
+									},
+									false
+								)}
+							</td>
 							<td>Ethics: </td>
 							<td
-								>{format.number(
+								>{format.number(currentProductStatsHoverStats.Ethics, false, 1)}
+								{@render showHoverDifference(
 									clientState.Company.Offers[newProductID].productStats.Ethics,
-									false,
-									1
-								)}</td
-							>
+									currentProductStatsHoverStats.Ethics,
+									(value) => {
+										return format.number(value, true, 1);
+									},
+									false
+								)}
+							</td>
 						</tr>
 						<tr>
 							<td></td>
 							<td></td>
 							<td>Durability: </td>
-							<td>{clientState.Company.Offers[newProductID].productStats.Durability}</td>
+							<td
+								>{currentProductStatsHoverStats.Durability}
+								{@render showHoverDifference(
+									clientState.Company.Offers[newProductID].productStats.Durability,
+									currentProductStatsHoverStats.Durability,
+									(value) => {
+										return format.number(value, true, 1);
+									},
+									false
+								)}
+							</td>
 						</tr>
 						<tr>
 							<td></td>
@@ -628,6 +697,10 @@
 					clientState.Decisions.Products[newProductID].Product.Components.FormFactor = c[0];
 					currentComponentSnippet = null;
 				}}
+				onmouseover={() => {
+					currentProductHover.Components.FormFactor = c[0];
+				}}
+				onmouseout={resetHoverProduct}
 			>
 				<img
 					style="mix-blend-mode: lighten;"
@@ -645,11 +718,14 @@
 		{#each Object.entries(clientState.productComponents.Frame) as c}
 			<button
 				onclick={() => {
-					clientState.Company.Offers[newProductID].Product.Components.Frame = c[0];
 					clientState.Decisions.Products[newProductID].Product.Components.Frame = c[0];
 					onProductChange();
 					currentComponentSnippet = null;
 				}}
+				onmouseover={() => {
+					currentProductHover.Components.Frame = c[0];
+				}}
+				onmouseout={resetHoverProduct}
 			>
 				<img
 					style="mix-blend-mode: lighten;"
@@ -672,6 +748,10 @@
 					onProductChange();
 					currentComponentSnippet = null;
 				}}
+				onmouseover={() => {
+					currentProductHover.Components.Body = c[0];
+				}}
+				onmouseout={resetHoverProduct}
 			>
 				<img
 					style="mix-blend-mode: lighten;"
@@ -694,6 +774,10 @@
 					onProductChange();
 					currentComponentSnippet = null;
 				}}
+				onmouseover={() => {
+					currentProductHover.Components.Mechanism = c[0];
+				}}
+				onmouseout={resetHoverProduct}
 			>
 				<img
 					style="mix-blend-mode: lighten;"
@@ -716,6 +800,10 @@
 					onProductChange();
 					currentComponentSnippet = null;
 				}}
+				onmouseover={() => {
+					currentProductHover.Components.Misc[miscSlot] = c[0];
+				}}
+				onmouseout={resetHoverProduct}
 			>
 				<img
 					style="mix-blend-mode: lighten;"
@@ -744,7 +832,33 @@
 	{@render productMisc(3)}
 {/snippet}
 
+{#snippet showHoverDifference(
+	/** @type {number}*/ mainValue,
+	/** @type {number}*/ hoverValue,
+	/** @type {(value: number)=>string}*/ format,
+	/** @type {boolean?}*/ invert
+)}
+	{#if mainValue != hoverValue}
+		<span
+			class={invert
+				? hoverValue < mainValue
+					? 'green'
+					: 'red'
+				: hoverValue < mainValue
+					? 'red'
+					: 'green'}>{format(hoverValue - mainValue)}</span
+		>
+	{/if}
+{/snippet}
+
 <style>
+	span.red {
+		color: red;
+	}
+	span.green {
+		color: green;
+	}
+
 	.main-product-div {
 		display: grid;
 		grid-template-columns: 1fr 1fr;
