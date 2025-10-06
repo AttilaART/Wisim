@@ -1,8 +1,10 @@
 <script>
 	import { format } from '$lib/javascript/format';
 	import { calculateProductStats } from '../calculateProduct';
+	import storageIcon from '$lib/images/warehouse.svg';
 	import Increment from './increment.svelte';
 	import Window from './window.svelte';
+	import ProductionIcon from '$lib/images/production.svg';
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
@@ -97,8 +99,8 @@
 
 	function generateProductID() {
 		let id = 0;
-		console.log(clientState.Company.Offers);
-		console.log(id);
+		// console.log(clientState.Company.Offers);
+		// console.log(id);
 		while (clientState.Company.Offers[id] ? true : false) {
 			id = Math.trunc(Math.random() * 10000000000);
 		}
@@ -161,7 +163,7 @@
 			clientState.Decisions.Products[newProductID] = JSON.parse(
 				JSON.stringify(baseProductDecisions)
 			);
-			console.log(clientState.Decisions);
+			//console.log(clientState.Decisions);
 
 			newProductWindowID = newWindow(newProduct);
 		}}
@@ -197,11 +199,11 @@
 						</tr>
 					</tbody>
 				</table>
-				<small
-					>In storage: {clientState.Company.ProductsInStorage[offer[0]]
-						? format.number(clientState.Company.ProductsInStorage[offer[0]], false, 0)
-						: '0'}</small
-				> <br />
+				{clientState.Company.ProductsInStorage[offer[0]]
+					? format.number(clientState.Company.ProductsInStorage[offer[0]], false, 0)
+					: '0'}
+				<img class="inlineIcon" style="height: 1rem;" src={storageIcon} alt="" />
+				<br />
 				<small>Sold for</small>
 				<h4><input type="number" bind:value={offer[1].Price} /></h4>
 				<button
@@ -601,7 +603,8 @@
 				/>
 				<div id="spacer" style="flex: 1 1 0;"></div>
 				<div>
-					Production cost 🔧 {clientState.Company.Offers[newProductID].productStats.ProductionCost}
+					Production cost <img class="inlineIcon" src={ProductionIcon} alt="production" />
+					{clientState.Company.Offers[newProductID].productStats.ProductionCost}
 				</div>
 				<input
 					type="submit"
@@ -852,6 +855,10 @@
 {/snippet}
 
 <style>
+	img.inlineIcon {
+		height: 1.5rem;
+	}
+
 	span.red {
 		color: red;
 	}

@@ -21,8 +21,9 @@
 				onclick();
 			}
 		}}
+		aria-label="-"
+		class="minus"
 	>
-		-
 	</button>
 	<span style="position: relative; min-width: 2rem; vertical-align: middle;">
 		<div
@@ -43,8 +44,9 @@
 				onclick();
 			}
 		}}
+		aria-label="-"
+		class="plus"
 	>
-		+
 	</button>
 </div>
 
@@ -53,7 +55,24 @@
 		border-radius: 50px;
 		aspect-ratio: 1 / 1;
 		padding: 0;
-		height: 2rem;
+		height: 1.5rem;
 		font-weight: bold;
+		background-color: transparent;
+		background-position: center;
+		background-size: 100% 100%;
+		border: none;
+	}
+	.minus {
+		background-image: url('$lib/images/minusIcon.svg');
+		&:active {
+			background-image: url('$lib/images/minusIconDepressed.svg');
+		}
+	}
+
+	.plus {
+		background-image: url('$lib/images/plusIcon.svg');
+		&:active {
+			background-image: url('$lib/images/plusIconDepressed.svg');
+		}
 	}
 </style>
