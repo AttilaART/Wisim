@@ -56,11 +56,15 @@
 		aspect-ratio: 1 / 1;
 		padding: 0;
 		height: 1.5rem;
-		font-weight: bold;
 		background-color: transparent;
 		background-position: center;
 		background-size: 100% 100%;
 		border: none;
+
+		&:active {
+			border: none !important;
+			outline: none !important;
+		}
 	}
 	.minus {
 		background-image: url('$lib/images/minusIcon.svg');

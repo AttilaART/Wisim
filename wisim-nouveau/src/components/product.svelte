@@ -5,6 +5,7 @@
 	import Increment from './increment.svelte';
 	import Window from './window.svelte';
 	import ProductionIcon from '$lib/images/production.svg';
+	import MarketingIcon from '$lib/images/marketing.svg';
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
@@ -131,6 +132,15 @@
 			JSON.stringify(clientState.Decisions.Products[newProductID].Product)
 		);
 	}
+
+	$effect(() => {
+		console.log();
+		if (clientState.Company.Offers[newProductID]) {
+			clientState.Decisions.Products[newProductID].Product =
+				clientState.Company.Offers[newProductID].Product;
+		}
+		updateDecisions(clientState.Decisions);
+	});
 </script>
 
 <div class="productsGrid">
@@ -140,13 +150,8 @@
 			newProductID = generateProductID();
 			clientState.Company.Offers[newProductID] = {
 				Product: JSON.parse(JSON.stringify(baseProduct)),
-				productStats: (() => {
-					/** @type {{productStats: import("$lib/javascript/simulation").ProductStats, productionLineCost: number}}*/ let {
-						productStats,
-						productionLineCost
-					} = calculateProductStats(baseProduct, clientState.productComponents);
-					return productStats;
-				})(),
+				productStats: calculateProductStats(baseProduct, clientState.productComponents)
+					.productStats,
 
 				Price: 150,
 				Promotion: {
@@ -168,49 +173,57 @@
 			newProductWindowID = newWindow(newProduct);
 		}}
 	>
-		<center>
-			<h1 style="margin: 0px;">+</h1>
-		</center>
-		New Product
+		<div style="line-height: 3.5rem;">
+			<span style="font-size: 3rem; font-weight: bolder; vertical-align: middle;">+</span>
+			<span style="margin: 0px; vertical-align: middle;"> New Product </span>
+		</div>
 	</button>
 	{#if offers}
 		{#each Object.entries(offers) as offer}
-			<article>
-				<h3><input type="text" bind:value={offer[1].Product.Name} /></h3>
-				<table>
-					<tbody>
-						<tr>
-							<td>Quality: {format.number(offer[1].productStats.Quality, false, 2)}</td>
-							<td
-								>Production Cost: {format.number(
-									offer[1].productStats.ProductionCost,
-									false,
-									2
-								)}</td
-							>
-						</tr>
-						<tr>
-							<td>Durability: {format.number(offer[1].productStats.Durability, false, 2)}</td>
-							<td>Materials Use: {format.number(offer[1].productStats.MaterialUse, false, 2)}</td>
-						</tr>
-						<tr>
-							<td>Ecology: {format.number(offer[1].productStats.Ecology, false, 2)}</td>
-							<td>Ethics: {format.number(offer[1].productStats.Ethics, false, 2)}</td>
-						</tr>
-					</tbody>
-				</table>
-				{clientState.Company.ProductsInStorage[offer[0]]
-					? format.number(clientState.Company.ProductsInStorage[offer[0]], false, 0)
-					: '0'}
-				<img class="inlineIcon" style="height: 1rem;" src={storageIcon} alt="" />
-				<br />
-				<small>Sold for</small>
-				<h4><input type="number" bind:value={offer[1].Price} /></h4>
-				<button
-					onclick={() => {
-						productConfugureWindows[newWindow(configurePromotion)] = offer[0];
-					}}>Configure Promotion</button
-				>
+			<article
+				style="position: relative; display: grid; grid-template-columns: 70% 30%; grid-template-rows: auto auto auto; gap: 0.5rem;"
+			>
+				<img
+					src={images[
+						'/src/lib/images/' +
+							clientState.productComponents.FormFactor[`${offer[1].Product.Components.FormFactor}`]
+								.Image
+					]}
+					alt=""
+					style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 6rem;"
+				/>
+				<div>
+					<button
+						class="inlineIcon marketingIcon"
+						onclick={() => {
+							productConfugureWindows[newWindow(configurePromotion)] = offer[0];
+						}}
+						aria-label="Marketing"
+					></button>
+					<h4 style="display: inline;">
+						{offer[1].Product.Name}
+					</h4>
+				</div>
+				<div>
+					<h4>{format.currency(offer[1].Price, false, 0)}</h4>
+					<div>
+						{clientState.Company.ProductsInStorage[offer[0]]
+							? format.number(clientState.Company.ProductsInStorage[offer[0]], false, 0)
+							: '0'}
+						<img
+							class="inlineIcon"
+							style="height: 1.2rem; translate: 0 -0.1rem ;"
+							src={storageIcon}
+							alt=""
+						/>
+						<small>+50</small>
+					</div>
+				</div>
+				<label for="outdated{offer[1].Product.ID}">
+					<input id="outdated{offer[1].Product.ID}" type="checkbox" />
+					Mark as outdated
+				</label>
+				<button style="padding: 0.5rem;">Make a copy</button>
 			</article>
 		{/each}
 	{/if}
@@ -229,8 +242,9 @@
 					<h2>
 						<input
 							id="name"
-							bind:value={clientState.Decisions.Products[newProductID].Name}
+							bind:value={clientState.Company.Offers[newProductID].Product.Name}
 							type="text"
+							autocomplete="off"
 						/>
 					</h2>
 				</div>
@@ -241,14 +255,14 @@
 							currentComponentSnippet = productFormFactor;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.FormFactor}
+						{#if !clientState.Company.Offers[newProductID].Product.Components.FormFactor}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
 								src={images[
 									'/src/lib/images/' +
 										clientState.productComponents.FormFactor[
-											`${clientState.Decisions.Products[newProductID].Product.Components.FormFactor}`
+											`${clientState.Company.Offers[newProductID].Product.Components.FormFactor}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
@@ -262,7 +276,7 @@
 							currentComponentSnippet = productFrame;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.Frame}
+						{#if !clientState.Company.Offers[newProductID].Product.Components.Frame}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
@@ -283,14 +297,14 @@
 							currentComponentSnippet = productBody;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.Body}
+						{#if !clientState.Company.Offers[newProductID].Product.Components.Body}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
 								src={images[
 									'/src/lib/images/' +
 										clientState.productComponents.Body[
-											`${clientState.Decisions.Products[newProductID].Product.Components.Body}`
+											`${clientState.Company.Offers[newProductID].Product.Components.Body}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
@@ -304,14 +318,14 @@
 							currentComponentSnippet = productCoffeeMechanism;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.Mechanism}
+						{#if !clientState.Company.Offers[newProductID].Product.Components.Mechanism}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
 								src={images[
 									'/src/lib/images/' +
 										clientState.productComponents.Mechanism[
-											`${clientState.Decisions.Products[newProductID].Product.Components.Mechanism}`
+											`${clientState.Company.Offers[newProductID].Product.Components.Mechanism}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
@@ -330,7 +344,7 @@
 								src={images[
 									'/src/lib/images/' +
 										clientState.productComponents.FormFactor[
-											`${clientState.Decisions.Products[newProductID].Product.Components.FormFactor}`
+											`${clientState.Company.Offers[newProductID].Product.Components.FormFactor}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; width: 100%; height: 10em; object-fit: contain; position: relative; left: 50%; top: 50%; translate: -50% -50%;"
@@ -347,14 +361,14 @@
 							currentComponentSnippet = productMisc0;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.Misc[0]}
+						{#if !clientState.Company.Offers[newProductID].Product.Components.Misc[0]}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
 								src={images[
 									'/src/lib/images/' +
 										clientState.productComponents.Misc[
-											`${clientState.Decisions.Products[newProductID].Product.Components.Misc[0]}`
+											`${clientState.Company.Offers[newProductID].Product.Components.Misc[0]}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
@@ -368,14 +382,14 @@
 							currentComponentSnippet = productMisc1;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.Misc[1]}
+						{#if !clientState.Company.Offers[newProductID].Product.Components.Misc[1]}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
 								src={images[
 									'/src/lib/images/' +
 										clientState.productComponents.Misc[
-											`${clientState.Decisions.Products[newProductID].Product.Components.Misc[1]}`
+											`${clientState.Company.Offers[newProductID].Product.Components.Misc[1]}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
@@ -389,14 +403,14 @@
 							currentComponentSnippet = productMisc2;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.Misc[2]}
+						{#if !clientState.Company.Offers[newProductID].Product.Components.Misc[2]}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
 								src={images[
 									'/src/lib/images/' +
 										clientState.productComponents.Misc[
-											`${clientState.Decisions.Products[newProductID].Product.Components.Misc[2]}`
+											`${clientState.Company.Offers[newProductID].Product.Components.Misc[2]}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
@@ -410,14 +424,14 @@
 							currentComponentSnippet = productMisc3;
 						}}
 					>
-						{#if !clientState.Decisions.Products[newProductID].Product.Components.Misc[3]}
+						{#if !clientState.Company.Offers[newProductID].Product.Components.Misc[3]}
 							<span style="font-weight: bold; font-size: 1.5rem;">+</span>
 						{:else}
 							<img
 								src={images[
 									'/src/lib/images/' +
 										clientState.productComponents.Misc[
-											`${clientState.Decisions.Products[newProductID].Product.Components.Misc[3]}`
+											`${clientState.Company.Offers[newProductID].Product.Components.Misc[3]}`
 										]?.Image
 								]}
 								style="mix-blend-mode: lighten; max-height: 1.5rem;"
@@ -431,12 +445,12 @@
 					>Product goal
 					<input
 						id="maxProduction"
-						bind:value={clientState.Decisions.Products[newProductID].ProductionGoal}
+						bind:value={clientState.Company.Offers[newProductID].ProductionGoal}
 						type="number"
 					/>
 				</label>-->
 				<!--<Increment
-					bind:value={clientState.Decisions.Products[newProductID].Product.MaterialQuality}
+					bind:value={clientState.Company.Offers[newProductID].Product.MaterialQuality}
 					label="Material Quality"
 					min={0}
 					max={99}
@@ -444,7 +458,7 @@
 				/>-->
 
 				<Increment
-					bind:value={clientState.Decisions.Products[newProductID].Product.ExtraDurability}
+					bind:value={clientState.Company.Offers[newProductID].Product.ExtraDurability}
 					label="Durability"
 					min={0}
 					max={99}
@@ -452,7 +466,7 @@
 				/>
 
 				<Increment
-					bind:value={clientState.Decisions.Products[newProductID].Product.ExtraQuality}
+					bind:value={clientState.Company.Offers[newProductID].Product.ExtraQuality}
 					label="Quality"
 					min={0}
 					max={99}
@@ -609,7 +623,6 @@
 				<input
 					type="submit"
 					onclick={() => {
-						updateDecisions(clientState.Decisions);
 						deleteWindow(newProductWindowID);
 					}}
 					value="Confirm"
@@ -914,5 +927,26 @@
 		display: flex;
 		flex-direction: column;
 		gap: var(--pico-spacing);
+
+		& > button,
+		& > article {
+			height: 10rem;
+		}
+	}
+
+	.marketingIcon {
+		height: 1.5rem;
+		translate: 0 -0.5rem;
+		background-color: transparent;
+		background-image: url($lib/images/marketing.svg);
+		background-color: transparent;
+		background-position: center;
+		background-size: 100% 100%;
+		border: none;
+
+		&:active {
+			border: none !important;
+			outline: none !important;
+		}
 	}
 </style>

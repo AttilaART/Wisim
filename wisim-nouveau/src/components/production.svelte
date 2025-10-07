@@ -12,7 +12,7 @@
 
 	/** @param {import("$lib/javascript/simulation").Machine} machine */
 	function newMachine(machine) {
-		console.log(clientState);
+		// console.log(clientState);
 		machine = JSON.parse(JSON.stringify(machine));
 		machine.ID = clientState.Company.Machines.length;
 		clientState.Company.Machines.push(machine);

@@ -28,14 +28,14 @@ export function calculateProductStats(product, productComponents) {
 	parts.push(productComponents.Body[`${product.Components.Body}`]);
 	parts.push(productComponents.Mechanism[`${product.Components.Mechanism}`]);
 
-	console.log(product.Components.Mechanism);
-	console.log(productComponents.Mechanism[`${product.Components.Mechanism}`]);
+	// console.log(product.Components.Mechanism);
+	// console.log(productComponents.Mechanism[`${product.Components.Mechanism}`]);
 
 	for (let component of product.Components.Misc) {
 		parts.push(productComponents.Misc[`${component}`]);
 	}
 
-	console.log(parts);
+	// console.log(parts);
 	for (let part of parts) {
 		if (part === undefined) {
 			continue;
@@ -60,7 +60,7 @@ export function calculateProductStats(product, productComponents) {
 	productStats.MaterialUse += 5 * product.MaterialQuality;
 
 	productStats.Durability = Math.round(productStats.Durability);
-	console.log(productStats);
+	// console.log(productStats);
 
 	return { productStats, productionLineCost };
 }

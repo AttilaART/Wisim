@@ -1,0 +1,66 @@
+<svg width="100" height="100" version="1.1" viewBox="0 0 26.458 26.458" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+  <defs>
+    <radialGradient id="radialGradient3" cx="13.229" cy="13.229" r="13.229" gradientTransform="matrix(1 0 0 .93575 26.458 .85)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#77ab77" offset="0"/>
+      <stop stop-color="#385a38" offset="1"/>
+    </radialGradient>
+    <linearGradient id="linearGradient70" x1="26.458" x2="52.917" y1="26.458" y2="3.5763e-7" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#1f311f" offset="0"/>
+      <stop stop-color="#345234" offset="1"/>
+    </linearGradient>
+    <linearGradient id="linearGradient71" x1="27.308" x2="52.067" y1="25.608" y2=".85" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#3f3f3f" offset="0"/>
+      <stop stop-color="#a6c9a6" offset="1"/>
+    </linearGradient>
+    <linearGradient id="linearGradient13" x1="63.811" x2="63.811" y1="25.787" y2="36.828" gradientTransform="translate(.23291 -.50832)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ac8b40" offset=".17585"/>
+      <stop stop-color="#d2b98d" offset=".50476"/>
+      <stop stop-color="#9f792b" offset=".84161"/>
+    </linearGradient>
+    <linearGradient id="linearGradient15" x1="36.572" x2="39.498" y1="16.542" y2="16.542" gradientTransform="translate(.27006 -.50832)" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#dbd099" offset="0"/>
+      <stop stop-color="#dcc8a5" offset=".11718"/>
+      <stop stop-color="#b99c5d" offset=".38615"/>
+      <stop stop-color="#ac8b40" offset=".98003"/>
+    </linearGradient>
+    <linearGradient id="linearGradient18" x1="48.131" x2="48.131" y1="9.4764" y2="13.257" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#304c30" offset="0"/>
+      <stop stop-color="#2d532d" offset="1"/>
+    </linearGradient>
+    <filter id="filter33" x="-.24326" y="-.37905" width="1.4865" height="1.7581" color-interpolation-filters="sRGB">
+      <feFlood flood-color="rgb(0,0,0)" flood-opacity=".62745" in="SourceGraphic" result="flood"/>
+      <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="1.700000"/>
+      <feOffset dx="0.000000" dy="0.000000" in="blur" result="offset"/>
+      <feComposite in="flood" in2="offset" operator="in" result="comp1"/>
+      <feComposite in="SourceGraphic" in2="comp1" result="comp2"/>
+    </filter>
+    <filter id="filter102" x="-1.0858" y="-.31397" width="3.172" height="1.6279" color-interpolation-filters="sRGB">
+      <feFlood flood-color="rgb(32,97,36)" in="SourceGraphic" result="flood"/>
+      <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="0.600000"/>
+      <feOffset dx="0.000000" dy="0.000000" in="blur" result="offset"/>
+      <feComposite in="flood" in2="offset" operator="in" result="comp1"/>
+      <feComposite in="SourceGraphic" in2="comp1" result="comp2"/>
+    </filter>
+    <filter id="filter104" x="-.58134" y="-.20309" width="2.1631" height="1.4062" color-interpolation-filters="sRGB">
+      <feFlood flood-color="rgb(32,97,36)" in="SourceGraphic" result="flood"/>
+      <feGaussianBlur in="SourceGraphic" result="blur" stdDeviation="0.600000"/>
+      <feOffset dx="0.000000" dy="0.000000" in="blur" result="offset"/>
+      <feComposite in="flood" in2="offset" operator="in" result="comp1"/>
+      <feComposite in="SourceGraphic" in2="comp1" result="comp2"/>
+    </filter>
+  </defs>
+  <g transform="translate(-26.458)">
+    <circle cx="39.688" cy="13.229" r="12.379" fill="url(#radialGradient3)" stroke="url(#linearGradient70)" stroke-linejoin="round" stroke-width="1.7"/>
+    <path d="m38.15 1.4805c-3.0299 0.42101-5.8715 2.0143-7.7636 4.4248-2.2505 2.8397-3.075 6.7249-2.1752 10.236 0.88408 3.5162 3.4629 6.5416 6.7999 7.9645 3.2992 1.4264 7.2355 1.2439 10.379-0.50639 3.5873-1.9405 6.0101-5.8466 6.1174-9.929 0.12345-2.283-0.47822-4.5278-1.6146-6.4562-2.1555-3.7759-6.686-6.2233-11.104-5.7755-0.21302 0.014075-0.42604 0.02815-0.63907 0.042226z" fill="url(#linearGradient71)" style="mix-blend-mode:overlay"/>
+    <g transform="translate(-.13971 .021576)">
+      <g transform="matrix(1.006 -.26957 .26957 1.006 -5.1453 11.786)" filter="url(#filter33)" stroke-width=".96013">
+        <path d="m36.572 14.982v3.1213h2.9264v-2.9027z" fill="url(#linearGradient15)"/>
+        <path transform="matrix(1.1595 0 0 1 -34.032 -18.725)" d="m70.379 26.111-4.261 2.0769a3.9823 3.9823 164.53 0 1-1.4008 0.3877l-7.4022 0.64183a0.80601 0.80601 132.52 0 0-0.73639 0.803v2.5744a0.80584 0.80584 47.472 0 0 0.7364 0.80284l7.4022 0.6402a3.9767 3.9767 15.472 0 1 1.4007 0.38773l4.2612 2.0785a0.46186 0.46186 148 0 0 0.66433-0.41511v-9.5627a0.462 0.462 32.007 0 0-0.66442-0.4153z" fill="url(#linearGradient13)"/>
+      </g>
+      <g fill="none" stroke="url(#linearGradient18)" stroke-linecap="round" stroke-linejoin="round" stroke-width=".7">
+        <path d="m46.59 6.9595c2.8328 1.3136 3.9117 5.7634 2.3852 8.814" filter="url(#filter104)"/>
+        <path d="m48.467 14.217c0.3358-1.9896-0.11648-4.2164-1.543-5.7012" filter="url(#filter102)"/>
+      </g>
+    </g>
+  </g>
+</svg>
