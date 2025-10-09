@@ -8,8 +8,8 @@
 		<h1>Wisim</h1>
 		<div id="buttons">
 			<button disabled>Continue</button>
-			<button disabled>Multiplayer</button>
-			<a href="/singleplayer"><button>Singleplayer</button></a>
+			<a href="/multiplayer"><button>Multiplayer</button></a>
+			<a href="/game?localhost:8000"><button>Singleplayer</button></a>
 			<button class="secondary">Exit</button>
 		</div>
 	</article>

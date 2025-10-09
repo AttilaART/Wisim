@@ -17,6 +17,16 @@
 	import Invoices from '../../components/invoices.svelte';
 	import Production from '../../components/production.svelte';
 
+	/** @type {{data: {serverAdress: string}}}*/
+	let { data } = $props();
+
+	/** @param {HTMLElement} el */
+	const preventPageReload = (el) => {
+		el.addEventListener('submit', (/** @type {Event}*/ e) => {
+			e.preventDefault();
+		});
+	};
+
 	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
 	let windows = $state({});
 
@@ -55,7 +65,7 @@
 
 	/** @type {Promise<{connection: import("$lib/javascript/connection").Connection, clientState: import("$lib/javascript/simulation").clientState}>} */
 	let connectionPromise = $state(
-		newConnection('ws://localhost:8000', handleConnection, onClose, onError)
+		newConnection(`ws://${data.serverAdress}`, handleConnection, onClose, onError)
 	);
 	/** @type {import("$lib/javascript/connection").Connection} */
 	let connection = $state(null);
@@ -78,7 +88,12 @@
 	 */
 	async function onClose(event) {
 		console.log(`WebSocket Closed. Reconnecting \n ${event}`);
-		connectionPromise = newConnection('ws://localhost:8000', handleConnection, onClose, onError);
+		connectionPromise = newConnection(
+			`ws://${data.serverAdress}`,
+			handleConnection,
+			onClose,
+			onError
+		);
 
 		({ connection, clientState } = await connectionPromise);
 		connection.sCompany(companyID);
@@ -193,6 +208,7 @@
 				<p>Choose Your Company</p>
 			</header>
 			<form
+				use:preventPageReload
 				onsubmit={() => {
 					connection.sCompany(companyID);
 				}}
