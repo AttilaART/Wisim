@@ -15,13 +15,13 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] # Mulitplayer
 
 
 ## Done
 
 - [ ] # Multi Products
 - [ ] # Implement Marketing
+- [ ] # Mulitplayer
 
 
 ## Need Rework
