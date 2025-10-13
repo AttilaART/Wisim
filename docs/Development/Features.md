@@ -8,13 +8,13 @@ kanban-plugin: board
 
 - [ ] # Warehouse
 - [ ] # Complex research screen
-- [ ] # Production Screen
 - [ ] # Multi Machines on offer
 - [ ] Add Icons
 
 
 ## In Progress
 
+- [ ] # Production Screen
 
 
 ## Done

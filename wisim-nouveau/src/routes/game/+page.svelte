@@ -16,16 +16,10 @@
 	import FinancialReport from '../../components/financialReport.svelte';
 	import Invoices from '../../components/invoices.svelte';
 	import Production from '../../components/production.svelte';
+	import { preventPageReload } from '$lib/helper.svelte';
 
 	/** @type {{data: {serverAdress: string}}}*/
 	let { data } = $props();
-
-	/** @param {HTMLElement} el */
-	const preventPageReload = (el) => {
-		el.addEventListener('submit', (/** @type {Event}*/ e) => {
-			e.preventDefault();
-		});
-	};
 
 	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
 	let windows = $state({});
@@ -336,8 +330,6 @@
 			updateDecisions={(decisions) => {
 				connection.sDecisions(decisions);
 			}}
-			bind:offers={clientState.Company.Offers}
-			externalFactors={clientState.ExternalFactors}
 			{newWindow}
 			deleteWindow={(id) => {
 				deleteWindow(id);

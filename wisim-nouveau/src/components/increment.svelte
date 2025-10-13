@@ -5,7 +5,7 @@
 	 * @property {number} value
 	 * @property {number | undefined} min
 	 * @property {number | undefined} max
-	 * @property {()=>void | undefined} onclick
+	 * @property {()=>void?} onclick
 	 */
 	/** @type {props} */
 	let { label, value = $bindable(), min, max, onclick } = $props();

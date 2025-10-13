@@ -6,7 +6,7 @@
 <h2>Research</h2>
 <form
 	onchange={() => {
-		updateDecisions(clientState.decisions);
+		updateDecisions(clientState.Decisions);
 	}}
 >
 	<label for="">
@@ -14,28 +14,28 @@
 		<input
 			type="number"
 			step="10000"
-			bind:value={clientState.decisions.Research.Quality}
+			bind:value={clientState.Decisions.Research.Quality}
 			max="1000000000"
 		/>
 	</label>
 
 	<label for="">
 		Ecology Research
-		<input type="number" step="10000" bind:value={clientState.decisions.Research.Ecology} />
+		<input type="number" step="10000" bind:value={clientState.Decisions.Research.Ecology} />
 	</label>
 
 	<label for="">
 		Production Speed Research
-		<input type="number" step="10000" bind:value={clientState.decisions.Research.Production_cost} />
+		<input type="number" step="10000" bind:value={clientState.Decisions.Research.Production_cost} />
 	</label>
 
 	<label for="">
 		Durability Research
-		<input type="number" step="10000" bind:value={clientState.decisions.Research.Durability} />
+		<input type="number" step="10000" bind:value={clientState.Decisions.Research.Durability} />
 	</label>
 
 	<label for="">
 		Marketing Research
-		<input type="number" step="10000" bind:value={clientState.decisions.Research.Promotion} />
+		<input type="number" step="10000" bind:value={clientState.Decisions.Research.Promotion} />
 	</label>
 </form>
