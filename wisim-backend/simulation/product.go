@@ -7,7 +7,10 @@ import (
 
 func (c *Company) newProduct(productID string, companyID int, productName string, productDecisions Decisions_product) Offer {
 	productStats, productionLineCost := c.calculateProductStats(productDecisions.Product)
-	offer := Offer{Status: "current", Product: Product{ID: productID, CompanyID: companyID, Name: productName}, productStats: productStats}
+	offer := Offer{Status: "current", Product: productDecisions.Product, productStats: productStats}
+	offer.Product.ID = productID
+	offer.Product.CompanyID = companyID
+	offer.Product.Name = productName
 
 	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(fmt.Sprintf("Production line cost for product %s", productName), production, "The cost of setting up the production line for the product.", true, -productionLineCost)
 
@@ -26,8 +29,15 @@ func (c Company) calculateProductStats(
 	parts = append(parts, c.productComponents.Body[product.Components.Body])
 	parts = append(parts, c.productComponents.Mechanism[product.Components.Mechanism])
 
-	for _, component := range product.Components.Misc {
-		parts = append(parts, c.productComponents.Misc[component])
+	productStats.MiscSlots += c.productComponents.FormFactor[product.Components.FormFactor].MiscSlots
+	productStats.MiscSlots += c.productComponents.Frame[product.Components.Frame].MiscSlots
+	productStats.MiscSlots += c.productComponents.Body[product.Components.Body].MiscSlots
+	productStats.MiscSlots += c.productComponents.Mechanism[product.Components.Mechanism].MiscSlots
+
+	for i, component := range product.Components.Misc {
+		if i < productStats.MiscSlots {
+			parts = append(parts, c.productComponents.Misc[component])
+		}
 	}
 
 	for _, part := range parts {

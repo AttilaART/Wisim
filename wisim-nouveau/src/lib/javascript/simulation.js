@@ -158,6 +158,7 @@ export const delta = {
 
 /**
  * @typedef {Object} ProductStats
+  * @property {number} MiscSlots
   * @property {number} ProductionCost
   * @property {number} MaterialUse
 

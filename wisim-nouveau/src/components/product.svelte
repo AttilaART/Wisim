@@ -6,8 +6,9 @@
 	import Window from './window.svelte';
 	import ProductionIcon from '$lib/images/production.svg';
 	import MarketingIcon from '$lib/images/marketing.svg';
-	import { preventPageReload } from '$lib/helper.svelte';
+	import { ignoreError, preventPageReload } from '$lib/helper.svelte';
 	import ProductDesigner from './productDesigner.svelte';
+	import { createRawSnippet, mount, unmount } from 'svelte';
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
@@ -19,17 +20,15 @@
 	 * @type {Props}
 	 */
 	let { clientState = $bindable(), updateDecisions, newWindow, deleteWindow } = $props();
-
-	const images = import.meta.glob(['$lib/images/Products/Base_blueprint/*.svg'], {
-		eager: true,
-		as: 'url'
-	});
 </script>
 
-<div class="productsGrid">
+<div class="products-grid">
+	{#snippet newProductNoExistingProduct(/** @type {number}*/ windowID)}
+		{@render newProduct(windowID, null)}
+	{/snippet}
 	<button
 		onclick={() => {
-			newWindow(newProduct);
+			newWindow(newProductNoExistingProduct);
 		}}
 	>
 		<div style="line-height: 3.5rem;">
@@ -39,17 +38,20 @@
 	</button>
 	{#if clientState.Company.Offers}
 		{#each Object.entries(clientState.Company.Offers) as offer}
-			<article
-				style="position: relative; display: grid; grid-template-columns: 70% 30%; grid-template-rows: auto auto auto; gap: 0.5rem;"
-			>
+			<article>
 				<img
-					src={images[
-						'/src/lib/images/' +
-							clientState.productComponents.FormFactor[`${offer[1].Product.Components.FormFactor}`]
-								.Image
-					]}
+					src={'/src/lib/images/' +
+						ignoreError(() => {
+							return clientState.productComponents.FormFactor[
+								`${offer[1].Product.Components.FormFactor}`
+							]
+								? clientState.productComponents.FormFactor[
+										`${offer[1].Product.Components.FormFactor}`
+									].Image
+								: '';
+						})}
 					alt=""
-					style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, -50%); height: 6rem;"
+					style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 0.5rem)); height: 6rem; mix-blend-mode: lighten;"
 				/>
 				<div>
 					<button class="inlineIcon marketingIcon" aria-label="Marketing"></button>
@@ -57,7 +59,7 @@
 						{offer[1].Product.Name}
 					</h4>
 				</div>
-				<div>
+				<div style="text-align: right;">
 					<h4>{format.currency(offer[1].Price, false, 0)}</h4>
 					<div>
 						{clientState.Company.ProductsInStorage[offer[0]]
@@ -72,11 +74,26 @@
 						<small>+50</small>
 					</div>
 				</div>
-				<label for="outdated{offer[1].Product.ID}">
+				<label
+					for="outdated{offer[1].Product.ID}"
+					style="position: absolute; bottom: 0.5rem; left: 0.5rem;"
+				>
 					<input id="outdated{offer[1].Product.ID}" type="checkbox" />
 					Mark as outdated
 				</label>
-				<button style="padding: 0.5rem;">Make a copy</button>
+
+				{#snippet newProductWithExistingProduct(/** @type {number}*/ windowID)}
+					{@render newProduct(windowID, offer[1].Product)}
+				{/snippet}
+				<button
+					onclick={() => {
+						newWindow(newProductWithExistingProduct);
+					}}
+					class="contrast outline"
+					style="position: absolute; bottom: 0.5rem; right: 0.5rem; padding: 0.5rem; line-height: 1rem;"
+				>
+					Make a copy
+				</button>
 			</article>
 		{/each}
 	{/if}
@@ -156,7 +173,10 @@
 {/snippet}
 -->
 
-{#snippet newProduct(/** @type {number}*/ windowID)}
+{#snippet newProduct(
+	/** @type {number}*/ windowID,
+	/** @type {import("$lib/javascript/simulation").Product?}*/ existingProduct
+)}
 	<Window
 		title="Product Designer"
 		closeWindow={() => {
@@ -169,18 +189,65 @@
 			closeWindow={() => {
 				deleteWindow(windowID);
 			}}
-			ExistingProduct={null}
+			{existingProduct}
 		></ProductDesigner>
 	</Window>
 {/snippet}
 
 <style>
-	img.inlineIcon {
-		height: 1.5rem;
+	@property --top-color {
+		syntax: '<color>';
+		initial-value: black;
+		inherits: false;
+	}
+
+	.products-grid {
+		display: flex;
+		flex-direction: column;
+		gap: 1rem;
+		min-width: 30rem;
+
+		& > article,
+		& > button {
+			min-height: 9rem;
+		}
+
+		article {
+			position: relative;
+			display: grid;
+			grid-template-columns: auto 30%;
+			grid-template-rows: auto auto auto;
+			gap: 0.5rem;
+
+			box-shadow: inset 0px 0px 40px black;
+			border: solid 1px silver;
+			padding: 0.5rem;
+			margin: 0;
+
+			transition:
+				--top-color 0.5s,
+				box-shadow 0.25s;
+
+			background-image: linear-gradient(to bottom, var(--top-color), transparent);
+
+			&:hover {
+				--top-color: gray;
+			}
+
+			&:active {
+				box-shadow: inset 0px 0px 20px black;
+			}
+		}
+	}
+	img.inlineIcon,
+	button.inlineIcon {
+		min-height: 0 !important;
+		height: 1.5rem !important;
 	}
 
 	.marketingIcon {
-		height: 1.5rem;
+		min-height: 0 !important;
+		height: 1.5rem !important;
 		translate: 0 -0.5rem;
 		background-color: transparent;
 		background-image: url($lib/images/marketing.svg);

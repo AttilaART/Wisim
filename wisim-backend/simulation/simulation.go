@@ -204,6 +204,7 @@ type Product struct {
 }
 
 type ProductStats struct {
+	MiscSlots      int
 	ProductionCost float32
 	MaterialUse    float32
 
@@ -660,6 +661,7 @@ func (game_state *GameState) SimulateStep() error {
 		println("Developing Products...")
 
 		for ID, decisions := range game_state.CurrentDecisions[i].Products {
+			println(ID)
 			if _, exists := c.Offers[ID]; !exists {
 				c.Offers[ID] = c.newProduct(ID, i, decisions.Name, game_state.CurrentDecisions[i].Products[ID])
 			}

@@ -7,12 +7,12 @@
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
 	 * @property {()=>void} closeWindow,
-	 * @property {import("$lib/javascript/simulation").Product?} ExistingProduct
+	 * @property {import("$lib/javascript/simulation").Product?} existingProduct
 	 */
 
 	/** @type {Props} */
 
-	let { clientState = $bindable(), updateDecisions, closeWindow, ExistingProduct } = $props();
+	let { clientState = $bindable(), updateDecisions, closeWindow, existingProduct } = $props();
 
 	/** @type {import("$lib/javascript/simulation").Decisions_product} */
 	let productDecisions = $state({
@@ -27,7 +27,7 @@
 			Ethics: 0.2
 		},
 		Product: {
-			ID: '-1',
+			ID: `${Math.trunc(Math.random() * 100000000)}`,
 			CompanyID: clientState.Company.ID,
 			Name: 'Unnamed Product',
 
@@ -93,15 +93,17 @@
 		});
 	}
 
-	if (ExistingProduct != null) {
-		productDecisions.Product = JSON.parse(JSON.stringify(ExistingProduct));
+	if (existingProduct != null) {
+		let id = productDecisions.Product.ID;
+		productDecisions.Product = JSON.parse(JSON.stringify(existingProduct));
+		productDecisions.Product.ID = id;
 	}
 </script>
 
 <div style="min-width: 50rem;">
 	<div class="main-grid">
 		<div>
-			<input type="text" autocomplete="off" bind:value={productDecisions.Name} />
+			<input type="text" autocomplete="off" bind:value={productDecisions.Product.Name} />
 
 			{@render currentDesignerSnippet()}
 
@@ -247,12 +249,17 @@
 					</tr>
 				</tbody>
 			</table>
+			<fieldset role="group">
+				<input type="number" placeholder="price" bind:value={productDecisions.Price} />
+				<input type="text" disabled value="CHF" style="width: 5rem;" />
+			</fieldset>
 		</div>
 	</div>
 	<footer class="grid">
 		<button onclick={closeWindow}>Cancel</button>
 		<button
 			onclick={() => {
+				productDecisions.Name = productDecisions.Product.Name;
 				clientState.Decisions.Products[productDecisions.Product.ID] = productDecisions;
 				clientState.Company.Offers[productDecisions.Product.ID] = {
 					Price: productDecisions.Price,
@@ -267,8 +274,16 @@
 					},
 					Product: productDecisions.Product
 				};
+				updateDecisions(clientState.Decisions);
 				closeWindow();
-			}}>Confirm</button
+			}}
+			disabled={(() => {
+				if (!productDecisions.Product.Components.FormFactor) return true;
+				if (!productDecisions.Product.Components.Body) return true;
+				if (!productDecisions.Product.Components.Mechanism) return true;
+				if (!productDecisions.Product.Components.Frame) return true;
+				return false;
+			})()}>Confirm</button
 		>
 	</footer>
 </div>
@@ -279,23 +294,42 @@
 			onclick={() => {
 				currentDesignerSnippet = formFactor;
 			}}
-			>+
+		>
+			{@render showImageOrPlus(
+				clientState.productComponents.FormFactor,
+				productDecisions.Product.Components.FormFactor
+			)}
 		</button>
 		<button
 			onclick={() => {
 				currentDesignerSnippet = frame;
-			}}>+</button
+			}}
 		>
+			{@render showImageOrPlus(
+				clientState.productComponents.Frame,
+				productDecisions.Product.Components.Frame
+			)}
+		</button>
 		<button
 			onclick={() => {
 				currentDesignerSnippet = body;
-			}}>+</button
+			}}
 		>
+			{@render showImageOrPlus(
+				clientState.productComponents.Body,
+				productDecisions.Product.Components.Body
+			)}
+		</button>
 		<button
 			onclick={() => {
 				currentDesignerSnippet = mechanism;
-			}}>+</button
+			}}
 		>
+			{@render showImageOrPlus(
+				clientState.productComponents.Mechanism,
+				productDecisions.Product.Components.Mechanism
+			)}
+		</button>
 
 		<div>
 			<img
@@ -310,30 +344,54 @@
 		<button
 			onclick={() => {
 				currentDesignerSnippet = misc1;
-			}}>+</button
+			}}
+			disabled={productStats.MiscSlots < 1}
 		>
+			{@render showImageOrPlus(
+				clientState.productComponents.Misc,
+				productDecisions.Product.Components.Misc[0]
+			)}
+		</button>
 		<button
 			onclick={() => {
 				currentDesignerSnippet = misc2;
-			}}>+</button
+			}}
+			disabled={productStats.MiscSlots < 2}
 		>
+			{@render showImageOrPlus(
+				clientState.productComponents.Misc,
+				productDecisions.Product.Components.Misc[1]
+			)}
+		</button>
 		<button
 			onclick={() => {
 				currentDesignerSnippet = misc3;
-			}}>+</button
+			}}
+			disabled={productStats.MiscSlots < 3}
 		>
+			{@render showImageOrPlus(
+				clientState.productComponents.Misc,
+				productDecisions.Product.Components.Misc[2]
+			)}
+		</button>
 		<button
 			onclick={() => {
 				currentDesignerSnippet = misc4;
-			}}>+</button
+			}}
+			disabled={productStats.MiscSlots < 4}
 		>
+			{@render showImageOrPlus(
+				clientState.productComponents.Misc,
+				productDecisions.Product.Components.Misc[3]
+			)}
+		</button>
 	</div>
 {/snippet}
 
 {#snippet formFactor()}
 	<div class="grid">
 		{#each Object.entries(clientState.productComponents.FormFactor) as c}
-			{@render renderComponent('FromFactor', c)}
+			{@render renderComponent('FormFactor', c)}
 		{/each}
 	</div>
 {/snippet}
@@ -341,7 +399,7 @@
 {#snippet frame()}
 	<div class="grid">
 		{#each Object.entries(clientState.productComponents.Frame) as c}
-			{@render renderComponent('frame', c)}
+			{@render renderComponent('Frame', c)}
 		{/each}
 	</div>
 {/snippet}
@@ -463,6 +521,17 @@
 	{/if}
 {/snippet}
 
+{#snippet showImageOrPlus(
+	/** @type {Object.<string, import("$lib/javascript/simulation").Component>}*/ imageSource,
+	/** @type {string?}*/ field
+)}
+	{#if !field}
+		+
+	{:else}
+		<img src={'/src/lib/images/' + `${imageSource[field]?.Image}`} alt="" />
+	{/if}
+{/snippet}
+
 <style>
 	span.red {
 		color: red;
@@ -503,6 +572,17 @@
 		border-color: silver;
 
 		box-shadow: inset 0px 0px 20px black;
+
+		transition: box-shadow 0.5s;
+
+		&:hover {
+			box-shadow: inset 0px 0px 10px color-mix(in oklab, gray, transparent 30%);
+		}
+
+		img {
+			content-fit: contain;
+			height: 2rem;
+		}
 	}
 
 	.parts-grid {

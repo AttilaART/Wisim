@@ -4,3 +4,10 @@ export const preventPageReload = (el) => {
 		e.preventDefault();
 	});
 };
+
+/** @param {()=>any} func */
+export function ignoreError(func) {
+	try {
+		return func();
+	} catch {}
+}

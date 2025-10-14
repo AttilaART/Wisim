@@ -9,6 +9,7 @@ export function calculateProductStats(product, productComponents) {
 	// Calcualtes product stats without side effects
 	/** @type {import("$lib/javascript/simulation").ProductStats} */
 	let productStats = {
+		MiscSlots: 0,
 		ProductionCost: 0,
 		MaterialUse: 0,
 
@@ -28,11 +29,24 @@ export function calculateProductStats(product, productComponents) {
 	parts.push(productComponents.Body[`${product.Components.Body}`]);
 	parts.push(productComponents.Mechanism[`${product.Components.Mechanism}`]);
 
+	/** @param {number | undefined} value*/
+	function addIfNotUndefined(value) {
+		if (value !== undefined) {
+			productStats.MiscSlots += value;
+		}
+	}
+
+	addIfNotUndefined(productComponents.FormFactor[`${product.Components.FormFactor}`]?.MiscSlots);
+	addIfNotUndefined(productComponents.Frame[`${product.Components.Frame}`]?.MiscSlots);
+	addIfNotUndefined(productComponents.Body[`${product.Components.Body}`]?.MiscSlots);
+	addIfNotUndefined(productComponents.Mechanism[`${product.Components.Mechanism}`]?.MiscSlots);
+
 	// console.log(product.Components.Mechanism);
 	// console.log(productComponents.Mechanism[`${product.Components.Mechanism}`]);
 
-	for (let component of product.Components.Misc) {
-		parts.push(productComponents.Misc[`${component}`]);
+	for (let i in product.Components.Misc) {
+		if (Number(i) < productStats.MiscSlots)
+			parts.push(productComponents.Misc[`${product.Components.Misc[i]}`]);
 	}
 
 	// console.log(parts);
