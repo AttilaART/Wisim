@@ -15,8 +15,8 @@
     },
     "Machines": [
       {
-        "ProductionCapacity": 150,
-        "RequiredWorkers": 1,
+        "ProductionCapacity": 1500,
+        "RequiredWorkers": 3,
         "MinimumWorkers": 1,
         "EnergyUse": 0.01,
         "Value": 5000,

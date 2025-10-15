@@ -14,17 +14,42 @@
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
 	 * @property {(contents: import("svelte").Snippet<[number]>)=>number} newWindow,
 	 * @property {(windowId: number)=>void} deleteWindow,
+	 * @property {()=>void} openProduction
 	 */
 
 	/**
 	 * @type {Props}
 	 */
-	let { clientState = $bindable(), updateDecisions, newWindow, deleteWindow } = $props();
+	let {
+		clientState = $bindable(),
+		updateDecisions,
+		newWindow,
+		deleteWindow,
+		openProduction
+	} = $props();
+	/**
+	 * @param {string} productID
+	 */
+	function calculateMonthlyProduction(productID) {
+		let totalProduction = 0;
+		for (let m of clientState.Company.Machines) {
+			if (m.AssignedProductID == productID) {
+				totalProduction += m.ProductionCapacity;
+			}
+		}
+
+		return totalProduction / clientState.Company.Offers[productID].productStats.ProductionCost;
+	}
 </script>
+
+<label for="">
+	<input type="checkbox" />
+	Show Outdated
+</label>
 
 <div class="products-grid">
 	{#snippet newProductNoExistingProduct(/** @type {number}*/ windowID)}
-		{@render newProduct(windowID, null)}
+		{@render newProduct(windowID, null, false)}
 	{/snippet}
 	<button
 		onclick={() => {
@@ -38,7 +63,14 @@
 	</button>
 	{#if clientState.Company.Offers}
 		{#each Object.entries(clientState.Company.Offers) as offer}
-			<article>
+			{#snippet viewProduct(/** @type {number}*/ windowID)}
+				{@render newProduct(windowID, offer[1].Product, true)}
+			{/snippet}
+			<article
+				onclick={() => {
+					newWindow(viewProduct);
+				}}
+			>
 				<img
 					src={'/src/lib/images/' +
 						ignoreError(() => {
@@ -61,7 +93,7 @@
 				</div>
 				<div style="text-align: right;">
 					<h4>{format.currency(offer[1].Price, false, 0)}</h4>
-					<div>
+					<!--<div>
 						{clientState.Company.ProductsInStorage[offer[0]]
 							? format.number(clientState.Company.ProductsInStorage[offer[0]], false, 0)
 							: '0'}
@@ -71,10 +103,26 @@
 							src={storageIcon}
 							alt=""
 						/>
-						<small>+50</small>
+					</div>-->
+					<div>
+						<img
+							class="inlineIcon"
+							style="height: 1.2rem; translate: 0 -0.1rem ;"
+							src={ProductionIcon}
+							alt=""
+						/>
+						<strong>
+							{format.number(offer[1].productStats.ProductionCost, false, 1)}
+						</strong>
 					</div>
+					<small
+						>{format.number(calculateMonthlyProduction(offer[1].Product.ID), false, 1)}/month</small
+					>
 				</div>
 				<label
+					onclick={(e) => {
+						e.stopPropagation();
+					}}
 					for="outdated{offer[1].Product.ID}"
 					style="position: absolute; bottom: 0.5rem; left: 0.5rem;"
 				>
@@ -83,10 +131,11 @@
 				</label>
 
 				{#snippet newProductWithExistingProduct(/** @type {number}*/ windowID)}
-					{@render newProduct(windowID, offer[1].Product)}
+					{@render newProduct(windowID, offer[1].Product, false)}
 				{/snippet}
 				<button
-					onclick={() => {
+					onclick={(e) => {
+						e.stopPropagation();
 						newWindow(newProductWithExistingProduct);
 					}}
 					class="contrast outline"
@@ -175,7 +224,8 @@
 
 {#snippet newProduct(
 	/** @type {number}*/ windowID,
-	/** @type {import("$lib/javascript/simulation").Product?}*/ existingProduct
+	/** @type {import("$lib/javascript/simulation").Product?}*/ existingProduct,
+	/** @type {boolean}*/ viewOnly
 )}
 	<Window
 		title="Product Designer"
@@ -190,6 +240,8 @@
 				deleteWindow(windowID);
 			}}
 			{existingProduct}
+			{viewOnly}
+			{openProduction}
 		></ProductDesigner>
 	</Window>
 {/snippet}

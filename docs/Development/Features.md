@@ -12,9 +12,17 @@ kanban-plugin: board
 - [ ] Add Icons
 
 
+## Bugs
+
+- [ ] report.BalanceSheet.Assets only shows machines
+
+
 ## In Progress
 
 - [ ] # Production Screen
+- [ ] # Add Monthly overview
+	Show most important values from the past month:
+	- Show how much money was made
 
 
 ## Done
@@ -41,6 +49,6 @@ kanban-plugin: board
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false]}
+{"kanban-plugin":"board","list-collapse":[false,false,false,false,false]}
 ```
 %%

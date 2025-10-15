@@ -37,8 +37,9 @@ export const delta = {
 
 /**
  * @typedef {Object} Decisions_product
- * @property {number} Price
  * @property {string} Name
+ * @property {number} Price
+ * @property {boolean} Outdated
  * @property {Object} Promotion
  * @property {number} Promotion.Quantity
  * @property {number} Promotion.Price
@@ -185,6 +186,7 @@ export const delta = {
 /**
  * @typedef {Object} Offer
  * @property {Product} Product - The product being offered
+ * @property {boolean} Outdated
  * @property {number} Price
  * @property {ProductStats} productStats
  * @property {number} PromotionQuality

@@ -17,15 +17,17 @@
 	import Invoices from '../../components/invoices.svelte';
 	import Production from '../../components/production.svelte';
 	import { preventPageReload } from '$lib/helper.svelte';
+	import MonthlyOverview from '../../components/monthlyOverview.svelte';
+	import { calculateProductStats } from '../../calculateProduct';
 
 	/** @type {{data: {serverAdress: string}}}*/
 	let { data } = $props();
 
-	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
+	/** @type {Object.<string, (id: number)=>ReturnType<import("svelte").Snippet>>} */
 	let windows = $state({});
 
 	/**
-	 *@param {import("svelte").Snippet<[number]>} snippet
+	 *@param {(id: number)=>ReturnType<import("svelte").Snippet>} snippet
 	 * @returns {number} window ID
 	 */
 	function newWindow(snippet) {
@@ -100,6 +102,19 @@
 		console.log(`WebSocket Closed. \n ${event}`);
 	}
 
+	function updateCompanyBasedOnDecisions() {
+		for (let id of Object.keys(clientState.Decisions.Products)) {
+			clientState.Company.Offers[id].Product = clientState.Decisions.Products[id].Product;
+			if (clientState.productComponents) {
+				clientState.Company.Offers[id].productStats = calculateProductStats(
+					clientState.Decisions.Products[id].Product,
+					clientState.productComponents
+				).productStats;
+			}
+		}
+		console.log('Synchronised company with decisions');
+	}
+
 	/**
 	 * @param {MessageEvent} event
 	 */
@@ -120,12 +135,14 @@
 					break;
 				case Methods.Get_company:
 					clientState.Company = dataJSON.Data;
+					updateCompanyBasedOnDecisions();
 					console.log('company updated');
 					break;
 				case Methods.Get_decisions:
 					clientState.Decisions = dataJSON.Data;
 					clientState.Decisions.Employees.ProductionDeltas = [];
 					clientState.Decisions.Employees.MarketingDeltas = [];
+					updateCompanyBasedOnDecisions();
 					console.log('decisions updated');
 					connection.sDecisions(clientState.Decisions);
 					break;
@@ -149,6 +166,7 @@
 					console.log('unemployed updated');
 				case Methods.Get_product_components:
 					clientState.productComponents = dataJSON.Data;
+					updateCompanyBasedOnDecisions();
 			}
 		} else {
 			switch (dataJSON.Method) {
@@ -160,6 +178,7 @@
 					isReady = false;
 					isSimulating = false;
 					fetchEverything(connection);
+					newWindow(monthlyOverview);
 					break;
 				case Methods.Broadcast_chat:
 					chats.push(dataJSON.Data);
@@ -203,6 +222,7 @@
 			</header>
 			<form
 				use:preventPageReload
+				use:connection.gProductComponents
 				onsubmit={() => {
 					connection.sCompany(companyID);
 				}}
@@ -333,6 +353,9 @@
 			{newWindow}
 			deleteWindow={(id) => {
 				deleteWindow(id);
+			}}
+			openProduction={() => {
+				newWindow(production);
 			}}
 		></Product>
 	</Window>
@@ -495,6 +518,17 @@
 			<input bind:value={chatMessage} type="text" />
 			<input type="submit" style="display: none" />
 		</form>
+	</Window>
+{/snippet}
+
+{#snippet monthlyOverview(/** @type {Number} id */ id)}
+	<Window
+		title="Monthly Report"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<MonthlyOverview bind:clientState></MonthlyOverview>
 	</Window>
 {/snippet}
 

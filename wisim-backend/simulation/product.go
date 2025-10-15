@@ -7,12 +7,12 @@ import (
 
 func (c *Company) newProduct(productID string, companyID int, productName string, productDecisions Decisions_product) Offer {
 	productStats, productionLineCost := c.calculateProductStats(productDecisions.Product)
-	offer := Offer{Status: "current", Product: productDecisions.Product, productStats: productStats}
+	offer := Offer{Outdated: productDecisions.Outdated, Product: productDecisions.Product, productStats: productStats}
 	offer.Product.ID = productID
 	offer.Product.CompanyID = companyID
 	offer.Product.Name = productName
 
-	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(fmt.Sprintf("Production line cost for product %s", productName), production, "The cost of setting up the production line for the product.", true, -productionLineCost)
+	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(fmt.Sprintf("Production line cost for product %s", productName), facilities, "The cost of setting up the production line for the product.", true, -productionLineCost)
 
 	return offer
 }

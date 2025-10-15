@@ -249,7 +249,7 @@ func (g *GameState) generateCompanies(
 		companies[i].Offers = make(map[string]Offer)
 		companies[i].ProductsInStorage = make(map[string]int)
 
-		requiredProductionPersonelle := 1
+		requiredProductionPersonelle := 0
 		for _, m := range companies[i].Machines {
 			requiredProductionPersonelle += m.RequiredWorkers
 		}
@@ -299,12 +299,12 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 		MarketingMinimumWage:  80000 / 12,
 
 		MachineOnOffer: Machine{
-			ProductionCapacity: 150,
-			RequiredWorkers:    1,
+			ProductionCapacity: 1500,
+			RequiredWorkers:    3,
 			MinimumWorkers:     1,
 			EnergyUse:          0.01,
-			Value:              5000,
-			MaintananceCost:    50,
+			Value:              10000,
+			MaintananceCost:    100,
 		},
 	}
 

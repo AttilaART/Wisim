@@ -5,8 +5,8 @@
 
 	let financial_Report = $derived(
 		/** @returns {import("$lib/javascript/simulation").Financial_report?}*/ (() => {
-			if (!(clientState.company.Reports == null || clientState.company.Reports.length == 0)) {
-				return clientState.company.Reports[clientState.company.Reports.length - 1].Financial_report;
+			if (!(clientState.Company.Reports == null || clientState.Company.Reports.length == 0)) {
+				return clientState.Company.Reports[clientState.Company.Reports.length - 1].FinancialReport;
 			}
 			return null;
 		})()
