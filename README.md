@@ -10,8 +10,8 @@ Bear in mind that most of the information in this document are subject to change
 
 #### Early game
 
-Each player is put in charge of an existing small company producing a (to be defined)
-product. The players are given a few in game steps to get to grips with how to
+Each player is put in charge of an existing small company producing ~a (to be defined)
+product~ coffee machines. The players are given a few in game steps to get to grips with how to
 game works.
 
 #### Mid game
@@ -30,9 +30,9 @@ they win.
 ### Rough Progress
 
 - [x] Core simulation
-- [ ] Core GUI
+- [x] Core GUI
 - [ ] Core gameplay loop
-- [ ] Core online
+- [x] Core online
 - [ ] Polish
 
 ## Running the beta
@@ -41,43 +41,25 @@ Before running the program, make sure to have the following programs installed
 
 - Node (npm)
 - Go
-- Wails CLI
 
-1. Clone the Git repository onto your computer and switch to "windows" branch
+1. Clone the Git repository onto your computer.
 
 ```zsh
 git clone https://github.com/AttilaART/Wisim.git
 ```
 
-2. Start the server
+2. Install dependencies
 
 ```zsh
-cd Wisim/Wisim/server
-PORT=8000
-NUMBER_OF_PLAYERS=1
-go build .
-./server $PORT $NUMBER_OF_PLAYERS new
-```
-
-3. Start the front-end
-
-```zsh
+cd wisim-nouveau
+npm install
 cd ..
-wails dev
 ```
 
-After which the program will start by itself.
+3. Start the servers
 
-If none of this works you can try running the compiled binaries to be found in the
-`Wisim/Wisim/build/bin` directory.
+```zsh
+./start.sh
+```
 
-Make sure to run the correct one for your device.
-
-MacOS: `WiSim.app`
-Windows: `WiSim.exe`
-Linux: `WiSim`
-
-### Troubleshooting
-
-Navigate into "WiSim/frontend"
-and run `npm i`
+After which you should navigate to [localhost:5173](http://localhost:5173/).
