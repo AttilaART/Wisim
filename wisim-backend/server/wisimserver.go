@@ -153,7 +153,11 @@ func getDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 		return
 	}
 
-	decisions := gamestate.Companies[s.conns[ws].Company].Get_decisions()
+	decisions := gamestate.CurrentDecisions[s.conns[ws].Company]
+
+	b, _ := json.MarshalIndent(decisions, "", "   ")
+	fmt.Printf("%s\n", b)
+
 	reply.Data = &decisions
 }
 
@@ -182,7 +186,10 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 		reply.Error = errorInvalidCompany
 		return
 	}
+
 	company := gamestate.Companies[s.conns[ws].Company]
+
+	company = gamestate.SynchroniseCompannyWithDecisions(gamestate.CurrentDecisions[s.conns[ws].Company], gamestate.Companies[s.conns[ws].Company])
 
 	// company = removeProductNaNInf(company)
 	reply.Data = &company
@@ -377,6 +384,7 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 	decisions := simulation.Decisions{}
 	err := mapstructure.Decode(*message.Data, &decisions)
 	if err != nil {
+		println("problem")
 		reply.Error = err.Error()
 		return
 	}
@@ -387,9 +395,6 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 	}
 
 	gamestate.CurrentDecisions[s.conns[ws].Company] = decisions
-
-	b, _ := json.MarshalIndent(decisions, "", "   ")
-	fmt.Printf("%s\n", b)
 }
 
 func setReady(s *Server, ws *websocket.Conn, message Message[any]) {

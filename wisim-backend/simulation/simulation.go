@@ -173,7 +173,7 @@ const (
 type Offer struct {
 	Outdated     bool
 	Product      Product
-	productStats ProductStats
+	ProductStats ProductStats
 	Price        float32
 	Promotion    struct {
 		Quantity        float32
@@ -813,6 +813,9 @@ func (game_state *GameState) SimulateStep() error {
 	//		}
 	//		println(string(s))
 	//	}
+
+	game_state.resetCurrentDecisions()
+
 	return nil
 }
 
@@ -947,11 +950,11 @@ func (c *Company) compileSalesReport(purchasingStatiscs map[string]Purchasing_st
 		salesStatistics.AvrBangForBuckFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesBangForBuck]
 
 		marketingStatistics := Marketing_statistics{}
-		marketingStatistics.Quality = c.Offers[productID].productStats.Quality
-		marketingStatistics.Durabilty = int(c.Offers[productID].productStats.Durability)
-		marketingStatistics.Ethics = c.Offers[productID].productStats.Ethics
+		marketingStatistics.Quality = c.Offers[productID].ProductStats.Quality
+		marketingStatistics.Durabilty = int(c.Offers[productID].ProductStats.Durability)
+		marketingStatistics.Ethics = c.Offers[productID].ProductStats.Ethics
 		// reportMarketingStatistics.Coolness = offer.Product.Coolness_factor
-		marketingStatistics.Ecology = c.Offers[productID].productStats.Ecology
+		marketingStatistics.Ecology = c.Offers[productID].ProductStats.Ecology
 
 		marketingStatistics.Price = float64(c.Offers[productID].Price)
 		marketingStatistics.PromotionQuantity = float64(c.Offers[productID].Promotion.Quantity)

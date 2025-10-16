@@ -297,14 +297,16 @@
 				clientState.Decisions.Products[productDecisions.Product.ID] = productDecisions;
 				clientState.Company.Offers[productDecisions.Product.ID] = {
 					Price: productDecisions.Price,
-					productStats: productStats,
+					ProductStats: productStats,
 					PromotionQuality: 0,
+					Outdated: productDecisions.Outdated,
 					Promotion: {
 						Quantity: productDecisions.Promotion.Quantity,
 						StyleQuality: productDecisions.Promotion.Quality,
 						StyleEcology: productDecisions.Promotion.Ecology,
 						StyleEthics: productDecisions.Promotion.Ethics,
-						StyleDurability: productDecisions.Promotion.Durability
+						StyleDurability: productDecisions.Promotion.Durability,
+						StylePrice: productDecisions.Promotion.Price
 					},
 					Product: productDecisions.Product
 				};

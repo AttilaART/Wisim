@@ -7,7 +7,7 @@ import (
 
 func (c *Company) newProduct(productID string, companyID int, productName string, productDecisions Decisions_product) Offer {
 	productStats, productionLineCost := c.calculateProductStats(productDecisions.Product)
-	offer := Offer{Outdated: productDecisions.Outdated, Product: productDecisions.Product, productStats: productStats}
+	offer := Offer{Outdated: productDecisions.Outdated, Product: productDecisions.Product, ProductStats: productStats}
 	offer.Product.ID = productID
 	offer.Product.CompanyID = companyID
 	offer.Product.Name = productName

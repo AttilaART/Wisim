@@ -188,7 +188,7 @@ export const delta = {
  * @property {Product} Product - The product being offered
  * @property {boolean} Outdated
  * @property {number} Price
- * @property {ProductStats} productStats
+ * @property {ProductStats} ProductStats
  * @property {number} PromotionQuality
  * @property {Object} Promotion - Promotion goals
  * @property {number} Promotion.Quantity
@@ -196,6 +196,7 @@ export const delta = {
  * @property {number} Promotion.StyleEcology
  * @property {number} Promotion.StyleEthics
  * @property {number} Promotion.StyleDurability
+ * @property {number} Promotion.StylePrice
  */
 
 /**

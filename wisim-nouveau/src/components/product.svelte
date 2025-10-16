@@ -9,6 +9,7 @@
 	import { ignoreError, preventPageReload } from '$lib/helper.svelte';
 	import ProductDesigner from './productDesigner.svelte';
 	import { createRawSnippet, mount, unmount } from 'svelte';
+	import { fade, fly } from 'svelte/transition';
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
@@ -38,13 +39,44 @@
 			}
 		}
 
-		return totalProduction / clientState.Company.Offers[productID].productStats.ProductionCost;
+		return totalProduction / clientState.Company.Offers[productID].ProductStats.ProductionCost;
 	}
+
+	/**
+	 * @param {string} productID
+	 */
+	function addToDecisionsIfNotPresent(productID) {
+		if (clientState.Decisions.Products[productID] == undefined) {
+			let offer = clientState.Company.Offers[productID];
+
+			clientState.Decisions.Products[productID] = {
+				Name: offer.Product.Name,
+				Outdated: offer.Outdated,
+				Product: offer.Product,
+				Price: offer.Price,
+				Promotion: {
+					Quantity: offer.Promotion.Quantity,
+					Quality: offer.Promotion.StyleQuality,
+					Ecology: offer.Promotion.StyleEcology,
+					Ethics: offer.Promotion.StyleEthics,
+					Durability: offer.Promotion.StyleDurability,
+					Price: offer.Promotion.StylePrice
+				}
+			};
+		}
+	}
+
+	let showOutdated = $state(false);
+
+	for (let productID of Object.keys(clientState.Company.Offers)) {
+		addToDecisionsIfNotPresent(productID);
+	}
+	updateDecisions(clientState.Decisions);
 </script>
 
 <label for="">
-	<input type="checkbox" />
 	Show Outdated
+	<input type="checkbox" bind:checked={showOutdated} />
 </label>
 
 <div class="products-grid">
@@ -62,38 +94,40 @@
 		</div>
 	</button>
 	{#if clientState.Company.Offers}
-		{#each Object.entries(clientState.Company.Offers) as offer}
-			{#snippet viewProduct(/** @type {number}*/ windowID)}
-				{@render newProduct(windowID, offer[1].Product, true)}
-			{/snippet}
-			<article
-				onclick={() => {
-					newWindow(viewProduct);
-				}}
-			>
-				<img
-					src={'/src/lib/images/' +
-						ignoreError(() => {
-							return clientState.productComponents.FormFactor[
-								`${offer[1].Product.Components.FormFactor}`
-							]
-								? clientState.productComponents.FormFactor[
-										`${offer[1].Product.Components.FormFactor}`
-									].Image
-								: '';
-						})}
-					alt=""
-					style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 0.5rem)); height: 6rem; mix-blend-mode: lighten;"
-				/>
-				<div>
-					<button class="inlineIcon marketingIcon" aria-label="Marketing"></button>
-					<h4 style="display: inline;">
-						{offer[1].Product.Name}
-					</h4>
-				</div>
-				<div style="text-align: right;">
-					<h4>{format.currency(offer[1].Price, false, 0)}</h4>
-					<!--<div>
+		{#each Object.entries(clientState.Company.Offers) as offer (offer[0])}
+			{#if !clientState.Decisions.Products[offer[0]].Outdated || showOutdated}
+				{#snippet viewProduct(/** @type {number}*/ windowID)}
+					{@render newProduct(windowID, offer[1].Product, true)}
+				{/snippet}
+				<article
+					in:fly={{ y: -100 }}
+					onclick={() => {
+						newWindow(viewProduct);
+					}}
+				>
+					<img
+						src={'/src/lib/images/' +
+							ignoreError(() => {
+								return clientState.productComponents.FormFactor[
+									`${offer[1].Product.Components.FormFactor}`
+								]
+									? clientState.productComponents.FormFactor[
+											`${offer[1].Product.Components.FormFactor}`
+										].Image
+									: '';
+							})}
+						alt=""
+						style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 0.5rem)); height: 6rem; mix-blend-mode: lighten;"
+					/>
+					<div>
+						<button class="inlineIcon marketingIcon" aria-label="Marketing"></button>
+						<h4 style="display: inline;">
+							{offer[1].Product.Name}
+						</h4>
+					</div>
+					<div style="text-align: right;">
+						<h4>{format.currency(offer[1].Price, false, 0)}</h4>
+						<!--<div>
 						{clientState.Company.ProductsInStorage[offer[0]]
 							? format.number(clientState.Company.ProductsInStorage[offer[0]], false, 0)
 							: '0'}
@@ -104,46 +138,56 @@
 							alt=""
 						/>
 					</div>-->
-					<div>
-						<img
-							class="inlineIcon"
-							style="height: 1.2rem; translate: 0 -0.1rem ;"
-							src={ProductionIcon}
-							alt=""
-						/>
-						<strong>
-							{format.number(offer[1].productStats.ProductionCost, false, 1)}
-						</strong>
+						<div>
+							<img
+								class="inlineIcon"
+								style="height: 1.2rem; translate: 0 -0.1rem ;"
+								src={ProductionIcon}
+								alt=""
+							/>
+							<strong>
+								{format.number(offer[1].ProductStats.ProductionCost, false, 1)}
+							</strong>
+						</div>
+						<small
+							>{format.number(
+								calculateMonthlyProduction(offer[1].Product.ID),
+								false,
+								1
+							)}/month</small
+						>
 					</div>
-					<small
-						>{format.number(calculateMonthlyProduction(offer[1].Product.ID), false, 1)}/month</small
+					<label
+						onclick={(e) => {
+							e.stopPropagation();
+							updateDecisions(clientState.Decisions);
+						}}
+						for="outdated{offer[1].Product.ID}"
+						style="position: absolute; bottom: 0.5rem; left: 0.5rem;"
 					>
-				</div>
-				<label
-					onclick={(e) => {
-						e.stopPropagation();
-					}}
-					for="outdated{offer[1].Product.ID}"
-					style="position: absolute; bottom: 0.5rem; left: 0.5rem;"
-				>
-					<input id="outdated{offer[1].Product.ID}" type="checkbox" />
-					Mark as outdated
-				</label>
+						<input
+							id="outdated{offer[1].Product.ID}"
+							bind:checked={clientState.Decisions.Products[offer[0]].Outdated}
+							type="checkbox"
+						/>
+						Mark as outdated
+					</label>
 
-				{#snippet newProductWithExistingProduct(/** @type {number}*/ windowID)}
-					{@render newProduct(windowID, offer[1].Product, false)}
-				{/snippet}
-				<button
-					onclick={(e) => {
-						e.stopPropagation();
-						newWindow(newProductWithExistingProduct);
-					}}
-					class="contrast outline"
-					style="position: absolute; bottom: 0.5rem; right: 0.5rem; padding: 0.5rem; line-height: 1rem;"
-				>
-					Make a copy
-				</button>
-			</article>
+					{#snippet newProductWithExistingProduct(/** @type {number}*/ windowID)}
+						{@render newProduct(windowID, offer[1].Product, false)}
+					{/snippet}
+					<button
+						onclick={(e) => {
+							e.stopPropagation();
+							newWindow(newProductWithExistingProduct);
+						}}
+						class="contrast outline"
+						style="position: absolute; bottom: 0.5rem; right: 0.5rem; padding: 0.5rem; line-height: 1rem;"
+					>
+						Make a copy
+					</button>
+				</article>
+			{/if}
 		{/each}
 	{/if}
 </div>
