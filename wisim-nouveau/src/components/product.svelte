@@ -10,6 +10,7 @@
 	import ProductDesigner from './productDesigner.svelte';
 	import { createRawSnippet, mount, unmount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
+	import ConfigurePromotion from './configurePromotion.svelte';
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
@@ -120,7 +121,17 @@
 						style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 0.5rem)); height: 6rem; mix-blend-mode: lighten;"
 					/>
 					<div>
-						<button class="inlineIcon marketingIcon" aria-label="Marketing"></button>
+						{#snippet configurePromotionOfProduct(/** @type {number}*/ windowID)}
+							{@render configurePromotion(windowID, offer[0])}
+						{/snippet}
+						<button
+							onclick={(e) => {
+								e.stopPropagation();
+								newWindow(configurePromotionOfProduct);
+							}}
+							class="inlineIcon marketingIcon"
+							aria-label="Marketing"
+						></button>
 						<h4 style="display: inline;">
 							{offer[1].Product.Name}
 						</h4>
@@ -191,80 +202,17 @@
 		{/each}
 	{/if}
 </div>
-<!--
-{#snippet configurePromotion(/** @type {number}*/ windowID)}
+
+{#snippet configurePromotion(/** @type {number}*/ windowID, /** @type {string}*/ productID)}
 	<Window
-		title={`Configure ${clientState.Company.Offers[productConfugureWindows[windowID]].Product.Name}`}
+		title={'Configure Promotion'}
 		closeWindow={() => {
 			deleteWindow(windowID);
-			delete productConfugureWindows[windowID];
 		}}
 	>
-		<form
-			use:preventPageReload
-			onchange={() => {
-				updateDecisions(clientState.Decisions);
-			}}
-		>
-			<label for="PromotionQuantity">
-				<h2>Advertisment Budget</h2>
-				<input
-					id="quantity"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Quantity
-					}
-					type="number"
-				/>
-			</label>
-
-			<h2>Advertisment Style</h2>
-			<label for="PromotionQuality"
-				>Quality
-				<input
-					id="PromotionQuality"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Quality
-					}
-					type="range"
-				/>
-			</label>
-
-			<label for="PromotionEcology"
-				>Ecology
-				<input
-					id="PromotionEcology"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Ecology
-					}
-					type="range"
-				/>
-			</label>
-
-			<label for="PromotionEthicals"
-				>Ethics
-				<input
-					id="PromotionEthicals"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Ethics
-					}
-					type="range"
-				/>
-			</label>
-
-			<label for="PromotionDurability"
-				>Durability
-				<input
-					id="PromotionDurability"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Durability
-					}
-					type="range"
-				/>
-			</label>
-		</form>
+		<ConfigurePromotion bind:clientState {updateDecisions} {productID}></ConfigurePromotion>
 	</Window>
 {/snippet}
--->
 
 {#snippet newProduct(
 	/** @type {number}*/ windowID,
@@ -278,7 +226,7 @@
 		}}
 	>
 		<ProductDesigner
-			{clientState}
+			bind:clientState
 			{updateDecisions}
 			closeWindow={() => {
 				deleteWindow(windowID);

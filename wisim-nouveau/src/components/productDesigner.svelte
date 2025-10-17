@@ -1,6 +1,7 @@
 <script>
 	import { format } from '$lib/javascript/format';
 	import { calculateProductStats } from '../calculateProduct';
+	import noIcon from '$lib/images/noIcon.svg';
 	import Increment from './increment.svelte';
 
 	/** @typedef {Object} Props
@@ -456,34 +457,42 @@
 {/snippet}
 
 {#snippet formFactor()}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.FormFactor) as c}
-			{@render renderComponent('FormFactor', c)}
-		{/each}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.FormFactor) as c}
+				{@render renderComponent('FormFactor', c)}
+			{/each}
+		</div>
 	</div>
 {/snippet}
 
 {#snippet frame()}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.Frame) as c}
-			{@render renderComponent('Frame', c)}
-		{/each}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.Frame) as c}
+				{@render renderComponent('Frame', c)}
+			{/each}
+		</div>
 	</div>
 {/snippet}
 
 {#snippet body()}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.Body) as c}
-			{@render renderComponent('Body', c)}
-		{/each}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.Body) as c}
+				{@render renderComponent('Body', c)}
+			{/each}
+		</div>
 	</div>
 {/snippet}
 
 {#snippet mechanism()}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.Mechanism) as c}
-			{@render renderComponent('Mechanism', c)}
-		{/each}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.Mechanism) as c}
+				{@render renderComponent('Mechanism', c)}
+			{/each}
+		</div>
 	</div>
 {/snippet}
 
@@ -501,25 +510,43 @@
 {/snippet}
 
 {#snippet misc(/** @type {number} */ slot)}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.Misc) as c}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.Misc) as c}
+				<button
+					class="component-button"
+					onclick={() => {
+						productDecisions.Product.Components.Misc[slot] = c[0];
+						currentDesignerSnippet = selectPart;
+					}}
+					onmouseenter={(_) => {
+						hoverProductDecisions.Product.Components.Misc[slot] = c[0];
+					}}
+					onmouseleave={(_) => {
+						hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
+					}}
+				>
+					<img src={'/src/lib/images/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+					{@render componentTooltip(c)}
+				</button>
+			{/each}
+
 			<button
 				class="component-button"
 				onclick={() => {
-					productDecisions.Product.Components.Misc[slot] = c[0];
+					productDecisions.Product.Components.Misc[slot] = null;
 					currentDesignerSnippet = selectPart;
 				}}
 				onmouseenter={(_) => {
-					hoverProductDecisions.Product.Components.Misc[slot] = c[0];
+					hoverProductDecisions.Product.Components.Misc[slot] = null;
 				}}
 				onmouseleave={(_) => {
 					hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 				}}
 			>
-				<img src={'/src/lib/images/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
-				{@render componentTooltip(c)}
+				<img src={noIcon} alt="" style="mix-blend-mode: lighten;" />
 			</button>
-		{/each}
+		</div>
 	</div>
 {/snippet}
 
@@ -632,6 +659,10 @@
 		gap: 1rem;
 	}
 
+	.parts-grid {
+		height: 22.5rem;
+	}
+
 	.component-button,
 	.parts-grid > button {
 		background-color: transparent;
@@ -680,5 +711,16 @@
 				mix-blend-mode: lighten;
 			}
 		}
+	}
+
+	.component-grid > div {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		grid-template-rows: auto;
+	}
+
+	.component-grid {
+		height: 22.5rem;
 	}
 </style>

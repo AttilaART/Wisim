@@ -149,7 +149,7 @@ export const delta = {
   * @property {string?} Components.Frame
   * @property {string?} Components.Body
   * @property {string?} Components.Mechanism
-  * @property {string[]} Components.Misc
+  * @property {Array.<string?>} Components.Misc
 
 	* @property {number} MaterialQuality
 	* @property {number} ExtraDurability

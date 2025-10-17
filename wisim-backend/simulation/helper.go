@@ -4,6 +4,7 @@ import (
 	"maps"
 	"math"
 	"math/rand"
+	"slices"
 
 	"github.com/pehringer/simd"
 )
@@ -94,6 +95,9 @@ func (g *GameState) resetCurrentDecisions() {
 		g.CurrentDecisions[i].Employees.MarketingDeltas = make([]Delta[Employee], 0)
 		g.CurrentDecisions[i].Employees.ProductionDeltas = make([]Delta[Employee], 0)
 
+		g.CurrentDecisions[i].Production.Machines = make([]Delta[Machine], 0)
+		g.CurrentDecisions[i].Production.Logistics = make([]Delta[Warehouse], 0)
+
 		oldProductDecisions := g.CurrentDecisions[i].Products
 		maps.Copy(g.CurrentDecisions[i].Products, oldProductDecisions)
 
@@ -101,7 +105,7 @@ func (g *GameState) resetCurrentDecisions() {
 	}
 }
 
-func (g *GameState) SynchroniseCompannyWithDecisions(decisions Decisions, company Company) Company {
+func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company Company) Company {
 	for ID, d := range decisions.Products {
 		offer := company.Offers[ID]
 		offer.Product = d.Product
@@ -127,6 +131,13 @@ func (g *GameState) SynchroniseCompannyWithDecisions(decisions Decisions, compan
 		offer.ProductStats, _ = company.calculateProductStats(d.Product)
 
 		company.Offers[ID] = offer
+	}
+
+	company.Machines = slices.Clone(company.Machines)
+	for _, d := range decisions.Production.Machines {
+		if d.Change == Delta_New {
+			company.Machines = append(company.Machines, d.Item)
+		}
 	}
 
 	return company

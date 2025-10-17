@@ -52,6 +52,7 @@
 	let companyDialogue = $state();
 	let isReady = $state();
 	let isSimulating = $state(false);
+	let overviewWindowOpen = $state(false);
 
 	/**
 	 * @type {number}
@@ -162,7 +163,9 @@
 					isReady = false;
 					isSimulating = false;
 					fetchEverything(connection);
-					newWindow(monthlyOverview);
+					if (!overviewWindowOpen) {
+						newWindow(monthlyOverview);
+					}
 					break;
 				case Methods.Broadcast_chat:
 					chats.push(dataJSON.Data);
@@ -206,7 +209,6 @@
 			</header>
 			<form
 				use:preventPageReload
-				use:connection.gProductComponents
 				onsubmit={() => {
 					connection.sCompany(companyID);
 				}}
@@ -509,9 +511,10 @@
 	<Window
 		title="Monthly Report"
 		closeWindow={() => {
+			overviewWindowOpen = false;
 			deleteWindow(id);
 		}}
-	>
+		>{(overviewWindowOpen = true)}
 		<MonthlyOverview bind:clientState></MonthlyOverview>
 	</Window>
 {/snippet}

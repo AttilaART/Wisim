@@ -220,20 +220,22 @@ func (c *Company) calculateBudget(decisions Decisions, externalFactors ExternalF
 		c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities = deleteByIndex(c.Reports[len(c.Reports)-1].BalanceSheet.Liabilities, loansToDelete...)
 
 	} else if c.Balance+financialReport.Totals.Cashflow < 0 {
-		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
-			"Bridge loan",
-			bridge_loans,
-			"You are automatically lent out bridge loans when your balance goes beneath 0",
-			true,
-			-(c.Balance + financialReport.Totals.Cashflow))
-		ptrBridgeLoan := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_liabilities(
-			"Bridge loan",
-			bridge_loans,
-			"You are automatically lent out bridge loans when your balance goes beneath 0",
-			true,
-			-c.Balance)
+		/*
+			c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
+				"Bridge loan",
+				bridge_loans,
+				"You are automatically lent out bridge loans when your balance goes beneath 0",
+				true,
+				-(c.Balance + financialReport.Totals.Cashflow))
+			ptrBridgeLoan := c.Reports[len(c.Reports)-1].BalanceSheet.add_to_liabilities(
+				"Bridge loan",
+				bridge_loans,
+				"You are automatically lent out bridge loans when your balance goes beneath 0",
+				true,
+				-c.Balance)
 
-		insertInFinanceReport(*ptrBridgeLoan)
+			insertInFinanceReport(*ptrBridgeLoan)
+		*/
 	}
 
 	c.Balance += financialReport.Totals.Cashflow

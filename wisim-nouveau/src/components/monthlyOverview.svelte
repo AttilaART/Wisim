@@ -9,12 +9,12 @@
 		let totalProductsSold = 0;
 		let totalMarketShare = 0;
 		for (let r of Object.entries(latestReport.SalesReport)) {
-			console.log($state.snapshot(r[1].ProductSalesStatistics));
 			totalProductsSold += r[1].ProductSalesStatistics.ProductsSold;
 			totalMarketShare += r[1].ProductSalesStatistics.MarketShare;
+
+			console.log(r[1].ProductSalesStatistics);
 		}
 
-		console.log(latestReport.SalesReport);
 		return { totalProductsSold, totalMarketShare };
 	});
 
@@ -42,6 +42,7 @@
 			<label for="">
 				Total Cashflow:
 				<h4>{format.currency(latestReport.FinancialReport.Totals.Cashflow, true, 2)}</h4>
+				{console.log(latestReport.BalanceSheet.Liabilities)}
 			</label>
 
 			<label for="">
