@@ -680,7 +680,8 @@
 
 		img {
 			content-fit: contain;
-			height: 2rem;
+			padding: 5px;
+			height: 3rem;
 		}
 	}
 
@@ -703,7 +704,7 @@
 			background-color: #bdbdbd;
 
 			img {
-				padding: 1rem;
+				padding: 0.5rem;
 				height: 100%;
 				width: 100%;
 

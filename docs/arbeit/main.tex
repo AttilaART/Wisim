@@ -1,32 +1,5 @@
-\documentclass{scrartcl}
-
-\usepackage{fontspec}
+\input{template.tex}
 \usepackage{lipsum}
-\usepackage[linktoc=all]{hyperref}
-\hypersetup{
-    colorlinks,
-    citecolor=black,
-    filecolor=black,
-    linkcolor=black,
-    urlcolor=black
-}
-
-\setmainfont[
-  BoldFont={SFNSText-Bold.otf}, 
-  ItalicFont={SFNSText-RegularItalic.otf},
-  BoldItalicFont={SFNSText-BoldItalic.otf}
-]{SFNSText-Regular.otf}
-
-\newfontfamily\ClashGroteskBold{ClashGrotesk-Bold.ttf}
-\newfontfamily\ClashGroteskSemibold{ClashGrotesk-Semibold.ttf}
-
-\setkomafont{title}{\ClashGroteskSemibold}
-\addtokomafont{section}{\ClashGroteskSemibold}
-
-\setkomafont{sectionentry}{\sffamily\large}
-\setkomafont{partentry}{\sffamily\normalsize}
-
-\setlength{\parindent}{0pt}
 
 \title{}
 \author{Attila Pinter}
@@ -35,13 +8,20 @@
 \begin{document}
 
 \begin{titlepage}
-	Kantonsschule im Lee Winterthur \\
-	Maturitätsarbeit HS 2025/26 \\
+	Kantonsschule im Lee Winterthur\\
+	Maturitätsarbeit HS 2025/26
 
-	{\Huge \ClashGroteskSemibold Developing a playable simulation of markets and corporations}\\
+	\vspace{0.25cm}
+
+	\begin{minipage}{\textwidth}
+		\raggedright
+		{\Huge \ClashGroteskSemibold Developing a playable simulation of markets and corporations}
+	\end{minipage}
+
+	\vspace{0.25cm}
 
 	Attila Pinter, 4a \\
-	Patrik Hknilcka \\
+	Patrik Hknilcka
 
 	\today
 
@@ -56,6 +36,8 @@
 \input{goals.tex}
 
 \input{concept.tex}
+
+\input{design.tex}
 
 \section{Technology}
 

@@ -1,41 +1,33 @@
-This is XeTeX, Version 3.141592653-2.6-0.999993 (MiKTeX 22.1) (preloaded format=xelatex 2025.8.21)  25 SEP 2025 10:28
+This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.4) (preloaded format=xelatex 2025.9.7)  17 OCT 2025 13:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **./main.tex
 (main.tex
-LaTeX2e <2024-11-01> patch level 2
-L3 programming layer <2025-03-26>
-
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/scrartcl.cls
-Document Class: scrartcl 2025/08/28 v3.47 KOMA-Script document class (article)
-
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/scrkbase.sty
-Package: scrkbase 2025/08/28 v3.47 KOMA-Script package (KOMA-Script-dependent b
+LaTeX2e <2025-06-01> patch level 1
+L3 programming layer <2025-08-13>
+(template.tex
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrartcl.cls
+Document Class: scrartcl 2025/09/09 v3.48 KOMA-Script document class (article)
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrkbase.sty
+Package: scrkbase 2025/09/09 v3.48 KOMA-Script package (KOMA-Script-dependent b
 asics and keyval usage)
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/scrbase.sty
-Package: scrbase 2025/08/28 v3.47 KOMA-Script package (KOMA-Script-independent 
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrbase.sty
+Package: scrbase 2025/09/09 v3.48 KOMA-Script package (KOMA-Script-independent 
 basics and keyval usage)
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/scrlfile.sty
-Package: scrlfile 2025/08/28 v3.47 KOMA-Script package (file load hooks)
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlfile.sty
+Package: scrlfile 2025/09/09 v3.48 KOMA-Script package (file load hooks)
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/scrlfile-hook.sty
-Package: scrlfile-hook 2025/08/28 v3.47 KOMA-Script package (using LaTeX hooks)
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlfile-hook.sty
+Package: scrlfile-hook 2025/09/09 v3.48 KOMA-Script package (using LaTeX hooks)
 
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/scrlogo.sty
-Package: scrlogo 2025/08/28 v3.47 KOMA-Script package (logo)
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlogo.sty
+Package: scrlogo 2025/09/09 v3.48 KOMA-Script package (logo)
 )))
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/graphics/keyval.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/graphics/keyval.sty
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks17
 )
@@ -43,9 +35,8 @@ Applying: [2021/05/01] Usage of raw or classic option list on input line 254.
 Already applied: [0000/00/00] Usage of raw or classic option list on input line
  370.
 ))
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/tocbasic.sty
-Package: tocbasic 2025/08/28 v3.47 KOMA-Script package (handling toc-files)
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/tocbasic.sty
+Package: tocbasic 2025/09/09 v3.48 KOMA-Script package (handling toc-files)
 \scr@dte@tocline@numberwidth=\skip49
 \scr@dte@tocline@numbox=\box53
 )
@@ -54,18 +45,16 @@ Package tocbasic Info: omitting babel extension for `toc'
 (tocbasic)             for `toc' on input line 141.
 Class scrartcl Info: File `scrsize11pt.clo' used instead of
 (scrartcl)           file `scrsize11.clo' to setup font sizes on input line 248
-5.
+6.
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/scrsize11pt.clo
-File: scrsize11pt.clo 2025/08/28 v3.47 KOMA-Script font size class option (11pt
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrsize11pt.clo
+File: scrsize11pt.clo 2025/09/09 v3.48 KOMA-Script font size class option (11pt
 )
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/koma-script/typearea.sty
-Package: typearea 2025/08/28 v3.47 KOMA-Script package (type area)
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/typearea.sty
+Package: typearea 2025/09/09 v3.48 KOMA-Script package (type area)
 \ta@bcor=\skip50
-\ta@div=\count193
+\ta@div=\count271
 \ta@hblk=\skip51
 \ta@vblk=\skip52
 \ta@temp=\skip53
@@ -86,273 +75,323 @@ Package typearea Info: These are the values describing the layout:
 (typearea)              \topskip        = 11.0pt
 (typearea)              \footskip       = 47.6pt
 (typearea)              \baselineskip   = 13.6pt
-(typearea)              on input line 1806.
+(typearea)              on input line 1807.
 )
-\c@part=\count194
-\c@section=\count195
-\c@subsection=\count196
-\c@subsubsection=\count197
-\c@paragraph=\count198
-\c@subparagraph=\count199
+\c@part=\count272
+\c@section=\count273
+\c@subsection=\count274
+\c@subsubsection=\count275
+\c@paragraph=\count276
+\c@subparagraph=\count277
 \scr@dte@section@maxnumwidth=\skip55
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\section on input line 5160.
+(scrartcl)           for `\section on input line 5161.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\section on input line 5160.
+(scrartcl)           for `\section on input line 5161.
 \scr@dte@part@maxnumwidth=\skip56
 Class scrartcl Info: using compatibility default `afterindent=false'
-(scrartcl)           for `\part on input line 5168.
+(scrartcl)           for `\part on input line 5169.
 \scr@dte@subsection@maxnumwidth=\skip57
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\subsection on input line 5178.
+(scrartcl)           for `\subsection on input line 5179.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\subsection on input line 5178.
+(scrartcl)           for `\subsection on input line 5179.
 \scr@dte@subsubsection@maxnumwidth=\skip58
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\subsubsection on input line 5188.
+(scrartcl)           for `\subsubsection on input line 5189.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\subsubsection on input line 5188.
+(scrartcl)           for `\subsubsection on input line 5189.
 \scr@dte@paragraph@maxnumwidth=\skip59
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\paragraph on input line 5199.
+(scrartcl)           for `\paragraph on input line 5200.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\paragraph on input line 5199.
+(scrartcl)           for `\paragraph on input line 5200.
 \scr@dte@subparagraph@maxnumwidth=\skip60
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\subparagraph on input line 5209.
+(scrartcl)           for `\subparagraph on input line 5210.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\subparagraph on input line 5209.
+(scrartcl)           for `\subparagraph on input line 5210.
 \abovecaptionskip=\skip61
 \belowcaptionskip=\skip62
 \c@pti@nb@sid@b@x=\box54
 Package tocbasic Info: omitting babel extension for `lof'
 (tocbasic)             because of feature `nobabel' available
-(tocbasic)             for `lof' on input line 6409.
+(tocbasic)             for `lof' on input line 6410.
 \scr@dte@figure@maxnumwidth=\skip63
-\c@figure=\count266
+\c@figure=\count278
 Package tocbasic Info: omitting babel extension for `lot'
 (tocbasic)             because of feature `nobabel' available
-(tocbasic)             for `lot' on input line 6421.
+(tocbasic)             for `lot' on input line 6422.
 \scr@dte@table@maxnumwidth=\skip64
-\c@table=\count267
-Class scrartcl Info: Redefining `\numberline' on input line 6591.
-\bibindent=\dimen146
+\c@table=\count279
+Class scrartcl Info: Redefining `\numberline' on input line 6592.
+\bibindent=\dimen148
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/fontspec/fontspec.sty
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/l3packages/xparse/xparse.sty
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/l3kernel/expl3.sty
-Package: expl3 2025-03-26 L3 programming layer (loader) 
+(/home/attila/.miktex/texmfs/install/tex/latex/fontspec/fontspec.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/l3packages/xparse/xparse.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/l3kernel/expl3.sty
+Package: expl3 2025-08-13 L3 programming layer (loader) 
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/l3backend/l3backend-xetex.def
-File: l3backend-xetex.def 2025-03-14 L3 backend support: XeTeX
-\g__graphics_track_int=\count268
-\g__pdfannot_backend_int=\count269
-\g__pdfannot_backend_link_int=\count270
+(/home/attila/.miktex/texmfs/install/tex/latex/l3backend/l3backend-xetex.def
+File: l3backend-xetex.def 2025-06-09 L3 backend support: XeTeX
+\g__graphics_track_int=\count280
+\g__pdfannot_backend_int=\count281
+\g__pdfannot_backend_link_int=\count282
 ))
 Package: xparse 2024-08-16 L3 Experimental document command parser
 )
 Package: fontspec 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaTeX
-
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/fontspec/fontspec-xetex.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/fontspec/fontspec-xetex.sty
 Package: fontspec-xetex 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaTe
 X
-\l__fontspec_script_int=\count271
-\l__fontspec_language_int=\count272
-\l__fontspec_strnum_int=\count273
-\l__fontspec_tmp_int=\count274
-\l__fontspec_tmpa_int=\count275
-\l__fontspec_tmpb_int=\count276
-\l__fontspec_tmpc_int=\count277
-\l__fontspec_em_int=\count278
-\l__fontspec_emdef_int=\count279
-\l__fontspec_strong_int=\count280
-\l__fontspec_strongdef_int=\count281
-\l__fontspec_tmpa_dim=\dimen147
-\l__fontspec_tmpb_dim=\dimen148
-\l__fontspec_tmpc_dim=\dimen149
+\l__fontspec_script_int=\count283
+\l__fontspec_language_int=\count284
+\l__fontspec_strnum_int=\count285
+\l__fontspec_tmp_int=\count286
+\l__fontspec_tmpa_int=\count287
+\l__fontspec_tmpb_int=\count288
+\l__fontspec_tmpc_int=\count289
+\l__fontspec_em_int=\count290
+\l__fontspec_emdef_int=\count291
+\l__fontspec_strong_int=\count292
+\l__fontspec_strongdef_int=\count293
+\l__fontspec_tmpa_dim=\dimen149
+\l__fontspec_tmpb_dim=\dimen150
+\l__fontspec_tmpc_dim=\dimen151
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/base/fontenc.sty
-Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
+(/home/attila/.miktex/texmfs/install/tex/latex/base/fontenc.sty
+Package: fontenc 2024/12/21 v2.1c Standard LaTeX package
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/fontspec/fontspec.cfg)))
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/lipsum/lipsum.sty
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/l3packages/l3keys2e/l3keys2e.sty
-Package: l3keys2e 2024-08-16 LaTeX2e option processing using LaTeX3 keys
+(/home/attila/.miktex/texmfs/install/tex/latex/fontspec/fontspec.cfg)))
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlayer-scrpage.sty
+Package: scrlayer-scrpage 2025/09/09 v3.48 KOMA-Script package (end user interf
+ace for scrlayer)
+(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlayer.sty
+Package: scrlayer 2025/09/09 v3.48 KOMA-Script package (defining layers and pag
+e styles)
+Package scrlayer Info: patching LaTeX kernel macro \pagestyle on input line 217
+9.
 )
-Package: lipsum 2021-09-20 v2.7 150 paragraphs of Lorem Ipsum dummy text
-\g__lipsum_par_int=\count282
-\l__lipsum_a_int=\count283
-\l__lipsum_b_int=\count284
+Package scrlayer-scrpage Info: Makeing stand-alone element `pagehead' from
+(scrlayer-scrpage)             alias to `pageheadfoot' on input line 1106.
+)
+(/home/attila/.miktex/texmfs/install/tex/latex/xcolor/xcolor.sty
+Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/lipsum/lipsum.ltd.tex))
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/hyperref/hyperref.sty
-Package: hyperref 2024-11-05 v7.01l Hypertext links for LaTeX
+(/home/attila/.miktex/texmfs/install/tex/latex/graphics-cfg/color.cfg
+File: color.cfg 2016/01/02 v1.6 sample color configuration
+)
+Package xcolor Info: Driver file: xetex.def on input line 274.
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/iftex/iftex.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/graphics-def/xetex.def
+File: xetex.def 2022/09/22 v5.0n Graphics/color driver for xetex
+)
+(/home/attila/.miktex/texmfs/install/tex/latex/graphics/mathcolor.ltx)
+Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `RGB' extended on input line 1365.
+Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
+Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
+Package xcolor Info: Model `tHsb' substituted by `hsb' on input line 1369.
+Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
+Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
+Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
+)
+(/home/attila/.miktex/texmfs/install/tex/latex/booktabs/booktabs.sty
+Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
+\heavyrulewidth=\dimen152
+\lightrulewidth=\dimen153
+\cmidrulewidth=\dimen154
+\belowrulesep=\dimen155
+\belowbottomsep=\dimen156
+\aboverulesep=\dimen157
+\abovetopsep=\dimen158
+\cmidrulesep=\dimen159
+\cmidrulekern=\dimen160
+\defaultaddspace=\dimen161
+\@cmidla=\count294
+\@cmidlb=\count295
+\@aboverulesep=\dimen162
+\@belowrulesep=\dimen163
+\@thisruleclass=\count296
+\@lastruleclass=\count297
+\@thisrulewidth=\dimen164
+)
+(/home/attila/.miktex/texmfs/install/tex/latex/graphics/graphicx.sty
+Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/home/attila/.miktex/texmfs/install/tex/latex/graphics/graphics.sty
+Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
+
+(/home/attila/.miktex/texmfs/install/tex/latex/graphics/trig.sty
+Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
+)
+(/home/attila/.miktex/texmfs/install/tex/latex/graphics-cfg/graphics.cfg
+File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
+)
+Package graphics Info: Driver file: xetex.def on input line 106.
+)
+\Gin@req@height=\dimen165
+\Gin@req@width=\dimen166
+)
+(/home/attila/.miktex/texmfs/install/tex/latex/href-ul/href-ul.sty
+Package: href-ul 2025/03/07 0.5.2 Underlined Hyperlinks
+
+(/home/attila/.miktex/texmfs/install/tex/latex/pgfopts/pgfopts.sty
+Package: pgfopts 2014/07/10 v2.1a LaTeX package options with pgfkeys
+
+(/home/attila/.miktex/texmfs/install/tex/latex/pgf/utilities/pgfkeys.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfkeys.code.tex
+\pgfkeys@pathtoks=\toks18
+\pgfkeys@temptoks=\toks19
+
+(/home/attila/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfkeyslibraryfi
+ltered.code.tex
+\pgfkeys@tmptoks=\toks20
+)))
+\pgfopts@list@add@a@toks=\toks21
+\pgfopts@list@add@b@toks=\toks22
+)
+(/home/attila/.miktex/texmfs/install/tex/latex/ulem/ulem.sty
+\UL@box=\box55
+\UL@hyphenbox=\box56
+\UL@skip=\skip65
+\UL@hook=\toks23
+\UL@height=\dimen167
+\UL@pe=\count298
+\UL@pixel=\dimen168
+\ULC@box=\box57
+Package: ulem 2019/11/18
+\ULdepth=\dimen169
+)
+(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/hyperref.sty
+Package: hyperref 2025-07-12 v7.01o Hypertext links for LaTeX
+
+(/home/attila/.miktex/texmfs/install/tex/generic/iftex/iftex.sty
 Package: iftex 2024/12/12 v1.0g TeX engine tests
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/kvsetkeys/kvsetkeys.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/kvsetkeys/kvsetkeys.sty
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/kvdefinekeys/kvdefinekeys.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/kvdefinekeys/kvdefinekeys.sty
 Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
-)
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/pdfescape/pdfescape.sty
+) (/home/attila/.miktex/texmfs/install/tex/generic/pdfescape/pdfescape.sty
 Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/ltxcmds/ltxcmds.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/ltxcmds/ltxcmds.sty
 Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/pdftexcmds/pdftexcmds.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/pdftexcmds/pdftexcmds.sty
 Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
 )
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/infwarerr/infwarerr.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/infwarerr/infwarerr.sty
 Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
 )
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
 Package pdftexcmds Info: \pdfdraftmode not found.
 ))
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/hycolor/hycolor.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/hycolor/hycolor.sty
 Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/hyperref/nameref.sty
-Package: nameref 2023-11-26 v2.56 Cross-referencing by name of section
+(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/nameref.sty
+Package: nameref 2025-06-21 v2.57 Cross-referencing by name of section
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/refcount/refcount.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/refcount/refcount.sty
 Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/gettitlestring/gettitlestring.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/gettitlestring/gettitlestring.
+sty
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
-
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/kvoptions/kvoptions.sty
+ (/home/attila/.miktex/texmfs/install/tex/latex/kvoptions/kvoptions.sty
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count285
+\c@section@level=\count299
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/etoolbox/etoolbox.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/etoolbox/etoolbox.sty
 Package: etoolbox 2025/02/11 v2.5l e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count286
+\etb@tempcnta=\count300
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/stringenc/stringenc.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/stringenc/stringenc.sty
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
-\@linkdim=\dimen150
-\Hy@linkcounter=\count287
-\Hy@pagecounter=\count288
+\@linkdim=\dimen170
+\Hy@linkcounter=\count301
+\Hy@pagecounter=\count302
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/hyperref/pd1enc.def
-File: pd1enc.def 2024-11-05 v7.01l Hyperref: PDFDocEncoding definition (HO)
+(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/pd1enc.def
+File: pd1enc.def 2025-07-12 v7.01o Hyperref: PDFDocEncoding definition (HO)
 )
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/intcalc/intcalc.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/intcalc/intcalc.sty
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count289
+\Hy@SavedSpaceFactor=\count303
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/hyperref/puenc.def
-File: puenc.def 2024-11-05 v7.01l Hyperref: PDF Unicode definition (HO)
+(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/puenc.def
+File: puenc.def 2025-07-12 v7.01o Hyperref: PDF Unicode definition (HO)
 )
-Package hyperref Info: Hyper figures OFF on input line 4157.
-Package hyperref Info: Link nesting OFF on input line 4162.
-Package hyperref Info: Hyper index ON on input line 4165.
-Package hyperref Info: Plain pages OFF on input line 4172.
-Package hyperref Info: Backreferencing OFF on input line 4177.
+Package hyperref Info: Hyper figures OFF on input line 4195.
+Package hyperref Info: Link nesting OFF on input line 4200.
+Package hyperref Info: Hyper index ON on input line 4203.
+Package hyperref Info: Plain pages OFF on input line 4210.
+Package hyperref Info: Backreferencing OFF on input line 4215.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
-Package hyperref Info: Bookmarks ON on input line 4424.
-\c@Hy@tempcnt=\count290
+Package hyperref Info: Bookmarks ON on input line 4462.
+\c@Hy@tempcnt=\count304
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/url/url.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/url/url.sty
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
-LaTeX Info: Redefining \url on input line 4763.
-\XeTeXLinkMargin=\dimen151
+LaTeX Info: Redefining \url on input line 4801.
+\XeTeXLinkMargin=\dimen171
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/bitset/bitset.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/bitset/bitset.sty
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/bigintcalc/bigintcalc.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/bigintcalc/bigintcalc.sty
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count291
-\Field@Width=\dimen152
-\Fld@charsize=\dimen153
-Package hyperref Info: Hyper figures OFF on input line 6042.
-Package hyperref Info: Link nesting OFF on input line 6047.
-Package hyperref Info: Hyper index ON on input line 6050.
-Package hyperref Info: backreferencing OFF on input line 6057.
-Package hyperref Info: Link coloring OFF on input line 6062.
-Package hyperref Info: Link coloring with OCG OFF on input line 6067.
-Package hyperref Info: PDF/A mode OFF on input line 6072.
-
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/base/atbegshi-ltx.sty
-Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
-package with kernel methods
-)
-\Hy@abspage=\count292
-\c@Item=\count293
-\c@Hfootnote=\count294
+\Fld@menulength=\count305
+\Field@Width=\dimen172
+\Fld@charsize=\dimen173
+Package hyperref Info: Hyper figures OFF on input line 6078.
+Package hyperref Info: Link nesting OFF on input line 6083.
+Package hyperref Info: Hyper index ON on input line 6086.
+Package hyperref Info: backreferencing OFF on input line 6093.
+Package hyperref Info: Link coloring OFF on input line 6098.
+Package hyperref Info: Link coloring with OCG OFF on input line 6103.
+Package hyperref Info: PDF/A mode OFF on input line 6108.
+\Hy@abspage=\count306
+\c@Item=\count307
+\c@Hfootnote=\count308
 )
 Package hyperref Info: Driver (autodetected): hxetex.
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/hyperref/hxetex.def
-File: hxetex.def 2024-11-05 v7.01l Hyperref driver for XeTeX
-\pdfm@box=\box55
-\c@Hy@AnnotLevel=\count295
-\HyField@AnnotCount=\count296
-\Fld@listcount=\count297
-\c@bookmark@seq@number=\count298
+(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/hxetex.def
+File: hxetex.def 2025-07-12 v7.01o Hyperref driver for XeTeX
+\pdfm@box=\box58
+\c@Hy@AnnotLevel=\count309
+\HyField@AnnotCount=\count310
+\Fld@listcount=\count311
+\c@bookmark@seq@number=\count312
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/rerunfilecheck/rerunfilecheck.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/rerunfilecheck/rerunfilecheck.st
+y
 Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gene
-ric/uniquecounter/uniquecounter.sty
+(/home/attila/.miktex/texmfs/install/tex/generic/uniquecounter/uniquecounter.st
+y
 Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 84.
 )
-\Hy@SectionHShift=\skip65
-)
-Package hyperref Info: Option `colorlinks' set `true' on input line 12.
+\Hy@SectionHShift=\skip66
+))
+Package hyperref Info: Option `colorlinks' set `true' on input line 22.
 
 Package fontspec Info: 
 (fontspec)             Font family 'SFNSText-Regular.otf(0)' created for font
@@ -400,6 +439,15 @@ Package fontspec Info:
 (fontspec)             <->"[ClashGrotesk-Semibold.ttf]/OT:script=latn;language=
 dflt;"
 
+) (/home/attila/.miktex/texmfs/install/tex/latex/lipsum/lipsum.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/l3packages/l3keys2e/l3keys2e.sty
+Package: l3keys2e 2024-08-16 LaTeX2e option processing using LaTeX3 keys
+)
+Package: lipsum 2021-09-20 v2.7 150 paragraphs of Lorem Ipsum dummy text
+\g__lipsum_par_int=\count313
+\l__lipsum_a_int=\count314
+\l__lipsum_b_int=\count315
+ (/home/attila/.miktex/texmfs/install/tex/latex/lipsum/lipsum.ltd.tex))
 Class scrartcl Info: loading recommended package `bookmark'.
 (scrartcl)           Using `bookmark' together with `hyperref' is recommended,
 (scrartcl)           because of handling of possible bookmark level gaps.
@@ -407,48 +455,47 @@ Class scrartcl Info: loading recommended package `bookmark'.
 (scrartcl)           `bookmarkpackage=false' before \begin{document} and
 (scrartcl)           you can avoid this message adding:
 (scrartcl)             \usepackage{bookmark}
-(scrartcl)           before \begin{document} on input line 35.
+(scrartcl)           before \begin{document} on input line 8.
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/bookmark/bookmark.sty
+(/home/attila/.miktex/texmfs/install/tex/latex/bookmark/bookmark.sty
 Package: bookmark 2023-12-10 v1.31 PDF bookmarks (HO)
 
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/bookmark/bkm-dvipdfm.def
+(/home/attila/.miktex/texmfs/install/tex/latex/bookmark/bkm-dvipdfm.def
 File: bkm-dvipdfm.def 2023-12-10 v1.31 bookmark driver for dvipdfm (HO)
-\BKM@id=\count299
-)) (main.aux)
+\BKM@id=\count316
+))
+(main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 35.
-LaTeX Font Info:    ... okay on input line 35.
-Package scrbase Info: activating english \abstractname on input line 35.
-Package scrbase Info: activating english \partname on input line 35.
-Package scrbase Info: activating english \figurename on input line 35.
-Package scrbase Info: activating english \tablename on input line 35.
-Package scrbase Info: activating english \contentsname on input line 35.
-Package scrbase Info: activating english \listfigurename on input line 35.
-Package scrbase Info: activating english \listtablename on input line 35.
-Package scrbase Info: activating english \refname on input line 35.
-Package scrbase Info: activating english \indexname on input line 35.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for TU/lmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 8.
+LaTeX Font Info:    ... okay on input line 8.
+Package scrbase Info: activating english \abstractname on input line 8.
+Package scrbase Info: activating english \partname on input line 8.
+Package scrbase Info: activating english \figurename on input line 8.
+Package scrbase Info: activating english \tablename on input line 8.
+Package scrbase Info: activating english \contentsname on input line 8.
+Package scrbase Info: activating english \listfigurename on input line 8.
+Package scrbase Info: activating english \listtablename on input line 8.
+Package scrbase Info: activating english \refname on input line 8.
+Package scrbase Info: activating english \indexname on input line 8.
 
 Package fontspec Info: 
 (fontspec)             Adjusting the maths setup (use [no-math] to avoid
@@ -456,103 +503,71 @@ Package fontspec Info:
 
 \symlegacymaths=\mathgroup4
 LaTeX Font Info:    Overwriting symbol font `legacymaths' in version `bold'
-(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 35.
-LaTeX Font Info:    Redeclaring math accent \acute on input line 35.
-LaTeX Font Info:    Redeclaring math accent \grave on input line 35.
-LaTeX Font Info:    Redeclaring math accent \ddot on input line 35.
-LaTeX Font Info:    Redeclaring math accent \tilde on input line 35.
-LaTeX Font Info:    Redeclaring math accent \bar on input line 35.
-LaTeX Font Info:    Redeclaring math accent \breve on input line 35.
-LaTeX Font Info:    Redeclaring math accent \check on input line 35.
-LaTeX Font Info:    Redeclaring math accent \hat on input line 35.
-LaTeX Font Info:    Redeclaring math accent \dot on input line 35.
-LaTeX Font Info:    Redeclaring math accent \mathring on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \colon on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Delta on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Theta on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Xi on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Pi on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Phi on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Psi on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \Omega on input line 35.
-LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 35.
-LaTeX Font Info:    Redeclaring symbol font `operators' on input line 35.
+(Font)                  OT1/cmr/m/n --> OT1/cmr/bx/n on input line 8.
+LaTeX Font Info:    Redeclaring math accent \acute on input line 8.
+LaTeX Font Info:    Redeclaring math accent \grave on input line 8.
+LaTeX Font Info:    Redeclaring math accent \ddot on input line 8.
+LaTeX Font Info:    Redeclaring math accent \tilde on input line 8.
+LaTeX Font Info:    Redeclaring math accent \bar on input line 8.
+LaTeX Font Info:    Redeclaring math accent \breve on input line 8.
+LaTeX Font Info:    Redeclaring math accent \check on input line 8.
+LaTeX Font Info:    Redeclaring math accent \hat on input line 8.
+LaTeX Font Info:    Redeclaring math accent \dot on input line 8.
+LaTeX Font Info:    Redeclaring math accent \mathring on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \colon on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Gamma on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Delta on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Theta on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Lambda on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Xi on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Pi on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Sigma on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Upsilon on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Phi on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Psi on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \Omega on input line 8.
+LaTeX Font Info:    Redeclaring math symbol \mathdollar on input line 8.
+LaTeX Font Info:    Redeclaring symbol font `operators' on input line 8.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `normal' on input line 35.
+(Font)              `operators' in the math version `normal' on input line 8.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  OT1/cmr/m/n --> TU/SFNSText-Regular.otf(0)/m/n on input
- line 35.
+ line 8.
 LaTeX Font Info:    Encoding `OT1' has changed to `TU' for symbol font
-(Font)              `operators' in the math version `bold' on input line 35.
+(Font)              `operators' in the math version `bold' on input line 8.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  OT1/cmr/bx/n --> TU/SFNSText-Regular.otf(0)/m/n on inpu
-t line 35.
+t line 8.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `normal'
 (Font)                  TU/SFNSText-Regular.otf(0)/m/n --> TU/SFNSText-Regular.
-otf(0)/m/n on input line 35.
+otf(0)/m/n on input line 8.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `normal'
 (Font)                  OT1/cmr/m/it --> TU/SFNSText-Regular.otf(0)/m/it on inp
-ut line 35.
+ut line 8.
 LaTeX Font Info:    Overwriting math alphabet `\mathbf' in version `normal'
 (Font)                  OT1/cmr/bx/n --> TU/SFNSText-Regular.otf(0)/b/n on inpu
-t line 35.
+t line 8.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `normal'
-(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 35.
+(Font)                  OT1/cmss/m/n --> TU/lmss/m/n on input line 8.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `normal'
-(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 35.
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/m/n on input line 8.
 LaTeX Font Info:    Overwriting symbol font `operators' in version `bold'
 (Font)                  TU/SFNSText-Regular.otf(0)/m/n --> TU/SFNSText-Regular.
-otf(0)/b/n on input line 35.
+otf(0)/b/n on input line 8.
 LaTeX Font Info:    Overwriting math alphabet `\mathit' in version `bold'
 (Font)                  OT1/cmr/bx/it --> TU/SFNSText-Regular.otf(0)/b/it on in
-put line 35.
+put line 8.
 LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
-(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 35.
+(Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 8.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
-(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 35.
-
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/graphics/color.sty
-Package: color 2024/06/23 v1.3e Standard LaTeX Color (DPC)
-
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/graphics-cfg/color.cfg
-File: color.cfg 2016/01/02 v1.6 sample color configuration
-)
-Package color Info: Driver file: xetex.def on input line 149.
-
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/graphics-def/xetex.def
-File: xetex.def 2022/09/22 v5.0n Graphics/color driver for xetex
-)
-(/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/late
-x/graphics/mathcolor.ltx))
-Package hyperref Info: Link coloring ON on input line 35.
-
-Underfull \hbox (badness 10000) in paragraph at lines 38--40
-
- []
-
-
-Overfull \hbox (33.52393pt too wide) in paragraph at lines 41--42
-[]\TU/ClashGrotesk-Semibold.ttf(0)/m/n/24.88 Developing a playable simulation o
-f mar-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 41--42
-
- []
-
-
-Underfull \hbox (badness 10000) in paragraph at lines 43--45
-
- []
-
+(Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 8.
+Package hyperref Info: Link coloring ON on input line 8.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <10.95> on input line 19.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 19.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 19.
 
 
 [1
@@ -562,33 +577,81 @@ Underfull \hbox (badness 10000) in paragraph at lines 43--45
 LaTeX Font Warning: Font shape `TU/ClashGrotesk-Semibold.ttf(0)/bx/n' undefined
 
 (Font)              using `TU/ClashGrotesk-Semibold.ttf(0)/m/n' instead on inpu
-t line 50.
+t line 30.
 
-(main.toc
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <10.95> on input line 4.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <8> on input line 4.
-LaTeX Font Info:    External font `cmex10' loaded for size
-(Font)              <6> on input line 4.
-)
+(main.toc)
 \tf@toc=\write3
 \openout3 = `main.toc'.
 
 
 
-[2] (motivation.tex) (goals.tex) (concept.tex
+LaTeX Font Info:    Font shape `TU/SFNSText-Regular.otf(0)/m/sl' in size <10.95
+> not available
+(Font)              Font shape `TU/SFNSText-Regular.otf(0)/m/it' tried instead 
+on input line 33.
+[2] (motivation.tex
+Overfull \hbox (33.9259pt too wide) in paragraph at lines 3--9
+\TU/SFNSText-Regular.otf(0)/m/it/10.95 administration\TU/SFNSText-Regular.otf(0
+)/m/n/10.95 , we \TU/SFNSText-Regular.otf(0)/m/it/10.95 played \TU/SFNSText-Reg
+ular.otf(0)/m/n/10.95 a game, where you were the board of a company manufacturi
+ng
+ []
 
-[3])
+) (goals.tex) (concept.tex
+Overfull \hbox (2.69382pt too wide) in paragraph at lines 3--7
+\TU/SFNSText-Regular.otf(0)/m/n/10.95 creates and runs a company that manufactu
+res and sells a product while competing
+ []
+
+File: conceptualStructure.png Graphic file (type bmp)
+<conceptualStructure.png>
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+)
+Overfull \hbox (3.3895pt too wide) in paragraph at lines 17--39
+\TU/SFNSText-Regular.otf(0)/m/n/10.95 wanted to make. My general idea was based
+ around |   [] \TU/SFNSText-Regular.otf(0)/m/it/10.95 creating an experience
+ []
+
+
+
+[3] (design.tex
+File: wisimLayout1.png Graphic file (type bmp)
+<wisimLayout1.png>
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+)
+
+Package lipsum Warning: Unknown language 'latin'. Hyphenation patterns for
+(lipsum)                'english' will be used instead.
+
+
 
 [4]
 
+Package lipsum Warning: Unknown language 'english'. Hyphenation patterns for
+(lipsum)                'english' will be used instead.
+
+
+
 [5]
+
+Package lipsum Warning: Unknown language 'english'. Hyphenation patterns for
+(lipsum)                'english' will be used instead.
+
+
+Package lipsum Warning: Unknown language 'english'. Hyphenation patterns for
+(lipsum)                'english' will be used instead.
+
+
 
 [6] (main.aux)
  ***********
-LaTeX2e <2024-11-01> patch level 2
-L3 programming layer <2025-03-26>
+LaTeX2e <2025-06-01> patch level 1
+L3 programming layer <2025-08-13>
  ***********
 
 
@@ -596,12 +659,12 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 14102 strings out of 405079
- 304265 string characters out of 5494885
- 928516 words of memory out of 5000000
- 40591 multiletter control sequences out of 15000+600000
- 630148 words of font info for 78 fonts, out of 8000000 for 9000
- 1348 hyphenation exceptions out of 8191
- 108i,7n,107p,11209b,345s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 16811 strings out of 405216
+ 375491 string characters out of 5493734
+ 1043682 words of memory out of 5000000
+ 44957 multiletter control sequences out of 15000+600000
+ 630262 words of font info for 80 fonts, out of 8000000 for 9000
+ 0 hyphenation exceptions out of 8191
+ 113i,19n,110p,11230b,400s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
 Output written on main.pdf (6 pages).

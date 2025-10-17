@@ -1,0 +1,63 @@
+\documentclass{scrartcl}
+
+\usepackage{fontspec}
+\usepackage{scrlayer-scrpage}
+\usepackage{xcolor}
+\usepackage{booktabs}
+\usepackage{graphicx}
+
+\definecolor{blue}{RGB}{1, 114, 173}
+\definecolor{sectionColor}{RGB}{45, 49, 56}
+\definecolor{subsectionColor}{RGB}{55, 60, 68}
+\definecolor{subsubsectionColor}{RGB}{100, 107, 121}
+\definecolor{normalcolor}{RGB}{100, 107, 121}
+
+\usepackage{href-ul}
+\hypersetup{
+	colorlinks,
+	citecolor=black,
+	filecolor=black,
+	linkcolor=black,
+	urlcolor=blue
+}
+
+\setmainfont[
+	BoldFont={SFNSText-Bold.otf},
+	ItalicFont={SFNSText-RegularItalic.otf},
+	BoldItalicFont={SFNSText-BoldItalic.otf}
+]{SFNSText-Regular.otf}
+
+\newfontfamily\ClashGroteskBold{ClashGrotesk-Bold.ttf}
+\newfontfamily\ClashGroteskSemibold{ClashGrotesk-Semibold.ttf}
+
+\setkomafont{title}{\ClashGroteskSemibold \color{sectionColor}}
+\addtokomafont{section}{\ClashGroteskSemibold \color{sectionColor}}
+\addtokomafont{subsection}{\ClashGroteskSemibold \color{subsectionColor}}
+\addtokomafont{subsubsection}{\ClashGroteskSemibold \color{subsubsectionColor}}
+\addtokomafont{subsubsection}{\ClashGroteskSemibold \color{subsubsectionColor}}
+
+\setkomafont{partentry}{\sffamily\large}
+\setkomafont{partentrypagenumber}{\sffamily\large}
+\setkomafont{sectionentry}{\sffamily\large}
+\setkomafont{sectionentrydots}{\sffamily\large}
+\setkomafont{sectionentrypagenumber}{\sffamily\large}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.25cm}
+
+% \pagestyle{scrheadings}
+% \lohead*[\large \ClashGroteskSemibold AttilaART]{\large \ClashGroteskSemibold AttilaART}
+% \lofoot{
+%   \begin{minipage}{\textwidth}
+%     {\large \ClashGroteskSemibold Contact}
+%
+%     \normalfont
+%
+%     \vspace{0.25cm}
+%
+%     Email: \href{mailto:attila@attilaart.ch}{attila@attilaart.ch} \\
+%     Web: \href{https://attilaart.ch}{attilaart.ch} \\
+%     Github: \href{https://github.com/AttilaART}{AttilaART} \\
+%
+%   \end{minipage}
+% }

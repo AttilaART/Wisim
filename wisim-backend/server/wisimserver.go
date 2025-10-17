@@ -189,7 +189,7 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 
 	company := gamestate.Companies[s.conns[ws].Company]
 
-	company = gamestate.SynchroniseCompannyWithDecisions(gamestate.CurrentDecisions[s.conns[ws].Company], gamestate.Companies[s.conns[ws].Company])
+	company = gamestate.SynchroniseCompanyWithDecisions(gamestate.CurrentDecisions[s.conns[ws].Company], gamestate.Companies[s.conns[ws].Company])
 
 	// company = removeProductNaNInf(company)
 	reply.Data = &company
