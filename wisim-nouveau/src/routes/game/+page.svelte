@@ -18,7 +18,17 @@
 	import Production from '../../components/production.svelte';
 	import { preventPageReload } from '$lib/helper.svelte';
 	import MonthlyOverview from '../../components/monthlyOverview.svelte';
-	import { calculateProductStats } from '../../calculateProduct';
+
+	/** handle wasm import */
+	import { wasm_exec } from '$lib/wasm_exec.js';
+
+	wasm_exec();
+
+	// @ts-ignore
+	const go = new Go();
+	go.run((await WebAssembly.instantiateStreaming(fetch('/main.wasm'), go.importObject)).instance);
+
+	/**/
 
 	/** @type {{data: {serverAdress: string}}}*/
 	let { data } = $props();

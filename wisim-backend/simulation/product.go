@@ -6,7 +6,7 @@ import (
 )
 
 func (c *Company) newProduct(productID string, companyID int, productName string, productDecisions Decisions_product) Offer {
-	productStats, productionLineCost := c.calculateProductStats(productDecisions.Product)
+	productStats, productionLineCost := CalculateProductStats(productDecisions.Product, *c.productComponents)
 	offer := Offer{Outdated: productDecisions.Outdated, Product: productDecisions.Product, ProductStats: productStats}
 	offer.Product.ID = productID
 	offer.Product.CompanyID = companyID
@@ -18,25 +18,25 @@ func (c *Company) newProduct(productID string, companyID int, productName string
 }
 
 // Calcualtes base product stats
-func (c Company) calculateProductStats(
-	product Product,
+func CalculateProductStats(
+	product Product, productComponents ProductComponents,
 ) (productStats ProductStats, productionLineCost float64) { // Calcualtes product stats without side effects
 
 	parts := []Component{}
 
-	parts = append(parts, c.productComponents.FormFactor[product.Components.FormFactor])
-	parts = append(parts, c.productComponents.Frame[product.Components.Frame])
-	parts = append(parts, c.productComponents.Body[product.Components.Body])
-	parts = append(parts, c.productComponents.Mechanism[product.Components.Mechanism])
+	parts = append(parts, productComponents.FormFactor[product.Components.FormFactor])
+	parts = append(parts, productComponents.Frame[product.Components.Frame])
+	parts = append(parts, productComponents.Body[product.Components.Body])
+	parts = append(parts, productComponents.Mechanism[product.Components.Mechanism])
 
-	productStats.MiscSlots += c.productComponents.FormFactor[product.Components.FormFactor].MiscSlots
-	productStats.MiscSlots += c.productComponents.Frame[product.Components.Frame].MiscSlots
-	productStats.MiscSlots += c.productComponents.Body[product.Components.Body].MiscSlots
-	productStats.MiscSlots += c.productComponents.Mechanism[product.Components.Mechanism].MiscSlots
+	productStats.MiscSlots += productComponents.FormFactor[product.Components.FormFactor].MiscSlots
+	productStats.MiscSlots += productComponents.Frame[product.Components.Frame].MiscSlots
+	productStats.MiscSlots += productComponents.Body[product.Components.Body].MiscSlots
+	productStats.MiscSlots += productComponents.Mechanism[product.Components.Mechanism].MiscSlots
 
 	for i, component := range product.Components.Misc {
 		if i < productStats.MiscSlots {
-			parts = append(parts, c.productComponents.Misc[component])
+			parts = append(parts, productComponents.Misc[component])
 		}
 	}
 

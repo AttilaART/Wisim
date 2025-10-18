@@ -128,7 +128,7 @@ func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company
 			d.Promotion.Ethics,
 			d.Promotion.Durability,
 		}
-		offer.ProductStats, _ = company.calculateProductStats(d.Product)
+		offer.ProductStats, _ = CalculateProductStats(d.Product, *company.productComponents)
 
 		company.Offers[ID] = offer
 	}

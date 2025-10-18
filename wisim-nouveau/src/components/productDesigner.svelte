@@ -1,6 +1,5 @@
 <script>
 	import { format } from '$lib/javascript/format';
-	import { calculateProductStats } from '../calculateProduct';
 	import noIcon from '$lib/images/noIcon.svg';
 	import Increment from './increment.svelte';
 
@@ -60,10 +59,16 @@
 	});
 
 	/** @type {number} */
-	/** @type {{productStats: import("$lib/javascript/simulation").ProductStats , productionLineCost: number}} */
-	let { productStats, productionLineCost } = $derived(
-		calculateProductStats(productDecisions.Product, clientState.productComponents)
-	);
+	/** @type {{ProductStats: import("$lib/javascript/simulation").ProductStats , ProductionLineCost: number}} */
+	let { ProductStats: productStats, ProductionLineCost: productionLineCost } = $derived.by(() => {
+		// @ts-ignore
+		return JSON.parse(
+			CalculateProductStatsGo(
+				JSON.stringify(productDecisions.Product),
+				JSON.stringify(clientState.productComponents)
+			)
+		);
+	});
 
 	/** @type {import("$lib/javascript/simulation").Decisions_product} */
 	let hoverProductDecisions = $state(JSON.parse(JSON.stringify(productDecisions)));
@@ -72,10 +77,17 @@
 		hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 	});
 
-	/** @type {{productStats: import("$lib/javascript/simulation").ProductStats , productionLineCost: number}} */
-	let { productStats: hoverProductStats, productionLineCost: hoverProductionLineCost } = $derived(
-		calculateProductStats(hoverProductDecisions.Product, clientState.productComponents)
-	);
+	/** @type {{ProductStats: import("$lib/javascript/simulation").ProductStats , ProductionLineCost: number}} */
+	let { ProductStats: hoverProductStats, ProductionLineCost: hoverProductionLineCost } =
+		$derived.by(() => {
+			// @ts-ignore
+			return JSON.parse(
+				CalculateProductStatsGo(
+					JSON.stringify(hoverProductDecisions.Product),
+					JSON.stringify(clientState.productComponents)
+				)
+			);
+		});
 
 	/** @type {import("svelte").Snippet} */
 	let currentDesignerSnippet = $state(selectPart);

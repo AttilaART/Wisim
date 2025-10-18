@@ -1,6 +1,5 @@
 <script>
 	import { format } from '$lib/javascript/format';
-	import { calculateProductStats } from '../calculateProduct';
 	import storageIcon from '$lib/images/warehouse.svg';
 	import Increment from './increment.svelte';
 	import Window from './window.svelte';
