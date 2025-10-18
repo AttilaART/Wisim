@@ -1,13 +1,11 @@
 <script>
 	import { format } from '$lib/javascript/format';
 	import storageIcon from '$lib/images/warehouse.svg';
-	import Increment from './increment.svelte';
 	import Window from './window.svelte';
 	import ProductionIcon from '$lib/images/production.svg';
 	import MarketingIcon from '$lib/images/marketing.svg';
 	import { ignoreError, preventPageReload } from '$lib/helper.svelte';
 	import ProductDesigner from './productDesigner.svelte';
-	import { createRawSnippet, mount, unmount } from 'svelte';
 	import { fade, fly } from 'svelte/transition';
 	import ConfigurePromotion from './configurePromotion.svelte';
 	/** @typedef {Object} Props
@@ -106,7 +104,7 @@
 					}}
 				>
 					<img
-						src={'/src/lib/images/' +
+						src={'/' +
 							ignoreError(() => {
 								return clientState.productComponents.FormFactor[
 									`${offer[1].Product.Components.FormFactor}`

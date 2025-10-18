@@ -92,11 +92,6 @@
 	/** @type {import("svelte").Snippet} */
 	let currentDesignerSnippet = $state(selectPart);
 
-	const images = import.meta.glob(['$lib/images/Products/Base_blueprint/*.svg'], {
-		eager: true,
-		as: 'url'
-	});
-
 	let mousePosition = $state({ x: 0, y: 0 });
 
 	window.addEventListener('mousemove', (event) => {
@@ -413,7 +408,7 @@
 
 		<div>
 			<img
-				src={'/src/lib/images/' +
+				src={'/' +
 					clientState.productComponents.FormFactor[
 						`${productDecisions.Product.Components.FormFactor}`
 					]?.Image}
@@ -538,7 +533,7 @@
 						hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 					}}
 				>
-					<img src={'/src/lib/images/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+					<img src={'/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
 					{@render componentTooltip(c)}
 				</button>
 			{/each}
@@ -579,7 +574,7 @@
 			hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 		}}
 	>
-		<img src={'/src/lib/images/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+		<img src={'/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
 		{@render componentTooltip(c)}
 	</button>
 {/snippet}
@@ -634,7 +629,7 @@
 	{#if !field}
 		+
 	{:else}
-		<img src={'/src/lib/images/' + `${imageSource[field]?.Image}`} alt="" />
+		<img src={'/' + `${imageSource[field]?.Image}`} alt="" />
 	{/if}
 {/snippet}
 
