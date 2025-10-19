@@ -10,6 +10,7 @@ kanban-plugin: board
 - [ ] # Complex research screen
 - [ ] # Multi Machines on offer
 - [ ] Add Icons
+- [ ] # Add different architypes of customers
 
 
 ## Bugs
@@ -19,10 +20,6 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] # Production Screen
-- [ ] # Add Monthly overview
-	Show most important values from the past month:
-	- Show how much money was made
 
 
 ## Done
@@ -30,6 +27,10 @@ kanban-plugin: board
 - [ ] # Multi Products
 - [ ] # Implement Marketing
 - [ ] # Mulitplayer
+- [ ] # Production Screen
+- [ ] # Add Monthly overview
+	Show most important values from the past month:
+	- Show how much money was made
 
 
 ## Need Rework

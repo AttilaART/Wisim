@@ -1,10 +1,13 @@
+\babel@toc {english}{}\relax 
 \contentsline {section}{\numberline {1}Motivation}{3}{section.1}%
-\contentsline {section}{\numberline {2}Goals}{3}{section.2}%
-\contentsline {section}{\numberline {3}Concept and Design}{3}{section.3}%
-\contentsline {section}{\numberline {4}Design}{4}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Mechanics}{5}{subsection.4.1}%
-\contentsline {section}{\numberline {5}Technology}{5}{section.5}%
-\contentsline {section}{\numberline {6}Iteration}{5}{section.6}%
-\contentsline {section}{\numberline {7}Economic model}{6}{section.7}%
-\contentsline {section}{\numberline {8}Actually making it fun}{6}{section.8}%
+\contentsline {section}{\numberline {2}Concept and Design}{3}{section.2}%
+\contentsline {section}{\numberline {3}Design}{3}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Mechanics}{4}{subsection.3.1}%
+\contentsline {section}{\numberline {4}Technology}{4}{section.4}%
+\contentsline {section}{\numberline {5}Iteration}{4}{section.5}%
+\contentsline {section}{\numberline {6}Economic Simulation}{4}{section.6}%
+\contentsline {subsection}{\numberline {6.1}The Market}{5}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}The Marketing Phase}{7}{subsection.6.2}%
+\contentsline {subsection}{\numberline {6.3}The Purchasing Phase}{7}{subsection.6.3}%
+\contentsline {section}{\numberline {7}Actually making it fun}{8}{section.7}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
