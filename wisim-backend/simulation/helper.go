@@ -1,9 +1,10 @@
 package simulation
 
 import (
-	"fmt"
+	"maps"
 	"math"
 	"math/rand"
+	"slices"
 
 	"github.com/pehringer/simd"
 )
@@ -89,55 +90,57 @@ func (employee_pool Employee_pool) Get_avr_skill(companyID int, employeeType Emp
 	return avgSkill / float32(len(employeesIDs))
 }
 
-func (c *Company) Get_decisions() Decisions {
-	var decisions Decisions = Decisions{}
-	if len(c.DecisionHistory) >= 1 {
-		decisions = c.DecisionHistory[len(c.DecisionHistory)-1]
-	} else {
-		decisions = Decisions{
-			Products: make(map[string]Decisions_product),
-			Research: Decisions_research{
-				Quality:         1000,
-				Durability:      1000,
-				Ecology:         1000,
-				Promotion:       1000,
-				Production_cost: 1000,
-			},
-			Production: struct {
-				Machines  []Delta[Machine]
-				Logistics []Delta[Warehouse]
-			}{
-				nil,
-				nil,
-			},
-			Employees: struct {
-				ProductionDeltas []Delta[Employee]
-				MarketingDeltas  []Delta[Employee]
-				SeverancePay     float32
-			}{
-				nil,
-				nil,
-				10000,
-			},
-		}
+func (g *GameState) resetCurrentDecisions() {
+	for i := range g.Companies {
+		g.CurrentDecisions[i].Employees.MarketingDeltas = make([]Delta[Employee], 0)
+		g.CurrentDecisions[i].Employees.ProductionDeltas = make([]Delta[Employee], 0)
 
-		for productID := range c.Offers {
-			decisions.Products[productID] = Decisions_product{
-				Price: 350,
-			}
-		}
+		g.CurrentDecisions[i].Production.Machines = make([]Delta[Machine], 0)
+		g.CurrentDecisions[i].Production.Logistics = make([]Delta[Warehouse], 0)
 
-		fmt.Println("No decision history!")
+		oldProductDecisions := g.CurrentDecisions[i].Products
+		maps.Copy(g.CurrentDecisions[i].Products, oldProductDecisions)
+
+		g.DecisionsSubmitted[i] = false
+	}
+}
+
+func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company Company) Company {
+	for ID, d := range decisions.Products {
+		offer := company.Offers[ID]
+		offer.Product = d.Product
+		offer.Price = d.Price
+		offer.Outdated = d.Outdated
+		offer.Promotion = struct {
+			Quantity        float32
+			Quality         float32
+			StyleQuality    float32
+			StylePrice      float32
+			StyleEcology    float32
+			StyleEthics     float32
+			StyleDurability float32
+		}{
+			d.Promotion.Quantity,
+			0,
+			d.Promotion.Quality,
+			d.Promotion.Price,
+			d.Promotion.Ecology,
+			d.Promotion.Ethics,
+			d.Promotion.Durability,
+		}
+		offer.ProductStats, _ = CalculateProductStats(d.Product, *company.productComponents)
+
+		company.Offers[ID] = offer
 	}
 
-	// initialise slices
-	decisions.Employees.MarketingDeltas = make([]Delta[Employee], 0)
-	decisions.Employees.ProductionDeltas = make([]Delta[Employee], 0)
+	company.Machines = slices.Clone(company.Machines)
+	for _, d := range decisions.Production.Machines {
+		if d.Change == Delta_New {
+			company.Machines = append(company.Machines, d.Item)
+		}
+	}
 
-	decisions.Production.Logistics = make([]Delta[Warehouse], 0)
-	decisions.Production.Machines = make([]Delta[Machine], 0)
-
-	return decisions
+	return company
 }
 
 func deleteByIndex[V any](s []V, index ...int) []V {

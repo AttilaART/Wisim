@@ -136,8 +136,9 @@ type Decisions struct {
 }
 
 type Decisions_product struct {
-	Price     float32
 	Name      string
+	Outdated  bool
+	Price     float32
 	Promotion struct {
 		Quantity   float32
 		Price      float32
@@ -170,9 +171,9 @@ const (
 )
 
 type Offer struct {
-	Status       string
+	Outdated     bool
 	Product      Product
-	productStats ProductStats
+	ProductStats ProductStats
 	Price        float32
 	Promotion    struct {
 		Quantity        float32
@@ -494,9 +495,9 @@ type Research_statistics struct {
 }
 
 type Sales_statistics struct {
-	Products_sold  int
-	Product_demand int
-	Market_share   float32
+	ProductsSold  int
+	ProductDemand int
+	MarketShare   float32
 
 	AvrDecisionFactor      float32
 	AvrPurchasingThreshold float32
@@ -661,9 +662,14 @@ func (game_state *GameState) SimulateStep() error {
 		println("Developing Products...")
 
 		for ID, decisions := range game_state.CurrentDecisions[i].Products {
-			println(ID)
 			if _, exists := c.Offers[ID]; !exists {
 				c.Offers[ID] = c.newProduct(ID, i, decisions.Name, game_state.CurrentDecisions[i].Products[ID])
+			} else {
+				o := c.Offers[ID]
+				o.Outdated = decisions.Outdated
+				o.Product.Name = decisions.Product.Name
+				o.Price = decisions.Price
+				c.Offers[ID] = o
 			}
 		}
 
@@ -701,9 +707,9 @@ func (game_state *GameState) SimulateStep() error {
 	println("================ Compiling reports =============== ")
 
 	game_state.MarketSalesStatistics = append(game_state.MarketSalesStatistics, Sales_statistics{})
-	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].Products_sold = purchasingStatistics["-1"].ProductsSold
-	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].Product_demand = purchasingStatistics["-1"].ProductDemand
-	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].Market_share = 100
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].ProductsSold = purchasingStatistics["-1"].ProductsSold
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].ProductDemand = purchasingStatistics["-1"].ProductDemand
+	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].MarketShare = 100
 
 	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrDecisionFactor = purchasingStatistics["-1"].AvrDecisionFactor
 	game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1].AvrPurchasingThreshold = purchasingStatistics["-1"].AvrPurchasingThreshold
@@ -785,7 +791,7 @@ func (game_state *GameState) SimulateStep() error {
 	totalProductsSold := 0
 	for _, c := range game_state.Companies {
 		for _, salesReport := range c.Reports[len(c.Reports)-1].SalesReport {
-			totalProductsSold += salesReport.ProductSalesStatistics.Products_sold
+			totalProductsSold += salesReport.ProductSalesStatistics.ProductsSold
 		}
 	}
 
@@ -807,6 +813,9 @@ func (game_state *GameState) SimulateStep() error {
 	//		}
 	//		println(string(s))
 	//	}
+
+	game_state.resetCurrentDecisions()
+
 	return nil
 }
 
@@ -821,11 +830,11 @@ func (company *Company) compileReports(
 	for productID := range company.Offers {
 		company.compileSalesReport(
 			companyPurchasingStatistcs,
-			marketPurchasingStatistics.Products_sold,
+			marketPurchasingStatistics.ProductsSold,
 			company.Reports[len(company.Reports)-1].SalesReport,
 		)
 
-		company.ProductsInStorage[productID] -= company.Reports[len(company.Reports)-1].SalesReport[productID].ProductSalesStatistics.Products_sold
+		company.ProductsInStorage[productID] -= company.Reports[len(company.Reports)-1].SalesReport[productID].ProductSalesStatistics.ProductsSold
 	}
 
 	// Finance
@@ -920,13 +929,13 @@ func (c *Company) compileSalesReport(purchasingStatiscs map[string]Purchasing_st
 
 		salesStatistics := Sales_statistics{}
 
-		salesStatistics.Products_sold = productSpecificPurchasingStatiscs.ProductsSold
-		println("salesStatistics.ProductsSold: ", salesStatistics.Products_sold, productID)
-		salesStatistics.Product_demand = productSpecificPurchasingStatiscs.ProductDemand
+		salesStatistics.ProductsSold = productSpecificPurchasingStatiscs.ProductsSold
+		println("salesStatistics.ProductsSold: ", salesStatistics.ProductsSold, productID)
+		salesStatistics.ProductDemand = productSpecificPurchasingStatiscs.ProductDemand
 		if MarketProductsSold != 0 {
-			salesStatistics.Market_share = (float32(productSpecificPurchasingStatiscs.ProductsSold) / float32(MarketProductsSold))
+			salesStatistics.MarketShare = (float32(productSpecificPurchasingStatiscs.ProductsSold) / float32(MarketProductsSold))
 		} else {
-			salesStatistics.Market_share = 0
+			salesStatistics.MarketShare = 0
 		}
 
 		salesStatistics.AvrDecisionFactor = productSpecificPurchasingStatiscs.AvrDecisionFactor
@@ -941,11 +950,11 @@ func (c *Company) compileSalesReport(purchasingStatiscs map[string]Purchasing_st
 		salesStatistics.AvrBangForBuckFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesBangForBuck]
 
 		marketingStatistics := Marketing_statistics{}
-		marketingStatistics.Quality = c.Offers[productID].productStats.Quality
-		marketingStatistics.Durabilty = int(c.Offers[productID].productStats.Durability)
-		marketingStatistics.Ethics = c.Offers[productID].productStats.Ethics
+		marketingStatistics.Quality = c.Offers[productID].ProductStats.Quality
+		marketingStatistics.Durabilty = int(c.Offers[productID].ProductStats.Durability)
+		marketingStatistics.Ethics = c.Offers[productID].ProductStats.Ethics
 		// reportMarketingStatistics.Coolness = offer.Product.Coolness_factor
-		marketingStatistics.Ecology = c.Offers[productID].productStats.Ecology
+		marketingStatistics.Ecology = c.Offers[productID].ProductStats.Ecology
 
 		marketingStatistics.Price = float64(c.Offers[productID].Price)
 		marketingStatistics.PromotionQuantity = float64(c.Offers[productID].Promotion.Quantity)

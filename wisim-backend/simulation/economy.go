@@ -39,12 +39,13 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 	}
 
 	// Calculate purchases
-	var avgPrice float32
+	var marketExpectedPrice float32
 	for _, o := range offers {
-		avgPrice += o.Price
+		marketExpectedPrice += o.Price
 	}
 
-	avgPrice = avgPrice / float32(len(offers))
+	marketExpectedPrice = marketExpectedPrice / float32(len(offers))
+	marketExpectedPrice *= 1.2
 
 	tBefore := time.Now()
 	purchasingStatistics := make([]Purchasing_statistics, len(offers)+1)
@@ -66,16 +67,16 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 	for i, o := range offers {
 		offerPrices[i] = o.Price
 
-		offersProperties[i][propertiesQuality] = o.productStats.Quality
-		offersProperties[i][propertiesEcology] = o.productStats.Ecology
-		offersProperties[i][propertiesEthics] = o.productStats.Ethics
-		offersProperties[i][propertiesPrice] = isCheap(o, avgPrice)
-		offersProperties[i][propertiesBangForBuck] = o.productStats.Quality / o.Price
+		offersProperties[i][propertiesQuality] = o.ProductStats.Quality
+		offersProperties[i][propertiesEcology] = o.ProductStats.Ecology
+		offersProperties[i][propertiesEthics] = o.ProductStats.Ethics
+		offersProperties[i][propertiesPrice] = isCheap(o, marketExpectedPrice)
+		offersProperties[i][propertiesBangForBuck] = o.ProductStats.Quality / o.Price
 		if o.Price <= 0 {
 			offersProperties[i][propertiesPrice] = 10
 			offersProperties[i][propertiesBangForBuck] = 10
 		}
-		offersProperties[i][propertiesDurability] = float32(o.productStats.Durability)
+		offersProperties[i][propertiesDurability] = float32(o.ProductStats.Durability)
 
 		offerDurabilities[i] = int(offersProperties[i][propertiesDurability])
 	}

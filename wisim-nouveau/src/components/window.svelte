@@ -3,11 +3,10 @@
 	let { title, closeWindow, children } = $props();
 </script>
 
-<article {@attach draggable([controls({ allow: ControlFrom.selector('header') })])}>
-	<header>
-		<button onclick={closeWindow} rel="prev" aria-label="Close"></button><center
-			style="user-select: none; pointer-events: none;">{title}</center
-		>
+<article {@attach draggable([controls({ allow: ControlFrom.selector('.windowHeader') })])}>
+	<header class="windowHeader">
+		<button class="windowHeader" onclick={closeWindow} rel="prev" aria-label="Close"></button>
+		<span class="windowHeader">{title}</span>
 	</header>
 	<div style="overflow: scroll; max-height: calc(100vh - 136px - 58px - var(--pico-spacing)*2);">
 		{@render children()}
@@ -22,6 +21,21 @@
 		top: 0;
 		left: 0;
 		header {
+			height: 3rem;
+
+			position: relative;
+			span {
+				pointer-events: none;
+				user-select: none;
+
+				position: absolute;
+				left: 50%;
+				top: 50%;
+				translate: -50% -50%;
+				text-align: center;
+				white-space: nowrap;
+			}
+
 			button {
 				float: right;
 				margin: 0;

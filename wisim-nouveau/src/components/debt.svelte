@@ -1,14 +1,16 @@
 <script>
 	import { format } from '$lib/javascript/format';
+	import { preventPageReload } from '$lib/helper.svelte';
 	/** @type {{clientState: import("$lib/javascript/simulation").clientState, updateDecisions: (decisions: import("$lib/javascript/simulation").Decisions)=>void}} */
 	let { clientState = $bindable(), updateDecisions } = $props();
 
 	/** @type {number}*/
 	let newAmount = $state(clientState.Decisions.Finances.SetBankLoan);
-	let creditLimit = $state(10000000); //TODO: Implement Credit limit
+	let creditLimit = $state(100000); //TODO: Implement Credit limit
 </script>
 
 <form
+	use:preventPageReload
 	onsubmit={() => {
 		clientState.Company.Balance =
 			clientState.Company.Balance - clientState.Decisions.Finances.SetBankLoan + newAmount;

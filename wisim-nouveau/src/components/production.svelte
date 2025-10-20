@@ -60,7 +60,8 @@
 		<tr>
 			<th>Name </th>
 			<th> Production capacity</th>
-			<th>Required Workers</th>
+			<th>Minimum Worker Count</th>
+			<th>Optimal Worker Count</th>
 			<th>Assigned Product</th>
 		</tr>
 	</thead>
@@ -72,6 +73,9 @@
 				</td>
 				<td>
 					<h2>{m.ProductionCapacity}</h2>
+				</td>
+				<td>
+					<h2>{m.MinimumWorkers}</h2>
 				</td>
 				<td>
 					<h2>{m.RequiredWorkers}</h2>

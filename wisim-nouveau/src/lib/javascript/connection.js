@@ -109,13 +109,7 @@ export const baseState = {
 		production: [],
 		marketing: []
 	},
-	productComponents: {
-		FormFactor: {},
-		Frame: {},
-		Body: {},
-		Mechanism: {},
-		Misc: {}
-	}
+	productComponents: null
 };
 
 /** @typedef {string} employeeType */

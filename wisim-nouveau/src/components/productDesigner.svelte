@@ -1,6 +1,6 @@
 <script>
 	import { format } from '$lib/javascript/format';
-	import { calculateProductStats } from '../calculateProduct';
+	import noIcon from '$lib/images/noIcon.svg';
 	import Increment from './increment.svelte';
 
 	/** @typedef {Object} Props
@@ -8,16 +8,29 @@
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
 	 * @property {()=>void} closeWindow,
 	 * @property {import("$lib/javascript/simulation").Product?} existingProduct
+	 * @property {boolean} viewOnly
+	 * @property {()=>void} openProduction
 	 */
 
 	/** @type {Props} */
 
-	let { clientState = $bindable(), updateDecisions, closeWindow, existingProduct } = $props();
+	let {
+		clientState = $bindable(),
+		updateDecisions,
+		closeWindow,
+		existingProduct,
+		viewOnly,
+		openProduction
+	} = $props();
+
+	/** @type {HTMLDialogElement} */
+	let machinesDialogue;
 
 	/** @type {import("$lib/javascript/simulation").Decisions_product} */
 	let productDecisions = $state({
 		Price: 150,
-		Name: 'Unnamed Product',
+		Name: '',
+		Outdated: false,
 		Promotion: {
 			Quantity: 10000,
 			Quality: 0.2,
@@ -29,7 +42,7 @@
 		Product: {
 			ID: `${Math.trunc(Math.random() * 100000000)}`,
 			CompanyID: clientState.Company.ID,
-			Name: 'Unnamed Product',
+			Name: '',
 
 			Components: {
 				FormFactor: 'FormFactorMedium',
@@ -46,10 +59,16 @@
 	});
 
 	/** @type {number} */
-	/** @type {{productStats: import("$lib/javascript/simulation").ProductStats , productionLineCost: number}} */
-	let { productStats, productionLineCost } = $derived(
-		calculateProductStats(productDecisions.Product, clientState.productComponents)
-	);
+	/** @type {{ProductStats: import("$lib/javascript/simulation").ProductStats , ProductionLineCost: number}} */
+	let { ProductStats: productStats, ProductionLineCost: productionLineCost } = $derived.by(() => {
+		// @ts-ignore
+		return JSON.parse(
+			CalculateProductStatsGo(
+				JSON.stringify(productDecisions.Product),
+				JSON.stringify(clientState.productComponents)
+			)
+		);
+	});
 
 	/** @type {import("$lib/javascript/simulation").Decisions_product} */
 	let hoverProductDecisions = $state(JSON.parse(JSON.stringify(productDecisions)));
@@ -58,18 +77,20 @@
 		hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 	});
 
-	/** @type {{productStats: import("$lib/javascript/simulation").ProductStats , productionLineCost: number}} */
-	let { productStats: hoverProductStats, productionLineCost: hoverProductionLineCost } = $derived(
-		calculateProductStats(hoverProductDecisions.Product, clientState.productComponents)
-	);
+	/** @type {{ProductStats: import("$lib/javascript/simulation").ProductStats , ProductionLineCost: number}} */
+	let { ProductStats: hoverProductStats, ProductionLineCost: hoverProductionLineCost } =
+		$derived.by(() => {
+			// @ts-ignore
+			return JSON.parse(
+				CalculateProductStatsGo(
+					JSON.stringify(hoverProductDecisions.Product),
+					JSON.stringify(clientState.productComponents)
+				)
+			);
+		});
 
 	/** @type {import("svelte").Snippet} */
 	let currentDesignerSnippet = $state(selectPart);
-
-	const images = import.meta.glob(['$lib/images/Products/Base_blueprint/*.svg'], {
-		eager: true,
-		as: 'url'
-	});
 
 	let mousePosition = $state({ x: 0, y: 0 });
 
@@ -95,15 +116,31 @@
 
 	if (existingProduct != null) {
 		let id = productDecisions.Product.ID;
+		productDecisions.Price = clientState.Company.Offers[existingProduct.ID].Price;
 		productDecisions.Product = JSON.parse(JSON.stringify(existingProduct));
-		productDecisions.Product.ID = id;
+		if (!viewOnly) {
+			productDecisions.Product.ID = id;
+		}
+	}
+
+	/**
+	 * @param {HTMLElement} el
+	 */
+	function focusOnMount(el) {
+		el.focus();
 	}
 </script>
 
 <div style="min-width: 50rem;">
 	<div class="main-grid">
 		<div>
-			<input type="text" autocomplete="off" bind:value={productDecisions.Product.Name} />
+			<input
+				use:focusOnMount
+				type="text"
+				autocomplete="off"
+				placeholder="Product Name"
+				bind:value={productDecisions.Product.Name}
+			/>
 
 			{@render currentDesignerSnippet()}
 
@@ -115,6 +152,7 @@
 						min={0}
 						max={5}
 						onclick={() => {}}
+						disabled={viewOnly}
 					></Increment>
 				</center>
 				<center>
@@ -124,6 +162,7 @@
 						min={0}
 						max={5}
 						onclick={() => {}}
+						disabled={viewOnly}
 					></Increment>
 				</center>
 			</div>
@@ -256,26 +295,37 @@
 		</div>
 	</div>
 	<footer class="grid">
-		<button onclick={closeWindow}>Cancel</button>
+		<button class="secondary" onclick={closeWindow}>Cancel</button>
 		<button
 			onclick={() => {
+				if (productDecisions.Product.Name == '') {
+					productDecisions.Product.Name = 'Unnamed Product';
+				}
 				productDecisions.Name = productDecisions.Product.Name;
 				clientState.Decisions.Products[productDecisions.Product.ID] = productDecisions;
 				clientState.Company.Offers[productDecisions.Product.ID] = {
 					Price: productDecisions.Price,
-					productStats: productStats,
+					ProductStats: productStats,
 					PromotionQuality: 0,
+					Outdated: productDecisions.Outdated,
 					Promotion: {
 						Quantity: productDecisions.Promotion.Quantity,
 						StyleQuality: productDecisions.Promotion.Quality,
 						StyleEcology: productDecisions.Promotion.Ecology,
 						StyleEthics: productDecisions.Promotion.Ethics,
-						StyleDurability: productDecisions.Promotion.Durability
+						StyleDurability: productDecisions.Promotion.Durability,
+						StylePrice: productDecisions.Promotion.Price
 					},
 					Product: productDecisions.Product
 				};
+
 				updateDecisions(clientState.Decisions);
-				closeWindow();
+				if (viewOnly) {
+					closeWindow();
+				} else {
+					clientState.Company.Balance -= productionLineCost;
+					machinesDialogue.show();
+				}
 			}}
 			disabled={(() => {
 				if (!productDecisions.Product.Components.FormFactor) return true;
@@ -283,8 +333,29 @@
 				if (!productDecisions.Product.Components.Mechanism) return true;
 				if (!productDecisions.Product.Components.Frame) return true;
 				return false;
-			})()}>Confirm</button
+			})()}>Confirm {!viewOnly ? format.currency(-hoverProductionLineCost, true, 2) : ''}</button
 		>
+		<dialog bind:this={machinesDialogue}>
+			<article>
+				<p>Would you like to also assign some machines to your product?</p>
+				<footer>
+					<button
+						onclick={() => {
+							machinesDialogue.close();
+							closeWindow();
+						}}
+						class="secondary outline">Later</button
+					>
+					<button
+						onclick={() => {
+							machinesDialogue.close();
+							closeWindow();
+							openProduction();
+						}}>Yes</button
+					>
+				</footer>
+			</article>
+		</dialog>
 	</footer>
 </div>
 
@@ -294,6 +365,7 @@
 			onclick={() => {
 				currentDesignerSnippet = formFactor;
 			}}
+			disabled={viewOnly}
 		>
 			{@render showImageOrPlus(
 				clientState.productComponents.FormFactor,
@@ -304,6 +376,7 @@
 			onclick={() => {
 				currentDesignerSnippet = frame;
 			}}
+			disabled={viewOnly}
 		>
 			{@render showImageOrPlus(
 				clientState.productComponents.Frame,
@@ -314,6 +387,7 @@
 			onclick={() => {
 				currentDesignerSnippet = body;
 			}}
+			disabled={viewOnly}
 		>
 			{@render showImageOrPlus(
 				clientState.productComponents.Body,
@@ -324,6 +398,7 @@
 			onclick={() => {
 				currentDesignerSnippet = mechanism;
 			}}
+			disabled={viewOnly}
 		>
 			{@render showImageOrPlus(
 				clientState.productComponents.Mechanism,
@@ -333,7 +408,7 @@
 
 		<div>
 			<img
-				src={'/src/lib/images/' +
+				src={'/' +
 					clientState.productComponents.FormFactor[
 						`${productDecisions.Product.Components.FormFactor}`
 					]?.Image}
@@ -345,7 +420,7 @@
 			onclick={() => {
 				currentDesignerSnippet = misc1;
 			}}
-			disabled={productStats.MiscSlots < 1}
+			disabled={productStats.MiscSlots < 1 || viewOnly}
 		>
 			{@render showImageOrPlus(
 				clientState.productComponents.Misc,
@@ -356,7 +431,7 @@
 			onclick={() => {
 				currentDesignerSnippet = misc2;
 			}}
-			disabled={productStats.MiscSlots < 2}
+			disabled={productStats.MiscSlots < 2 || viewOnly}
 		>
 			{@render showImageOrPlus(
 				clientState.productComponents.Misc,
@@ -367,7 +442,7 @@
 			onclick={() => {
 				currentDesignerSnippet = misc3;
 			}}
-			disabled={productStats.MiscSlots < 3}
+			disabled={productStats.MiscSlots < 3 || viewOnly}
 		>
 			{@render showImageOrPlus(
 				clientState.productComponents.Misc,
@@ -378,7 +453,7 @@
 			onclick={() => {
 				currentDesignerSnippet = misc4;
 			}}
-			disabled={productStats.MiscSlots < 4}
+			disabled={productStats.MiscSlots < 4 || viewOnly}
 		>
 			{@render showImageOrPlus(
 				clientState.productComponents.Misc,
@@ -389,34 +464,42 @@
 {/snippet}
 
 {#snippet formFactor()}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.FormFactor) as c}
-			{@render renderComponent('FormFactor', c)}
-		{/each}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.FormFactor) as c}
+				{@render renderComponent('FormFactor', c)}
+			{/each}
+		</div>
 	</div>
 {/snippet}
 
 {#snippet frame()}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.Frame) as c}
-			{@render renderComponent('Frame', c)}
-		{/each}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.Frame) as c}
+				{@render renderComponent('Frame', c)}
+			{/each}
+		</div>
 	</div>
 {/snippet}
 
 {#snippet body()}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.Body) as c}
-			{@render renderComponent('Body', c)}
-		{/each}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.Body) as c}
+				{@render renderComponent('Body', c)}
+			{/each}
+		</div>
 	</div>
 {/snippet}
 
 {#snippet mechanism()}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.Mechanism) as c}
-			{@render renderComponent('Mechanism', c)}
-		{/each}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.Mechanism) as c}
+				{@render renderComponent('Mechanism', c)}
+			{/each}
+		</div>
 	</div>
 {/snippet}
 
@@ -434,25 +517,43 @@
 {/snippet}
 
 {#snippet misc(/** @type {number} */ slot)}
-	<div class="grid">
-		{#each Object.entries(clientState.productComponents.Misc) as c}
+	<div class="component-grid">
+		<div>
+			{#each Object.entries(clientState.productComponents.Misc) as c}
+				<button
+					class="component-button"
+					onclick={() => {
+						productDecisions.Product.Components.Misc[slot] = c[0];
+						currentDesignerSnippet = selectPart;
+					}}
+					onmouseenter={(_) => {
+						hoverProductDecisions.Product.Components.Misc[slot] = c[0];
+					}}
+					onmouseleave={(_) => {
+						hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
+					}}
+				>
+					<img src={'/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+					{@render componentTooltip(c)}
+				</button>
+			{/each}
+
 			<button
 				class="component-button"
 				onclick={() => {
-					productDecisions.Product.Components.Misc[slot] = c[0];
+					productDecisions.Product.Components.Misc[slot] = null;
 					currentDesignerSnippet = selectPart;
 				}}
 				onmouseenter={(_) => {
-					hoverProductDecisions.Product.Components.Misc[slot] = c[0];
+					hoverProductDecisions.Product.Components.Misc[slot] = null;
 				}}
 				onmouseleave={(_) => {
 					hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 				}}
 			>
-				<img src={'/src/lib/images/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
-				{@render componentTooltip(c)}
+				<img src={noIcon} alt="" style="mix-blend-mode: lighten;" />
 			</button>
-		{/each}
+		</div>
 	</div>
 {/snippet}
 
@@ -473,7 +574,7 @@
 			hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 		}}
 	>
-		<img src={'/src/lib/images/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+		<img src={'/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
 		{@render componentTooltip(c)}
 	</button>
 {/snippet}
@@ -528,7 +629,7 @@
 	{#if !field}
 		+
 	{:else}
-		<img src={'/src/lib/images/' + `${imageSource[field]?.Image}`} alt="" />
+		<img src={'/' + `${imageSource[field]?.Image}`} alt="" />
 	{/if}
 {/snippet}
 
@@ -565,6 +666,10 @@
 		gap: 1rem;
 	}
 
+	.parts-grid {
+		height: 22.5rem;
+	}
+
 	.component-button,
 	.parts-grid > button {
 		background-color: transparent;
@@ -575,13 +680,15 @@
 
 		transition: box-shadow 0.5s;
 
-		&:hover {
+		&:hover,
+		&:focus {
 			box-shadow: inset 0px 0px 10px color-mix(in oklab, gray, transparent 30%);
 		}
 
 		img {
 			content-fit: contain;
-			height: 2rem;
+			padding: 5px;
+			height: 3rem;
 		}
 	}
 
@@ -604,7 +711,7 @@
 			background-color: #bdbdbd;
 
 			img {
-				padding: 1rem;
+				padding: 0.5rem;
 				height: 100%;
 				width: 100%;
 
@@ -612,5 +719,16 @@
 				mix-blend-mode: lighten;
 			}
 		}
+	}
+
+	.component-grid > div {
+		display: grid;
+		gap: 1rem;
+		grid-template-columns: 1fr 1fr 1fr 1fr;
+		grid-template-rows: auto;
+	}
+
+	.component-grid {
+		height: 22.5rem;
 	}
 </style>

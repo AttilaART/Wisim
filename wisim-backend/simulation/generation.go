@@ -249,7 +249,7 @@ func (g *GameState) generateCompanies(
 		companies[i].Offers = make(map[string]Offer)
 		companies[i].ProductsInStorage = make(map[string]int)
 
-		requiredProductionPersonelle := 1
+		requiredProductionPersonelle := 0
 		for _, m := range companies[i].Machines {
 			requiredProductionPersonelle += m.RequiredWorkers
 		}
@@ -299,12 +299,12 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 		MarketingMinimumWage:  80000 / 12,
 
 		MachineOnOffer: Machine{
-			ProductionCapacity: 150,
-			RequiredWorkers:    1,
+			ProductionCapacity: 1500,
+			RequiredWorkers:    3,
 			MinimumWorkers:     1,
 			EnergyUse:          0.01,
-			Value:              5000,
-			MaintananceCost:    50,
+			Value:              10000,
+			MaintananceCost:    100,
 		},
 	}
 
@@ -358,39 +358,33 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 
 	gameState.CurrentDecisions = make([]Decisions, numberOfCompanies)
 
-	defaultDecisions := Decisions{
-		Products: map[string]Decisions_product{
-			"0": {
-				Price: 150,
-				Name:  "Unnamed Product",
-				Promotion: struct {
-					Quantity   float32
-					Price      float32
-					Quality    float32
-					Ecology    float32
-					Ethics     float32
-					Durability float32
-				}{
-					Quantity:   10000,
-					Price:      0.2,
-					Quality:    0.2,
-					Ecology:    0.2,
-					Ethics:     0.2,
-					Durability: 0.2,
-				},
-			},
-		},
-		Production: struct {
-			Machines  []Delta[Machine]
-			Logistics []Delta[Warehouse]
-		}{
-			make([]Delta[Machine], 0),
-			make([]Delta[Warehouse], 0),
-		},
-	}
-
 	for i := range gameState.CurrentDecisions {
-		gameState.CurrentDecisions[i] = defaultDecisions
+		gameState.CurrentDecisions[i] = Decisions{
+			Products: make(map[string]Decisions_product),
+			Research: Decisions_research{
+				Quality:         1000,
+				Durability:      1000,
+				Ecology:         1000,
+				Promotion:       1000,
+				Production_cost: 1000,
+			},
+			Production: struct {
+				Machines  []Delta[Machine]
+				Logistics []Delta[Warehouse]
+			}{
+				Logistics: make([]Delta[Warehouse], 0),
+				Machines:  make([]Delta[Machine], 0),
+			},
+			Employees: struct {
+				ProductionDeltas []Delta[Employee]
+				MarketingDeltas  []Delta[Employee]
+				SeverancePay     float32
+			}{
+				ProductionDeltas: make([]Delta[Employee], 0),
+				MarketingDeltas:  make([]Delta[Employee], 0),
+				SeverancePay:     10000,
+			},
+		}
 	}
 
 	gameState.DecisionsSubmitted = make([]bool, numberOfCompanies)

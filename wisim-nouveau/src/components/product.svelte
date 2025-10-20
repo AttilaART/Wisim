@@ -1,30 +1,85 @@
 <script>
 	import { format } from '$lib/javascript/format';
-	import { calculateProductStats } from '../calculateProduct';
 	import storageIcon from '$lib/images/warehouse.svg';
-	import Increment from './increment.svelte';
 	import Window from './window.svelte';
 	import ProductionIcon from '$lib/images/production.svg';
 	import MarketingIcon from '$lib/images/marketing.svg';
 	import { ignoreError, preventPageReload } from '$lib/helper.svelte';
 	import ProductDesigner from './productDesigner.svelte';
-	import { createRawSnippet, mount, unmount } from 'svelte';
+	import { fade, fly } from 'svelte/transition';
+	import ConfigurePromotion from './configurePromotion.svelte';
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
 	 * @property {(contents: import("svelte").Snippet<[number]>)=>number} newWindow,
 	 * @property {(windowId: number)=>void} deleteWindow,
+	 * @property {()=>void} openProduction
 	 */
 
 	/**
 	 * @type {Props}
 	 */
-	let { clientState = $bindable(), updateDecisions, newWindow, deleteWindow } = $props();
+	let {
+		clientState = $bindable(),
+		updateDecisions,
+		newWindow,
+		deleteWindow,
+		openProduction
+	} = $props();
+	/**
+	 * @param {string} productID
+	 */
+	function calculateMonthlyProduction(productID) {
+		let totalProduction = 0;
+		for (let m of clientState.Company.Machines) {
+			if (m.AssignedProductID == productID) {
+				totalProduction += m.ProductionCapacity;
+			}
+		}
+
+		return totalProduction / clientState.Company.Offers[productID].ProductStats.ProductionCost;
+	}
+
+	/**
+	 * @param {string} productID
+	 */
+	function addToDecisionsIfNotPresent(productID) {
+		if (clientState.Decisions.Products[productID] == undefined) {
+			let offer = clientState.Company.Offers[productID];
+
+			clientState.Decisions.Products[productID] = {
+				Name: offer.Product.Name,
+				Outdated: offer.Outdated,
+				Product: offer.Product,
+				Price: offer.Price,
+				Promotion: {
+					Quantity: offer.Promotion.Quantity,
+					Quality: offer.Promotion.StyleQuality,
+					Ecology: offer.Promotion.StyleEcology,
+					Ethics: offer.Promotion.StyleEthics,
+					Durability: offer.Promotion.StyleDurability,
+					Price: offer.Promotion.StylePrice
+				}
+			};
+		}
+	}
+
+	let showOutdated = $state(false);
+
+	for (let productID of Object.keys(clientState.Company.Offers)) {
+		addToDecisionsIfNotPresent(productID);
+	}
+	updateDecisions(clientState.Decisions);
 </script>
+
+<label for="">
+	Show Outdated
+	<input type="checkbox" bind:checked={showOutdated} />
+</label>
 
 <div class="products-grid">
 	{#snippet newProductNoExistingProduct(/** @type {number}*/ windowID)}
-		{@render newProduct(windowID, null)}
+		{@render newProduct(windowID, null, false)}
 	{/snippet}
 	<button
 		onclick={() => {
@@ -37,31 +92,50 @@
 		</div>
 	</button>
 	{#if clientState.Company.Offers}
-		{#each Object.entries(clientState.Company.Offers) as offer}
-			<article>
-				<img
-					src={'/src/lib/images/' +
-						ignoreError(() => {
-							return clientState.productComponents.FormFactor[
-								`${offer[1].Product.Components.FormFactor}`
-							]
-								? clientState.productComponents.FormFactor[
-										`${offer[1].Product.Components.FormFactor}`
-									].Image
-								: '';
-						})}
-					alt=""
-					style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 0.5rem)); height: 6rem; mix-blend-mode: lighten;"
-				/>
-				<div>
-					<button class="inlineIcon marketingIcon" aria-label="Marketing"></button>
-					<h4 style="display: inline;">
-						{offer[1].Product.Name}
-					</h4>
-				</div>
-				<div style="text-align: right;">
-					<h4>{format.currency(offer[1].Price, false, 0)}</h4>
+		{#each Object.entries(clientState.Company.Offers) as offer (offer[0])}
+			{#if !clientState.Decisions.Products[offer[0]].Outdated || showOutdated}
+				{#snippet viewProduct(/** @type {number}*/ windowID)}
+					{@render newProduct(windowID, offer[1].Product, true)}
+				{/snippet}
+				<article
+					in:fly={{ y: -100 }}
+					onclick={() => {
+						newWindow(viewProduct);
+					}}
+				>
+					<img
+						src={'/' +
+							ignoreError(() => {
+								return clientState.productComponents.FormFactor[
+									`${offer[1].Product.Components.FormFactor}`
+								]
+									? clientState.productComponents.FormFactor[
+											`${offer[1].Product.Components.FormFactor}`
+										].Image
+									: '';
+							})}
+						alt=""
+						style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 0.5rem)); height: 6rem; mix-blend-mode: lighten;"
+					/>
 					<div>
+						{#snippet configurePromotionOfProduct(/** @type {number}*/ windowID)}
+							{@render configurePromotion(windowID, offer[0])}
+						{/snippet}
+						<button
+							onclick={(e) => {
+								e.stopPropagation();
+								newWindow(configurePromotionOfProduct);
+							}}
+							class="inlineIcon marketingIcon"
+							aria-label="Marketing"
+						></button>
+						<h4 style="display: inline;">
+							{offer[1].Product.Name}
+						</h4>
+					</div>
+					<div style="text-align: right;">
+						<h4>{format.currency(offer[1].Price, false, 0)}</h4>
+						<!--<div>
 						{clientState.Company.ProductsInStorage[offer[0]]
 							? format.number(clientState.Company.ProductsInStorage[offer[0]], false, 0)
 							: '0'}
@@ -71,111 +145,76 @@
 							src={storageIcon}
 							alt=""
 						/>
-						<small>+50</small>
+					</div>-->
+						<div>
+							<img
+								class="inlineIcon"
+								style="height: 1.2rem; translate: 0 -0.1rem ;"
+								src={ProductionIcon}
+								alt=""
+							/>
+							<strong>
+								{format.number(offer[1].ProductStats.ProductionCost, false, 1)}
+							</strong>
+						</div>
+						<small
+							>{format.number(
+								calculateMonthlyProduction(offer[1].Product.ID),
+								false,
+								1
+							)}/month</small
+						>
 					</div>
-				</div>
-				<label
-					for="outdated{offer[1].Product.ID}"
-					style="position: absolute; bottom: 0.5rem; left: 0.5rem;"
-				>
-					<input id="outdated{offer[1].Product.ID}" type="checkbox" />
-					Mark as outdated
-				</label>
+					<label
+						onclick={(e) => {
+							e.stopPropagation();
+							updateDecisions(clientState.Decisions);
+						}}
+						for="outdated{offer[1].Product.ID}"
+						style="position: absolute; bottom: 0.5rem; left: 0.5rem;"
+					>
+						<input
+							id="outdated{offer[1].Product.ID}"
+							bind:checked={clientState.Decisions.Products[offer[0]].Outdated}
+							type="checkbox"
+						/>
+						Mark as outdated
+					</label>
 
-				{#snippet newProductWithExistingProduct(/** @type {number}*/ windowID)}
-					{@render newProduct(windowID, offer[1].Product)}
-				{/snippet}
-				<button
-					onclick={() => {
-						newWindow(newProductWithExistingProduct);
-					}}
-					class="contrast outline"
-					style="position: absolute; bottom: 0.5rem; right: 0.5rem; padding: 0.5rem; line-height: 1rem;"
-				>
-					Make a copy
-				</button>
-			</article>
+					{#snippet newProductWithExistingProduct(/** @type {number}*/ windowID)}
+						{@render newProduct(windowID, offer[1].Product, false)}
+					{/snippet}
+					<button
+						onclick={(e) => {
+							e.stopPropagation();
+							newWindow(newProductWithExistingProduct);
+						}}
+						class="contrast outline"
+						style="position: absolute; bottom: 0.5rem; right: 0.5rem; padding: 0.5rem; line-height: 1rem;"
+					>
+						Make a copy
+					</button>
+				</article>
+			{/if}
 		{/each}
 	{/if}
 </div>
-<!--
-{#snippet configurePromotion(/** @type {number}*/ windowID)}
+
+{#snippet configurePromotion(/** @type {number}*/ windowID, /** @type {string}*/ productID)}
 	<Window
-		title={`Configure ${clientState.Company.Offers[productConfugureWindows[windowID]].Product.Name}`}
+		title={'Configure Promotion'}
 		closeWindow={() => {
 			deleteWindow(windowID);
-			delete productConfugureWindows[windowID];
 		}}
 	>
-		<form
-			use:preventPageReload
-			onchange={() => {
-				updateDecisions(clientState.Decisions);
-			}}
-		>
-			<label for="PromotionQuantity">
-				<h2>Advertisment Budget</h2>
-				<input
-					id="quantity"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Quantity
-					}
-					type="number"
-				/>
-			</label>
-
-			<h2>Advertisment Style</h2>
-			<label for="PromotionQuality"
-				>Quality
-				<input
-					id="PromotionQuality"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Quality
-					}
-					type="range"
-				/>
-			</label>
-
-			<label for="PromotionEcology"
-				>Ecology
-				<input
-					id="PromotionEcology"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Ecology
-					}
-					type="range"
-				/>
-			</label>
-
-			<label for="PromotionEthicals"
-				>Ethics
-				<input
-					id="PromotionEthicals"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Ethics
-					}
-					type="range"
-				/>
-			</label>
-
-			<label for="PromotionDurability"
-				>Durability
-				<input
-					id="PromotionDurability"
-					bind:value={
-						clientState.Decisions.Products[productConfugureWindows[windowID]].Promotion.Durability
-					}
-					type="range"
-				/>
-			</label>
-		</form>
+		<ConfigurePromotion bind:clientState {updateDecisions} {productID}></ConfigurePromotion>
 	</Window>
 {/snippet}
--->
 
 {#snippet newProduct(
 	/** @type {number}*/ windowID,
-	/** @type {import("$lib/javascript/simulation").Product?}*/ existingProduct
+	/** @type {import("$lib/javascript/simulation").Product?}*/ existingProduct,
+	/** @type {boolean}*/ viewOnly
 )}
 	<Window
 		title="Product Designer"
@@ -184,12 +223,14 @@
 		}}
 	>
 		<ProductDesigner
-			{clientState}
+			bind:clientState
 			{updateDecisions}
 			closeWindow={() => {
 				deleteWindow(windowID);
 			}}
 			{existingProduct}
+			{viewOnly}
+			{openProduction}
 		></ProductDesigner>
 	</Window>
 {/snippet}

@@ -9,7 +9,7 @@
       "Ethics": 0,
       "Durability": 2,
       "ProductionLineCost": 400,
-      "Image": "Products/Base_blueprint/coffee_large.svg"
+      "Image": "coffee_large.svg"
     },
     "FormFactorMedium": {
       "Name": "Medium",
@@ -20,7 +20,7 @@
       "Ethics": 0,
       "Durability": 2,
       "ProductionLineCost": 200,
-      "Image": "Products/Base_blueprint/coffee_medium.svg"
+      "Image": "coffee_medium.svg"
     },
     "FormFactorSmall": {
       "Name": "Compact",
@@ -31,7 +31,7 @@
       "Ethics": 0,
       "Durability": 1,
       "ProductionLineCost": 100,
-      "Image": "Products/Base_blueprint/coffee_small.svg"
+      "Image": "coffee_small.svg"
     }
   },
   "Frame": {
@@ -255,7 +255,7 @@
       "Quality": 0.5,
       "Durability": 0,
       "ProductionLineCost": 1000,
-      "Image": ""
+      "Image": "EfficientCoffeeBrewing.svg"
     },
     "MiscCreamer": {
       "Name": "Creamer Module",

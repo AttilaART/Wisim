@@ -1,0 +1,169 @@
+\section{Economic Simulation}
+
+When attempting to simulate a consumer market, there are quite a few approaches
+you could choose between. The vast majority of models fall into 2 categories:
+
+\begin{enumerate}
+	\item{Statistical models: models where the simulation uses regressions and
+	      other statistical analysis tools to determine outcomes.}
+	\item{Agent-based models: these models choose to, instead of simulating the
+	      whole market at once, instantiate individual \textit{agents} that have
+	      the ability to independently make decisions.  }
+\end{enumerate}
+
+There are 2 main advantages to statistical models: they are simpler to build, as
+you can often base them around simple regressions while still returning convincing
+results, and performance, unless the implementer makes grave mistakes, statistical
+models almost always outperform (in terms of speed) agent-based models of the same
+caliber.
+
+For example, the cult classic city builder SimCity 4 was able to simulate regions
+with populations up to 100 million with very minor performance issues,
+\footnote{
+	This Kotaku article from 2014 shows off a city of over 100 million
+	inhabitants, the Guinness world record, without any performance problems.
+
+	\noindent  Link to article:
+	\href{https://kotaku.com/simcity-megacity-has-over-100-000-000-million-people-li-1629131314}
+	{https://kotaku.com/simcity-megacity-has-over-100-000-000-million-people-li-1629131314};
+
+	\noindent World record:
+	\href{https://www.guinnessworldrecords.com/world-records/418977-largest-simcity-4-city-region}
+	{https://www.guinnessworldrecords.com/world-records/418977-largest-simcity-4-city-region}
+}
+while over 20 years later, games like Cities: Skylines 2 are still plagued by
+performance issues from simulating just 100'000 agents on modern multi-core
+hardware.
+
+The biggest downside of statistical modelling for this project is flexibility.
+An agent-based model can simulate virtually anything, should the designer choose
+to, without necessarily major changes. This was the deciding factor for me, as
+the development of the game would take time, during which I would inevitably want
+to rework aspects of the simulation to optimise certain aspects.
+
+\subsection{The Market}
+
+\subsubsection*{The customers}
+
+The customer is simulated as a bundle of different characteristics, preferences,
+and needs; these all combine to produce unique behaviors for each individual
+agent. Taking inspiration from Economy Week, each customer has the following
+properties: \footnote{The names provided the table may not be accurate to the
+	corresponding implementations found in the code to simplify the explanation,
+	as the implementation contains subtle differences for performance and
+	technological reasons.
+}
+
+{\small
+	\begin{tabular}{l l p{0.45\textwidth}} \toprule
+		Property             & Type               & Description                        \\ \midrule
+
+		Base Need            & Number             & The amount of products a customer
+		wants. When their existing products wear out, they buy more.                   \\
+
+		Owned Products       & List[number]       & Keeps track of the remaining
+		durability of owned products.                                                  \\
+
+		Purchasing Threshold & Number             & How attractive a product has to
+		be for the customer to buy it.                                                 \\
+
+		Savviness            & Number             & How well informed the customer is. \\
+
+		Loyalties            & List[number]       & How loyal the customer is to a
+		certain company.                                                               \\
+
+		Loyalty Factor       & Number             & How much the customer's loyalties
+		influence their                                                                \\
+
+		Preferences          & Dictionary[number] & Which aspects of a product impact
+		the customer's decisions the most. For example, a customer could value low
+		prices more than they do the quality of the product.                           \\ \bottomrule
+	\end{tabular}}
+
+Originally the preferences were determined by sampling a \textit{weighted normal
+	distribution}; however, after some playtesting and reading
+\href{https://en.wikipedia.org/wiki/The_Tipping_Point}{ The Tipping Point } by
+Malcom Gladwell, I reworked the generation of customers by instead creating
+\textit{archetypes} and slightly modifying their preferences randomly.
+
+Each of the archetypes has some preferences boosted and others diminished. For
+example, "the enthusiast" will not shy away from buying an expensive product,
+even multiple, if they perceive it to be unique and high quality. On the other
+hand, "the Everyman" will prefer a simpler, cheaper, long-lasting product.
+
+	{\small archetypes have not yet been fleshed out}
+
+\subsubsection*{The Companies}
+
+During the decisions phase, companies were able to develop products and set up
+production chains. Now the products made by companies are put on the market
+along with corresponding marketing campaigns.
+
+\subsubsection*{External Factors}
+
+Since the simulation is limited to the customers and products, external factors
+are able to add extra challenge and variety to the game. There are external
+factors that influence, for example, how easily people will spend money,
+resembling the \href{https://en.wikipedia.org/wiki/Credit_cycle}
+{ credit cycle } experienced in real life, where after a period of high
+consumer spending there is a period of low spending while consumers save back up
+and pay off loans.
+
+\subsection{The Marketing Phase}
+
+In this phase, the marketing campaigns of companies are simulated. Each
+marketing campaign has a style, a quality and a quantity.
+
+The style is determined by the player, which can influence the perception of the
+product. This can be used to round out the \textit{less} attractive parts of the
+product. For example, if a player had a high quality product that they wanted to
+market to a more eco-focused audience, instead of having to undertake the
+difficult and expensive process of actually producing in an environmentally
+friendly manner, they can just focus on promoting the product as eco-friendly.
+\footnote{This technique is often labelled as
+	\href{https://en.wikipedia.org/wiki/Greenwashing}{Greenwashing}.
+	The most famous example is Volkswagen's "clean diesel" emissions scandal in 2015
+	where Volkswagen programmed diesel engined cars to run efficiently when they
+	were being tested while reverting to "dirty" operation when driven on the road.
+
+	\noindent Further reading:
+	\href{https://en.wikipedia.org/wiki/Volkswagen_emissions_scandal}
+	{https://en.wikipedia.org/wiki/Volkswagen\_emissions\_scandal}
+}
+
+The quality of a campaign influences how much the perception of the product is
+changed. This is mostly determined by the skill and motivation of the companies
+marketing staff.
+
+Lastly, the quantity of a campaign, expressed in a monetary amount, determines
+who even sees the campaign. A high quantity of marketing means there is a high
+chance that people know about a product. A campaign could theoretically be
+extremely effective, however if no-one sees it, it isn’t actually successful
+since there are still few people who even know about the product’s existence.
+
+All of these factors are mixed in with each customer's "savviness" stat. People
+with more savviness are generally more informed on a market and thus have a
+higher chance of knowing about a product, however they are also less effected
+by marketing and thus perceive it more objectively. Other people with lower
+savviness will easily be swayed by effective marketing.
+
+\subsection{The Purchasing Phase}
+
+After the effects of marketing are evaluated, if the customer needs a product,
+it will evaluate the dot product of its preferences and the product's properties
+(the decision factors) for each product.
+
+$$
+	\text{decision factors} = \begin{pmatrix}
+		\text{ quality } \\
+		...              \\
+		\text{ durability }
+	\end{pmatrix} \cdot \begin{pmatrix}
+		\text{ quality preference } \\
+		...                         \\
+		\text{ durability preference }
+	\end{pmatrix}
+$$
+
+The customer then checks if the product is still available; if so, they try to
+buy enough to fulfill their needs.

@@ -6,9 +6,10 @@
 	 * @property {number | undefined} min
 	 * @property {number | undefined} max
 	 * @property {()=>void?} onclick
+	 * @property {boolean?} disabled
 	 */
 	/** @type {props} */
-	let { label, value = $bindable(), min, max, onclick } = $props();
+	let { label, value = $bindable(), min, max, onclick, disabled } = $props();
 </script>
 
 <div
@@ -23,6 +24,7 @@
 		}}
 		aria-label="-"
 		class="minus"
+		{disabled}
 	>
 	</button>
 	<span style="position: relative; min-width: 2rem; vertical-align: middle;">
@@ -46,6 +48,7 @@
 		}}
 		aria-label="-"
 		class="plus"
+		{disabled}
 	>
 	</button>
 </div>
@@ -64,6 +67,9 @@
 		&:active {
 			border: none !important;
 			outline: none !important;
+		}
+		&:focus {
+			box-shadow: 0px 0px 10px silver;
 		}
 	}
 	.minus {

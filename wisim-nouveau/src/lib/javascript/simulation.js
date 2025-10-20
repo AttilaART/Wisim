@@ -37,8 +37,9 @@ export const delta = {
 
 /**
  * @typedef {Object} Decisions_product
- * @property {number} Price
  * @property {string} Name
+ * @property {number} Price
+ * @property {boolean} Outdated
  * @property {Object} Promotion
  * @property {number} Promotion.Quantity
  * @property {number} Promotion.Price
@@ -148,7 +149,7 @@ export const delta = {
   * @property {string?} Components.Frame
   * @property {string?} Components.Body
   * @property {string?} Components.Mechanism
-  * @property {string[]} Components.Misc
+  * @property {Array.<string?>} Components.Misc
 
 	* @property {number} MaterialQuality
 	* @property {number} ExtraDurability
@@ -185,8 +186,9 @@ export const delta = {
 /**
  * @typedef {Object} Offer
  * @property {Product} Product - The product being offered
+ * @property {boolean} Outdated
  * @property {number} Price
- * @property {ProductStats} productStats
+ * @property {ProductStats} ProductStats
  * @property {number} PromotionQuality
  * @property {Object} Promotion - Promotion goals
  * @property {number} Promotion.Quantity
@@ -194,6 +196,7 @@ export const delta = {
  * @property {number} Promotion.StyleEcology
  * @property {number} Promotion.StyleEthics
  * @property {number} Promotion.StyleDurability
+ * @property {number} Promotion.StylePrice
  */
 
 /**

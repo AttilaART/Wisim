@@ -10,6 +10,13 @@ kanban-plugin: board
 - [ ] # Complex research screen
 - [ ] # Multi Machines on offer
 - [ ] # (Singlplayer) Add win / loss conditions
+- [ ] Add Icons
+- [ ] # Add different architypes of customers
+
+
+## Bugs
+
+- [ ] report.BalanceSheet.Assets only shows machines
 
 
 ## In Progress
@@ -23,6 +30,10 @@ kanban-plugin: board
 - [ ] # Multi Products
 - [ ] # Implement Marketing
 - [ ] # Mulitplayer
+- [ ] # Production Screen
+- [ ] # Add Monthly overview
+	Show most important values from the past month:
+	- Show how much money was made
 
 
 ## Need Rework
@@ -42,6 +53,6 @@ kanban-plugin: board
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false]}
+{"kanban-plugin":"board","list-collapse":[false,false,false,false,false]}
 ```
 %%

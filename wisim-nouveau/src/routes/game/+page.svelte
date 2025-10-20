@@ -17,15 +17,27 @@
 	import Invoices from '../../components/invoices.svelte';
 	import Production from '../../components/production.svelte';
 	import { preventPageReload } from '$lib/helper.svelte';
+	import MonthlyOverview from '../../components/monthlyOverview.svelte';
+
+	/** handle wasm import */
+	import { wasm_exec } from '$lib/wasm_exec.js';
+
+	wasm_exec();
+
+	// @ts-ignore
+	const go = new Go();
+	go.run((await WebAssembly.instantiateStreaming(fetch('/main.wasm'), go.importObject)).instance);
+
+	/**/
 
 	/** @type {{data: {serverAdress: string}}}*/
 	let { data } = $props();
 
-	/** @type {Object.<string, import("svelte").Snippet<[number]>>} */
+	/** @type {Object.<string, (id: number)=>ReturnType<import("svelte").Snippet>>} */
 	let windows = $state({});
 
 	/**
-	 *@param {import("svelte").Snippet<[number]>} snippet
+	 *@param {(id: number)=>ReturnType<import("svelte").Snippet>} snippet
 	 * @returns {number} window ID
 	 */
 	function newWindow(snippet) {
@@ -50,6 +62,7 @@
 	let companyDialogue = $state();
 	let isReady = $state();
 	let isSimulating = $state(false);
+	let overviewWindowOpen = $state(false);
 
 	/**
 	 * @type {number}
@@ -160,6 +173,9 @@
 					isReady = false;
 					isSimulating = false;
 					fetchEverything(connection);
+					if (!overviewWindowOpen) {
+						newWindow(monthlyOverview);
+					}
 					break;
 				case Methods.Broadcast_chat:
 					chats.push(dataJSON.Data);
@@ -334,6 +350,9 @@
 			deleteWindow={(id) => {
 				deleteWindow(id);
 			}}
+			openProduction={() => {
+				newWindow(production);
+			}}
 		></Product>
 	</Window>
 {/snippet}
@@ -495,6 +514,18 @@
 			<input bind:value={chatMessage} type="text" />
 			<input type="submit" style="display: none" />
 		</form>
+	</Window>
+{/snippet}
+
+{#snippet monthlyOverview(/** @type {Number} id */ id)}
+	<Window
+		title="Monthly Report"
+		closeWindow={() => {
+			overviewWindowOpen = false;
+			deleteWindow(id);
+		}}
+		>{(overviewWindowOpen = true)}
+		<MonthlyOverview bind:clientState></MonthlyOverview>
 	</Window>
 {/snippet}
 

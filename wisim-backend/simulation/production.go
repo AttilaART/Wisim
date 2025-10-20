@@ -218,13 +218,13 @@ func produce(
 	for productID := range offers {
 		productSpecificReport := productionReport.ProductSpecificReport[productID]
 
-		productSpecificReport.BaseProductsProduced = int(float32(productSpecificReport.BaseProduction) / float32(offers[productID].productStats.ProductionCost))
-		productSpecificReport.BonusProductsProduced = int(float32(productSpecificReport.BonusProduction) / float32(offers[productID].productStats.ProductionCost))
+		productSpecificReport.BaseProductsProduced = int(float32(productSpecificReport.BaseProduction) / float32(offers[productID].ProductStats.ProductionCost))
+		productSpecificReport.BonusProductsProduced = int(float32(productSpecificReport.BonusProduction) / float32(offers[productID].ProductStats.ProductionCost))
 		productSpecificReport.TotalProductsProduced = productSpecificReport.BaseProductsProduced + productSpecificReport.BonusProductsProduced
 
-		productSpecificReport.ExcessProduction = productSpecificReport.TotalProduction - (int(offers[productID].productStats.ProductionCost * float32(productSpecificReport.TotalProductsProduced)))
+		productSpecificReport.ExcessProduction = productSpecificReport.TotalProduction - (int(offers[productID].ProductStats.ProductionCost * float32(productSpecificReport.TotalProductsProduced)))
 
-		productionReport.MaterialUsed += offers[productID].productStats.MaterialUse * float32(productSpecificReport.TotalProductsProduced)
+		productionReport.MaterialUsed += offers[productID].ProductStats.MaterialUse * float32(productSpecificReport.TotalProductsProduced)
 
 		productionReport.ProductSpecificReport[productID] = productSpecificReport
 		fmt.Printf("Product %s (%s) produced: \n    Base: %d\n    Bonus: %d\n    Total: %d\n",
