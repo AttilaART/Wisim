@@ -9,12 +9,13 @@ kanban-plugin: board
 - [ ] # Warehouse
 - [ ] # Complex research screen
 - [ ] # Multi Machines on offer
-- [ ] Add Icons
+- [ ] # (Singlplayer) Add win / loss conditions
 
 
 ## In Progress
 
 - [ ] # Production Screen
+- [ ] Add Icons
 
 
 ## Done
