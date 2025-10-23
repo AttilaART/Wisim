@@ -6,6 +6,7 @@ import (
 )
 
 func (c *Company) newProduct(productID string, companyID int, productName string, productDecisions Decisions_product) Offer {
+	productDecisions.Product.TechLevels = c.Tech
 	productStats, productionLineCost := CalculateProductStats(productDecisions.Product, *c.productComponents)
 	offer := Offer{Outdated: productDecisions.Outdated, Product: productDecisions.Product, ProductStats: productStats}
 	offer.Product.ID = productID
@@ -61,6 +62,17 @@ func CalculateProductStats(
 
 	productStats.Quality += float32(product.MaterialQuality)
 	productStats.MaterialUse += float32(5 * product.MaterialQuality)
+
+	productStats.Durability *= product.TechLevels.Durability
+	productStats.Ecology *= product.TechLevels.Ecology
+	productStats.Quality *= product.TechLevels.Quality
+
+	if product.TechLevels.MaterialUse != 0 {
+		productStats.MaterialUse /= product.TechLevels.MaterialUse
+	}
+	if product.TechLevels.ProductionCost != 0 {
+		productStats.ProductionCost /= product.TechLevels.ProductionCost
+	}
 
 	return productStats, productionLineCost
 }

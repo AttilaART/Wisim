@@ -43,9 +43,82 @@ func calculateProductStatsWrapped() js.Func {
 	return f
 }
 
+func calculateProductionWrapped() js.Func {
+	f := js.FuncOf(func(this js.Value, args []js.Value) any {
+		if len(args) != 4 {
+			return fmt.Sprintf("Invalid arguments: Expected 4, Got %d", len(args))
+		}
+
+		var err error
+
+		var args1 []simulation.Machine
+		err = json.Unmarshal(([]byte)(args[1].String()), &args1)
+		if err != nil {
+			return err.Error()
+		}
+
+		var args2 map[string]simulation.Offer
+		err = json.Unmarshal(([]byte)(args[2].String()), &args2)
+		if err != nil {
+			return err.Error()
+		}
+
+		var employees []simulation.Employee
+		err = json.Unmarshal(([]byte)(args[3].String()), &employees)
+		if err != nil {
+			return err.Error()
+		}
+
+		args3 := make(simulation.Employee_pool)
+
+		for i, e := range employees {
+			employees[i].Employer = args[0].Int()
+			args3[e.ID] = &employees[i]
+		}
+
+		productSpecificReportTemp := make(map[string]struct {
+			TotalProduction       int
+			BaseProduction        int
+			BonusProduction       int
+			ExcessProduction      int
+			TotalProductsProduced int
+			BaseProductsProduced  int
+			BonusProductsProduced int
+
+			MaterialUsed float32
+			EnergyUsed   float32
+		})
+
+		machineProduction := make([]int, len(args1))
+
+		_, _, _, workerSurplus := simulation.ProduceProducts(
+			args[0].Int(),
+			args1,
+			args2,
+			args3,
+			productSpecificReportTemp,
+			machineProduction,
+		)
+
+		returnValue := struct {
+			WorkerSurplus     int
+			MachineProduction []int
+		}{workerSurplus, machineProduction}
+
+		json, err := json.Marshal(returnValue)
+		if err != nil {
+			return err.Error()
+		}
+
+		return string(json)
+	})
+	return f
+}
+
 func main() {
 	println("Wisim WASM loaded Successfully")
 	js.Global().Set("CalculateProductStatsGo", calculateProductStatsWrapped())
+	js.Global().Set("CalculateProductionGo", calculateProductionWrapped())
 
 	<-make(chan struct{})
 }

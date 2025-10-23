@@ -4,7 +4,7 @@
 	import Window from './window.svelte';
 	import ProductionIcon from '$lib/images/production.svg';
 	import MarketingIcon from '$lib/images/marketing.svg';
-	import { ignoreError, preventPageReload } from '$lib/helper.svelte';
+	import { calculateProduction, ignoreError, preventPageReload } from '$lib/helper.svelte';
 	import ProductDesigner from './productDesigner.svelte';
 	import { fade, fly } from 'svelte/transition';
 	import ConfigurePromotion from './configurePromotion.svelte';
@@ -29,20 +29,6 @@
 	/**
 	 * @param {string} productID
 	 */
-	function calculateMonthlyProduction(productID) {
-		let totalProduction = 0;
-		for (let m of clientState.Company.Machines) {
-			if (m.AssignedProductID == productID) {
-				totalProduction += m.ProductionCapacity;
-			}
-		}
-
-		return totalProduction / clientState.Company.Offers[productID].ProductStats.ProductionCost;
-	}
-
-	/**
-	 * @param {string} productID
-	 */
 	function addToDecisionsIfNotPresent(productID) {
 		if (clientState.Decisions.Products[productID] == undefined) {
 			let offer = clientState.Company.Offers[productID];
@@ -64,11 +50,38 @@
 		}
 	}
 
+	console.log(clientState.Company);
+
 	let showOutdated = $state(false);
 
 	for (let productID of Object.keys(clientState.Company.Offers)) {
 		addToDecisionsIfNotPresent(productID);
 	}
+
+	let productProduction = $derived.by(() => {
+		let { MachineProduction: machineProduction, WorkerSurplus: workerSurplus } =
+			calculateProduction(
+				clientState.Company.ID,
+				clientState.Company.Machines,
+				clientState.Company.Offers,
+				clientState.Employees.production
+			);
+
+		/**
+		 * @type {Object.<string, number>}
+		 */
+		let productProduction = {};
+
+		for (let i in clientState.Company.Machines) {
+			if (productProduction[clientState.Company.Machines[i].AssignedProductID] == undefined) {
+				productProduction[clientState.Company.Machines[i].AssignedProductID] = 0;
+			}
+			productProduction[clientState.Company.Machines[i].AssignedProductID] += machineProduction[i];
+		}
+
+		return productProduction;
+	});
+
 	updateDecisions(clientState.Decisions);
 </script>
 
@@ -159,7 +172,15 @@
 						</div>
 						<small
 							>{format.number(
-								calculateMonthlyProduction(offer[1].Product.ID),
+								clientState.Company.ProductsInStorage[offer[0]]
+									? clientState.Company.ProductsInStorage[offer[0]]
+									: 0,
+								false,
+								0
+							)} + {format.number(
+								productProduction[offer[0]]
+									? productProduction[offer[0]] / offer[1].ProductStats.ProductionCost
+									: 0,
 								false,
 								1
 							)}/month</small

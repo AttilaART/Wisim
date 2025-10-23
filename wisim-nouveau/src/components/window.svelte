@@ -23,10 +23,10 @@
 		header {
 			height: 3rem;
 
+			user-select: none;
 			position: relative;
 			span {
 				pointer-events: none;
-				user-select: none;
 
 				position: absolute;
 				left: 50%;

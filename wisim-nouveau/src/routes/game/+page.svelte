@@ -524,7 +524,8 @@
 			overviewWindowOpen = false;
 			deleteWindow(id);
 		}}
-		>{(overviewWindowOpen = true)}
+	>
+		<span hidden>{(overviewWindowOpen = true)}</span>
 		<MonthlyOverview bind:clientState></MonthlyOverview>
 	</Window>
 {/snippet}

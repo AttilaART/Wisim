@@ -52,6 +52,8 @@
 				Misc: []
 			},
 
+			TechLevels: clientState.Company.Tech,
+
 			MaterialQuality: 0,
 			ExtraDurability: 0,
 			ExtraQuality: 0
@@ -657,6 +659,7 @@
 
 	*:hover > .tooltip {
 		display: unset;
+		poimter-events: none;
 		animation: showTooltip 1s 1s;
 	}
 

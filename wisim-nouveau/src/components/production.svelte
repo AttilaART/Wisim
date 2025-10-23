@@ -1,4 +1,5 @@
 <script>
+	import { calculateProduction } from '$lib/helper.svelte';
 	import { format } from '$lib/javascript/format';
 	import { delta, financeReportCategories } from '$lib/javascript/simulation';
 
@@ -18,6 +19,17 @@
 		clientState.Company.Machines.push(machine);
 		clientState.Company.Balance -= machine.Value;
 		updateMachineDecision(machine, delta.Delta_New);
+	}
+
+	/** @param {import("$lib/javascript/simulation").Machine} machine */
+	function sellMachine(machine) {
+		// console.log(clientState);
+		let index = clientState.Company.Machines.findIndex((m) => {
+			return m.ID == machine.ID;
+		});
+		clientState.Company.Machines.splice(index, 1);
+		clientState.Company.Balance += machine.Value;
+		updateMachineDecision(machine, delta.Delta_Remove);
 	}
 
 	/**
@@ -53,26 +65,47 @@
 
 		updateDecisions(clientState.Decisions);
 	}
+
+	let { MachineProduction, WorkerSurplus: workerSurplus } = $derived.by(() => {
+		return calculateProduction(
+			clientState.Company.ID,
+			clientState.Company.Machines,
+			clientState.Company.Offers,
+			clientState.Employees.production
+		);
+	});
 </script>
 
+<div>
+	<article>
+		{#if workerSurplus > 0}
+			You have <strong>{workerSurplus}</strong> production employees too many.
+		{:else if workerSurplus < 0}
+			You are missing <strong>{-workerSurplus}</strong> production employees!
+		{/if}
+	</article>
+</div>
 <table>
 	<thead>
 		<tr>
 			<th>Name </th>
-			<th> Production capacity</th>
+			<th>Production capacity</th>
 			<th>Minimum Worker Count</th>
 			<th>Optimal Worker Count</th>
 			<th>Assigned Product</th>
+			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-		{#each clientState.Company.Machines as m}
+		{#each clientState.Company.Machines as m, i (m.ID)}
 			<tr>
 				<td>
 					Machine {m.ID}
 				</td>
 				<td>
-					<h2>{m.ProductionCapacity}</h2>
+					<h2 style={MachineProduction[i] >= m.ProductionCapacity ? '' : 'color: red;'}>
+						{MachineProduction[i]}
+					</h2>
 				</td>
 				<td>
 					<h2>{m.MinimumWorkers}</h2>
@@ -93,6 +126,15 @@
 							<option value={offer[0]}>{offer[1].Product.Name}</option>
 						{/each}
 					</select>
+				</td>
+				<td>
+					<button
+						onclick={() => {
+							sellMachine(m);
+						}}
+					>
+						Sell
+					</button>
 				</td>
 			</tr>
 		{/each}

@@ -1,6 +1,7 @@
 <script>
 	import { format } from '$lib/javascript/format';
 	import { delta } from '$lib/javascript/simulation';
+
 	/** @type {{clientState: import("$lib/javascript/simulation").clientState, updateDecisions: (decisions: import("$lib/javascript/simulation").Decisions)=>void}} */
 	let { clientState = $bindable(), updateDecisions } = $props();
 
@@ -11,68 +12,115 @@
 	 * @property {import("$lib/javascript/simulation").Change} Delta.Delta_Change
 	 * @property {import("$lib/javascript/simulation").Change} Delta.Delta_Remove
 	 */
+
+	function syncDecisionsAndEmployees() {
+		/**
+		 * @param {import("$lib/javascript/simulation").Delta<import("$lib/javascript/simulation").Employee>} d
+		 * @param {import("$lib/javascript/simulation").Employee[]} employees
+		 * @param {import("$lib/javascript/simulation").Employee[]} unemployed
+		 */
+		function handleDeltaNew(d, employees, unemployed) {
+			let indexInEmployees = employees.findIndex((e) => {
+				return d.Item.ID == e.ID;
+			});
+
+			if (indexInEmployees < 0) {
+				employees.push(d.Item);
+			}
+
+			let indexInUnemployed = unemployed.findIndex((e) => {
+				return d.Item.ID == e.ID;
+			});
+
+			if (indexInUnemployed >= 0) unemployed.splice(indexInUnemployed, 1);
+		}
+
+		/**
+		 * @param {import("$lib/javascript/simulation").Delta<import("$lib/javascript/simulation").Employee>} d
+		 * @param {import("$lib/javascript/simulation").Employee[]} employees
+		 * @param {import("$lib/javascript/simulation").Employee[]} unemployed
+		 */
+		function handleDeltaRemove(d, employees, unemployed) {
+			let indexInEmployees = unemployed.findIndex((e) => {
+				return d.Item.ID == e.ID;
+			});
+
+			if (indexInEmployees < 0) {
+				unemployed.push(d.Item);
+			}
+
+			let indexInUnemployed = employees.findIndex((e) => {
+				return d.Item.ID == e.ID;
+			});
+
+			if (indexInUnemployed >= 0) employees.splice(indexInUnemployed, 1);
+		}
+
+		for (let d of clientState.Decisions.Employees.ProductionDeltas) {
+			if (d.Change == delta.Delta_New) {
+				handleDeltaNew(d, clientState.Employees.production, clientState.Unemployed.production);
+			} else if (d.Change == delta.Delta_Remove) {
+				handleDeltaRemove(d, clientState.Employees.production, clientState.Unemployed.production);
+			}
+		}
+		for (let d of clientState.Decisions.Employees.MarketingDeltas) {
+			if (d.Change == delta.Delta_New) {
+				handleDeltaNew(d, clientState.Employees.marketing, clientState.Unemployed.marketing);
+			} else if (d.Change == delta.Delta_Remove) {
+				handleDeltaRemove(d, clientState.Employees.marketing, clientState.Unemployed.marketing);
+			}
+		}
+	}
+
 	/**
-	 * @param {import("$lib/javascript/simulation").Change} delta
+	 * @param {import("$lib/javascript/simulation").Change} change
 	 * @param {import("$lib/javascript/simulation").Employee} employee
 	 * @param {string} employeeType
 	 * @returns {void}
 	 */
-	function modifyEmployee(delta, employee, employeeType) {
-		/** @type{import("$lib/javascript/simulation").Delta<import("$lib/javascript/simulation").Employee>} */
-		let emplyeeDelta = {
-			Change: delta,
-			Item: employee
-		};
-
+	function modifyEmployee(change, employee, employeeType) {
 		// check if employee is already in deltas
-
 		let deltasList = [];
+		employee.Employer = clientState.Company.ID;
 
-		if (employeeType == 'production') deltasList = clientState.Decisions.Employees.ProductionDeltas;
-		else if (employeeType == 'marketing')
+		if (employeeType == 'production') {
+			deltasList = clientState.Decisions.Employees.ProductionDeltas;
+		} else if (employeeType == 'marketing') {
 			deltasList = clientState.Decisions.Employees.MarketingDeltas;
-		else throw `invalid employeeType: ${employeeType}`;
+		} else throw `invalid employeeType: ${employeeType}`;
 
 		for (/** @type {number} i */ let i in deltasList) {
 			if (deltasList[i].Item.ID == employee.ID) {
-				deltasList[i].Change = delta;
+				deltasList[i].Change = change;
 				deltasList[i].Item = employee;
+
+				new Promise(() => {
+					syncDecisionsAndEmployees();
+				});
 				return;
 			}
 		}
 
-		deltasList.push(emplyeeDelta);
-	}
-	/**
-	 * @param {number} id
-	 * @param {string} type
-	 * @returns {boolean}
-	 */
-	function isFired(id, type) {
-		for (let e of clientState.Decisions.Employees[format.capitaliseFirstLetter(type) + 'Deltas']) {
-			if (e.Item.ID == id) {
-				if (e.Change == delta.Delta_Remove) {
-					return true;
-				}
-			}
-		}
-		return false;
+		deltasList.push({
+			Change: change,
+			Item: employee
+		});
+
+		new Promise(() => {
+			syncDecisionsAndEmployees();
+		});
 	}
 
 	/**
-	 * @param {number} id
-	 * @param {string} type
-	 * @returns {boolean}
+	 * @param {import("$lib/javascript/simulation").Employee} e
+	 * @param {import("$lib/javascript/simulation").Employee[]} employees
 	 */
-	function isHired(id, type) {
-		for (let e of clientState.Decisions.Employees[format.capitaliseFirstLetter(type) + 'Deltas']) {
-			if (e.Item.ID == id) {
-				if (e.Change == delta.Delta_New) {
-					return true;
-				}
-			}
-		}
-		return false;
+	function isEmployee(e, employees) {
+		return (
+			employees.findIndex((em) => {
+				return em.ID == e.ID;
+			}) >= 0
+		);
 	}
 
 	/**
@@ -140,39 +188,23 @@
 			<tbody>
 				{#if menuState[0] == 'production'}
 					{#if menuState[1] == 'hired'}
-						{#each clientState.Employees.production as e, index (e.ID)}
-							{@render employee(index, 'production')}
-						{/each}
+						{@render displayProductionHired()}
 					{:else}
-						{#each clientState.Unemployed.production as e, index (e.ID)}
-							{@render prospective(index, 'production')}
-						{/each}
+						{@render displayProductionNotHired()}
 					{/if}
 				{:else if menuState[0] == 'marketing'}
 					{#if menuState[1] == 'hired'}
-						{#each clientState.Employees.marketing as e, index (e.ID)}
-							{@render employee(index, 'marketing')}
-						{/each}
+						{@render displayMarketingHired()}
 					{:else}
-						{#each clientState.Unemployed.marketing as e, index (e.ID)}
-							{@render prospective(index, 'marketing')}
-						{/each}
+						{@render displayMarketingNotHired()}
 					{/if}
 				{:else if menuState[0] == 'all'}
 					{#if menuState[1] == 'hired'}
-						{#each clientState.Employees.marketing as e, index (e.ID)}
-							{@render employee(index, 'marketing')}
-						{/each}
-						{#each clientState.Employees.production as e, index (e.ID)}
-							{@render employee(index, 'production')}
-						{/each}
+						{@render displayMarketingHired()}
+						{@render displayProductionHired()}
 					{:else}
-						{#each clientState.Unemployed.marketing as e, index (e.ID)}
-							{@render prospective(index, 'marketing')}
-						{/each}
-						{#each clientState.Unemployed.production as e, index (e.ID)}
-							{@render prospective(index, 'production')}
-						{/each}
+						{@render displayMarketingNotHired()}
+						{@render displayProductionNotHired()}
 					{/if}
 				{/if}
 			</tbody>
@@ -180,97 +212,85 @@
 	</div>
 </section>
 
-{#snippet employee(/** @type {Number} */ index, /** @type {String} */ type)}
-	<tr style="opacity: {isFired(clientState.Employees[type][index].ID, type) ? '0.5' : '1'};">
+{#snippet employee(
+	/** @type {import("$lib/javascript/simulation").Employee}*/ employee,
+	/** @type {import("svelte").Snippet<[]>} */ action,
+	/** @type {boolean} */ isFired
+)}
+	<!--<tr style="opacity: {isFired ? '0.5' : '1'};">-->
+	<tr>
 		<td>
-			{clientState.Employees[type][index].Name}
+			{employee.Name}
 		</td>
 		<td>
-			<progress value={clientState.Employees[type][index].Skill - 0.5} max="1"></progress>
+			<progress value={employee.Skill - 0.5} max="1"></progress>
 		</td>
 		<td>
-			<progress value={clientState.Employees[type][index].Motivation - 0.5} max="1"></progress>
+			<progress value={employee.Motivation - 0.5} max="1"></progress>
 		</td>
 		<td>
-			<div style="display: inline-block;">
-				{clientState.Employees[type][index].Working_hours}h
-			</div>
-			<input
-				style="display: inline-block;"
-				bind:value={clientState.Employees[type][index].Working_hours}
-				type="range"
-				min="1"
-				max="12"
-				onchange={() => {
-					onModifyEmployee(type, index);
-				}}
-			/>
+			{format.currency(employee.Pay, false, 0)} / Mon
 		</td>
 		<td>
-			<label
-				for=""
-				onchange={() => {
-					onModifyEmployee(type, index);
-				}}
-			>
-				<input
-					bind:value={clientState.Employees[type][index].Pay}
-					type="number"
-					min={clientState.ExternalFactors[format.capitaliseFirstLetter(type) + 'MinimumWage']}
-					step="1000"
-				/>
-			</label>
-		</td>
-		<td>
-			{#if !isFired(clientState.Employees[type][index].ID, type)}
-				<button
-					onclick={() => {
-						modifyEmployee(delta.Delta_Remove, clientState.Employees[type][index], type);
-						updateDecisions(clientState.Decisions);
-					}}>FIRE</button
-				>
-			{:else}
-				<button
-					onclick={() => {
-						modifyEmployee(delta.Delta_Change, clientState.Employees[type][index], type);
-						updateDecisions(clientState.Decisions);
-					}}>Rehire</button
-				>
-			{/if}
+			{@render action()}
 		</td>
 	</tr>
 {/snippet}
 
-{#snippet prospective(/** @type {Number} */ index, /** @type {String} */ type)}
-	<tr style="opacity: {isFired(clientState.Unemployed[type][index].ID, type) ? '0.5' : '1'};">
-		<td>
-			{clientState.Unemployed[type][index].Name}
-		</td>
-		<td>
-			<progress value={clientState.Unemployed[type][index].Skill - 0.5} max="1"></progress>
-		</td>
-		<td>
-			{format.currency(clientState.Unemployed[type][index].Pay, false, 0)} / Mon
-		</td>
-		<td>
-			{#if !isHired(clientState.Unemployed[type][index].ID, type)}
-				<button
-					onclick={() => {
-						modifyEmployee(delta.Delta_New, clientState.Unemployed[type][index], type);
-						updateDecisions(clientState.Decisions);
-					}}>Send Offer</button
-				>
-			{:else}
-				<button
-					class="secondary"
-					onclick={() => {
-						modifyEmployee(delta.Delta_Remove, clientState.Unemployed[type][index], type);
-						updateDecisions(clientState.Decisions);
-					}}>Rescind Offer</button
-				>
-			{/if}
-		</td>
-	</tr>
+{#snippet displayMarketingHired()}
+	{#each clientState.Employees.marketing as e, index (e.ID)}
+		{#snippet action()}
+			<button
+				onclick={() => {
+					modifyEmployee(delta.Delta_Remove, e, 'marketing');
+				}}
+			>
+				Fire
+			</button>
+		{/snippet}
+		{@render employee(e, action, isEmployee(e, clientState.Employees.marketing))}
+	{/each}
+{/snippet}
+
+{#snippet displayMarketingNotHired()}
+	{#each clientState.Unemployed.marketing as e, index (e.ID)}
+		{#snippet action()}
+			<button
+				onclick={() => {
+					modifyEmployee(delta.Delta_New, e, 'marketing');
+				}}>Hire</button
+			>
+		{/snippet}
+		{@render employee(e, action, isEmployee(e, clientState.Employees.marketing))}
+	{/each}
+{/snippet}
+
+{#snippet displayProductionHired()}
+	{#each clientState.Employees.production as e, index (e.ID)}
+		{#snippet action()}
+			<button
+				onclick={() => {
+					modifyEmployee(delta.Delta_Remove, e, 'production');
+				}}
+			>
+				Fire
+			</button>
+		{/snippet}
+		{@render employee(e, action, isEmployee(e, clientState.Employees.production))}
+	{/each}
+{/snippet}
+
+{#snippet displayProductionNotHired()}
+	{#each clientState.Unemployed.production as e, index (e.ID)}
+		{#snippet hireOrCancel()}
+			<button
+				onclick={() => {
+					modifyEmployee(delta.Delta_New, e, 'production');
+				}}>Hire</button
+			>
+		{/snippet}
+		{@render employee(e, hireOrCancel, isEmployee(e, clientState.Employees.production))}
+	{/each}
 {/snippet}
 
 <style>

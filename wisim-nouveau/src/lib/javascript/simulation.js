@@ -150,7 +150,9 @@ export const delta = {
   * @property {string?} Components.Body
   * @property {string?} Components.Mechanism
   * @property {Array.<string?>} Components.Misc
-
+  *
+  * @property {TechLevels} TechLevels
+  *
 	* @property {number} MaterialQuality
 	* @property {number} ExtraDurability
 	* @property {number} ExtraQuality
@@ -424,6 +426,7 @@ export const financeReportCategories = {
  * @property {number} BangForBuck
  * @property {number} PromotionQuantity
  * @property {number} PromotionQuality
+ * @property {number} ImpressionCount
  */
 
 /**

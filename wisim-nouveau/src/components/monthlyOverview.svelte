@@ -25,6 +25,27 @@
 		}
 		return totalAssets;
 	});
+
+	let { avgPromotionQuality, totalPromotionQuantity, totalPromotionImpressions } = $derived.by(
+		() => {
+			let avgPromotionQuality = 0;
+			let totalPromotionQuantity = 0;
+			let totalPromotionImpressions = 0;
+
+			let entries = Object.entries(latestReport.SalesReport);
+			for (let e of entries) {
+				avgPromotionQuality += e[1].MarketingStatistics.PromotionQuality;
+				totalPromotionQuantity += e[1].MarketingStatistics.PromotionQuantity;
+				totalPromotionImpressions += e[1].MarketingStatistics.ImpressionCount;
+			}
+
+			if (entries.length > 0) {
+				avgPromotionQuality = avgPromotionQuality / entries.length;
+			}
+
+			return { avgPromotionQuality, totalPromotionQuantity, totalPromotionImpressions };
+		}
+	);
 </script>
 
 {#if !latestReport}
@@ -42,7 +63,6 @@
 			<label for="">
 				Total Cashflow:
 				<h4>{format.currency(latestReport.FinancialReport.Totals.Cashflow, true, 2)}</h4>
-				{console.log(latestReport.BalanceSheet.Liabilities)}
 			</label>
 
 			<label for="">
@@ -50,6 +70,25 @@
 				<h4>{format.currency(totalAssets, true, 2)}</h4>
 			</label>
 		</div>
+
+		<h3>Marketing</h3>
+		<div class="grid">
+			<label for="">
+				Advertising Quality
+				<h4>{format.number(avgPromotionQuality, false, 1)}</h4>
+			</label>
+
+			<label for="">
+				Advertising Costs
+				<h4>{format.currency(totalPromotionQuantity, false, 2)}</h4>
+			</label>
+
+			<label for="">
+				Total Impressions
+				<h4>{format.number(totalPromotionImpressions, false, 0)}</h4>
+			</label>
+		</div>
+
 		<h3>Sales</h3>
 		<div class="grid">
 			<label for="">

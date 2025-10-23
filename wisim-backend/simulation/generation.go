@@ -248,6 +248,9 @@ func (g *GameState) generateCompanies(
 		companies[i].productComponents = &g.ProductComponents
 		companies[i].Offers = make(map[string]Offer)
 		companies[i].ProductsInStorage = make(map[string]int)
+		if len(defaultCompany.Machines) == 0 {
+			companies[i].Machines = make([]Machine, 0)
+		}
 
 		requiredProductionPersonelle := 0
 		for _, m := range companies[i].Machines {

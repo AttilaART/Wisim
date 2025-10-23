@@ -199,6 +199,8 @@ type Product struct {
 		Misc       []string
 	}
 
+	TechLevels TechLevels
+
 	MaterialQuality int
 	ExtraDurability int
 	ExtraQuality    int
@@ -461,6 +463,9 @@ type Production_report struct {
 		TotalProductsProduced int
 		BaseProductsProduced  int
 		BonusProductsProduced int
+
+		MaterialUsed float32
+		EnergyUsed   float32
 	}
 
 	MaterialUsed float32
@@ -521,12 +526,14 @@ type Marketing_statistics struct {
 	BangForBuck       float64
 	PromotionQuantity float64
 	PromotionQuality  float64
+	ImpressionCount   int
 	// Place
 }
 
 type Customer struct {
 	Base_need      int
 	Owned_products []OwnedProduct
+	KnownProducts  []string
 
 	// Preferences moved to sepeate array in gamestate
 
@@ -694,10 +701,12 @@ func (game_state *GameState) SimulateStep() error {
 	println("---------------- Simulatig economy ----------------")
 
 	purchasingStatistics := make(map[string]Purchasing_statistics)
+	promotionImpression := make(map[string]int)
 	err := game_state.Population.simulateEconomy(
 		game_state.Companies,
 		game_state.ExternalFactors,
 		purchasingStatistics,
+		promotionImpression,
 	)
 	if err != nil {
 		return err
@@ -740,7 +749,9 @@ func (game_state *GameState) SimulateStep() error {
 		game_state.Companies[i].compileReports(
 			game_state.CurrentDecisions[i],
 			purchasingStatistics,
-			&game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1],
+			promotionImpression,
+			game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1],
+
 			game_state.ExternalFactors,
 		)
 
@@ -822,7 +833,8 @@ func (game_state *GameState) SimulateStep() error {
 func (company *Company) compileReports(
 	decisions Decisions,
 	companyPurchasingStatistcs map[string]Purchasing_statistics,
-	marketPurchasingStatistics *Sales_statistics,
+	promotionImpressions map[string]int,
+	marketPurchasingStatistics Sales_statistics,
 	externalFactors ExternalFactors,
 ) error {
 	company.Reports[len(company.Reports)-1].SalesReport = make(map[string]Sales_report)
@@ -830,6 +842,7 @@ func (company *Company) compileReports(
 	for productID := range company.Offers {
 		company.compileSalesReport(
 			companyPurchasingStatistcs,
+			promotionImpressions,
 			marketPurchasingStatistics.ProductsSold,
 			company.Reports[len(company.Reports)-1].SalesReport,
 		)
@@ -850,23 +863,27 @@ func (company *Company) compileReports(
 }
 
 func (c *Company) compilePersonelleReport(decisions Decisions) Personelle_report {
-	personelle_report := Personelle_report{}
+	personelleReport := Personelle_report{}
 
-	personelle_report.General = c.compile_personelle_subreport(decisions, Employee_type_all)
-	personelle_report.Marketing = c.compile_personelle_subreport(decisions, Employee_type_marketing)
-	personelle_report.Production = c.compile_personelle_subreport(decisions, Employee_type_production)
+	personelleReport.General = c.compilePersonelleSubreport(decisions, Employee_type_all)
+	personelleReport.Marketing = c.compilePersonelleSubreport(decisions, Employee_type_marketing)
+	personelleReport.Production = c.compilePersonelleSubreport(decisions, Employee_type_production)
 
-	return personelle_report
+	return personelleReport
 }
 
-func (c *Company) compile_personelle_subreport(decisions Decisions, employee_type Employee_type) Personelle_sub_report {
+func (c *Company) compilePersonelleSubreport(decisions Decisions, employeeType Employee_type) Personelle_sub_report {
 	var subReport Personelle_sub_report
-	employeeIDs := c.employeePool.Get_employees_of_company(c.ID, employee_type)
+	employeeIDs := c.employeePool.Get_employees_of_company(c.ID, employeeType)
 
 	subReport.NumberOfEmployees = len(employeeIDs)
 
+	if subReport.NumberOfEmployees == 0 {
+		return subReport
+	}
+
 	var employeeDeltas []Delta[Employee] // We can trust that the employees exist because we checked this when "simulating employees"
-	switch employee_type {
+	switch employeeType {
 	case Employee_type_marketing:
 		employeeDeltas = decisions.Employees.MarketingDeltas
 	case Employee_type_production:
@@ -919,7 +936,12 @@ func (c *Company) compile_personelle_subreport(decisions Decisions, employee_typ
 	return subReport
 }
 
-func (c *Company) compileSalesReport(purchasingStatiscs map[string]Purchasing_statistics, MarketProductsSold int, salesReportsMap map[string]Sales_report) {
+func (c *Company) compileSalesReport(
+	purchasingStatiscs map[string]Purchasing_statistics,
+	impressions map[string]int,
+	MarketProductsSold int,
+	salesReportsMap map[string]Sales_report,
+) {
 	// ----------------
 
 	for productID, productSpecificPurchasingStatiscs := range purchasingStatiscs {
@@ -959,6 +981,7 @@ func (c *Company) compileSalesReport(purchasingStatiscs map[string]Purchasing_st
 		marketingStatistics.Price = float64(c.Offers[productID].Price)
 		marketingStatistics.PromotionQuantity = float64(c.Offers[productID].Promotion.Quantity)
 		marketingStatistics.PromotionQuality = float64(c.Offers[productID].Promotion.Quantity)
+		marketingStatistics.ImpressionCount = impressions[productID]
 
 		salesReportsMap[productID] = Sales_report{salesStatistics, marketingStatistics}
 	}

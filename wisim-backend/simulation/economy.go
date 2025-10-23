@@ -14,7 +14,12 @@ import (
 
 // Economy functions
 // purchasingStatisticsMap is passed as argument to reduce unnececary garbage collection
-func (population *Population) simulateEconomy(companies []Company, externalFactors ExternalFactors, purchasingStatisticsMap map[string]Purchasing_statistics) error {
+func (population *Population) simulateEconomy(
+	companies []Company,
+	externalFactors ExternalFactors,
+	purchasingStatisticsMap map[string]Purchasing_statistics,
+	impressionsMap map[string]int,
+) error {
 	// Get offers
 	var offers []Offer
 	var offerIDs []struct {
@@ -49,6 +54,7 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 
 	tBefore := time.Now()
 	purchasingStatistics := make([]Purchasing_statistics, len(offers)+1)
+	impressions := make([]int, len(offers))
 
 	// Multithreading boilerplate
 	var wg sync.WaitGroup
@@ -63,6 +69,7 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 	offerDurabilities := make([]int, len(offers))
 	offersProperties := make([]Properties, len(offers))
 	offerMutexes := make([]sync.Mutex, len(offers))
+	offerExpectedImpressions := make([]int, len(offers))
 
 	for i, o := range offers {
 		offerPrices[i] = o.Price
@@ -79,6 +86,8 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 		offersProperties[i][propertiesDurability] = float32(o.ProductStats.Durability)
 
 		offerDurabilities[i] = int(offersProperties[i][propertiesDurability])
+
+		offerExpectedImpressions[i] = int(o.Promotion.Quantity * 2)
 	}
 	for _, interval := range split_load(numThreads, len(population.Population)) {
 		go simulatePopulationSegment(&wg,
@@ -89,9 +98,11 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 			offerPrices,
 			offerDurabilities,
 			offerMutexes,
+			offerExpectedImpressions,
 			productAvailability,
 			externalFactors,
 			purchasingStatistics,
+			impressions,
 			len(population.Population))
 	}
 
@@ -136,6 +147,7 @@ func (population *Population) simulateEconomy(companies []Company, externalFacto
 
 	for i, offer := range offers {
 		purchasingStatisticsMap[offer.Product.ID] = purchasingStatistics[i]
+		impressionsMap[offer.Product.ID] = impressions[i]
 	}
 
 	purchasingStatisticsMap["-1"] = purchasingStatistics[len(purchasingStatistics)-1]
@@ -152,9 +164,11 @@ func simulatePopulationSegment(
 	offerPrices []float32,
 	offerDurabilities []int,
 	offerMutexes []sync.Mutex,
+	offerExpectedImpressions []int,
 	productAvailability []int,
 	externalFactors ExternalFactors,
 	purchasingStatistics []Purchasing_statistics,
+	impressions []int,
 	populationSize int,
 ) {
 	for i, customer := range populationSegment {
@@ -173,6 +187,20 @@ func simulatePopulationSegment(
 		}
 
 		for ii := range offersProperties {
+			hasImpression := (float64(offerExpectedImpressions[ii])*float64(populationSegment[ii].Savyness))/float64(populationSize) > rand.Float64()
+
+			if hasImpression {
+				impressions[ii] += 1
+
+				adWasMemorable := (offers[ii].Promotion.Quality * customer.Savyness) > rand.Float32()
+
+				if adWasMemorable {
+					if !slices.Contains(populationSegment[i].KnownProducts, offers[ii].Product.ID) {
+						populationSegment[i].KnownProducts = append(populationSegment[i].KnownProducts, offers[ii].Product.ID)
+					}
+				}
+			}
+
 			if productAvailability[ii] <= 0 {
 				productsPurchasingFactors[ii] = 0
 				continue
@@ -180,51 +208,45 @@ func simulatePopulationSegment(
 				productsPurchasingFactors[ii] = 0
 				continue
 			}
-			var productPurchasingFactorsComponents Properties
-			simd.MulFloat32(populationSegmentPreferences[i][:], offersProperties[ii][:], productPurchasingFactorsComponents[:])
-			productPurchasingFactor := float32(int(productPurchasingFactorsComponents[5] +
-				productPurchasingFactorsComponents[4] +
-				productPurchasingFactorsComponents[3] +
-				productPurchasingFactorsComponents[2] +
-				productPurchasingFactorsComponents[1] +
-				productPurchasingFactorsComponents[0] +
-				customer.Brand_loyalty_factor*customer.Loyalties[offers[ii].Product.CompanyID]))
 
-			productPurchasingFactor *= externalFactors.EconomicSituationIndex
+			if hasImpression {
+				var productPurchasingFactorsComponents Properties
+				simd.MulFloat32(populationSegmentPreferences[i][:], offersProperties[ii][:], productPurchasingFactorsComponents[:])
+				productPurchasingFactor := float32(int(productPurchasingFactorsComponents[5] +
+					productPurchasingFactorsComponents[4] +
+					productPurchasingFactorsComponents[3] +
+					productPurchasingFactorsComponents[2] +
+					productPurchasingFactorsComponents[1] +
+					productPurchasingFactorsComponents[0] +
+					customer.Brand_loyalty_factor*customer.Loyalties[offers[ii].Product.CompanyID]))
 
-			productsPurchasingFactors[ii] = productPurchasingFactor
+				productPurchasingFactor *= externalFactors.EconomicSituationIndex
 
-			simd.AddFloat32(productPurchasingFactorsComponents[:], purchasingStatistics[ii].AvrPurchasingFactors[:], purchasingStatistics[ii].AvrPurchasingFactors[:])
+				productsPurchasingFactors[ii] = productPurchasingFactor
 
-			purchasingStatistics[ii].AvrDecisionFactor += productPurchasingFactor
-			purchasingStatistics[ii].AvrPurchasingThreshold += populationSegment[i].Purchashing_threshold
+				simd.AddFloat32(productPurchasingFactorsComponents[:], purchasingStatistics[ii].AvrPurchasingFactors[:], purchasingStatistics[ii].AvrPurchasingFactors[:])
+
+				purchasingStatistics[ii].AvrDecisionFactor += productPurchasingFactor
+				purchasingStatistics[ii].AvrPurchasingThreshold += populationSegment[i].Purchashing_threshold
+			}
 		}
 
 		// calculate promotion
 		for ii, o := range offers {
-			marketingReach := (o.Promotion.Quantity / float32(populationSize)) * rand.Float32() * 10
-			debugString := "marketingReach %s (%s) %.4f "
-			if marketingReach > customer.Savyness {
-				debugString += "> "
-			} else {
-				debugString += "< "
+			if !slices.Contains(populationSegment[i].KnownProducts, o.Product.ID) {
+				continue
 			}
-			debugString += "customer.Savyness (%.2f); threshold(%.2f): %t (%.2f)\n"
 
 			productsPurchasingFactors[ii] += productsPurchasingFactors[ii] * (customer.Loyalties[o.Product.CompanyID] * customer.Brand_loyalty_factor)
 
-			if customer.Savyness <= marketingReach {
-				marketingStickingFactor := (populationSegmentPreferences[i][propertiesQuality]*o.Promotion.StyleQuality +
-					populationSegmentPreferences[i][propertiesEcology]*o.Promotion.StyleEcology +
-					populationSegmentPreferences[i][propertiesEthics]*o.Promotion.StyleEthics +
-					populationSegmentPreferences[i][propertiesPrice]*o.Promotion.StylePrice +
-					populationSegmentPreferences[i][propertiesDurability]*o.Promotion.StyleDurability) *
-					o.Promotion.Quality
+			marketingBoost := (populationSegmentPreferences[i][propertiesQuality]*o.Promotion.StyleQuality +
+				populationSegmentPreferences[i][propertiesEcology]*o.Promotion.StyleEcology +
+				populationSegmentPreferences[i][propertiesEthics]*o.Promotion.StyleEthics +
+				populationSegmentPreferences[i][propertiesPrice]*o.Promotion.StylePrice +
+				populationSegmentPreferences[i][propertiesDurability]*o.Promotion.StyleDurability) *
+				o.Promotion.Quality
 
-				productsPurchasingFactors[ii] += productsPurchasingFactors[ii] + marketingStickingFactor
-			} else if customer.Loyalties[o.Product.CompanyID] < 0.5 {
-				productsPurchasingFactors[ii] *= 0.75
-			}
+			productsPurchasingFactors[ii] += productsPurchasingFactors[ii] + marketingBoost/populationSegment[i].Savyness
 
 			// fmt.Printf(debugString, o.Product.Name, o.Product.ID, marketingReach, customer.Savyness, customer.Purchashing_threshold, productsPurchasingFactors[ii] >= customer.Purchashing_threshold, productsPurchasingFactors[ii])
 
