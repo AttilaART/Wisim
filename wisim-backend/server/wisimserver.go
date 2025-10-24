@@ -144,7 +144,7 @@ func getDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("getDecisions: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -166,7 +166,7 @@ func getProductComponents(_ *Server, ws *websocket.Conn, message Message[any]) {
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("getProductComponents: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -178,7 +178,7 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("getCompany: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -187,9 +187,10 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 		return
 	}
 
-	company := gamestate.Companies[s.conns[ws].Company]
-
-	company = gamestate.SynchroniseCompanyWithDecisions(gamestate.CurrentDecisions[s.conns[ws].Company], gamestate.Companies[s.conns[ws].Company])
+	company := gamestate.SynchroniseCompanyWithDecisions(
+		gamestate.CurrentDecisions[s.conns[ws].Company],
+		gamestate.Companies[s.conns[ws].Company],
+	)
 
 	// company = removeProductNaNInf(company)
 	reply.Data = &company
@@ -200,7 +201,7 @@ func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("getExternalFactors: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -216,7 +217,7 @@ func getEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("getEmployees: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -271,7 +272,7 @@ func getUnemployedEmployees(s *Server, ws *websocket.Conn, message Message[any])
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("getUnemployedEmployees: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -329,7 +330,7 @@ func setCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("setCompany: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -377,7 +378,7 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("setDecisions: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -419,7 +420,7 @@ func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
 
 	err := ws.WriteJSON(reply)
 	if err != nil {
-		println("Error writing JSON to websocket: ", err.Error())
+		println("setReady: Error writing JSON to websocket: ", err.Error())
 	}
 
 	println("Company ", player.Company, "ready!")
@@ -454,7 +455,7 @@ func SimulateStep(s *Server) {
 	defer func() {
 		err := broadcast(s, simDoneMessage)
 		if err != nil {
-			println("Error broadcasting JSON to websockets: ", err.Error())
+			println("SimulateStep: Error broadcasting JSON to websockets: ", err.Error())
 		}
 	}()
 
@@ -481,7 +482,7 @@ func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
 	defer func() {
 		err := ws.WriteJSON(reply)
 		if err != nil {
-			println("Error writing JSON to websocket: ", err.Error())
+			println("setUnReady: Error writing JSON to websocket: ", err.Error())
 		}
 	}()
 
@@ -513,7 +514,10 @@ func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
 		chat.Message = fmt.Sprint(*message.Data)
 		chat.From = gamestate.Companies[s.conns[ws].Company].Name
 		reply.Data = &chat
-		broadcast(s, reply)
+		err := broadcast(s, reply)
+		if err != nil {
+			println("sendChat: Error writing JSON to websocket: ", err.Error())
+		}
 		fmt.Printf("CHAT (%d): %s\n", s.conns[ws].Company, chat.Message)
 	}
 }

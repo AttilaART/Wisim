@@ -124,52 +124,45 @@ func layoff(employees []Employee, size_of_layoff int) ([]Employee, int) {
 
 func (g *GameState) handleEmployeeDeltas() {
 	// Handle Changes & fires
-	for _, decisions := range g.CurrentDecisions {
-		for _, e := range decisions.Employees.MarketingDeltas {
-			switch e.Change {
+	type hiringDelta struct {
+		Company int
+		Delta   Delta[Employee]
+	}
+
+	hiring := make(map[int][]hiringDelta)
+
+	applyChanges := func(target *Employee, source Employee) {
+		target.Bonus = source.Bonus
+		target.EmployeeType = source.EmployeeType
+		target.Pay = source.Pay
+		target.WorkingHours = source.WorkingHours
+	}
+
+	handleDeltas := func(deltas []Delta[Employee], company int) {
+		for _, d := range deltas {
+			switch d.Change {
 			case Delta_Change:
-				*g.Employees[e.Item.ID] = e.Item
+				applyChanges(g.Employees[d.Item.ID], d.Item)
 			case Delta_Remove:
-				g.Employees[e.Item.ID].Employer = Employee_employer_none
+				g.Employees[d.Item.ID].Employer = Employee_employer_none
+			case Delta_New:
+				hiring[d.Item.ID] = append(hiring[d.Item.ID], hiringDelta{Company: company, Delta: d})
 			}
 		}
 	}
-
-	// Handle with new hires
-
-	newHires := make(map[int][]int)
 
 	for i, decisions := range g.CurrentDecisions {
-		for _, delta := range decisions.Employees.MarketingDeltas {
-			if delta.Change == Delta_New {
-				newHires[delta.Item.ID] = append(newHires[delta.Item.ID], i)
-			}
-		}
-		for _, delta := range decisions.Employees.ProductionDeltas {
-			if delta.Change == Delta_New {
-				if _, exists := newHires[delta.Item.ID]; exists {
-					hire := newHires[delta.Item.ID]
-					hire = append(hire, i)
-					newHires[delta.Item.ID] = hire
-				} else {
-					newHires[delta.Item.ID] = []int{i}
-				}
-			}
-		}
+		handleDeltas(decisions.Employees.MarketingDeltas, i)
+		handleDeltas(decisions.Employees.ProductionDeltas, i)
 	}
 
-	for hire := range newHires {
-		potentialEmployers := newHires[hire]
-		if len(potentialEmployers) == 1 {
-			g.Employees[hire].Employer = potentialEmployers[0]
-		} else {
-			g.Employees[hire].Employer = potentialEmployers[rand.Int()%len(potentialEmployers)]
+	for i, hd := range hiring {
+		winnerIndex := 0
+		if len(hd) > 0 {
+			winnerIndex = rand.Intn(len(hd))
 		}
-		g.Employees[hire].MonthsAtCompany = 0
-	}
 
-	/*
-		for _, e := range g.Employees {
-			println("Employee: ", e.Id, "Employer: ", e.Employer)
-		}*/
+		applyChanges(g.Employees[i], hd[winnerIndex].Delta.Item)
+		g.Employees[i].Employer = hd[winnerIndex].Company
+	}
 }

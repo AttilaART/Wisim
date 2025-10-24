@@ -123,6 +123,17 @@
 		if (!viewOnly) {
 			productDecisions.Product.ID = id;
 		}
+
+		let promotion = clientState.Company.Offers[existingProduct.ID].Promotion;
+		console.log(promotion);
+
+		productDecisions.Promotion.Quantity = promotion.Quantity;
+
+		productDecisions.Promotion.Ecology = promotion.Ecology;
+		productDecisions.Promotion.Quality = promotion.Quality;
+		productDecisions.Promotion.Durability = promotion.Durability;
+		productDecisions.Promotion.Ethics = promotion.Ethics;
+		productDecisions.Promotion.Price = promotion.Price;
 	}
 
 	/**
@@ -312,11 +323,11 @@
 					Outdated: productDecisions.Outdated,
 					Promotion: {
 						Quantity: productDecisions.Promotion.Quantity,
-						StyleQuality: productDecisions.Promotion.Quality,
-						StyleEcology: productDecisions.Promotion.Ecology,
-						StyleEthics: productDecisions.Promotion.Ethics,
-						StyleDurability: productDecisions.Promotion.Durability,
-						StylePrice: productDecisions.Promotion.Price
+						Quality: productDecisions.Promotion.Quality,
+						Ecology: productDecisions.Promotion.Ecology,
+						Ethics: productDecisions.Promotion.Ethics,
+						Durability: productDecisions.Promotion.Durability,
+						Price: productDecisions.Promotion.Price
 					},
 					Product: productDecisions.Product
 				};
@@ -566,10 +577,12 @@
 	<button
 		class="component-button"
 		onclick={() => {
+			// @ts-ignore
 			productDecisions.Product.Components[part] = c[0];
 			currentDesignerSnippet = selectPart;
 		}}
 		onmouseenter={(_) => {
+			// @ts-ignore
 			hoverProductDecisions.Product.Components[part] = c[0];
 		}}
 		onmouseleave={(_) => {

@@ -83,7 +83,7 @@ func (c *Company) calculatePromotion(decisions Decisions) {
 	promotionQuality := promotionQuality(c.employeePool, c.BaseMarketingStrength, c.employeePool.Get_employees_of_company(c.ID, Employee_type_marketing))
 
 	for productID, offer := range c.Offers {
-		offer.Promotion.Quality = promotionQuality
+		offer.PromotionQuality = promotionQuality
 		offer.Promotion.Quantity = decisions.Products[productID].Promotion.Quantity
 		offer.Price = decisions.Products[productID].Price
 		offer.Product.Name = decisions.Products[productID].Name

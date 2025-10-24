@@ -194,11 +194,11 @@ export const delta = {
  * @property {number} PromotionQuality
  * @property {Object} Promotion - Promotion goals
  * @property {number} Promotion.Quantity
- * @property {number} Promotion.StyleQuality
- * @property {number} Promotion.StyleEcology
- * @property {number} Promotion.StyleEthics
- * @property {number} Promotion.StyleDurability
- * @property {number} Promotion.StylePrice
+ * @property {number} Promotion.Quality
+ * @property {number} Promotion.Ecology
+ * @property {number} Promotion.Ethics
+ * @property {number} Promotion.Durability
+ * @property {number} Promotion.Price
  */
 
 /**

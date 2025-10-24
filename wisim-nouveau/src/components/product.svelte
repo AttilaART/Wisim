@@ -40,11 +40,11 @@
 				Price: offer.Price,
 				Promotion: {
 					Quantity: offer.Promotion.Quantity,
-					Quality: offer.Promotion.StyleQuality,
-					Ecology: offer.Promotion.StyleEcology,
-					Ethics: offer.Promotion.StyleEthics,
-					Durability: offer.Promotion.StyleDurability,
-					Price: offer.Promotion.StylePrice
+					Quality: offer.Promotion.Quality,
+					Ecology: offer.Promotion.Ecology,
+					Ethics: offer.Promotion.Ethics,
+					Durability: offer.Promotion.Durability,
+					Price: offer.Promotion.Price
 				}
 			};
 		}

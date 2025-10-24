@@ -171,18 +171,18 @@ const (
 )
 
 type Offer struct {
-	Outdated     bool
-	Product      Product
-	ProductStats ProductStats
-	Price        float32
-	Promotion    struct {
-		Quantity        float32
-		Quality         float32
-		StyleQuality    float32
-		StylePrice      float32
-		StyleEcology    float32
-		StyleEthics     float32
-		StyleDurability float32
+	Outdated         bool
+	Product          Product
+	ProductStats     ProductStats
+	Price            float32
+	PromotionQuality float32
+	Promotion        struct {
+		Quantity   float32
+		Quality    float32
+		Price      float32
+		Ecology    float32
+		Ethics     float32
+		Durability float32
 	}
 }
 

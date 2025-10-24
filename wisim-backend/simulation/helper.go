@@ -111,17 +111,16 @@ func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company
 		offer.Product = d.Product
 		offer.Price = d.Price
 		offer.Outdated = d.Outdated
+		offer.PromotionQuality = 0
 		offer.Promotion = struct {
-			Quantity        float32
-			Quality         float32
-			StyleQuality    float32
-			StylePrice      float32
-			StyleEcology    float32
-			StyleEthics     float32
-			StyleDurability float32
+			Quantity   float32
+			Quality    float32
+			Price      float32
+			Ecology    float32
+			Ethics     float32
+			Durability float32
 		}{
 			d.Promotion.Quantity,
-			0,
 			d.Promotion.Quality,
 			d.Promotion.Price,
 			d.Promotion.Ecology,
@@ -137,6 +136,26 @@ func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company
 	for _, d := range decisions.Production.Machines {
 		if d.Change == Delta_New {
 			company.Machines = append(company.Machines, d.Item)
+		}
+	}
+
+	// make sure to avoid null / undefined
+
+	if len(company.Machines) == 0 {
+		company.Machines = make([]Machine, 0)
+	}
+
+	for i := range company.Reports {
+		if company.Reports[i].BalanceSheet.Assets == nil {
+			company.Reports[i].BalanceSheet.Assets = make([]FinanceReportEntry, 0)
+		}
+
+		if company.Reports[i].BalanceSheet.Liabilities == nil {
+			company.Reports[i].BalanceSheet.Liabilities = make([]FinanceReportEntry, 0)
+		}
+
+		if company.Reports[i].BalanceSheet.InvoiceLog == nil {
+			company.Reports[i].BalanceSheet.InvoiceLog = make([]FinanceReportEntry, 0)
 		}
 	}
 

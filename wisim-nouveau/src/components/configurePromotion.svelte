@@ -50,6 +50,10 @@
 
 		return promotion;
 	}
+
+	$effect(() => {
+		clientState.Company.Offers[productID].Promotion;
+	});
 </script>
 
 <form

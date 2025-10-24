@@ -7,6 +7,7 @@ import { exec } from 'node:child_process';
 const compileWASM = {
 	name: 'compileWASM',
 	handleHotUpdate({ file }) {
+		if (file.endsWith('static/main.wasm')) return;
 		console.log(`File changed ${file}`);
 		exec(
 			'cd ../wisim-backend/wasm && GOOS=js GOARCH=wasm go build -o main.wasm main.go && cd ../../ && cp wisim-backend/wasm/main.wasm wisim-nouveau/static/main.wasm && echo "main.wasm compiled"',

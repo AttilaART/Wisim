@@ -88,7 +88,9 @@ func (c *Company) calculateProduction(decisions Decisions, externalFactors Exter
 	productionReport.MaterialUsed = materialUsed
 	productionReport.EnergyUsed = energyUsed
 	productionReport.WorkerSurplus = workerSurplus
-	productionReport.AvgMachineProductivity = float32(totalProduction) / float32(len(c.Machines))
+	if len(c.Machines) != 0 {
+		productionReport.AvgMachineProductivity = float32(totalProduction) / float32(len(c.Machines))
+	}
 
 	materialCosts := -round(float64(externalFactors.MaterialPrice)*float64(productionReport.MaterialUsed), 2)
 	energyCosts := -round(float64(externalFactors.EnergyPrice)*float64(productionReport.EnergyUsed), 2)
@@ -232,10 +234,12 @@ func calculateMachineProduction(employeePool Employee_pool, machine Machine) (in
 	avrgMotivation = avrgMotivation / float32(len(machine.AssignedWorkersIDs))
 
 	if avrgSkill <= 0 {
-		panic("skill is 0 or less")
+		log.Println("skill is 0 or less")
+		return 0, 0
 	}
 	if avrgMotivation <= 0 {
-		panic("motivation is 0 or less")
+		log.Println("motivation is 0 or less")
+		return 0, 0
 	}
 
 	baseProduction := int(float32(machine.ProductionCapacity) * (workingHours / float32(8*machine.RequiredWorkers)))

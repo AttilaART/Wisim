@@ -241,7 +241,7 @@
 	<div id="ui">
 		<Canvas>
 			{#each Object.entries(windows) as w (w[0])}
-				{@render w[1](w[0])}
+				{@render w[1](Number(w[0]))}
 			{/each}
 		</Canvas>
 		<div id="bottom-menu">

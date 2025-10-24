@@ -91,6 +91,8 @@
 
 		for (/** @type {number} i */ let i in deltasList) {
 			if (deltasList[i].Item.ID == employee.ID) {
+				if (change == delta.Delta_Change && deltasList[i].Change == delta.Delta_New)
+					change = delta.Delta_New;
 				deltasList[i].Change = change;
 				deltasList[i].Item = employee;
 
@@ -107,6 +109,7 @@
 		});
 
 		new Promise(() => {
+			updateDecisions(clientState.Decisions);
 			syncDecisionsAndEmployees();
 		});
 	}
@@ -128,9 +131,20 @@
 	 * @param {number} index
 	 */
 	function onModifyEmployee(type, index) {
+		// @ts-ignore
 		modifyEmployee(delta.Delta_Change, clientState.Employees[type][index], type);
 		console.log($state.snapshot(clientState.Decisions));
 		updateDecisions(clientState.Decisions);
+	}
+
+	/**
+	 * @param {import("$lib/javascript/simulation").Employee} a
+	 * @param {import("$lib/javascript/simulation").Employee} b
+	 */
+	function sortBySkill(a, b) {
+		if (a.Skill < b.Skill) return -1;
+		if (a.Skill > b.Skill) return 1;
+		return 0;
 	}
 </script>
 
@@ -200,11 +214,11 @@
 					{/if}
 				{:else if menuState[0] == 'all'}
 					{#if menuState[1] == 'hired'}
-						{@render displayMarketingHired()}
 						{@render displayProductionHired()}
+						{@render displayMarketingHired()}
 					{:else}
-						{@render displayMarketingNotHired()}
 						{@render displayProductionNotHired()}
+						{@render displayMarketingNotHired()}
 					{/if}
 				{/if}
 			</tbody>
@@ -215,19 +229,39 @@
 {#snippet employee(
 	/** @type {import("$lib/javascript/simulation").Employee}*/ employee,
 	/** @type {import("svelte").Snippet<[]>} */ action,
-	/** @type {boolean} */ isFired
+	/** @type {boolean} */ isEmployee,
+	/** @type {string} */ type
 )}
 	<!--<tr style="opacity: {isFired ? '0.5' : '1'};">-->
 	<tr>
 		<td>
 			{employee.Name}
 		</td>
-		<td>
+		<td style="min-width: 10rem;">
 			<progress value={employee.Skill - 0.5} max="1"></progress>
 		</td>
-		<td>
-			<progress value={employee.Motivation - 0.5} max="1"></progress>
+		<td style="min-width: 10rem;">
+			{#if employee.Motivation <= 0}
+				<span style="color: red;">BURNT OUT</span>
+			{:else}
+				<progress value={employee.Motivation - 0.5} max="1"></progress>
+			{/if}
 		</td>
+		{#if isEmployee}
+			<td>
+				<input
+					type="number"
+					bind:value={employee.WorkingHours}
+					onchange={() => {
+						if (employee.WorkingHours > 10) employee.WorkingHours = 10;
+						else if (employee.WorkingHours < 1) employee.WorkingHours = 1;
+						modifyEmployee(delta.Delta_Change, employee, type);
+						syncDecisionsAndEmployees();
+						updateDecisions(clientState.Decisions);
+					}}
+				/>
+			</td>
+		{/if}
 		<td>
 			{format.currency(employee.Pay, false, 0)} / Mon
 		</td>
@@ -248,12 +282,12 @@
 				Fire
 			</button>
 		{/snippet}
-		{@render employee(e, action, isEmployee(e, clientState.Employees.marketing))}
+		{@render employee(e, action, isEmployee(e, clientState.Employees.marketing), 'marketing')}
 	{/each}
 {/snippet}
 
 {#snippet displayMarketingNotHired()}
-	{#each clientState.Unemployed.marketing as e, index (e.ID)}
+	{#each clientState.Unemployed.marketing.toSorted(sortBySkill) as e, index (e.ID)}
 		{#snippet action()}
 			<button
 				onclick={() => {
@@ -261,7 +295,7 @@
 				}}>Hire</button
 			>
 		{/snippet}
-		{@render employee(e, action, isEmployee(e, clientState.Employees.marketing))}
+		{@render employee(e, action, isEmployee(e, clientState.Employees.marketing), 'marketing')}
 	{/each}
 {/snippet}
 
@@ -276,12 +310,12 @@
 				Fire
 			</button>
 		{/snippet}
-		{@render employee(e, action, isEmployee(e, clientState.Employees.production))}
+		{@render employee(e, action, isEmployee(e, clientState.Employees.production), 'production')}
 	{/each}
 {/snippet}
 
 {#snippet displayProductionNotHired()}
-	{#each clientState.Unemployed.production as e, index (e.ID)}
+	{#each clientState.Unemployed.production.toSorted(sortBySkill) as e, index (e.ID)}
 		{#snippet hireOrCancel()}
 			<button
 				onclick={() => {
@@ -289,7 +323,12 @@
 				}}>Hire</button
 			>
 		{/snippet}
-		{@render employee(e, hireOrCancel, isEmployee(e, clientState.Employees.production))}
+		{@render employee(
+			e,
+			hireOrCancel,
+			isEmployee(e, clientState.Employees.production),
+			'production'
+		)}
 	{/each}
 {/snippet}
 

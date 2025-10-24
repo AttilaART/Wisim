@@ -192,7 +192,7 @@ func simulatePopulationSegment(
 			if hasImpression {
 				impressions[ii] += 1
 
-				adWasMemorable := (offers[ii].Promotion.Quality * customer.Savyness) > rand.Float32()
+				adWasMemorable := (offers[ii].PromotionQuality * customer.Savyness) > rand.Float32()
 
 				if adWasMemorable {
 					if !slices.Contains(populationSegment[i].KnownProducts, offers[ii].Product.ID) {
@@ -239,12 +239,12 @@ func simulatePopulationSegment(
 
 			productsPurchasingFactors[ii] += productsPurchasingFactors[ii] * (customer.Loyalties[o.Product.CompanyID] * customer.Brand_loyalty_factor)
 
-			marketingBoost := (populationSegmentPreferences[i][propertiesQuality]*o.Promotion.StyleQuality +
-				populationSegmentPreferences[i][propertiesEcology]*o.Promotion.StyleEcology +
-				populationSegmentPreferences[i][propertiesEthics]*o.Promotion.StyleEthics +
-				populationSegmentPreferences[i][propertiesPrice]*o.Promotion.StylePrice +
-				populationSegmentPreferences[i][propertiesDurability]*o.Promotion.StyleDurability) *
-				o.Promotion.Quality
+			marketingBoost := (populationSegmentPreferences[i][propertiesQuality]*o.Promotion.Quality +
+				populationSegmentPreferences[i][propertiesEcology]*o.Promotion.Ecology +
+				populationSegmentPreferences[i][propertiesEthics]*o.Promotion.Ethics +
+				populationSegmentPreferences[i][propertiesPrice]*o.Promotion.Price +
+				populationSegmentPreferences[i][propertiesDurability]*o.Promotion.Durability) *
+				o.PromotionQuality
 
 			productsPurchasingFactors[ii] += productsPurchasingFactors[ii] + marketingBoost/populationSegment[i].Savyness
 
