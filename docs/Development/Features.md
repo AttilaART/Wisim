@@ -12,6 +12,12 @@ kanban-plugin: board
 - [ ] # (Singlplayer) Add win / loss conditions
 - [ ] Add Icons
 - [ ] # Add different architypes of customers
+- [ ] # Improve balancing
+	- Add limits to skill and motivation of employees
+	- Reduce bonuses from research
+- [ ] # Implent deeper marketing
+- [ ] # Implement deeper insights to company
+- [ ] # Add ability to name company
 
 
 ## Bugs
@@ -21,12 +27,19 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] # Production Screen
 - [ ] Add Icons
 
 
 ## Done
 
+- [ ] # Product creation screen
+	## Backend
+	- Implement backend framework for new product system
+	## Frontent
+	- Build UI for product designer
+	- Think of properties for new products
+	- Make art for product properties
+	- Implement new product calculation logic
 - [ ] # Multi Products
 - [ ] # Implement Marketing
 - [ ] # Mulitplayer
@@ -39,14 +52,7 @@ kanban-plugin: board
 ## Need Rework
 
 - [ ] # Brand loyalty
-- [ ] # Product creation screen
-	## Backend
-	- Implement backend framework for new product system
-	## Frontent
-	- Build UI for product designer
-	- Think of properties for new products
-	- Make art for product properties
-	- Implement new product calculation logic
+- [ ] # Production Screen
 
 
 

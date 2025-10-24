@@ -747,4 +747,8 @@
 	.component-grid {
 		height: 22.5rem;
 	}
+
+	.tooltip {
+		pointer-events: none;
+	}
 </style>

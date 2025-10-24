@@ -240,14 +240,16 @@
 		<td style="min-width: 10rem;">
 			<progress value={employee.Skill - 0.5} max="1"></progress>
 		</td>
-		<td style="min-width: 10rem;">
-			{#if employee.Motivation <= 0}
-				<span style="color: red;">BURNT OUT</span>
-			{:else}
-				<progress value={employee.Motivation - 0.5} max="1"></progress>
-			{/if}
-		</td>
+
 		{#if isEmployee}
+			<td style="min-width: 10rem;">
+				{#if employee.Motivation <= 0}
+					<span style="color: red;">BURNT OUT</span>
+				{:else}
+					<progress value={employee.Motivation - 0.5} max="1"></progress>
+				{/if}
+			</td>
+
 			<td>
 				<input
 					type="number"

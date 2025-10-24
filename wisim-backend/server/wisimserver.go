@@ -19,7 +19,8 @@ type Server struct {
 	conns      map[*websocket.Conn]Player
 	connsMutex sync.Mutex
 
-	methods map[string]func(*Server, *websocket.Conn, Message[any])
+	methods    map[string]func(*Server, *websocket.Conn, Message[any])
+	simulating sync.Mutex
 }
 
 func NewServer() *Server {
@@ -459,15 +460,16 @@ func SimulateStep(s *Server) {
 		}
 	}()
 
-	/*
-		defer func() {
-			if r := recover(); r != nil {
-				simDoneMessage.Error = fmt.Sprint("Critical Simulation Error: ", r)
-				println(simDoneMessage.Error)
-			}
-		}()
-	*/
+	defer func() {
+		s.simulating.Unlock()
 
+		if r := recover(); r != nil {
+			simDoneMessage.Error = fmt.Sprint("Critical Simulation Error: ", r)
+			println(simDoneMessage.Error)
+		}
+	}()
+
+	s.simulating.Lock()
 	err := gamestate.SimulateStep()
 	if err != nil {
 		simDoneMessage.Error = err.Error()
