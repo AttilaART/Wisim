@@ -101,6 +101,7 @@ type Company struct {
 }
 
 // NOTE: Employees keep track of their employers, not the companies
+
 type TechLevels struct {
 	Quality        float32
 	Ecology        float32
@@ -110,6 +111,9 @@ type TechLevels struct {
 }
 
 type Decisions struct {
+	General struct {
+		CompanyName string
+	}
 	Predictions struct {
 		SalesPrediction int
 	}
@@ -385,6 +389,7 @@ const (
 	predictions
 	write_off
 	other
+	cash
 )
 
 var AllGroups = []struct {
@@ -657,6 +662,9 @@ func (game_state *GameState) SimulateStep() error {
 		c := &game_state.Companies[i]
 		c.Reports = append(c.Reports, Report{Month: game_state.ExternalFactors.Month})
 		c.DecisionHistory = append(c.DecisionHistory, game_state.CurrentDecisions[i])
+
+		// renaming company
+		c.Name = game_state.CurrentDecisions[i].General.CompanyName
 
 		fmt.Printf("--------------- Simulating company %d -------------- \n", i)
 

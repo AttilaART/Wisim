@@ -15,9 +15,10 @@ kanban-plugin: board
 - [ ] # Improve balancing
 	- Add limits to skill and motivation of employees
 	- Reduce bonuses from research
+	- Increase difficulty of sales
+	- Increase cost of product development
 - [ ] # Implent deeper marketing
 - [ ] # Implement deeper insights to company
-- [ ] # Add ability to name company
 
 
 ## Bugs
@@ -27,7 +28,8 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] Add Icons
+- [ ] # Add ability to name company
+- [ ] # Rework reports
 
 
 ## Done

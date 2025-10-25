@@ -21,6 +21,7 @@
 
 	/** handle wasm import */
 	import { wasm_exec } from '$lib/wasm_exec.js';
+	import Reports from '../../components/reports.svelte';
 
 	wasm_exec();
 
@@ -247,15 +248,6 @@
 		<div id="bottom-menu">
 			<button
 				onclick={() => {
-					newWindow(finances);
-				}}
-			>
-				<strong>
-					{format.currency(clientState.Company.Balance, true, 2)}
-				</strong>
-			</button>
-			<button
-				onclick={() => {
 					newWindow(product);
 				}}>Product</button
 			>
@@ -280,6 +272,13 @@
 					newWindow(chat);
 				}}>Chat</button
 			>
+			<button
+				onclick={() => {
+					newWindow(reports);
+				}}
+			>
+				Reports
+			</button>
 			{#if !isReady}
 				<button
 					onclick={() => {
@@ -389,22 +388,19 @@
 	</Window>
 {/snippet}
 
-{#snippet finances(/** @type {Number} id */ id)}
+{#snippet reports(/** @type {Number} id */ id)}
 	<Window
 		title="Finances"
 		closeWindow={() => {
 			deleteWindow(id);
 		}}
 	>
-		<Finances
+		<Reports
 			bind:clientState
-			openDebtWindow={() => newWindow(debt)}
-			openFinancialReportWindow={() => newWindow(financialReport)}
-			openInvoicesWindow={() => newWindow(invoiceLog)}
 			updateDecisions={(decisions) => {
 				connection.sDecisions(decisions);
 			}}
-		></Finances>
+		></Reports>
 	</Window>
 {/snippet}
 

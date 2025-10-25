@@ -26,6 +26,14 @@ func (c *Company) calculateBudget(decisions Decisions, externalFactors ExternalF
 	totalProductsInStorage := 0
 	for productID := range c.ProductsInStorage {
 		totalProductsInStorage += c.ProductsInStorage[productID]
+
+		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_equity(
+			"Product Stock",
+			other,
+			"Value of products in stock",
+			false,
+			float64(c.ProductsInStorage[productID])*float64(c.Offers[productID].Price),
+		)
 	}
 
 	itemsInExternalStorage := (totalProductsInStorage - localStorageCapacity)
@@ -239,6 +247,8 @@ func (c *Company) calculateBudget(decisions Decisions, externalFactors ExternalF
 	}
 
 	c.Balance += financialReport.Totals.Cashflow
+
+	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_equity("Balance", cash, "Cash we store at the bank", true, c.Balance)
 
 	// calculate Liabilities
 	totalAssets := 0.0

@@ -567,10 +567,6 @@ func main() {
 
 	server.addMethod("bChat", sendChat)
 
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
-
 	http.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {

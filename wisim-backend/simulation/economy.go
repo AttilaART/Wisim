@@ -189,10 +189,33 @@ func simulatePopulationSegment(
 		for ii := range offersProperties {
 			hasImpression := (float64(offerExpectedImpressions[ii])*float64(populationSegment[ii].Savyness))/float64(populationSize) > rand.Float64()
 
+			var adWasMemorable bool
 			if hasImpression {
 				impressions[ii] += 1
 
-				adWasMemorable := (offers[ii].PromotionQuality * customer.Savyness) > rand.Float32()
+				adTalkingPoints := Properties{
+					offers[ii].Promotion.Quality,
+					offers[ii].Promotion.Ecology,
+					offers[ii].Promotion.Ethics,
+					offers[ii].Promotion.Price,
+					offers[ii].Promotion.Price,
+					offers[ii].Promotion.Durability,
+				}
+
+				var aligmentWithCustomerVec Properties
+
+				simd.MulFloat32(populationSegmentPreferences[i][:], adTalkingPoints[:], aligmentWithCustomerVec[:])
+
+				var aligmentWithCustomer float32 = 0
+				for _, x := range aligmentWithCustomerVec {
+					aligmentWithCustomer += x
+				}
+
+				print("Allignment with customer:", aligmentWithCustomer, ",")
+				print("Promotion quality:", offers[ii].PromotionQuality, ",")
+				println("Add memerability:", (aligmentWithCustomer * offers[ii].PromotionQuality * customer.Savyness))
+
+				adWasMemorable = (aligmentWithCustomer*offers[ii].PromotionQuality*customer.Savyness)*0.05 > rand.Float32()
 
 				if adWasMemorable {
 					if !slices.Contains(populationSegment[i].KnownProducts, offers[ii].Product.ID) {
@@ -209,7 +232,7 @@ func simulatePopulationSegment(
 				continue
 			}
 
-			if hasImpression {
+			if adWasMemorable {
 				var productPurchasingFactorsComponents Properties
 				simd.MulFloat32(populationSegmentPreferences[i][:], offersProperties[ii][:], productPurchasingFactorsComponents[:])
 				productPurchasingFactor := float32(int(productPurchasingFactorsComponents[5] +
