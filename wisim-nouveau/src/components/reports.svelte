@@ -1,5 +1,6 @@
 <script>
 	import { format } from '$lib/javascript/format';
+	import { chart } from '$lib/helper.svelte';
 	/**
 	 * @typedef {Object} props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState
@@ -8,6 +9,8 @@
 
 	/** @type {props} */
 	let { clientState = $bindable(), updateDecisions } = $props();
+
+	let latestReport = $derived(clientState.Company.Reports[clientState.Company.Reports.length - 1]);
 
 	let tab = $state('overview');
 
@@ -114,7 +117,7 @@
 	{#if tab == 'overview'}
 		{@render overview()}
 	{:else if tab == 'finances'}
-		Finances
+		{@render finances()}
 	{:else if tab == 'assets'}
 		Assets
 	{:else if tab == 'sales'}
@@ -164,4 +167,76 @@
 			</tbody>
 		</table>
 	</div>
+{/snippet}
+
+{#snippet finances()}
+	<div class="grid">
+		<div>
+			<div
+				use:chart={{
+					title: {
+						text: 'ECharts Getting Started Example'
+					},
+					tooltip: {},
+					xAxis: {
+						data: ['shirt', 'cardigan', 'chiffon', 'pants', 'heels', 'socks']
+					},
+					yAxis: {},
+					series: [
+						{
+							name: 'sales',
+							type: 'line',
+							data: [5, 20, 36, 10, 10, 20]
+						}
+					]
+				}}
+				style="height: 20rem"
+			></div>
+		</div>
+
+		<div>
+			<div
+				use:chart={{
+					title: {
+						text: 'ECharts Getting Started Example'
+					},
+					tooltip: {},
+					xAxis: {
+						data: ['shirt', 'cardigan', 'chiffon', 'pants', 'heels', 'socks']
+					},
+					yAxis: {},
+					series: [
+						{
+							name: 'sales',
+							type: 'line',
+							data: [5, 20, 36, 10, 10, 20]
+						}
+					]
+				}}
+				style="height: 20rem"
+			></div>
+		</div>
+	</div>
+
+	<h1>Key Metrics</h1>
+	{#if clientState.Company.Reports.length >= 1}
+		<article class="grid">
+			<label for="">
+				Net Income
+				<h2>{format.currency(latestReport.FinancialReport.Totals.NetIncome, true, 0)}</h2>
+			</label>
+
+			<label for="">
+				Total Cashflow
+				<h2>{format.currency(latestReport.FinancialReport.Totals.Cashflow, true, 0)}</h2>
+			</label>
+
+			<label for="">
+				Total assets
+				<h2>{format.currency(totalAssets(), false, 0)}</h2>
+			</label>
+		</article>
+	{:else}
+		<article>No Data</article>
+	{/if}
 {/snippet}
