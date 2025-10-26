@@ -57,17 +57,17 @@
 		<div class="grid">
 			<label for="">
 				Net Income:
-				<h4>{format.currency(latestReport.FinancialReport.Totals.NetIncome, true, 2)}</h4>
+				<h4>{format.currency(latestReport.FinancialReport.Totals.NetIncome, true, 0)}</h4>
 			</label>
 
 			<label for="">
 				Total Cashflow:
-				<h4>{format.currency(latestReport.FinancialReport.Totals.Cashflow, true, 2)}</h4>
+				<h4>{format.currency(latestReport.FinancialReport.Totals.Cashflow, true, 0)}</h4>
 			</label>
 
 			<label for="">
 				Total Assets:
-				<h4>{format.currency(totalAssets, true, 2)}</h4>
+				<h4>{format.currency(totalAssets, false, 0)}</h4>
 			</label>
 		</div>
 
@@ -80,7 +80,7 @@
 
 			<label for="">
 				Advertising Costs
-				<h4>{format.currency(totalPromotionQuantity, false, 2)}</h4>
+				<h4>{format.currency(totalPromotionQuantity, false, 0)}</h4>
 			</label>
 
 			<label for="">

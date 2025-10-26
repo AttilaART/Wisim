@@ -122,6 +122,7 @@
 		productDecisions.Product = JSON.parse(JSON.stringify(existingProduct));
 		if (!viewOnly) {
 			productDecisions.Product.ID = id;
+			productDecisions.Product.TechLevels = clientState.Company.Tech;
 		}
 
 		let promotion = clientState.Company.Offers[existingProduct.ID].Promotion;

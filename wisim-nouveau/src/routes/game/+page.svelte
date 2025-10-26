@@ -198,6 +198,16 @@
 		connection.gUnemployedEmployees('marketing');
 		connection.gProductComponents();
 	}
+
+	function totalProductsSold() {
+		let total = 0;
+		for (let r of clientState.Company.Reports) {
+			for (let p of Object.values(r.SalesReport)) {
+				total += p.ProductSalesStatistics.ProductsSold;
+			}
+		}
+		return total;
+	}
 </script>
 
 <svelte:head>
@@ -240,6 +250,31 @@
 	{/if}
 
 	<div id="ui">
+		<div id="top-bar">
+			<span>Balance: {format.currency(clientState.Company.Balance, true, 0)}</span>
+			<span
+				>Cashflow: {clientState.Company.Reports.length >= 1
+					? format.currency(
+							clientState.Company.Reports[clientState.Company.Reports.length - 1].FinancialReport
+								.Totals.Cashflow,
+							true,
+							0
+						)
+					: '0 CHF'}</span
+			>
+			<span>
+				Employees: {format.number(
+					clientState.Employees.marketing.length + clientState.Employees.production.length,
+					false,
+					0
+				)}
+			</span>
+			<span>
+				Total Sales: {clientState.Company.Reports.length >= 1
+					? format.number(totalProductsSold(), false, 0)
+					: 0}
+			</span>
+		</div>
 		<Canvas>
 			{#each Object.entries(windows) as w (w[0])}
 				{@render w[1](Number(w[0]))}
@@ -546,6 +581,17 @@
 
 		button {
 			flex: 1 1;
+		}
+	}
+
+	#top-bar {
+		display: flex;
+		backdrop-filter: blur(10px);
+		border-bottom: 0.5px solid color-mix(in oklab, var(--pico-background-color), transparent 10%);
+		z-index: 99;
+		* {
+			flex: 1 0;
+			text-align: center;
 		}
 	}
 </style>
