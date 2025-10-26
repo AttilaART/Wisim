@@ -268,7 +268,7 @@ func (g *GameState) generateCompanies(
 		}
 		for range baseNumberOfMarketingPersonelle {
 			_, e := g.Generate_employee(
-				externalFactors.ProductionMinimumWage,
+				externalFactors.MarketingMinimumWage,
 				baseWorkingHours,
 				Employee_type_marketing,
 				1,

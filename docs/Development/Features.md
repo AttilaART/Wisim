@@ -28,12 +28,16 @@ kanban-plugin: board
 
 ## In Progress
 
-- [ ] # Add ability to name company
 - [ ] # Rework reports
+- [ ] # Fix employee motivation
+	- Employee motivation has no cap -> unrealistic production
+	- They get burnt out too quickly when marketing employees arrive with higher pay
+	- Workin hours effect motivation too much
 
 
 ## Done
 
+- [ ] # Add ability to name company
 - [ ] # Product creation screen
 	## Backend
 	- Implement backend framework for new product system

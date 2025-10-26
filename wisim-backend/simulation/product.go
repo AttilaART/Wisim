@@ -12,6 +12,7 @@ func (c *Company) newProduct(productID string, companyID int, productName string
 	offer.Product.ID = productID
 	offer.Product.CompanyID = companyID
 	offer.Product.Name = productName
+	offer.Promotion = productDecisions.Promotion
 
 	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(fmt.Sprintf("Production line cost for product %s", productName), facilities, "The cost of setting up the production line for the product.", true, -productionLineCost)
 

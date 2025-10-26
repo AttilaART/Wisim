@@ -32,7 +32,7 @@
 		Name: '',
 		Outdated: false,
 		Promotion: {
-			Quantity: 10000,
+			Quantity: 1000,
 			Quality: 0.2,
 			Durability: 0.2,
 			Price: 0.2,

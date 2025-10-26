@@ -145,8 +145,8 @@ type Decisions_product struct {
 	Price     float32
 	Promotion struct {
 		Quantity   float32
-		Price      float32
 		Quality    float32
+		Price      float32
 		Ecology    float32
 		Ethics     float32
 		Durability float32
