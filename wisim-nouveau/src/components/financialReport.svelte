@@ -1,16 +1,7 @@
 <script>
 	import { format } from '$lib/javascript/format';
-	/** @type {{clientState: import("$lib/javascript/simulation").clientState, updateDecisions: (decisions: import("$lib/javascript/simulation").Decisions)=>void}} */
-	let { clientState = $bindable(), updateDecisions } = $props();
-
-	let financial_Report = $derived(
-		/** @returns {import("$lib/javascript/simulation").Financial_report?}*/ (() => {
-			if (!(clientState.Company.Reports == null || clientState.Company.Reports.length == 0)) {
-				return clientState.Company.Reports[clientState.Company.Reports.length - 1].FinancialReport;
-			}
-			return null;
-		})()
-	);
+	/** @type {{financial_Report: import("$lib/javascript/simulation").Financial_report}} */
+	let { financial_Report } = $props();
 </script>
 
 <div style="min-width: 600px;">

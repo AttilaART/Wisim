@@ -133,7 +133,7 @@
 	function onModifyEmployee(type, index) {
 		// @ts-ignore
 		modifyEmployee(delta.Delta_Change, clientState.Employees[type][index], type);
-		console.log($state.snapshot(clientState.Decisions));
+		// console.log($state.snapshot(clientState.Decisions));
 		updateDecisions(clientState.Decisions);
 	}
 

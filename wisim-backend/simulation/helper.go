@@ -162,6 +162,15 @@ func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company
 	return company
 }
 
+func ValidateDecisions(d Decisions) Decisions {
+	for i, p := range d.Products {
+		p.Promotion.Quantity = max(p.Promotion.Quantity, 0)
+		d.Products[i] = p
+	}
+
+	return d
+}
+
 func deleteByIndex[V any](s []V, index ...int) []V {
 	toBeDeleted := make([]bool, len(s))
 	for _, i := range index {

@@ -126,7 +126,7 @@
 		}
 
 		let promotion = clientState.Company.Offers[existingProduct.ID].Promotion;
-		console.log(promotion);
+		// console.log(promotion);
 
 		productDecisions.Promotion.Quantity = promotion.Quantity;
 

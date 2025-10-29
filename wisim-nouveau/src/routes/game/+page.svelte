@@ -234,7 +234,13 @@
 					connection.sCompany(companyID);
 				}}
 			>
-				<input bind:value={companyIDUserFacing} type="number" required placeholder="Company ID" />
+				<input
+					bind:value={companyIDUserFacing}
+					type="number"
+					required
+					placeholder="Company ID"
+					min="0"
+				/>
 				<input type="submit" value="Confirm" />
 			</form>
 		</article>
@@ -251,6 +257,7 @@
 
 	<div id="ui">
 		<div id="top-bar">
+			<span>{clientState.Company.Name}</span>
 			<span>Balance: {format.currency(clientState.Company.Balance, true, 0)}</span>
 			<span
 				>Cashflow: {clientState.Company.Reports.length >= 1
@@ -382,9 +389,7 @@
 				connection.sDecisions(decisions);
 			}}
 			{newWindow}
-			deleteWindow={(id) => {
-				deleteWindow(id);
-			}}
+			{deleteWindow}
 			openProduction={() => {
 				newWindow(production);
 			}}
@@ -426,7 +431,7 @@
 
 {#snippet reports(/** @type {Number} id */ id)}
 	<Window
-		title="Finances"
+		title="Reports"
 		closeWindow={() => {
 			deleteWindow(id);
 		}}
@@ -436,39 +441,9 @@
 			updateDecisions={(decisions) => {
 				connection.sDecisions(decisions);
 			}}
+			{newWindow}
+			{deleteWindow}
 		></Reports>
-	</Window>
-{/snippet}
-
-{#snippet financialReport(/** @type {Number} id */ id)}
-	<Window
-		title="Finance Report"
-		closeWindow={() => {
-			deleteWindow(id);
-		}}
-	>
-		<FinancialReport
-			bind:clientState
-			updateDecisions={(decisions) => {
-				connection.sDecisions(decisions);
-			}}
-		></FinancialReport>
-	</Window>
-{/snippet}
-
-{#snippet invoiceLog(/** @type {Number} id */ id)}
-	<Window
-		title="Finance Report"
-		closeWindow={() => {
-			deleteWindow(id);
-		}}
-	>
-		<Invoices
-			bind:clientState
-			updateDecisions={(decisions) => {
-				connection.sDecisions(decisions);
-			}}
-		></Invoices>
 	</Window>
 {/snippet}
 
@@ -538,6 +513,7 @@
 			{/each}
 		</div>
 		<form
+			use:preventPageReload
 			onsubmit={() => {
 				connection.bChat(chatMessage);
 				chatMessage = '';
@@ -558,7 +534,8 @@
 		}}
 	>
 		<span hidden>{(overviewWindowOpen = true)}</span>
-		<MonthlyOverview bind:clientState></MonthlyOverview>
+		<MonthlyOverview report={clientState.Company.Reports[clientState.Company.Reports.length - 1]}
+		></MonthlyOverview>
 	</Window>
 {/snippet}
 

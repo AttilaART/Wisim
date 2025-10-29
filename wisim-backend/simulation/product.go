@@ -79,7 +79,7 @@ func CalculateProductStats(
 }
 
 func (c *Company) calculatePromotion(decisions Decisions) {
-	c.BaseMarketingStrength += decisions.Research.Promotion / 1000 * c.BaseMarketingStrength
+	c.BaseMarketingStrength += decisions.Research.Promotion / 1000000 * c.BaseMarketingStrength
 
 	promotionQuality := promotionQuality(c.employeePool, c.BaseMarketingStrength, c.employeePool.Get_employees_of_company(c.ID, Employee_type_marketing))
 
@@ -109,5 +109,9 @@ func promotionQuality(employeePool Employee_pool, baseMarketingStrength float32,
 		totalPersonelleStrength += employeePool[id].Motivation * employeePool[id].Skill * (employeePool[id].WorkingHours / 8.0)
 	}
 
-	return baseMarketingStrength + float32(math.Sqrt(float64(totalPersonelleStrength)))
+	promotionQuality := baseMarketingStrength + float32(math.Sqrt(float64(totalPersonelleStrength)))
+
+	println(promotionQuality)
+
+	return promotionQuality
 }

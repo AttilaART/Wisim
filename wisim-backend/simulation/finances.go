@@ -248,6 +248,7 @@ func (c *Company) calculateBudget(decisions Decisions, externalFactors ExternalF
 
 	c.Balance += financialReport.Totals.Cashflow
 
+	c.Reports[len(c.Reports)-1].BalanceSheet.Bank_balance = c.Balance
 	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_equity("Balance", cash, "Cash we store at the bank", true, c.Balance)
 
 	// calculate Liabilities

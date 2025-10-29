@@ -211,9 +211,11 @@ func simulatePopulationSegment(
 					aligmentWithCustomer += x
 				}
 
-				print("Allignment with customer:", aligmentWithCustomer, ",")
-				print("Promotion quality:", offers[ii].PromotionQuality, ",")
-				fmt.Printf("Add memerability: %f \n", (aligmentWithCustomer*offers[ii].PromotionQuality*customer.Savyness)*0.05)
+				/*
+					print("Allignment with customer:", aligmentWithCustomer, ",")
+					print("Promotion quality:", offers[ii].PromotionQuality, ",")
+					fmt.Printf("Add memerability: %f \n", (aligmentWithCustomer*offers[ii].PromotionQuality*customer.Savyness)*0.05)
+				*/
 
 				adWasMemorable = (aligmentWithCustomer*offers[ii].PromotionQuality*customer.Savyness)*0.05 > rand.Float32()
 

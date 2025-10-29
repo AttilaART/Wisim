@@ -43,6 +43,6 @@ export function calculateProduction(companyID, machines, offers, employees) {
  * @param {echarts.EChartsCoreOption} options
  */
 export function chart(element, options) {
-	let chart = echarts.init(element);
+	let chart = echarts.init(element, 'dark');
 	chart.setOption(options);
 }

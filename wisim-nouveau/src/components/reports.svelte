@@ -1,16 +1,71 @@
+<script module>
+	/**
+	 * @param {import("$lib/javascript/simulation").Report} report
+	 */
+	export function getMonths(report) {
+		return `${report.Month}`;
+	}
+
+	/**
+	 * @param {import("$lib/javascript/simulation").Report} report
+	 */
+	function getNetProfit(report) {
+		return `${report.FinancialReport.Totals.NetIncome}`;
+	}
+
+	/**
+	 * @param {import("$lib/javascript/simulation").Report} report
+	 */
+	function getBankBalance(report) {
+		return `${report.BalanceSheet.Bank_balance}`;
+	}
+</script>
+
 <script>
 	import { format } from '$lib/javascript/format';
 	import { chart } from '$lib/helper.svelte';
+	import { financeReportCategories } from '$lib/javascript/simulation';
+	import Window from './window.svelte';
+	import FinancialReport from './financialReport.svelte';
+	import MonthlyOverview from './monthlyOverview.svelte';
+	import SalesReport from './salesReport.svelte';
+	import BalanceSheet from './balanceSheet.svelte';
+
 	/**
 	 * @typedef {Object} props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState
 	 * @property {(decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions
+	 * @property {(contents: import("svelte").Snippet<[number]>)=>number} newWindow,
+	 * @property {(windowId: number)=>void} deleteWindow,
 	 */
 
 	/** @type {props} */
-	let { clientState = $bindable(), updateDecisions } = $props();
+	let { clientState = $bindable(), updateDecisions, newWindow, deleteWindow } = $props();
 
-	let latestReport = $derived(clientState.Company.Reports[clientState.Company.Reports.length - 1]);
+	let onCurrentReport = $state(true);
+	let selectedProduct = $state(
+		Object.keys(clientState.Company.Reports[clientState.Company.Reports.length - 1].SalesReport)[0]
+	);
+
+	let selectedReportIndex = $state(clientState.Company.Reports.length);
+	let currentReportIndex = $derived.by(() => {
+		if (selectedReportIndex < 1) {
+			return 0;
+		} else if (selectedReportIndex > clientState.Company.Reports.length) {
+			return clientState.Company.Reports.length - 1;
+		}
+		return selectedReportIndex - 1;
+	});
+
+	$effect(() => {
+		if (onCurrentReport) {
+			selectedReportIndex = clientState.Company.Reports.length;
+		}
+	});
+
+	let currentReport = $derived(clientState.Company.Reports[currentReportIndex]);
+
+	let timespan = $state(12);
 
 	let tab = $state('overview');
 
@@ -41,9 +96,7 @@
 		for (let i = 0; i < 4; i++) {
 			if (clientState.Company.Reports.length - 1 - i >= 0) {
 				months += 1;
-				cashflow +=
-					clientState.Company.Reports[clientState.Company.Reports.length - 1 - i].FinancialReport
-						.Totals.Cashflow;
+				cashflow += currentReport.FinancialReport.Totals.Cashflow;
 			}
 		}
 
@@ -58,8 +111,7 @@
 		let assets = 0;
 
 		if (clientState.Company.Reports.length <= 0) return 0;
-		for (let e of clientState.Company.Reports[clientState.Company.Reports.length - 1].BalanceSheet
-			.Assets) {
+		for (let e of currentReport.BalanceSheet.Assets) {
 			assets += e.Value;
 		}
 
@@ -84,6 +136,58 @@
 	$effect(() => {
 		clientState.Company.Name = clientState.Decisions.General.CompanyName;
 	});
+
+	/**
+	 * @param {(report: import("$lib/javascript/simulation").Report)=>number | string} getData
+	 */
+	function aggragateData(getData) {
+		/** @type {Array.<number | string>} */
+		let data = [];
+
+		if (clientState.Company.Reports.length == 0) return data;
+
+		for (let i = currentReportIndex - timespan; i <= currentReportIndex; i++) {
+			if (i < 0) continue;
+			data.push(getData(clientState.Company.Reports[i]));
+		}
+
+		return data;
+	}
+	/** @typedef {Object.<string, import("$lib/javascript/simulation").FinanceReportEntry[]>} groupedInvoices
+  /** 
+   * @param {import("$lib/javascript/simulation").Report} report
+   * @returns {groupedInvoices} 
+   */
+	function groupInvoices(report) {
+		if (!(report == null)) {
+			let rawInvoices = report.BalanceSheet.InvoiceLog;
+
+			/** @type {groupedInvoices} */
+			let groupedInvoices = {};
+			for (let i of rawInvoices) {
+				if (groupedInvoices[i.Group] == undefined) {
+					groupedInvoices[i.Group] = [i];
+				} else {
+					groupedInvoices[i.Group].push(i);
+				}
+			}
+
+			return groupedInvoices;
+		}
+		return {};
+	}
+
+	/**
+	 * @param {import("$lib/javascript/simulation").FinanceReportEntry[]} group
+	 * @returns {number}
+	 */
+	function getInvoiceGroupTotal(group) {
+		let totalValue = 0;
+		for (let i of group) {
+			totalValue += i.Value;
+		}
+		return totalValue;
+	}
 </script>
 
 <div style="min-width: 50rem;">
@@ -93,6 +197,12 @@
 			onclick={() => {
 				tab = 'overview';
 			}}>Overview</button
+		>
+		<button
+			class={tab == 'monthly' ? '' : 'outline'}
+			onclick={() => {
+				tab = 'monthly';
+			}}>Monthly</button
 		>
 		<button
 			class={tab == 'finances' ? '' : 'outline'}
@@ -114,20 +224,53 @@
 		>
 	</div>
 
+	<fieldset role="group">
+		<input type="text" disabled value="Report Month" style="width: 10rem;" />
+		<input
+			type="number"
+			bind:value={selectedReportIndex}
+			min={1}
+			max={clientState.Company.Reports.length}
+			onchange={() => {
+				if (selectedReportIndex > clientState.Company.Reports.length) {
+					clientState.Company.Reports.length;
+				} else if (selectedReportIndex < 1) {
+					selectedReportIndex = 1;
+				}
+				onCurrentReport = selectedReportIndex == clientState.Company.Reports.length;
+			}}
+		/>
+
+		<input type="text" disabled value="Timespan (months)" style="width: 15rem;" />
+		<input
+			type="number"
+			bind:value={timespan}
+			min={1}
+			max={clientState.Company.Reports.length}
+			onchange={() => {
+				if (timespan < 1) {
+					timespan = 1;
+				}
+			}}
+		/>
+	</fieldset>
+
 	{#if tab == 'overview'}
 		{@render overview()}
+	{:else if tab == 'monthly'}
+		<MonthlyOverview report={currentReport}></MonthlyOverview>
 	{:else if tab == 'finances'}
 		{@render finances()}
 	{:else if tab == 'assets'}
-		Assets
+		{@render assets()}
 	{:else if tab == 'sales'}
-		Sales
+		{@render sales()}
 	{/if}
 </div>
 
 {#snippet overview()}
 	<h1>
-		<input bind:value={clientState.Decisions.General.CompanyName} type="text" />
+		<input bind:value={clientState.Decisions.General.CompanyName} type="text" autocomplete="off" />
 	</h1>
 
 	<div class="grid">
@@ -170,73 +313,185 @@
 {/snippet}
 
 {#snippet finances()}
-	<div class="grid">
-		<div>
+	{#key currentReportIndex - timespan}
+		<div class="grid" style="margin-bottom: 1rem;">
 			<div
 				use:chart={{
 					title: {
-						text: 'ECharts Getting Started Example'
+						text: 'Net Income'
 					},
 					tooltip: {},
-					xAxis: {
-						data: ['shirt', 'cardigan', 'chiffon', 'pants', 'heels', 'socks']
-					},
 					yAxis: {},
+					xAxis: {
+						data: aggragateData(getMonths)
+					},
 					series: [
 						{
-							name: 'sales',
+							name: 'Net Income',
 							type: 'line',
-							data: [5, 20, 36, 10, 10, 20]
+							data: aggragateData(getNetProfit)
 						}
 					]
 				}}
 				style="height: 20rem"
 			></div>
-		</div>
 
-		<div>
 			<div
 				use:chart={{
 					title: {
-						text: 'ECharts Getting Started Example'
+						text: 'Bank Balance'
 					},
 					tooltip: {},
 					xAxis: {
-						data: ['shirt', 'cardigan', 'chiffon', 'pants', 'heels', 'socks']
+						data: aggragateData(getMonths)
 					},
 					yAxis: {},
 					series: [
 						{
-							name: 'sales',
+							name: 'Balance',
 							type: 'line',
-							data: [5, 20, 36, 10, 10, 20]
+							data: aggragateData(getBankBalance)
 						}
 					]
 				}}
 				style="height: 20rem"
 			></div>
 		</div>
-	</div>
+	{/key}
 
 	<h1>Key Metrics</h1>
 	{#if clientState.Company.Reports.length >= 1}
-		<article class="grid">
+		<article id="key-metrics">
 			<label for="">
 				Net Income
-				<h2>{format.currency(latestReport.FinancialReport.Totals.NetIncome, true, 0)}</h2>
+				<h2>{format.currency(currentReport.FinancialReport.Totals.NetIncome, true, 0)}</h2>
 			</label>
 
 			<label for="">
 				Total Cashflow
-				<h2>{format.currency(latestReport.FinancialReport.Totals.Cashflow, true, 0)}</h2>
+				<h2>{format.currency(currentReport.FinancialReport.Totals.Cashflow, true, 0)}</h2>
 			</label>
 
 			<label for="">
 				Total assets
 				<h2>{format.currency(totalAssets(), false, 0)}</h2>
 			</label>
+
+			<label for="">
+				Operating Expenses
+				<h2>
+					{format.currency(currentReport.FinancialReport.Totals.TotalOperatingExpenses, false, 0)}
+				</h2>
+			</label>
+
+			<label for="">
+				Non-operating Expenses
+				<h2>
+					{format.currency(
+						currentReport.FinancialReport.Totals.TotalNonOperatingExpenses,
+						false,
+						0
+					)}
+				</h2>
+			</label>
+
+			<label for="">
+				Non-operating and Operating Expenses
+				<h2>
+					{format.currency(
+						currentReport.FinancialReport.Totals.TotalNonOperatingExpenses +
+							currentReport.FinancialReport.Totals.TotalOperatingExpenses,
+						false,
+						0
+					)}
+				</h2>
+			</label>
 		</article>
+
+		<div style="text-align: right;">
+			<button
+				class="outline"
+				onclick={() => {
+					newWindow(invoiceLog);
+				}}>See Invoice Log</button
+			>
+			<button
+				onclick={() => {
+					newWindow(financialReoport);
+				}}>See Full Financial Report</button
+			>
+		</div>
 	{:else}
 		<article>No Data</article>
 	{/if}
 {/snippet}
+
+{#snippet invoiceLog(/** @type {number} */ windowID)}
+	<Window
+		title="Invoice Log {selectedReportIndex}"
+		closeWindow={() => {
+			deleteWindow(windowID);
+		}}
+	>
+		{#each Object.entries(groupInvoices(currentReport)) as group (group[0])}
+			<details>
+				<summary style="min-width: 500px;">
+					<div class="grid">
+						<div>
+							{format.titleCase(financeReportCategories[group[0]].replaceAll('_', ' '))}
+						</div>
+						<div style="text-align: right;">
+							{format.currency(getInvoiceGroupTotal(group[1]), true, 2)}
+						</div>
+					</div>
+				</summary>
+				{#each group[1] as i}
+					<article>
+						<h6>{i.Name}</h6>
+						<p>{i.Info}</p>
+						<h5>{format.currency(i.Value, true, 2)}</h5>
+					</article>
+				{/each}
+			</details>
+		{/each}
+	</Window>
+{/snippet}
+
+{#snippet financialReoport(/** @type {number} */ windowID)}
+	<Window
+		title="Financial Report {selectedReportIndex}"
+		closeWindow={() => {
+			deleteWindow(windowID);
+		}}
+	>
+		<FinancialReport financial_Report={currentReport.FinancialReport}></FinancialReport>
+	</Window>
+{/snippet}
+
+{#snippet sales()}
+	<select bind:value={selectedProduct}>
+		{#each Object.keys(clientState.Company.Offers) as product}
+			<option value={product}>{clientState.Company.Offers[product].Product.Name}</option>
+		{/each}
+	</select>
+	{#key [selectedReportIndex, currentReportIndex, timespan, selectedProduct]}
+		<SalesReport
+			report={currentReport}
+			aggrageteData={aggragateData}
+			{selectedProduct}
+			{clientState}
+		></SalesReport>
+	{/key}
+{/snippet}
+
+{#snippet assets()}
+	<BalanceSheet report={currentReport}></BalanceSheet>
+{/snippet}
+
+<style>
+	#key-metrics {
+		display: grid;
+		grid-template-columns: 33% 33% 33%;
+		gap: 1rem;
+	}
+</style>

@@ -988,7 +988,7 @@ func (c *Company) compileSalesReport(
 
 		marketingStatistics.Price = float64(c.Offers[productID].Price)
 		marketingStatistics.PromotionQuantity = float64(c.Offers[productID].Promotion.Quantity)
-		marketingStatistics.PromotionQuality = float64(c.Offers[productID].Promotion.Quantity)
+		marketingStatistics.PromotionQuality = float64(c.Offers[productID].PromotionQuality)
 		marketingStatistics.ImpressionCount = impressions[productID]
 
 		salesReportsMap[productID] = Sales_report{salesStatistics, marketingStatistics}

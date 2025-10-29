@@ -1,18 +1,16 @@
 <script>
 	import { format } from '$lib/javascript/format';
-	/** @type {{clientState: import("$lib/javascript/simulation").clientState}} */
-	let { clientState = $bindable() } = $props();
-
-	let latestReport = $derived(clientState.Company.Reports[clientState.Company.Reports.length - 1]);
+	/** @type {{report: import("$lib/javascript/simulation").Report}} */
+	let { report } = $props();
 
 	let { totalProductsSold, totalMarketShare } = $derived.by(() => {
 		let totalProductsSold = 0;
 		let totalMarketShare = 0;
-		for (let r of Object.entries(latestReport.SalesReport)) {
+		for (let r of Object.entries(report.SalesReport)) {
 			totalProductsSold += r[1].ProductSalesStatistics.ProductsSold;
 			totalMarketShare += r[1].ProductSalesStatistics.MarketShare;
 
-			console.log(r[1].ProductSalesStatistics);
+			// console.log(r[1].ProductSalesStatistics);
 		}
 
 		return { totalProductsSold, totalMarketShare };
@@ -20,7 +18,7 @@
 
 	let totalAssets = $derived.by(() => {
 		let totalAssets = 0;
-		for (let e of Object.entries(latestReport.BalanceSheet.Assets)) {
+		for (let e of Object.entries(report.BalanceSheet.Assets)) {
 			totalAssets += e[1].Value;
 		}
 		return totalAssets;
@@ -32,7 +30,7 @@
 			let totalPromotionQuantity = 0;
 			let totalPromotionImpressions = 0;
 
-			let entries = Object.entries(latestReport.SalesReport);
+			let entries = Object.entries(report.SalesReport);
 			for (let e of entries) {
 				avgPromotionQuality += e[1].MarketingStatistics.PromotionQuality;
 				totalPromotionQuantity += e[1].MarketingStatistics.PromotionQuantity;
@@ -48,7 +46,7 @@
 	);
 </script>
 
-{#if !latestReport}
+{#if !report}
 	<h1>Loading</h1>
 {:else}
 	<div style="min-width:30rem;">
@@ -57,12 +55,12 @@
 		<div class="grid">
 			<label for="">
 				Net Income:
-				<h4>{format.currency(latestReport.FinancialReport.Totals.NetIncome, true, 0)}</h4>
+				<h4>{format.currency(report.FinancialReport.Totals.NetIncome, true, 0)}</h4>
 			</label>
 
 			<label for="">
 				Total Cashflow:
-				<h4>{format.currency(latestReport.FinancialReport.Totals.Cashflow, true, 0)}</h4>
+				<h4>{format.currency(report.FinancialReport.Totals.Cashflow, true, 0)}</h4>
 			</label>
 
 			<label for="">

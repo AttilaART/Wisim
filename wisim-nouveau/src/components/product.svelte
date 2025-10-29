@@ -50,7 +50,7 @@
 		}
 	}
 
-	console.log(clientState.Company);
+	// console.log(clientState.Company);
 
 	let showOutdated = $state(false);
 

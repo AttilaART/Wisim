@@ -396,7 +396,7 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 		return
 	}
 
-	gamestate.CurrentDecisions[s.conns[ws].Company] = decisions
+	gamestate.CurrentDecisions[s.conns[ws].Company] = simulation.ValidateDecisions(decisions)
 }
 
 func setReady(s *Server, ws *websocket.Conn, message Message[any]) {

@@ -12,23 +12,25 @@ kanban-plugin: board
 - [ ] # (Singlplayer) Add win / loss conditions
 - [ ] Add Icons
 - [ ] # Add different architypes of customers
+- [ ] # Implent deeper marketing
+- [ ] # Add projected incomes
+- [ ] # Package application
+
+
+## Bugs
+
+- [ ] # Fix window system bugs
+- [ ] # Fix random reloading
+- [ ] # Renaming company doesn't show in chat
+
+
+## In Progress
+
 - [ ] # Improve balancing
 	- Add limits to skill and motivation of employees
 	- Reduce bonuses from research
 	- Increase difficulty of sales
 	- Increase cost of product development
-- [ ] # Implent deeper marketing
-- [ ] # Implement deeper insights to company
-
-
-## Bugs
-
-- [ ] report.BalanceSheet.Assets only shows machines
-
-
-## In Progress
-
-- [ ] # Rework reports
 - [ ] # Fix employee motivation
 	- Employee motivation has no cap -> unrealistic production
 	- They get burnt out too quickly when marketing employees arrive with higher pay
@@ -37,6 +39,9 @@ kanban-plugin: board
 
 ## Done
 
+- [ ] # Rework reports
+- [ ] report.BalanceSheet.Assets only shows machines
+- [ ] # Marketing Quality Increases too much -> Products can be sold at insane prices
 - [ ] # Add ability to name company
 - [ ] # Product creation screen
 	## Backend
@@ -57,14 +62,16 @@ kanban-plugin: board
 
 ## Need Rework
 
+- [ ] # Implement deeper insights to company
 - [ ] # Brand loyalty
 - [ ] # Production Screen
+- [ ] # Improve windowing system
 
 
 
 
 %% kanban:settings
 ```
-{"kanban-plugin":"board","list-collapse":[false,false,false,false,false]}
+{"kanban-plugin":"board","list-collapse":[false,false,false,false,false],"show-checkboxes":false}
 ```
 %%
