@@ -7,14 +7,22 @@ import (
 )
 
 func (c *Company) research(decisions Decisions) {
-	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Quality research", research, "", true, float64(-decisions.Research.Quality))
-	c.Tech.Quality += decisions.Research.Quality / 1000
-	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Ecology research", research, "", true, float64(-decisions.Research.Ecology))
-	c.Tech.Quality += decisions.Research.Ecology / 1000
-	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Durability research", research, "", true, float64(-decisions.Research.Durability))
-	c.Tech.Quality += decisions.Research.Durability / 1000
-	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Production cost research", research, "", true, float64(-decisions.Research.Production_cost))
-	c.Tech.Quality += decisions.Research.Production_cost / 1000
+	if decisions.Research.Quality > 0 {
+		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Quality research", research, "", true, float64(-decisions.Research.Quality))
+		c.Tech.Quality += decisions.Research.Quality / 1000000
+	}
+	if decisions.Research.Ecology > 0 {
+		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Ecology research", research, "", true, float64(-decisions.Research.Ecology))
+		c.Tech.Quality += decisions.Research.Ecology / 1000000
+	}
+	if decisions.Research.Durability > 0 {
+		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Durability research", research, "", true, float64(-decisions.Research.Durability))
+		c.Tech.Quality += decisions.Research.Durability / 1000000
+	}
+	if decisions.Research.Production_cost > 0 {
+		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Production cost research", research, "", true, float64(-decisions.Research.Production_cost))
+		c.Tech.Quality += decisions.Research.Production_cost / 1000000
+	}
 }
 
 // Production functions

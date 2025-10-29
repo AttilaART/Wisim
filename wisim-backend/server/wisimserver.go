@@ -396,7 +396,7 @@ func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {
 		return
 	}
 
-	gamestate.CurrentDecisions[s.conns[ws].Company] = decisions
+	gamestate.CurrentDecisions[s.conns[ws].Company] = simulation.ValidateDecisions(decisions)
 }
 
 func setReady(s *Server, ws *websocket.Conn, message Message[any]) {
@@ -566,10 +566,6 @@ func main() {
 	server.addMethod("sUnready", setUnReady)
 
 	server.addMethod("bChat", sendChat)
-
-	go func() {
-		log.Println(http.ListenAndServe("localhost:6060", nil))
-	}()
 
 	http.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)

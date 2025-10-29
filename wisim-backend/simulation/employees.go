@@ -13,8 +13,11 @@ func (c *Company) simulateEmployees(externalFactors ExternalFactors) {
 
 	// refresh employee list
 	employeeIDs = c.Get_employees_ids(Employee_type_all)
+	productioEemployeeIDs := c.Get_employees_ids(Employee_type_production)
+	marketingEemployeeIDs := c.Get_employees_ids(Employee_type_marketing)
 	c.pay(employeeIDs)
-	c.motivateAndTrain(employeeIDs, externalFactors.ProductionMinimumWage, 0.01)
+	c.motivateAndTrain(productioEemployeeIDs, externalFactors.ProductionMinimumWage, 0.01)
+	c.motivateAndTrain(marketingEemployeeIDs, externalFactors.MarketingMinimumWage, 0.01)
 
 	// Increment months at company
 }
@@ -68,14 +71,36 @@ func (c *Company) motivateAndTrain(employeeIDs []int, minimumWage, passiveTraini
 	for _, ID := range employeeIDs {
 		var motivationFactor float32 = 0
 
-		motivationFactor += (c.employeePool[ID].Pay - averagePay) / 100
-		motivationFactor += (c.employeePool[ID].Pay - minimumWage) / 1000
-		motivationFactor += (c.employeePool[ID].ExtraTraining - 100) / 10000
-		motivationFactor += (8 - c.employeePool[ID].WorkingHours)
+		motivationFactor += (c.employeePool[ID].Pay - averagePay) / 1000
+		motivationFactor += (c.employeePool[ID].Pay - minimumWage) / 100
+		motivationFactor += (c.employeePool[ID].ExtraTraining) / 10000
+		motivationFactor += (8 - c.employeePool[ID].WorkingHours) / 20
 
-		c.employeePool[ID].Motivation += motivationFactor
+		const motivationNormalisationFactor = 0.01
+
+		scaleMotivationFactor := func(factor, maxvalue float64) float64 {
+			if factor < 0 {
+				return -(-1/(1-factor) + 1) * maxvalue
+			}
+			return (-1/(1+factor) + 1) * maxvalue
+		}
+
+		c.employeePool[ID].Motivation += float32(scaleMotivationFactor(float64(motivationFactor), 1))
+
+		// passive motivation normalisation
+		if c.employeePool[ID].Motivation > 1 {
+			c.employeePool[ID].Motivation -= motivationNormalisationFactor
+		} else if c.employeePool[ID].Motivation < 1 {
+			c.employeePool[ID].Motivation += motivationNormalisationFactor
+		}
+
+		// clamp motivation
+		c.employeePool[ID].Motivation = min(c.employeePool[ID].Motivation, 2)
 
 		c.employeePool[ID].Skill += passiveTraining
+		// clamp skill
+		c.employeePool[ID].Skill = min(c.employeePool[ID].Skill, 2)
+
 		if c.employeePool[ID].ExtraTraining > 0 {
 			c.employeePool[ID].Skill += c.employeePool[ID].ExtraTraining / 1000
 			c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement("Extra training for employee: "+c.employeePool[ID].Name, employee_training, "Training improves speed and quality of employeess' work", true, float64(c.employeePool[ID].ExtraTraining))

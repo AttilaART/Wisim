@@ -101,6 +101,7 @@ type Company struct {
 }
 
 // NOTE: Employees keep track of their employers, not the companies
+
 type TechLevels struct {
 	Quality        float32
 	Ecology        float32
@@ -110,6 +111,9 @@ type TechLevels struct {
 }
 
 type Decisions struct {
+	General struct {
+		CompanyName string
+	}
 	Predictions struct {
 		SalesPrediction int
 	}
@@ -141,8 +145,8 @@ type Decisions_product struct {
 	Price     float32
 	Promotion struct {
 		Quantity   float32
-		Price      float32
 		Quality    float32
+		Price      float32
 		Ecology    float32
 		Ethics     float32
 		Durability float32
@@ -385,6 +389,7 @@ const (
 	predictions
 	write_off
 	other
+	cash
 )
 
 var AllGroups = []struct {
@@ -657,6 +662,9 @@ func (game_state *GameState) SimulateStep() error {
 		c := &game_state.Companies[i]
 		c.Reports = append(c.Reports, Report{Month: game_state.ExternalFactors.Month})
 		c.DecisionHistory = append(c.DecisionHistory, game_state.CurrentDecisions[i])
+
+		// renaming company
+		c.Name = game_state.CurrentDecisions[i].General.CompanyName
 
 		fmt.Printf("--------------- Simulating company %d -------------- \n", i)
 
@@ -980,7 +988,7 @@ func (c *Company) compileSalesReport(
 
 		marketingStatistics.Price = float64(c.Offers[productID].Price)
 		marketingStatistics.PromotionQuantity = float64(c.Offers[productID].Promotion.Quantity)
-		marketingStatistics.PromotionQuality = float64(c.Offers[productID].Promotion.Quantity)
+		marketingStatistics.PromotionQuality = float64(c.Offers[productID].PromotionQuality)
 		marketingStatistics.ImpressionCount = impressions[productID]
 
 		salesReportsMap[productID] = Sales_report{salesStatistics, marketingStatistics}

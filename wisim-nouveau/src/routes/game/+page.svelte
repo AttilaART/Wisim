@@ -21,6 +21,7 @@
 
 	/** handle wasm import */
 	import { wasm_exec } from '$lib/wasm_exec.js';
+	import Reports from '../../components/reports.svelte';
 
 	wasm_exec();
 
@@ -197,6 +198,16 @@
 		connection.gUnemployedEmployees('marketing');
 		connection.gProductComponents();
 	}
+
+	function totalProductsSold() {
+		let total = 0;
+		for (let r of clientState.Company.Reports) {
+			for (let p of Object.values(r.SalesReport)) {
+				total += p.ProductSalesStatistics.ProductsSold;
+			}
+		}
+		return total;
+	}
 </script>
 
 <svelte:head>
@@ -223,7 +234,13 @@
 					connection.sCompany(companyID);
 				}}
 			>
-				<input bind:value={companyIDUserFacing} type="number" required placeholder="Company ID" />
+				<input
+					bind:value={companyIDUserFacing}
+					type="number"
+					required
+					placeholder="Company ID"
+					min="0"
+				/>
 				<input type="submit" value="Confirm" />
 			</form>
 		</article>
@@ -239,21 +256,39 @@
 	{/if}
 
 	<div id="ui">
+		<div id="top-bar">
+			<span>{clientState.Company.Name}</span>
+			<span>Balance: {format.currency(clientState.Company.Balance, true, 0)}</span>
+			<span
+				>Cashflow: {clientState.Company.Reports.length >= 1
+					? format.currency(
+							clientState.Company.Reports[clientState.Company.Reports.length - 1].FinancialReport
+								.Totals.Cashflow,
+							true,
+							0
+						)
+					: '0 CHF'}</span
+			>
+			<span>
+				Employees: {format.number(
+					clientState.Employees.marketing.length + clientState.Employees.production.length,
+					false,
+					0
+				)}
+			</span>
+			<span>
+				Total Sales: {clientState.Company.Reports.length >= 1
+					? format.number(totalProductsSold(), false, 0)
+					: 0}
+			</span>
+		</div>
+
 		<Canvas>
 			{#each Object.entries(windows) as w (w[0])}
 				{@render w[1](Number(w[0]))}
 			{/each}
 		</Canvas>
 		<div id="bottom-menu">
-			<button
-				onclick={() => {
-					newWindow(finances);
-				}}
-			>
-				<strong>
-					{format.currency(clientState.Company.Balance, true, 2)}
-				</strong>
-			</button>
 			<button
 				onclick={() => {
 					newWindow(product);
@@ -280,6 +315,13 @@
 					newWindow(chat);
 				}}>Chat</button
 			>
+			<button
+				onclick={() => {
+					newWindow(reports);
+				}}
+			>
+				Reports
+			</button>
 			{#if !isReady}
 				<button
 					onclick={() => {
@@ -347,9 +389,7 @@
 				connection.sDecisions(decisions);
 			}}
 			{newWindow}
-			deleteWindow={(id) => {
-				deleteWindow(id);
-			}}
+			{deleteWindow}
 			openProduction={() => {
 				newWindow(production);
 			}}
@@ -389,54 +429,21 @@
 	</Window>
 {/snippet}
 
-{#snippet finances(/** @type {Number} id */ id)}
+{#snippet reports(/** @type {Number} id */ id)}
 	<Window
-		title="Finances"
+		title="Reports"
 		closeWindow={() => {
 			deleteWindow(id);
 		}}
 	>
-		<Finances
-			bind:clientState
-			openDebtWindow={() => newWindow(debt)}
-			openFinancialReportWindow={() => newWindow(financialReport)}
-			openInvoicesWindow={() => newWindow(invoiceLog)}
-			updateDecisions={(decisions) => {
-				connection.sDecisions(decisions);
-			}}
-		></Finances>
-	</Window>
-{/snippet}
-
-{#snippet financialReport(/** @type {Number} id */ id)}
-	<Window
-		title="Finance Report"
-		closeWindow={() => {
-			deleteWindow(id);
-		}}
-	>
-		<FinancialReport
+		<Reports
 			bind:clientState
 			updateDecisions={(decisions) => {
 				connection.sDecisions(decisions);
 			}}
-		></FinancialReport>
-	</Window>
-{/snippet}
-
-{#snippet invoiceLog(/** @type {Number} id */ id)}
-	<Window
-		title="Finance Report"
-		closeWindow={() => {
-			deleteWindow(id);
-		}}
-	>
-		<Invoices
-			bind:clientState
-			updateDecisions={(decisions) => {
-				connection.sDecisions(decisions);
-			}}
-		></Invoices>
+			{newWindow}
+			{deleteWindow}
+		></Reports>
 	</Window>
 {/snippet}
 
@@ -506,6 +513,7 @@
 			{/each}
 		</div>
 		<form
+			use:preventPageReload
 			onsubmit={() => {
 				connection.bChat(chatMessage);
 				chatMessage = '';
@@ -526,7 +534,8 @@
 		}}
 	>
 		<span hidden>{(overviewWindowOpen = true)}</span>
-		<MonthlyOverview bind:clientState></MonthlyOverview>
+		<MonthlyOverview report={clientState.Company.Reports[clientState.Company.Reports.length - 1]}
+		></MonthlyOverview>
 	</Window>
 {/snippet}
 
@@ -550,6 +559,17 @@
 
 		button {
 			flex: 1 1;
+		}
+	}
+
+	#top-bar {
+		display: flex;
+		backdrop-filter: blur(10px);
+		border-bottom: 0.5px solid color-mix(in oklab, var(--pico-background-color), transparent 10%);
+		z-index: 99;
+		* {
+			flex: 1 0;
+			text-align: center;
 		}
 	}
 </style>

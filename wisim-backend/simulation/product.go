@@ -12,6 +12,7 @@ func (c *Company) newProduct(productID string, companyID int, productName string
 	offer.Product.ID = productID
 	offer.Product.CompanyID = companyID
 	offer.Product.Name = productName
+	offer.Promotion = productDecisions.Promotion
 
 	c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(fmt.Sprintf("Production line cost for product %s", productName), facilities, "The cost of setting up the production line for the product.", true, -productionLineCost)
 
@@ -78,7 +79,7 @@ func CalculateProductStats(
 }
 
 func (c *Company) calculatePromotion(decisions Decisions) {
-	c.BaseMarketingStrength += decisions.Research.Promotion / 1000 * c.BaseMarketingStrength
+	c.BaseMarketingStrength += decisions.Research.Promotion / 1000000 * c.BaseMarketingStrength
 
 	promotionQuality := promotionQuality(c.employeePool, c.BaseMarketingStrength, c.employeePool.Get_employees_of_company(c.ID, Employee_type_marketing))
 
@@ -91,7 +92,7 @@ func (c *Company) calculatePromotion(decisions Decisions) {
 		c.Reports[len(c.Reports)-1].BalanceSheet.add_to_income_statement(
 			"Advertisement costs",
 			marketing,
-			fmt.Sprintf("Cost of your ads for product %d (equals promotion quantity)", productID),
+			fmt.Sprintf("Cost of your ads for product %s (equals promotion quantity)", productID),
 			true,
 			float64(-decisions.Products[productID].Promotion.Quantity),
 		)
@@ -101,14 +102,16 @@ func (c *Company) calculatePromotion(decisions Decisions) {
 }
 
 // offer functions
-func promotionQuality(employee_pool Employee_pool, baseMarketingStrength float32, marketingPersonelleIds []int) float32 {
+func promotionQuality(employeePool Employee_pool, baseMarketingStrength float32, marketingPersonelleIds []int) float32 {
 	// Temporary method
 	var totalPersonelleStrength float32 = 1.0
 	for _, id := range marketingPersonelleIds {
-		totalPersonelleStrength += employee_pool[id].Motivation * employee_pool[id].Skill * (employee_pool[id].WorkingHours / 8.0)
+		totalPersonelleStrength += employeePool[id].Motivation * employeePool[id].Skill * (employeePool[id].WorkingHours / 8.0)
 	}
 
-	return baseMarketingStrength *
-		(totalPersonelleStrength / float32(len(marketingPersonelleIds))) *
-		float32(1+math.Log(float64(len(marketingPersonelleIds))))
+	promotionQuality := baseMarketingStrength + float32(math.Sqrt(float64(totalPersonelleStrength)))
+
+	println(promotionQuality)
+
+	return promotionQuality
 }

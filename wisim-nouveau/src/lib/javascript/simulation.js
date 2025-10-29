@@ -18,6 +18,7 @@ export const delta = {
 
 /**
  * @typedef {Object} Decisions
+ * @property {{CompanyName: string}} General
  * @property {{SalesPrediction: number}} Predictions
  * @property {{SetBankLoan: number}} Finances
  * @property {Object.<string ,Decisions_product>} Products

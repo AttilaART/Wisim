@@ -25,7 +25,7 @@
 				continue;
 			}
 
-			console.log(promotion[field]);
+			// console.log(promotion[field]);
 			// @ts-ignore
 			lengthExceptChanged += promotion[field] * promotion[field];
 		}
@@ -37,7 +37,7 @@
 		}
 
 		let multiplicationFactor = Math.sqrt(1 - promotion[changed]) / lengthExceptChanged;
-		console.log(multiplicationFactor);
+		// console.log(multiplicationFactor);
 
 		for (let field of Object.keys(promotion)) {
 			if (field == 'Quantity') {
@@ -64,11 +64,16 @@
 >
 	<label for="PromotionQuantity">
 		<h2>Advertisment Budget</h2>
-		<input
-			id="quantity"
-			bind:value={clientState.Decisions.Products[productID].Promotion.Quantity}
-			type="number"
-		/>
+		<fieldset role="group">
+			<input
+				id="quantity"
+				bind:value={clientState.Decisions.Products[productID].Promotion.Quantity}
+				type="number"
+				step={1000}
+				min={0}
+			/>
+			<input type="text" disabled value="CHF" style="width: 5rem;" />
+		</fieldset>
 	</label>
 
 	<h2>Advertisment Style</h2>

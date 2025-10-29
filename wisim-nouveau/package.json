@@ -29,6 +29,7 @@
 	},
 	"dependencies": {
 		"@neodrag/svelte": "^3.0.0-next.8",
-		"@picocss/pico": "^2.1.1"
+		"@picocss/pico": "^2.1.1",
+		"echarts": "^6.0.0"
 	}
 }

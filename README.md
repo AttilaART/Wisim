@@ -31,9 +31,11 @@ they win.
 
 - [x] Core simulation
 - [x] Core GUI
-- [ ] Core gameplay loop
+- [x] Core gameplay loop
 - [x] Core online
+- [ ] Balancing
 - [ ] Polish
+- [ ] Deeper / advanced features
 
 ## Running the beta
 
@@ -62,4 +64,4 @@ cd ..
 ./start.sh
 ```
 
-After which you should navigate to [localhost:5173](http://localhost:5173/).
+After which you should be able to navigate to [localhost:5173](http://localhost:5173/).

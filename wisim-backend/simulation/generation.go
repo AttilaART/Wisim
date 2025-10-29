@@ -268,7 +268,7 @@ func (g *GameState) generateCompanies(
 		}
 		for range baseNumberOfMarketingPersonelle {
 			_, e := g.Generate_employee(
-				externalFactors.ProductionMinimumWage,
+				externalFactors.MarketingMinimumWage,
 				baseWorkingHours,
 				Employee_type_marketing,
 				1,
@@ -363,6 +363,9 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 
 	for i := range gameState.CurrentDecisions {
 		gameState.CurrentDecisions[i] = Decisions{
+			General: struct{ CompanyName string }{
+				CompanyName: gameState.Companies[i].Name,
+			},
 			Products: make(map[string]Decisions_product),
 			Research: Decisions_research{
 				Quality:         1000,

@@ -1,3 +1,5 @@
+import * as echarts from 'echarts';
+
 /** @param {HTMLElement} el */
 export const preventPageReload = (el) => {
 	el.addEventListener('submit', (/** @type {Event}*/ e) => {
@@ -34,4 +36,13 @@ export function calculateProduction(companyID, machines, offers, employees) {
 	);
 
 	return result;
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {echarts.EChartsCoreOption} options
+ */
+export function chart(element, options) {
+	let chart = echarts.init(element, 'dark');
+	chart.setOption(options);
 }
