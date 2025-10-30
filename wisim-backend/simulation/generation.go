@@ -375,11 +375,13 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 				Production_cost: 1000,
 			},
 			Production: struct {
-				Machines  []Delta[Machine]
-				Logistics []Delta[Warehouse]
+				Machines                 []Delta[Machine]
+				Logistics                []Delta[Warehouse]
+				MachineAssignmentPattern AssignmentPattern
 			}{
-				Logistics: make([]Delta[Warehouse], 0),
-				Machines:  make([]Delta[Machine], 0),
+				Logistics:                make([]Delta[Warehouse], 0),
+				Machines:                 make([]Delta[Machine], 0),
+				MachineAssignmentPattern: FillMachines,
 			},
 			Employees: struct {
 				ProductionDeltas []Delta[Employee]

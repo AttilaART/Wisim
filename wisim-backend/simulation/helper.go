@@ -106,6 +106,8 @@ func (g *GameState) resetCurrentDecisions() {
 }
 
 func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company Company) Company {
+	company.Name = decisions.General.CompanyName
+
 	for ID, d := range decisions.Products {
 		offer := company.Offers[ID]
 		offer.Product = d.Product

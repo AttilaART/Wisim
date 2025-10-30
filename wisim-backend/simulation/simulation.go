@@ -132,8 +132,9 @@ type Decisions struct {
 	}
 
 	Production struct {
-		Machines  []Delta[Machine]
-		Logistics []Delta[Warehouse]
+		Machines                 []Delta[Machine]
+		Logistics                []Delta[Warehouse]
+		MachineAssignmentPattern AssignmentPattern
 	}
 
 	Research Decisions_research

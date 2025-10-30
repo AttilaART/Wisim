@@ -6,6 +6,13 @@ export const delta = {
 	Delta_Remove: 2
 };
 
+/** @typedef {number} AssignmentPattern */
+
+export const assignmentPatterns = {
+	fillMachines: 0,
+	distributeWorkers: 1
+};
+
 /**
  * @typedef {Object} clientState
  * @property {Company} Company
@@ -23,7 +30,7 @@ export const delta = {
  * @property {{SetBankLoan: number}} Finances
  * @property {Object.<string ,Decisions_product>} Products
  * @property {{ProductionDeltas: Delta<Employee>[], MarketingDeltas: Delta<Employee>[], SeverancePay: number}} Employees
- * @property {{Production_goal: number, Machines: Delta<Machine>[], Logistics: Delta<Warehouse>[]}} Production
+ * @property {{Production_goal: number, Machines: Delta<Machine>[], Logistics: Delta<Warehouse>[], MachineAssignmentPattern: AssignmentPattern}} Production
  * @property {Decisions_research} Research
  */
 

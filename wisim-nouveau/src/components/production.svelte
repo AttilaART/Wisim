@@ -1,7 +1,7 @@
 <script>
 	import { calculateProduction } from '$lib/helper.svelte';
 	import { format } from '$lib/javascript/format';
-	import { delta, financeReportCategories } from '$lib/javascript/simulation';
+	import { assignmentPatterns, delta, financeReportCategories } from '$lib/javascript/simulation';
 
 	/**
 	 * @typedef {Object} props
@@ -71,18 +71,33 @@
 			clientState.Company.ID,
 			clientState.Company.Machines,
 			clientState.Company.Offers,
-			clientState.Employees.production
+			clientState.Employees.production,
+			clientState.Decisions.Production.MachineAssignmentPattern
 		);
 	});
 </script>
 
 <div>
-	<article>
-		{#if workerSurplus > 0}
-			You have <strong>{workerSurplus}</strong> production employees too many.
-		{:else if workerSurplus < 0}
-			You are missing <strong>{-workerSurplus}</strong> production employees!
-		{/if}
+	<article class="grid">
+		<span style="line-height: 200%;">
+			{#if workerSurplus > 0}
+				You have <strong>{workerSurplus}</strong> production employees too many.
+			{:else if workerSurplus < 0}
+				You are missing <strong>{-workerSurplus}</strong> production employees!
+			{/if}
+		</span>
+		<fieldset role="group">
+			<input type="text" value="Worker Distribution" disabled />
+			<select
+				bind:value={clientState.Decisions.Production.MachineAssignmentPattern}
+				onchange={() => {
+					updateDecisions(clientState.Decisions);
+				}}
+			>
+				<option value={assignmentPatterns.fillMachines}>Fill Machines</option>
+				<option value={assignmentPatterns.distributeWorkers}>Distribute Evenly</option>
+			</select>
+		</fieldset>
 	</article>
 </div>
 <table>

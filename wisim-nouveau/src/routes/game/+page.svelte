@@ -174,9 +174,11 @@
 					isReady = false;
 					isSimulating = false;
 					fetchEverything(connection);
+					/*
 					if (!overviewWindowOpen) {
 						newWindow(monthlyOverview);
 					}
+          */
 					break;
 				case Methods.Broadcast_chat:
 					chats.push(dataJSON.Data);

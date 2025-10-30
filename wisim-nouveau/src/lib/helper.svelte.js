@@ -19,10 +19,11 @@ export function ignoreError(func) {
  * @param {Array.<import("$lib/javascript/simulation").Machine>} machines
  * @param {Object.<string, import("$lib/javascript/simulation").Offer>} offers
  * @param {Array.<import("$lib/javascript/simulation").Employee>} employees
+ * @param {import("$lib/javascript/simulation").AssignmentPattern} assignmentPattern
  * @returns {{WorkerSurplus: number, MachineProduction: number[]}}
  */
 
-export function calculateProduction(companyID, machines, offers, employees) {
+export function calculateProduction(companyID, machines, offers, employees, assignmentPattern) {
 	/** @type {{WorkerSurplus: number, MachineProduction: number[]}}*/
 
 	let result = JSON.parse(
@@ -31,7 +32,8 @@ export function calculateProduction(companyID, machines, offers, employees) {
 			companyID,
 			JSON.stringify(machines),
 			JSON.stringify(offers),
-			JSON.stringify(employees)
+			JSON.stringify(employees),
+			assignmentPattern
 		)
 	);
 

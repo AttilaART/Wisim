@@ -91,6 +91,7 @@ func (c *Company) calculateProduction(decisions Decisions, externalFactors Exter
 		c.employeePool,
 		productionReport.ProductSpecificReport,
 		make([]int, len(c.Machines)),
+		decisions.Production.MachineAssignmentPattern,
 	)
 
 	productionReport.MaterialUsed = materialUsed
@@ -144,8 +145,15 @@ func calculate_machines_value(
 	}
 }
 
+type AssignmentPattern int
+
+const (
+	FillMachines = iota
+	distributeWorkers
+)
+
 // returns machines & number of unassigned wokers (if not enough workers for the machines, it return a negative int)
-func assignWorkers(employeePool Employee_pool, machines []Machine, workersIds []int) ([]Machine, int) {
+func assignWorkers(employeePool Employee_pool, machines []Machine, workersIds []int, assignmentPattern AssignmentPattern) ([]Machine, int) {
 	println("Sorting Employees")
 
 	workersIds = slices.SortedFunc(func(yield func(int) bool) {
@@ -184,13 +192,43 @@ func assignWorkers(employeePool Employee_pool, machines []Machine, workersIds []
 		return -1
 	})
 
-	for i := range machines {
-		machines[i].AssignedWorkersIDs = make([]int, 0)
+	if assignmentPattern == FillMachines {
+		for i := range machines {
+			machines[i].AssignedWorkersIDs = make([]int, 0)
 
-		for range machines[i].RequiredWorkers {
-			if len(workersIds) >= 1 {
-				machines[i].AssignedWorkersIDs = append(machines[i].AssignedWorkersIDs, workersIds[len(workersIds)-1])
-				workersIds = workersIds[0 : len(workersIds)-1]
+			for range machines[i].RequiredWorkers {
+				if len(workersIds) >= 1 {
+					machines[i].AssignedWorkersIDs = append(machines[i].AssignedWorkersIDs, workersIds[len(workersIds)-1])
+					workersIds = workersIds[0 : len(workersIds)-1]
+				}
+			}
+		}
+	} else {
+
+		alllMachinesAreFull := func() bool {
+			for _, m := range machines {
+				if len(m.AssignedWorkersIDs) < m.RequiredWorkers {
+					return false
+				}
+			}
+
+			return true
+		}
+
+	AssignmentLoop:
+		for len(workersIds) > 0 {
+			if alllMachinesAreFull() {
+				break AssignmentLoop
+			}
+			for i := range machines {
+				if len(workersIds) == 0 {
+					break AssignmentLoop
+				}
+
+				if len(machines[i].AssignedWorkersIDs) < machines[i].RequiredWorkers {
+					machines[i].AssignedWorkersIDs = append(machines[i].AssignedWorkersIDs, workersIds[len(workersIds)-1])
+					workersIds = workersIds[0 : len(workersIds)-1]
+				}
 			}
 		}
 	}
@@ -280,12 +318,14 @@ func ProduceProducts(companyID int, machines []Machine, offers map[string]Offer,
 	MaterialUsed float32
 	EnergyUsed   float32
 }, machineProduction []int,
+	assignmentPattern AssignmentPattern,
 ) (materialUsed float32, energyUsed float32, totalProduction int, workerSurplus int) {
 	machines, workerSurplus = assignWorkers(
 		employeePool,
 		machines,
 		employeePool.Get_employees_of_company(
 			companyID, Employee_type_production),
+		assignmentPattern,
 	)
 
 	for i, m := range machines {

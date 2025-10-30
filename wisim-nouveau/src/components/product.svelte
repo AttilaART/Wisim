@@ -64,7 +64,8 @@
 				clientState.Company.ID,
 				clientState.Company.Machines,
 				clientState.Company.Offers,
-				clientState.Employees.production
+				clientState.Employees.production,
+				clientState.Decisions.Production.MachineAssignmentPattern
 			);
 
 		/**

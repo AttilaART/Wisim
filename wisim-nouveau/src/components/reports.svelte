@@ -43,9 +43,6 @@
 	let { clientState = $bindable(), updateDecisions, newWindow, deleteWindow } = $props();
 
 	let onCurrentReport = $state(true);
-	let selectedProduct = $state(
-		Object.keys(clientState.Company.Reports[clientState.Company.Reports.length - 1].SalesReport)[0]
-	);
 
 	let selectedReportIndex = $state(clientState.Company.Reports.length);
 	let currentReportIndex = $derived.by(() => {
@@ -64,6 +61,8 @@
 	});
 
 	let currentReport = $derived(clientState.Company.Reports[currentReportIndex]);
+
+	let selectedProduct = $state(currentReport ? Object.keys(currentReport.SalesReport)[0] : '');
 
 	let timespan = $state(12);
 
@@ -258,7 +257,7 @@
 	{#if tab == 'overview'}
 		{@render overview()}
 	{:else if tab == 'monthly'}
-		<MonthlyOverview report={currentReport}></MonthlyOverview>
+		{@render monthly()}
 	{:else if tab == 'finances'}
 		{@render finances()}
 	{:else if tab == 'assets'}
@@ -270,7 +269,14 @@
 
 {#snippet overview()}
 	<h1>
-		<input bind:value={clientState.Decisions.General.CompanyName} type="text" autocomplete="off" />
+		<input
+			bind:value={clientState.Decisions.General.CompanyName}
+			type="text"
+			autocomplete="off"
+			onchange={() => {
+				updateDecisions(clientState.Decisions);
+			}}
+		/>
 	</h1>
 
 	<div class="grid">
@@ -310,6 +316,14 @@
 			</tbody>
 		</table>
 	</div>
+{/snippet}
+
+{#snippet monthly()}
+	{#if selectedReportIndex != -1}
+		<MonthlyOverview report={currentReport}></MonthlyOverview>
+	{:else}
+		No Data
+	{/if}
 {/snippet}
 
 {#snippet finances()}
@@ -360,6 +374,7 @@
 	{/key}
 
 	<h1>Key Metrics</h1>
+	=
 	{#if clientState.Company.Reports.length >= 1}
 		<article id="key-metrics">
 			<label for="">
@@ -469,23 +484,31 @@
 {/snippet}
 
 {#snippet sales()}
-	<select bind:value={selectedProduct}>
-		{#each Object.keys(clientState.Company.Offers) as product}
-			<option value={product}>{clientState.Company.Offers[product].Product.Name}</option>
-		{/each}
-	</select>
-	{#key [selectedReportIndex, currentReportIndex, timespan, selectedProduct]}
-		<SalesReport
-			report={currentReport}
-			aggrageteData={aggragateData}
-			{selectedProduct}
-			{clientState}
-		></SalesReport>
-	{/key}
+	{#if currentReport}
+		<select bind:value={selectedProduct}>
+			{#each Object.keys(clientState.Company.Offers) as product}
+				<option value={product}>{clientState.Company.Offers[product].Product.Name}</option>
+			{/each}
+		</select>
+		{#key [selectedReportIndex, currentReportIndex, timespan, selectedProduct]}
+			<SalesReport
+				report={currentReport}
+				aggrageteData={aggragateData}
+				{selectedProduct}
+				{clientState}
+			></SalesReport>
+		{/key}
+	{:else}
+		No Data
+	{/if}
 {/snippet}
 
 {#snippet assets()}
-	<BalanceSheet report={currentReport}></BalanceSheet>
+	{#if currentReport}
+		<BalanceSheet report={currentReport}></BalanceSheet>
+	{:else}
+		No Data
+	{/if}
 {/snippet}
 
 <style>

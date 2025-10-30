@@ -45,7 +45,7 @@ func calculateProductStatsWrapped() js.Func {
 
 func calculateProductionWrapped() js.Func {
 	f := js.FuncOf(func(this js.Value, args []js.Value) any {
-		if len(args) != 4 {
+		if len(args) != 5 {
 			return fmt.Sprintf("Invalid arguments: Expected 4, Got %d", len(args))
 		}
 
@@ -98,6 +98,7 @@ func calculateProductionWrapped() js.Func {
 			args3,
 			productSpecificReportTemp,
 			machineProduction,
+			simulation.AssignmentPattern(args[4].Int()),
 		)
 
 		returnValue := struct {
