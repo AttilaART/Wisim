@@ -86,7 +86,7 @@
 				You are missing <strong>{-workerSurplus}</strong> production employees!
 			{/if}
 		</span>
-		<fieldset role="group">
+		<fieldset role="group" style="margin: 0;">
 			<input type="text" value="Worker Distribution" disabled />
 			<select
 				bind:value={clientState.Decisions.Production.MachineAssignmentPattern}

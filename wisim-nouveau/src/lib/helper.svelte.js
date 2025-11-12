@@ -48,3 +48,23 @@ export function chart(element, options) {
 	let chart = echarts.init(element, 'dark');
 	chart.setOption(options);
 }
+
+/**
+ * @template T
+ * @param {T[]} elements
+ * @param {(e: T)=>number} getValue
+ * @returns {number}
+ */
+export function average(elements, getValue) {
+	if (elements.length == 0) {
+		return 0;
+	}
+
+	let total = 0;
+
+	elements.forEach((e) => {
+		total += getValue(e);
+	});
+
+	return total / elements.length;
+}

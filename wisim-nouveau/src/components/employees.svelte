@@ -1,10 +1,14 @@
 <script>
+	import { average } from '$lib/helper.svelte';
 	import { format } from '$lib/javascript/format';
 	import { delta } from '$lib/javascript/simulation';
+	import { flip } from 'svelte/animate';
+	import { fade, fly } from 'svelte/transition';
 
 	/** @type {{clientState: import("$lib/javascript/simulation").clientState, updateDecisions: (decisions: import("$lib/javascript/simulation").Decisions)=>void}} */
 	let { clientState = $bindable(), updateDecisions } = $props();
 
+	/** @type {[string, string]}*/
 	let menuState = $state(['all', 'hired']);
 	/**
 	 * @typedef {Object} Delta
@@ -146,6 +150,45 @@
 		if (a.Skill > b.Skill) return 1;
 		return 0;
 	}
+
+	/** @param {[string, string]} menuState */
+	function getEmployeeArray(menuState) {
+		/** @type {import("$lib/javascript/simulation").Employee[]} */
+		let employeeArray = [];
+		if (menuState[0] == 'all' && menuState[1] == 'hired') {
+			employeeArray = employeeArray.concat(
+				clientState.Employees.marketing,
+				clientState.Employees.production
+			);
+		} else if (menuState[0] == 'production' && menuState[1] == 'hired') {
+			employeeArray = clientState.Employees.production;
+		} else if (menuState[0] == 'marketing' && menuState[1] == 'hired') {
+			employeeArray = clientState.Employees.marketing;
+		} else if (menuState[0] == 'all' && menuState[1] == 'prospective') {
+			employeeArray = employeeArray.concat(
+				clientState.Unemployed.marketing,
+				clientState.Unemployed.production
+			);
+		} else if (menuState[0] == 'production' && menuState[1] == 'prospective') {
+			employeeArray = clientState.Unemployed.production;
+		} else if (menuState[0] == 'marketing' && menuState[1] == 'prospective') {
+			employeeArray = clientState.Unemployed.marketing;
+		}
+
+		return employeeArray;
+	}
+
+	let employeeArray = $derived(getEmployeeArray(menuState));
+
+	/** @param {number} skill */
+	function colorSkill(skill) {
+		return `hsl(${Math.round(((skill - 0.5) / 0.8) * 130)}, 85%, 40%)`;
+	}
+
+	/** @param {number} motivation */
+	function colorMotivation(motivation) {
+		return `hsl(clamp(-10, ${Math.round(((motivation - 0.5) / 0.8) * 130)}, 140), 85%, 40%)`;
+	}
 </script>
 
 <section>
@@ -222,6 +265,66 @@
 					{/if}
 				{/if}
 			</tbody>
+			<tfoot>
+				<tr>
+					<td>
+						<strong>Count: {employeeArray.length}</strong>
+					</td>
+					<td>
+						<progress
+							style="--pico-progress-color: {colorSkill(
+								average(employeeArray, (e) => {
+									return e.Skill;
+								})
+							)};"
+							value={average(employeeArray, (e) => {
+								return e.Skill;
+							}) - 0.5}
+							max="1"
+						></progress>
+					</td>
+
+					{#if menuState[1] == 'hired'}
+						<td>
+							<progress
+								style="--pico-progress-color: {colorMotivation(
+									average(employeeArray, (e) => {
+										return e.Motivation;
+									})
+								)};"
+								value={average(employeeArray, (e) => {
+									return e.Motivation;
+								}) - 0.5}
+								max="1"
+							></progress>
+						</td>
+
+						<td>
+							<span style="padding-left: 1rem;">
+								{format.number(
+									average(employeeArray, (e) => {
+										return e.WorkingHours;
+									}),
+									false,
+									1
+								)}
+							</span>
+						</td>
+					{/if}
+					<td>
+						<span style="padding-left: 1rem;">
+							{format.currency(
+								average(employeeArray, (e) => {
+									return e.Pay;
+								}),
+								false,
+								0
+							)} / Mon
+						</span>
+					</td>
+					<td></td>
+				</tr>
+			</tfoot>
 		</table>
 	</div>
 </section>
@@ -238,7 +341,11 @@
 			{employee.Name}
 		</td>
 		<td style="min-width: 10rem;">
-			<progress value={employee.Skill - 0.5} max="1"></progress>
+			<progress
+				style="--pico-progress-color: {colorSkill(employee.Skill)};"
+				value={employee.Skill - 0.5}
+				max="1"
+			></progress>
 		</td>
 
 		{#if isEmployee}
@@ -246,7 +353,11 @@
 				{#if employee.Motivation <= 0}
 					<span style="color: red;">BURNT OUT</span>
 				{:else}
-					<progress value={employee.Motivation - 0.5} max="1"></progress>
+					<progress
+						style="--pico-progress-color: {colorMotivation(employee.Motivation)}"
+						value={employee.Motivation - 0.5}
+						max="1"
+					></progress>
 				{/if}
 			</td>
 
@@ -261,6 +372,7 @@
 						syncDecisionsAndEmployees();
 						updateDecisions(clientState.Decisions);
 					}}
+					style="margin-bottom: 0;"
 				/>
 			</td>
 		{/if}

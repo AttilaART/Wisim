@@ -12,9 +12,6 @@
 	import { format } from '$lib/javascript/format';
 	import Employees from '../../components/employees.svelte';
 	import Reasearch from '../../components/reasearch.svelte';
-	import Finances from '../../components/finances.svelte';
-	import FinancialReport from '../../components/financialReport.svelte';
-	import Invoices from '../../components/invoices.svelte';
 	import Production from '../../components/production.svelte';
 	import { preventPageReload } from '$lib/helper.svelte';
 	import MonthlyOverview from '../../components/monthlyOverview.svelte';
@@ -565,6 +562,7 @@
 	}
 
 	#top-bar {
+		padding-top: 0.5rem;
 		display: flex;
 		backdrop-filter: blur(10px);
 		border-bottom: 0.5px solid color-mix(in oklab, var(--pico-background-color), transparent 10%);
