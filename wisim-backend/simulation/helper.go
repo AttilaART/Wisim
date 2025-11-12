@@ -92,6 +92,9 @@ func (employee_pool Employee_pool) Get_avr_skill(companyID int, employeeType Emp
 
 func (g *GameState) resetCurrentDecisions() {
 	for i := range g.Companies {
+
+		g.CurrentDecisions[i].Predictions.ProductSales = make(map[string]int)
+
 		g.CurrentDecisions[i].Employees.MarketingDeltas = make([]Delta[Employee], 0)
 		g.CurrentDecisions[i].Employees.ProductionDeltas = make([]Delta[Employee], 0)
 

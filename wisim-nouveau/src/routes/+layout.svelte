@@ -1,5 +1,5 @@
 <script>
-	import '@picocss/pico';
+	import '../dynamic-pico.css';
 	import '../app.css';
 
 	/** @type {{children: import('svelte').Snippet}} */

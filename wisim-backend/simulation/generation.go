@@ -366,6 +366,9 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 			General: struct{ CompanyName string }{
 				CompanyName: gameState.Companies[i].Name,
 			},
+			Predictions: struct{ ProductSales map[string]int }{
+				ProductSales: make(map[string]int),
+			},
 			Products: make(map[string]Decisions_product),
 			Research: Decisions_research{
 				Quality:         1000,

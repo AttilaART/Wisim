@@ -31,3 +31,10 @@ td {
 	initial-value: #0172ad;
 }
 */
+
+/* redefine pico colours to be auto generated */
+
+html {
+	--pico-primary: #01aaff;
+	--pico-primary: red;
+}

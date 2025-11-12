@@ -115,7 +115,7 @@ type Decisions struct {
 		CompanyName string
 	}
 	Predictions struct {
-		SalesPrediction int
+		ProductSales map[string]int
 	}
 
 	Finances struct {

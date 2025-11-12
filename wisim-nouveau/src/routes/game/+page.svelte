@@ -5,8 +5,6 @@
 	import { baseState, Methods, newConnection } from '$lib/javascript/connection';
 	import Product from '../../components/product.svelte';
 	import Window from '../../components/window.svelte';
-	import '@picocss/pico';
-	import '../../app.css';
 	import Marketing from '../../components/marketing.svelte';
 	import Debt from '../../components/debt.svelte';
 	import { format } from '$lib/javascript/format';
@@ -61,6 +59,7 @@
 	let isReady = $state();
 	let isSimulating = $state(false);
 	let overviewWindowOpen = $state(false);
+	let predictionMode = $state(false);
 
 	/**
 	 * @type {number}
@@ -322,19 +321,53 @@
 				Reports
 			</button>
 			{#if !isReady}
-				<button
-					onclick={() => {
-						connection.sReady();
-						isReady = true;
-					}}>Ready</button
-				>{:else}
+				<div id="ready-div">
+					<button
+						id="ready"
+						onclick={() => {
+							connection.sReady();
+							isReady = true;
+						}}>Ready</button
+					>
+					<article id="prediction">
+						{#if clientState.Company.Offers != undefined && clientState.Decisions.Predictions.ProductSales != undefined}
+							{#each Object.entries(clientState.Company.Offers) as o}
+								<label for="">
+									{o[1].Product.Name} Sales
+									<input
+										bind:value={clientState.Decisions.Predictions.ProductSales[o[0]]}
+										type="number"
+										step="100"
+									/>
+								</label>
+							{/each}
+						{/if}
+						{#if !predictionMode}
+							<button
+								style="float: right;"
+								onclick={() => {
+									predictionMode = true;
+								}}>Enter Budget Mode</button
+							>
+						{:else}
+							<button
+								style="float: right;"
+								onclick={() => {
+									predictionMode = false;
+								}}>Exit Budget Mode</button
+							>
+						{/if}
+					</article>
+				</div>
+			{:else}
 				<button
 					class="secondary"
 					onclick={() => {
 						connection.sUnready();
 						isReady = false;
 					}}>Unready</button
-				>{/if}
+				>
+			{/if}
 		</div>
 	</div>
 {:catch error}
@@ -571,5 +604,38 @@
 			flex: 1 0;
 			text-align: center;
 		}
+	}
+
+	#ready-div {
+		position: relative;
+	}
+
+	#ready {
+		width: 100%;
+	}
+
+	#prediction {
+		position: absolute;
+		bottom: 0;
+		right: 0;
+		opacity: 0%;
+		width: 10rem;
+
+		&:not(:has(> :only-child)) {
+			width: 30rem;
+		}
+
+		transition:
+			opacity 0.5s,
+			bottom 0.75s 0.5s;
+	}
+
+	#ready-div:hover #prediction {
+		bottom: calc(100% + 1rem);
+		display: unset;
+		opacity: 100%;
+		transition:
+			opacity 0.5s 0.25s,
+			bottom 0.75s;
 	}
 </style>
