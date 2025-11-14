@@ -405,7 +405,7 @@ details summary[role='button']:not(.outline)::after {
 		--pico-text-selection-color: rgba(1, 170, 255, 0.1875);
 		--pico-muted-color: #7b8495;
 		--pico-muted-border-color: #202632;
-		--pico-primary: #01aaff;
+		--pico-primary: oklab(0.7072341844630559, -0.07863378636502683, -0.1483220493897549);
 		--pico-primary-background: #0172ad;
 		--pico-primary-border: var(--pico-primary-background);
 		--pico-primary-underline: rgba(1, 170, 255, 0.5);
@@ -444,7 +444,7 @@ details summary[role='button']:not(.outline)::after {
 			0.5rem 1rem 6rem rgba(7, 8.5, 12, 0.06), 0 0 0 0.0625rem rgba(7, 8.5, 12, 0.015);
 		--pico-h1-color: #f0f1f3;
 		--pico-h2-color: #e0e3e7;
-		--pico-h3-color: #c2c7d0;
+		--pico-h3-color: var(--pico-color);
 		--pico-h4-color: #b3b9c5;
 		--pico-h5-color: #a4acba;
 		--pico-h6-color: #8891a4;
@@ -554,7 +554,7 @@ details summary[role='button']:not(.outline)::after {
 [data-theme='dark'] {
 	color-scheme: dark;
 	--pico-background-color: rgb(19, 22.5, 30.5);
-	--pico-color: #c2c7d0;
+	--pico-color: var(--pico-color);
 	--pico-text-selection-color: rgba(1, 170, 255, 0.1875);
 	--pico-muted-color: #7b8495;
 	--pico-muted-border-color: #202632;
@@ -597,7 +597,7 @@ details summary[role='button']:not(.outline)::after {
 		0 0 0 0.0625rem rgba(7, 8.5, 12, 0.015);
 	--pico-h1-color: #f0f1f3;
 	--pico-h2-color: #e0e3e7;
-	--pico-h3-color: #c2c7d0;
+	--pico-h3-color: var(--pico-color);
 	--pico-h4-color: #b3b9c5;
 	--pico-h5-color: #a4acba;
 	--pico-h6-color: #8891a4;
