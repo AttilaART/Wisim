@@ -7,7 +7,7 @@
 </script>
 
 <svelte:boundary>
-	<div class="app">
+	<div class="app" data-theme="dark">
 		{@render children()}
 	</div>
 	{#snippet pending()}

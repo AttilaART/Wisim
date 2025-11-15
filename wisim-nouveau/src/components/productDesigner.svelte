@@ -302,6 +302,7 @@
 					</tr>
 				</tbody>
 			</table>
+			<!-- svelte-ignore a11y_no_redundant_roles -->
 			<fieldset role="group">
 				<input type="number" placeholder="price" bind:value={productDecisions.Price} />
 				<input type="text" disabled value="CHF" style="width: 5rem;" />
@@ -689,9 +690,11 @@
 
 	.component-button,
 	.parts-grid > button {
+		margin: 0;
+
 		background-color: transparent;
 		border-radius: 0;
-		border-color: silver;
+		border: 1px solid silver;
 
 		box-shadow: inset 0px 0px 20px black;
 

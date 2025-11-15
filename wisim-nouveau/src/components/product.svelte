@@ -86,9 +86,9 @@
 	updateDecisions(clientState.Decisions);
 </script>
 
-<label for="">
+<label for="showOutdated">
+	<input id="showOutdated" type="checkbox" bind:checked={showOutdated} />
 	Show Outdated
-	<input type="checkbox" bind:checked={showOutdated} />
 </label>
 
 <div class="products-grid">

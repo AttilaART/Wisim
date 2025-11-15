@@ -38,3 +38,7 @@ html {
 	--pico-primary: #01aaff;
 	--pico-primary: red;
 }
+
+[data-scheme='prediction'] {
+	--primary: green;
+}

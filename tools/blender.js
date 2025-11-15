@@ -51,7 +51,13 @@ function minimumFactor(a, b) {
  * @returns {number}
  */
 function minimumFactorForComponent(a, b, min, max) {
-  Math.max((a - b) / (min + a), (a - b) / (max + a));
+  console.log([(a - b) / (min + a), (a - b) / (max + a)]);
+
+  Math.max(
+    ...[(a - b) / (min + a), (a - b) / (max + a)].filter((e) =>
+      Number.isNaN(e),
+    ),
+  );
 }
 
 /**
@@ -61,6 +67,7 @@ function minimumFactorForComponent(a, b, min, max) {
  */
 function getColorToMixAndFactor(a, b) {
   let Factor = Math.ceil(minimumFactor(a, b) * 1000) / 1000;
+  Factor = 0.75;
 
   return {
     Color: {

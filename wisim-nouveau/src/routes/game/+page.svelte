@@ -253,7 +253,7 @@
 		</dialog>
 	{/if}
 
-	<div id="ui">
+	<div id="ui" data-scheme={predictionMode ? 'prediction' : 'normal'}>
 		<div id="top-bar">
 			<span>{clientState.Company.Name}</span>
 			<span>Balance: {format.currency(clientState.Company.Balance, true, 0)}</span>
@@ -320,7 +320,15 @@
 			>
 				Reports
 			</button>
-			{#if !isReady}
+
+			{#if predictionMode}
+				<button
+					style="float: right;"
+					onclick={() => {
+						predictionMode = false;
+					}}>Exit Budget Mode</button
+				>
+			{:else if !isReady}
 				<div id="ready-div">
 					<button
 						id="ready"
@@ -348,13 +356,6 @@
 								onclick={() => {
 									predictionMode = true;
 								}}>Enter Budget Mode</button
-							>
-						{:else}
-							<button
-								style="float: right;"
-								onclick={() => {
-									predictionMode = false;
-								}}>Exit Budget Mode</button
 							>
 						{/if}
 					</article>
@@ -583,10 +584,10 @@
 		flex: 0 0;
 		display: flex;
 		flex-direction: row;
-		gap: var(--pico-spacing);
-		padding: var(--pico-spacing);
+		gap: var(--spacing);
+		padding: calc(var(--spacing) * 0.5);
 		backdrop-filter: blur(10px);
-		border-top: 0.5px solid color-mix(in oklab, var(--pico-background-color), transparent 10%);
+		border-top: 0.5px solid color-mix(in oklab, var(--background), transparent 30%);
 		z-index: 99;
 
 		button {
@@ -598,7 +599,7 @@
 		padding-top: 0.5rem;
 		display: flex;
 		backdrop-filter: blur(10px);
-		border-bottom: 0.5px solid color-mix(in oklab, var(--pico-background-color), transparent 10%);
+		border-bottom: 0.5px solid color-mix(in oklab, var(--background), transparent 30%);
 		z-index: 99;
 		* {
 			flex: 1 0;
