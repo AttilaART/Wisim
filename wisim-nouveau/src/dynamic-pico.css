@@ -184,6 +184,8 @@ article {
 		border-radius: var(--corner-radius) var(--corner-radius) 0 0;
 		background-color: color-mix(in oklch, var(--background), white 3%);
 		position: relative;
+		color: var(--text);
+		padding: 0.5rem;
 
 		button[rel='prev'] {
 			position: absolute;
@@ -302,4 +304,22 @@ input:not([type='checkbox']) {
 
 img {
 	display: inline-block;
+}
+
+dialog {
+	z-index: 100;
+	position: fixed;
+	width: 100vw;
+	height: 100vh;
+	background: color-mix(in oklab, var(--background), transparent 50%);
+	backdrop-filter: blur(1rem);
+
+	article {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		width: clamp(20rem, 30%, 50rem);
+	}
 }
