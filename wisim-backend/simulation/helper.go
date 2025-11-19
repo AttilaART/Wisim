@@ -81,6 +81,10 @@ func (employee_pool Employee_pool) Get_employees_of_company(company_id int, empl
 	return employees_ids_of_company
 }
 
+func (c *Company) SetEmployeePool(p Employee_pool) {
+	c.employeePool = p
+}
+
 func (employee_pool Employee_pool) Get_avr_skill(companyID int, employeeType Employee_type) (avgSkill float32) {
 	employeesIDs := employee_pool.Get_employees_of_company(companyID, employeeType)
 	for _, id := range employeesIDs {
@@ -92,20 +96,22 @@ func (employee_pool Employee_pool) Get_avr_skill(companyID int, employeeType Emp
 
 func (g *GameState) resetCurrentDecisions() {
 	for i := range g.Companies {
-
-		g.CurrentDecisions[i].Predictions.ProductSales = make(map[string]int)
-
-		g.CurrentDecisions[i].Employees.MarketingDeltas = make([]Delta[Employee], 0)
-		g.CurrentDecisions[i].Employees.ProductionDeltas = make([]Delta[Employee], 0)
-
-		g.CurrentDecisions[i].Production.Machines = make([]Delta[Machine], 0)
-		g.CurrentDecisions[i].Production.Logistics = make([]Delta[Warehouse], 0)
-
-		oldProductDecisions := g.CurrentDecisions[i].Products
-		maps.Copy(g.CurrentDecisions[i].Products, oldProductDecisions)
-
+		g.CurrentDecisions[i].resetDecisions()
 		g.DecisionsSubmitted[i] = false
 	}
+}
+
+func (d *Decisions) resetDecisions() {
+	d.Predictions.ProductSales = make(map[string]int)
+
+	d.Employees.MarketingDeltas = make([]Delta[Employee], 0)
+	d.Employees.ProductionDeltas = make([]Delta[Employee], 0)
+
+	d.Production.Machines = make([]Delta[Machine], 0)
+	d.Production.Logistics = make([]Delta[Warehouse], 0)
+
+	oldProductDecisions := d.Products
+	maps.Copy(d.Products, oldProductDecisions)
 }
 
 func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company Company) Company {

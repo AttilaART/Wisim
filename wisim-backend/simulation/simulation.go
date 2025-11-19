@@ -116,6 +116,7 @@ type Decisions struct {
 	}
 	Predictions struct {
 		ProductSales map[string]int
+		Steps        int
 	}
 
 	Finances struct {
@@ -660,49 +661,7 @@ func (game_state *GameState) SimulateStep() error {
 
 	println("=============== Simulating companies ==============")
 	for i := range game_state.Companies {
-		c := &game_state.Companies[i]
-		c.Reports = append(c.Reports, Report{Month: game_state.ExternalFactors.Month})
-		c.DecisionHistory = append(c.DecisionHistory, game_state.CurrentDecisions[i])
-
-		// renaming company
-		c.Name = game_state.CurrentDecisions[i].General.CompanyName
-
-		fmt.Printf("--------------- Simulating company %d -------------- \n", i)
-
-		c.employeePool = game_state.Employees
-
-		println("Overworking employees...")
-		c.simulateEmployees(game_state.ExternalFactors)
-
-		// Add new products
-		println("Developing Products...")
-
-		for ID, decisions := range game_state.CurrentDecisions[i].Products {
-			if _, exists := c.Offers[ID]; !exists {
-				c.Offers[ID] = c.newProduct(ID, i, decisions.Name, game_state.CurrentDecisions[i].Products[ID])
-			} else {
-				o := c.Offers[ID]
-				o.Outdated = decisions.Outdated
-				o.Product.Name = decisions.Product.Name
-				o.Price = decisions.Price
-				c.Offers[ID] = o
-			}
-		}
-
-		println("Posting advertisments...")
-		c.calculatePromotion(game_state.CurrentDecisions[i])
-
-		println("Researching...")
-		c.research(game_state.CurrentDecisions[i])
-
-		println("Producing...")
-		c.calculateProduction(game_state.CurrentDecisions[i], game_state.ExternalFactors)
-		for productID := range c.Offers {
-			c.ProductsInStorage[productID] += c.Reports[len(c.Reports)-1].ProductionReport.ProductSpecificReport[productID].TotalProductsProduced
-		}
-
-		println("Shipping...")
-		c.calculate_logistics(game_state.CurrentDecisions[i])
+		game_state.Companies[i].prepareCompany(game_state.CurrentDecisions[i], game_state.ExternalFactors, game_state.Employees)
 	}
 
 	println("Simulating companies done!")
@@ -837,6 +796,87 @@ func (game_state *GameState) SimulateStep() error {
 	game_state.resetCurrentDecisions()
 
 	return nil
+}
+
+func SimulateMockStep(company Company, decisions Decisions, externalFactors ExternalFactors, employeePool Employee_pool, steps int) Company {
+	for range steps {
+		company.prepareCompany(decisions, externalFactors, employeePool)
+
+		for i := range decisions.Predictions.ProductSales {
+
+			productsSold := min(decisions.Predictions.ProductSales[i], company.ProductsInStorage[i])
+			company.ProductsInStorage[i] = company.ProductsInStorage[i] - productsSold
+
+			company.Reports[len(company.Reports)-1].BalanceSheet.add_to_income_statement(
+				"Sales of "+company.Offers[i].Product.Name,
+				sales,
+				fmt.Sprintf("%d %ss were sold in strores", productsSold, company.Offers[i].Product.Name),
+				true,
+				float64(productsSold*int(company.Offers[i].Price)))
+		}
+
+		company.compileReports(
+			decisions,
+			map[string]Purchasing_statistics{},
+			map[string]int{},
+			Sales_statistics{},
+
+			externalFactors,
+		)
+
+		decisions.resetDecisions()
+	}
+
+	return company
+}
+
+func (c *Company) prepareCompany(decisions Decisions, externalFactors ExternalFactors, employeePool Employee_pool) {
+	c.Reports = append(c.Reports, Report{Month: externalFactors.Month})
+	c.DecisionHistory = append(c.DecisionHistory, decisions)
+
+	// renaming company
+	c.Name = decisions.General.CompanyName
+
+	fmt.Printf("--------------- Simulating company %d -------------- \n", c.ID)
+
+	c.employeePool = employeePool
+
+	println("Overworking employees...")
+	c.simulateEmployees(externalFactors)
+
+	// Add new products
+	println("Developing Products...")
+
+	c.addNewProducts(decisions)
+
+	println("Posting advertisments...")
+	c.calculatePromotion(decisions)
+
+	println("Researching...")
+	c.research(decisions)
+
+	println("Producing...")
+	c.calculateProduction(decisions, externalFactors)
+	for productID := range c.Offers {
+		c.ProductsInStorage[productID] += c.Reports[len(c.Reports)-1].ProductionReport.ProductSpecificReport[productID].TotalProductsProduced
+	}
+
+	println("Shipping...")
+	c.calculate_logistics(decisions)
+}
+
+func (c *Company) addNewProducts(decisions Decisions) {
+	for ID, productDecisions := range decisions.Products {
+		if _, exists := c.Offers[ID]; !exists {
+			c.Offers[ID] = c.newProduct(ID, c.ID, productDecisions.Name, decisions.Products[ID])
+		} else {
+			o := c.Offers[ID]
+			o.Outdated = productDecisions.Outdated
+			o.Product.Name = productDecisions.Product.Name
+			o.Price = productDecisions.Price
+			c.Offers[ID] = o
+		}
+	}
 }
 
 func (company *Company) compileReports(

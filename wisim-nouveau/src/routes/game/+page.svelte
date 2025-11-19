@@ -11,7 +11,7 @@
 	import Employees from '../../components/employees.svelte';
 	import Reasearch from '../../components/reasearch.svelte';
 	import Production from '../../components/production.svelte';
-	import { preventPageReload } from '$lib/helper.svelte';
+	import { preventPageReload, simulateMockStep } from '$lib/helper.svelte';
 	import MonthlyOverview from '../../components/monthlyOverview.svelte';
 
 	/** handle wasm import */
@@ -58,8 +58,7 @@
 	let companyDialogue = $state();
 	let isReady = $state();
 	let isSimulating = $state(false);
-	let overviewWindowOpen = $state(false);
-	let predictionMode = $state(false);
+	let isSimulatingMock = $state(false);
 
 	/**
 	 * @type {number}
@@ -67,14 +66,60 @@
 	let companyIDUserFacing = $state(0);
 	let companyID = $derived(companyIDUserFacing - 1);
 
+	function handleMockSimulation() {
+		clientStateBase.Decisions = clientState.Decisions;
+		clientState = JSON.parse(JSON.stringify(clientStateBase));
+
+		isSimulatingMock = true;
+
+		clientState.Company = simulateMockStep(
+			clientState.Company,
+			clientState.Decisions,
+			clientState.ExternalFactors,
+			{ Employees: clientState.Employees, Unemployed: clientState.Unemployed },
+			() => {
+				isSimulatingMock = false;
+				clientState.predictionMode = true;
+			},
+			clientState.Decisions.Predictions.Steps
+		);
+	}
+
+	const hooks = {
+		sDecisions: () => {
+			if (clientState.predictionMode) {
+				handleMockSimulation();
+			}
+		}
+	};
+
 	/** @type {Promise<{connection: import("$lib/javascript/connection").Connection, clientState: import("$lib/javascript/simulation").clientState}>} */
 	let connectionPromise = $state(
-		newConnection(`ws://${data.serverAdress}`, handleConnection, onClose, onError)
+		newConnection(`ws://${data.serverAdress}`, handleConnection, onClose, onError, hooks)
 	);
 	/** @type {import("$lib/javascript/connection").Connection} */
 	let connection = $state(null);
 	/** @type {import("$lib/javascript/simulation").clientState} */
 	let clientState = $state(JSON.parse(JSON.stringify(baseState)));
+
+	/** @type {import("$lib/javascript/simulation").clientState} */
+	let clientStateBase = $state(JSON.parse(JSON.stringify(clientState)));
+
+	function togglePredictionMode() {
+		if (clientState.predictionMode) {
+			clientStateBase.Decisions = clientState.Decisions;
+			clientState = clientStateBase;
+
+			clientState.predictionMode = false;
+		} else {
+			clientStateBase = JSON.parse(JSON.stringify(clientState));
+
+			clientState.predictionMode = true;
+
+			handleMockSimulation();
+		}
+	}
+
 	/** @type {{Message: string, From: string}[]} */
 	let chats = $state([]);
 	/** @type {string} */
@@ -96,7 +141,8 @@
 			`ws://${data.serverAdress}`,
 			handleConnection,
 			onClose,
-			onError
+			onError,
+			hooks
 		);
 
 		({ connection, clientState } = await connectionPromise);
@@ -253,7 +299,16 @@
 		</dialog>
 	{/if}
 
-	<div id="ui" data-scheme={predictionMode ? 'prediction' : 'normal'}>
+	{#if isSimulatingMock}
+		<dialog open>
+			<center>
+				<h2>Loading...</h2>
+				<p>Calculating Budget</p>
+			</center>
+		</dialog>
+	{/if}
+
+	<div id="ui" data-scheme={clientState.predictionMode ? 'prediction' : 'normal'}>
 		<div id="top-bar">
 			<span>{clientState.Company.Name}</span>
 			<span>Balance: {format.currency(clientState.Company.Balance, true, 0)}</span>
@@ -321,15 +376,60 @@
 				Reports
 			</button>
 
-			{#if predictionMode}
-				<button
-					style="float: right;"
-					onclick={() => {
-						predictionMode = false;
-					}}>Exit Budget Mode</button
-				>
-			{:else if !isReady}
-				<div id="ready-div">
+			{#snippet predictionMenu()}
+				<article id="prediction">
+					{#if clientState.Company.Offers != undefined && clientState.Decisions.Predictions.ProductSales != undefined}
+						{#each Object.entries(clientState.Company.Offers) as o}
+							<label for="">
+								{o[1].Product.Name} Sales
+								<input
+									bind:value={clientState.Decisions.Predictions.ProductSales[o[0]]}
+									onchange={() => {
+										connection.sDecisions(clientState.Decisions);
+									}}
+									type="number"
+									step="100"
+									min="0"
+								/>
+								{#if clientState.predictionMode && clientState.Decisions.Predictions.ProductSales[o[0]] > clientState.Company.Reports[clientState.Company.Reports.length - 1].ProductionReport.ProductSpecificReport[o[0]].TotalProductsProduced}
+									<small style="color: orange;">Predicted Sales are more than production. </small>
+								{/if}
+							</label>
+						{/each}
+					{/if}
+					<fieldset role="group">
+						<input type="text" value="Steps to calculate" />
+						<input
+							type="number"
+							bind:value={clientState.Decisions.Predictions.Steps}
+							min="1"
+							step="1"
+							onchange={() => {
+								connection.sDecisions(clientState.Decisions);
+							}}
+						/>
+						{#if !clientState.predictionMode}
+							<button
+								style="float: right;"
+								onclick={() => {
+									togglePredictionMode();
+								}}>Enter Budget Mode</button
+							>
+						{/if}
+					</fieldset>
+				</article>
+			{/snippet}
+
+			<div id="ready-div">
+				{#if clientState.predictionMode}
+					<button
+						style="float: right;"
+						onclick={() => {
+							togglePredictionMode();
+						}}>Exit Budget Mode</button
+					>
+					{@render predictionMenu()}
+				{:else if !isReady}
 					<button
 						id="ready"
 						onclick={() => {
@@ -337,38 +437,17 @@
 							isReady = true;
 						}}>Ready</button
 					>
-					<article id="prediction">
-						{#if clientState.Company.Offers != undefined && clientState.Decisions.Predictions.ProductSales != undefined}
-							{#each Object.entries(clientState.Company.Offers) as o}
-								<label for="">
-									{o[1].Product.Name} Sales
-									<input
-										bind:value={clientState.Decisions.Predictions.ProductSales[o[0]]}
-										type="number"
-										step="100"
-									/>
-								</label>
-							{/each}
-						{/if}
-						{#if !predictionMode}
-							<button
-								style="float: right;"
-								onclick={() => {
-									predictionMode = true;
-								}}>Enter Budget Mode</button
-							>
-						{/if}
-					</article>
-				</div>
-			{:else}
-				<button
-					class="secondary"
-					onclick={() => {
-						connection.sUnready();
-						isReady = false;
-					}}>Unready</button
-				>
-			{/if}
+					{@render predictionMenu()}
+				{:else}
+					<button
+						class="secondary"
+						onclick={() => {
+							connection.sUnready();
+							isReady = false;
+						}}>Unready</button
+					>
+				{/if}
+			</div>
 		</div>
 	</div>
 {:catch error}
@@ -622,8 +701,12 @@
 		opacity: 0%;
 		width: 10rem;
 
-		&:not(:has(> :only-child)) {
+		&:has(:first-child) {
 			width: 30rem;
+		}
+
+		&:not(:has(:first-child)) {
+			display: none;
 		}
 
 		transition:
@@ -633,7 +716,6 @@
 
 	#ready-div:hover #prediction {
 		bottom: calc(100% + 1rem);
-		display: unset;
 		opacity: 100%;
 		transition:
 			opacity 0.5s 0.25s,

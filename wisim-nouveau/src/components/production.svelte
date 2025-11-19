@@ -13,12 +13,17 @@
 
 	/** @param {import("$lib/javascript/simulation").Machine} machine */
 	function newMachine(machine) {
-		// console.log(clientState);
-		machine = JSON.parse(JSON.stringify(machine));
-		machine.ID = clientState.Company.Machines.length;
-		clientState.Company.Machines.push(machine);
-		clientState.Company.Balance -= machine.Value;
-		updateMachineDecision(machine, delta.Delta_New);
+		console.log(clientState);
+
+		if (clientState.Company.Machines == null) {
+			clientState.Company.Machines = [];
+		}
+
+		const newMachine = JSON.parse(JSON.stringify(machine));
+		newMachine.ID = clientState.Company.Machines.length + 1;
+		clientState.Company.Machines.push(newMachine);
+		clientState.Company.Balance -= newMachine.Value;
+		updateMachineDecision(newMachine, delta.Delta_New);
 	}
 
 	/** @param {import("$lib/javascript/simulation").Machine} machine */
@@ -75,6 +80,22 @@
 			clientState.Decisions.Production.MachineAssignmentPattern
 		);
 	});
+
+	/**
+	 * @param {import("$lib/javascript/simulation").Machine[]} machines
+	 * @returns {import("$lib/javascript/simulation").Machine[]}
+	 */
+	function removeDuplicates(machines) {
+		/** @type {import("$lib/javascript/simulation").Machine[]} */
+		let returnArray = [];
+		for (let m of machines) {
+			if (returnArray.findIndex((e) => e.ID == m.ID) == -1) {
+				returnArray.push(m);
+			}
+		}
+
+		return returnArray;
+	}
 </script>
 
 <div>
@@ -89,6 +110,7 @@
 		<fieldset role="group" style="margin: 0;">
 			<input type="text" value="Worker Distribution" disabled />
 			<select
+				disabled={clientState.predictionMode}
 				bind:value={clientState.Decisions.Production.MachineAssignmentPattern}
 				onchange={() => {
 					updateDecisions(clientState.Decisions);
@@ -100,7 +122,7 @@
 		</fieldset>
 	</article>
 </div>
-<table>
+<table style="max-height: calc(100vw - 100px);">
 	<thead>
 		<tr>
 			<th>Name </th>
@@ -112,7 +134,7 @@
 		</tr>
 	</thead>
 	<tbody>
-		{#each clientState.Company.Machines as m, i (m.ID)}
+		{#each removeDuplicates(clientState.Company.Machines) as m, i (m.ID)}
 			<tr>
 				<td>
 					Machine {m.ID}
@@ -144,6 +166,7 @@
 				</td>
 				<td>
 					<button
+						disabled={clientState.predictionMode}
 						onclick={() => {
 							sellMachine(m);
 						}}
@@ -158,6 +181,7 @@
 
 <center>
 	<button
+		disabled={clientState.predictionMode}
 		onclick={() => {
 			newMachine(clientState.ExternalFactors.MachineOnOffer);
 		}}

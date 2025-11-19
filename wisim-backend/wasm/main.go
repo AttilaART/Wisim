@@ -116,10 +116,66 @@ func calculateProductionWrapped() js.Func {
 	return f
 }
 
+func simulateMockStepWrapped() js.Func {
+	f := js.FuncOf(func(this js.Value, args []js.Value) any {
+		if len(args) != 5 {
+			return fmt.Sprint("expected 4 arguments, got ", len(args))
+		}
+
+		var company simulation.Company
+		err := json.Unmarshal([]byte(args[0].String()), &company)
+		if err != nil {
+			return err.Error()
+		}
+
+		var decisions simulation.Decisions
+		err = json.Unmarshal([]byte(args[1].String()), &decisions)
+		if err != nil {
+			return err.Error()
+		}
+
+		var externalFactors simulation.ExternalFactors
+		err = json.Unmarshal([]byte(args[2].String()), &externalFactors)
+		if err != nil {
+			return err.Error()
+		}
+
+		var employeArray []simulation.Employee
+		err = json.Unmarshal([]byte(args[3].String()), &employeArray)
+		if err != nil {
+			return err.Error()
+		}
+
+		employePool := make(simulation.Employee_pool)
+
+		for _, e := range employeArray {
+			employePool[e.ID] = &e
+		}
+
+		company.SetEmployeePool(employePool)
+
+		json, err := json.Marshal(simulation.SimulateMockStep(
+			company,
+			decisions,
+			externalFactors,
+			employePool,
+			args[4].Int(),
+		))
+		if err != nil {
+			return err.Error()
+		}
+
+		return string(json)
+	})
+
+	return f
+}
+
 func main() {
 	println("Wisim WASM loaded Successfully")
 	js.Global().Set("CalculateProductStatsGo", calculateProductStatsWrapped())
 	js.Global().Set("CalculateProductionGo", calculateProductionWrapped())
+	js.Global().Set("SimulateMockStep", simulateMockStepWrapped())
 
 	<-make(chan struct{})
 }

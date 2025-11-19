@@ -41,6 +41,51 @@ export function calculateProduction(companyID, machines, offers, employees, assi
 }
 
 /**
+ * @param {import("$lib/javascript/simulation").Company} company
+ * @param {import("$lib/javascript/simulation").Decisions} decisions
+ * @param {import("$lib/javascript/simulation").ExternalFactors} externalFactors
+ * @param {{Employees: {marketing: import("$lib/javascript/simulation").Employee[], production: import("$lib/javascript/simulation").Employee[]}, Unemployed: {marketing: import("$lib/javascript/simulation").Employee[], production: import("$lib/javascript/simulation").Employee[]}}} employees
+ * @param {()=>void} onEnd
+ * @param {number} steps
+ * @returns {import("$lib/javascript/simulation").Company}
+ */
+export function simulateMockStep(company, decisions, externalFactors, employees, onEnd, steps) {
+	/** @type {import("$lib/javascript/simulation").Employee[]} */
+	let employePool = [];
+
+	employees.Employees.marketing.forEach((e) => {
+		e.Employer = company.ID;
+	});
+	employees.Employees.production.forEach((e) => {
+		e.Employer = company.ID;
+	});
+
+	employePool = employePool.concat(
+		employees.Employees.marketing,
+		employees.Employees.production,
+		employees.Unemployed.marketing,
+		employees.Unemployed.production
+	);
+
+	if (typeof steps != typeof 1) {
+		steps = 1;
+	}
+
+	// @ts-ignore
+	let result = SimulateMockStep(
+		JSON.stringify(company),
+		JSON.stringify(decisions),
+		JSON.stringify(externalFactors),
+		JSON.stringify(employePool),
+		steps
+	);
+
+	onEnd();
+
+	return JSON.parse(result);
+}
+
+/**
  * @param {HTMLElement} element
  * @param {echarts.EChartsCoreOption} options
  */
