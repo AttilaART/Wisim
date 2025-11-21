@@ -8,6 +8,7 @@ import (
 	"net/http"
 	_ "net/http/pprof"
 	"os"
+	"slices"
 	"strconv"
 	"sync"
 
@@ -188,10 +189,7 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 		return
 	}
 
-	company := gamestate.SynchroniseCompanyWithDecisions(
-		gamestate.CurrentDecisions[s.conns[ws].Company],
-		gamestate.Companies[s.conns[ws].Company],
-	)
+	company := simulation.SynchroniseCompanyWithDecisions(gamestate.Companies[s.conns[ws].Company], gamestate.CurrentDecisions[s.conns[ws].Company])
 
 	// company = removeProductNaNInf(company)
 	reply.Data = &company
@@ -261,6 +259,42 @@ func getEmployees(s *Server, ws *websocket.Conn, message Message[any]) {
 
 		for i, id := range employeeIDs {
 			reply.Data.Employees[i] = gamestate.Employees[id]
+		}
+	}
+
+	var deltas []simulation.Delta[simulation.Employee]
+
+	switch reply.Data.Type {
+	case "production":
+		deltas = gamestate.CurrentDecisions[s.conns[ws].Company].Employees.ProductionDeltas
+	case "marketing":
+		deltas = gamestate.CurrentDecisions[s.conns[ws].Company].Employees.MarketingDeltas
+	}
+
+	for _, d := range deltas {
+		if d.Change == simulation.Delta_Remove {
+			index := slices.IndexFunc(
+				reply.Data.Employees,
+				func(e *simulation.Employee) bool { return e.ID == d.Item.ID })
+
+			if index == -1 {
+				continue
+			}
+
+			reply.Data.Employees = slices.Delete(reply.Data.Employees, index, index)
+		} else if d.Change == simulation.Delta_New {
+			reply.Data.Employees = append(reply.Data.Employees, &d.Item)
+		} else if d.Change == simulation.Delta_Change {
+			index := slices.IndexFunc(
+				reply.Data.Employees,
+				func(e *simulation.Employee) bool { return e.ID == d.Item.ID })
+
+			if index == -1 {
+				continue
+				// might change this later
+			}
+
+			reply.Data.Employees[index] = &d.Item
 		}
 	}
 }

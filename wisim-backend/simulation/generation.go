@@ -371,6 +371,7 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 				Steps        int
 			}{
 				ProductSales: make(map[string]int),
+				Steps:        1,
 			},
 			Products: make(map[string]Decisions_product),
 			Research: Decisions_research{

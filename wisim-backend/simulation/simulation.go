@@ -802,6 +802,8 @@ func SimulateMockStep(company Company, decisions Decisions, externalFactors Exte
 	for range steps {
 		company.prepareCompany(decisions, externalFactors, employeePool)
 
+		purchasingStatistics := map[string]Purchasing_statistics{}
+
 		for i := range decisions.Predictions.ProductSales {
 
 			productsSold := min(decisions.Predictions.ProductSales[i], company.ProductsInStorage[i])
@@ -813,11 +815,14 @@ func SimulateMockStep(company Company, decisions Decisions, externalFactors Exte
 				fmt.Sprintf("%d %ss were sold in strores", productsSold, company.Offers[i].Product.Name),
 				true,
 				float64(productsSold*int(company.Offers[i].Price)))
+
+			purchasingStatistics[i] = Purchasing_statistics{ProductDemand: decisions.Predictions.ProductSales[i], ProductsSold: productsSold}
+			println(company.Offers[i].Product.Name, productsSold)
 		}
 
 		company.compileReports(
 			decisions,
-			map[string]Purchasing_statistics{},
+			purchasingStatistics,
 			map[string]int{},
 			Sales_statistics{},
 
@@ -825,7 +830,10 @@ func SimulateMockStep(company Company, decisions Decisions, externalFactors Exte
 		)
 
 		decisions.resetDecisions()
+
 	}
+
+	assignCompanySlicesAndMaps(&company)
 
 	return company
 }

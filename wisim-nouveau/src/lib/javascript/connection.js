@@ -254,7 +254,6 @@ export async function newConnection(url, eventHandler, onClose, onError, hooks) 
 		 * @param {import('./simulation').Decisions} decisions
 		 */
 		sDecisions: function (decisions) {
-			console.log(hooks);
 			hooks['sDecisions'] != undefined ? hooks['sDecisions']() : '';
 			/**
 			 * @type {Message}

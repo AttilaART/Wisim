@@ -70,9 +70,10 @@ func (c *Company) Get_employees_ids(employee_type Employee_type) []int {
 func (employee_pool Employee_pool) Get_employees_of_company(company_id int, employee_type Employee_type) (employees_ids_of_company []int) {
 	for id := range employee_pool {
 		if employee_pool[id].Employer == company_id {
-			if employee_type == Employee_type_all {
+			switch employee_type {
+			case Employee_type_all:
 				employees_ids_of_company = append(employees_ids_of_company, id)
-			} else if employee_type == employee_pool[id].EmployeeType {
+			case employee_pool[id].EmployeeType:
 				employees_ids_of_company = append(employees_ids_of_company, id)
 			}
 		}
@@ -83,6 +84,10 @@ func (employee_pool Employee_pool) Get_employees_of_company(company_id int, empl
 
 func (c *Company) SetEmployeePool(p Employee_pool) {
 	c.employeePool = p
+}
+
+func (c *Company) SetProductComponents(components *ProductComponents) {
+	c.productComponents = components
 }
 
 func (employee_pool Employee_pool) Get_avr_skill(companyID int, employeeType Employee_type) (avgSkill float32) {
@@ -102,7 +107,8 @@ func (g *GameState) resetCurrentDecisions() {
 }
 
 func (d *Decisions) resetDecisions() {
-	d.Predictions.ProductSales = make(map[string]int)
+	oldPredictionSales := d.Predictions.ProductSales
+	maps.Copy(d.Predictions.ProductSales, oldPredictionSales)
 
 	d.Employees.MarketingDeltas = make([]Delta[Employee], 0)
 	d.Employees.ProductionDeltas = make([]Delta[Employee], 0)
@@ -114,7 +120,7 @@ func (d *Decisions) resetDecisions() {
 	maps.Copy(d.Products, oldProductDecisions)
 }
 
-func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company Company) Company {
+func SynchroniseCompanyWithDecisions(company Company, decisions Decisions) Company {
 	company.Name = decisions.General.CompanyName
 
 	for ID, d := range decisions.Products {
@@ -152,6 +158,12 @@ func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company
 
 	// make sure to avoid null / undefined
 
+	assignCompanySlicesAndMaps(&company)
+
+	return company
+}
+
+func assignCompanySlicesAndMaps(company *Company) {
 	if len(company.Machines) == 0 {
 		company.Machines = make([]Machine, 0)
 	}
@@ -169,8 +181,6 @@ func (g *GameState) SynchroniseCompanyWithDecisions(decisions Decisions, company
 			company.Reports[i].BalanceSheet.InvoiceLog = make([]FinanceReportEntry, 0)
 		}
 	}
-
-	return company
 }
 
 func ValidateDecisions(d Decisions) Decisions {

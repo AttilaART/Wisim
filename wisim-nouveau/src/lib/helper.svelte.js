@@ -47,9 +47,18 @@ export function calculateProduction(companyID, machines, offers, employees, assi
  * @param {{Employees: {marketing: import("$lib/javascript/simulation").Employee[], production: import("$lib/javascript/simulation").Employee[]}, Unemployed: {marketing: import("$lib/javascript/simulation").Employee[], production: import("$lib/javascript/simulation").Employee[]}}} employees
  * @param {()=>void} onEnd
  * @param {number} steps
+ * @param {import("$lib/javascript/simulation").ProductComponents} productComponents
  * @returns {import("$lib/javascript/simulation").Company}
  */
-export function simulateMockStep(company, decisions, externalFactors, employees, onEnd, steps) {
+export function simulateMockStep(
+	company,
+	decisions,
+	externalFactors,
+	employees,
+	onEnd,
+	steps,
+	productComponents
+) {
 	/** @type {import("$lib/javascript/simulation").Employee[]} */
 	let employePool = [];
 
@@ -77,10 +86,28 @@ export function simulateMockStep(company, decisions, externalFactors, employees,
 		JSON.stringify(decisions),
 		JSON.stringify(externalFactors),
 		JSON.stringify(employePool),
-		steps
+		steps,
+		JSON.stringify(productComponents)
 	);
 
 	onEnd();
+
+	return JSON.parse(result);
+}
+
+/**
+ * @param {import("$lib/javascript/simulation").Company} company
+ * @param {import("$lib/javascript/simulation").Decisions} decisions
+ * @param {import("$lib/javascript/simulation").ProductComponents} productComponents
+ * @returns {import("$lib/javascript/simulation").Company}
+ */
+export function syncCompanyWithDecisions(company, decisions, productComponents) {
+	// @ts-ignore
+	let result = SyncCompanyWithDecisions(
+		JSON.stringify(company),
+		JSON.stringify(decisions),
+		JSON.stringify(productComponents)
+	);
 
 	return JSON.parse(result);
 }

@@ -295,6 +295,7 @@ func calculateMachineProduction(employeePool Employee_pool, machine Machine) (in
 		panic(fmt.Sprintf("base_production is 0 or less (%d)", baseProduction))
 	}
 
+	/**
 	fmt.Printf("------------\n")
 	fmt.Printf("machine %d base_production: %d\n", machine.ID, baseProduction)
 	fmt.Printf("machine %d bonus_production: %d\n", machine.ID, bonusProduction)
@@ -302,6 +303,7 @@ func calculateMachineProduction(employeePool Employee_pool, machine Machine) (in
 	fmt.Printf("machine %d motivation: %f\n", machine.ID, avrgMotivation)
 	fmt.Printf("machine %d working_hours: %f\n", machine.ID, workingHours)
 	fmt.Printf("Workers %d assigned: %d\n", machine.ID, len(machine.AssignedWorkersIDs))
+	*/
 
 	return baseProduction, bonusProduction
 }
@@ -359,12 +361,13 @@ func ProduceProducts(companyID int, machines []Machine, offers map[string]Offer,
 		productSpecificReport.MaterialUsed += offers[productID].ProductStats.MaterialUse * float32(productSpecificReport.TotalProductsProduced)
 
 		productSpecificReports[productID] = productSpecificReport
-		fmt.Printf("Product %s (%s) produced: \n    Base: %d\n    Bonus: %d\n    Total: %d\n",
-			offers[productID].Product.Name,
-			offers[productID].Product.ID,
-			productSpecificReport.BaseProductsProduced,
-			productSpecificReport.BonusProductsProduced,
-			productSpecificReport.TotalProductsProduced)
+		/* fmt.Printf("Product %s (%s) produced: \n    Base: %d\n    Bonus: %d\n    Total: %d\n",
+		offers[productID].Product.Name,
+		offers[productID].Product.ID,
+		productSpecificReport.BaseProductsProduced,
+		productSpecificReport.BonusProductsProduced,
+		productSpecificReport.TotalProductsProduced)
+		*/
 	}
 
 	for _, r := range productSpecificReports {

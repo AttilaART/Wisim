@@ -11,7 +11,11 @@
 	import Employees from '../../components/employees.svelte';
 	import Reasearch from '../../components/reasearch.svelte';
 	import Production from '../../components/production.svelte';
-	import { preventPageReload, simulateMockStep } from '$lib/helper.svelte';
+	import {
+		preventPageReload,
+		simulateMockStep,
+		syncCompanyWithDecisions
+	} from '$lib/helper.svelte';
 	import MonthlyOverview from '../../components/monthlyOverview.svelte';
 
 	/** handle wasm import */
@@ -67,7 +71,6 @@
 	let companyID = $derived(companyIDUserFacing - 1);
 
 	function handleMockSimulation() {
-		clientStateBase.Decisions = clientState.Decisions;
 		clientState = JSON.parse(JSON.stringify(clientStateBase));
 
 		isSimulatingMock = true;
@@ -81,8 +84,11 @@
 				isSimulatingMock = false;
 				clientState.predictionMode = true;
 			},
-			clientState.Decisions.Predictions.Steps
+			clientState.Decisions.Predictions.Steps,
+			clientState.productComponents
 		);
+
+		clientStateBase.Decisions = clientState.Decisions;
 	}
 
 	const hooks = {
@@ -109,6 +115,12 @@
 		if (clientState.predictionMode) {
 			clientStateBase.Decisions = clientState.Decisions;
 			clientState = clientStateBase;
+
+			clientState.Company = syncCompanyWithDecisions(
+				clientState.Company,
+				clientState.Decisions,
+				clientState.productComponents
+			);
 
 			clientState.predictionMode = false;
 		} else {
@@ -380,25 +392,31 @@
 				<article id="prediction">
 					{#if clientState.Company.Offers != undefined && clientState.Decisions.Predictions.ProductSales != undefined}
 						{#each Object.entries(clientState.Company.Offers) as o}
-							<label for="">
-								{o[1].Product.Name} Sales
-								<input
-									bind:value={clientState.Decisions.Predictions.ProductSales[o[0]]}
-									onchange={() => {
-										connection.sDecisions(clientState.Decisions);
-									}}
-									type="number"
-									step="100"
-									min="0"
-								/>
-								{#if clientState.predictionMode && clientState.Decisions.Predictions.ProductSales[o[0]] > clientState.Company.Reports[clientState.Company.Reports.length - 1].ProductionReport.ProductSpecificReport[o[0]].TotalProductsProduced}
-									<small style="color: orange;">Predicted Sales are more than production. </small>
+							{#if clientState.Decisions.Products[o[0]] != undefined}
+								{#if !clientState.Decisions.Products[o[0]].Outdated}
+									<label for="">
+										<strong>{o[1].Product.Name}</strong> demand
+										<input
+											bind:value={clientState.Decisions.Predictions.ProductSales[o[0]]}
+											onchange={() => {
+												connection.sDecisions(clientState.Decisions);
+											}}
+											type="number"
+											step="100"
+											min="0"
+										/>
+										{#if clientState.predictionMode && clientState.Decisions.Predictions.ProductSales[o[0]] > clientState.Company.Reports[clientState.Company.Reports.length - 1].ProductionReport.ProductSpecificReport[o[0]].TotalProductsProduced}
+											<small style="color: orange; display: block; margin-top: -0.5rem;"
+												>Predicted Demand is more than production.
+											</small>
+										{/if}
+									</label>
 								{/if}
-							</label>
+							{/if}
 						{/each}
 					{/if}
 					<fieldset role="group">
-						<input type="text" value="Steps to calculate" />
+						<input disabled type="text" value="Steps to calculate" />
 						<input
 							type="number"
 							bind:value={clientState.Decisions.Predictions.Steps}
@@ -408,15 +426,19 @@
 								connection.sDecisions(clientState.Decisions);
 							}}
 						/>
-						{#if !clientState.predictionMode}
-							<button
-								style="float: right;"
-								onclick={() => {
-									togglePredictionMode();
-								}}>Enter Budget Mode</button
-							>
-						{/if}
 					</fieldset>
+					<button
+						style="float: right;"
+						onclick={() => {
+							togglePredictionMode();
+						}}
+					>
+						{#if clientState.predictionMode}
+							Exit Budget Mode
+						{:else}
+							Enter Budget Mode
+						{/if}
+					</button>
 				</article>
 			{/snippet}
 
@@ -637,20 +659,6 @@
 	</Window>
 {/snippet}
 
-{#snippet monthlyOverview(/** @type {Number} id */ id)}
-	<Window
-		title="Monthly Report"
-		closeWindow={() => {
-			overviewWindowOpen = false;
-			deleteWindow(id);
-		}}
-	>
-		<span hidden>{(overviewWindowOpen = true)}</span>
-		<MonthlyOverview report={clientState.Company.Reports[clientState.Company.Reports.length - 1]}
-		></MonthlyOverview>
-	</Window>
-{/snippet}
-
 <style>
 	#ui {
 		display: flex;
@@ -669,7 +677,8 @@
 		border-top: 0.5px solid color-mix(in oklab, var(--background), transparent 30%);
 		z-index: 99;
 
-		button {
+		button,
+		div {
 			flex: 1 1;
 		}
 	}
