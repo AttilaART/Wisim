@@ -91,6 +91,7 @@ func (c *Company) calculateProduction(decisions Decisions, externalFactors Exter
 		c.employeePool,
 		productionReport.ProductSpecificReport,
 		make([]int, len(c.Machines)),
+		make([]int, len(c.Machines)),
 		decisions.Production.MachineAssignmentPattern,
 	)
 
@@ -319,7 +320,7 @@ func ProduceProducts(companyID int, machines []Machine, offers map[string]Offer,
 
 	MaterialUsed float32
 	EnergyUsed   float32
-}, machineProduction []int,
+}, machineProduction []int, machineWorkerCount []int,
 	assignmentPattern AssignmentPattern,
 ) (materialUsed float32, energyUsed float32, totalProduction int, workerSurplus int) {
 	machines, workerSurplus = assignWorkers(
@@ -374,6 +375,10 @@ func ProduceProducts(companyID int, machines []Machine, offers map[string]Offer,
 		energyUsed += r.EnergyUsed
 		materialUsed += r.MaterialUsed
 		totalProduction += r.TotalProduction
+	}
+
+	for i, m := range machines {
+		machineWorkerCount[i] = len(m.AssignedWorkersIDs)
 	}
 
 	return materialUsed, energyUsed, totalProduction, workerSurplus

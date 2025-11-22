@@ -807,7 +807,6 @@ func SimulateMockStep(company Company, decisions Decisions, externalFactors Exte
 		for i := range decisions.Predictions.ProductSales {
 
 			productsSold := min(decisions.Predictions.ProductSales[i], company.ProductsInStorage[i])
-			company.ProductsInStorage[i] = company.ProductsInStorage[i] - productsSold
 
 			company.Reports[len(company.Reports)-1].BalanceSheet.add_to_income_statement(
 				"Sales of "+company.Offers[i].Product.Name,
@@ -865,6 +864,7 @@ func (c *Company) prepareCompany(decisions Decisions, externalFactors ExternalFa
 
 	println("Producing...")
 	c.calculateProduction(decisions, externalFactors)
+
 	for productID := range c.Offers {
 		c.ProductsInStorage[productID] += c.Reports[len(c.Reports)-1].ProductionReport.ProductSpecificReport[productID].TotalProductsProduced
 	}

@@ -20,11 +20,11 @@ export function ignoreError(func) {
  * @param {Object.<string, import("$lib/javascript/simulation").Offer>} offers
  * @param {Array.<import("$lib/javascript/simulation").Employee>} employees
  * @param {import("$lib/javascript/simulation").AssignmentPattern} assignmentPattern
- * @returns {{WorkerSurplus: number, MachineProduction: number[]}}
+ * @returns {{WorkerSurplus: number, MachineProduction: number[], MachineWorkerCount: number[]}}
  */
 
 export function calculateProduction(companyID, machines, offers, employees, assignmentPattern) {
-	/** @type {{WorkerSurplus: number, MachineProduction: number[]}}*/
+	/** @type {{WorkerSurplus: number, MachineProduction: number[], MachineWorkerCount: number[]}}*/
 
 	let result = JSON.parse(
 		// @ts-ignore
@@ -67,6 +67,14 @@ export function simulateMockStep(
 	});
 	employees.Employees.production.forEach((e) => {
 		e.Employer = company.ID;
+	});
+
+	employees.Unemployed.marketing.forEach((e) => {
+		e.Employer = -1;
+	});
+
+	employees.Unemployed.production.forEach((e) => {
+		e.Employer = -1;
 	});
 
 	employePool = employePool.concat(

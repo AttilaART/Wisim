@@ -71,7 +71,11 @@
 		updateDecisions(clientState.Decisions);
 	}
 
-	let { MachineProduction, WorkerSurplus: workerSurplus } = $derived.by(() => {
+	let {
+		MachineProduction,
+		WorkerSurplus: workerSurplus,
+		MachineWorkerCount: machineWorkerCount
+	} = $derived.by(() => {
 		return calculateProduction(
 			clientState.Company.ID,
 			clientState.Company.Machines,
@@ -110,7 +114,6 @@
 		<fieldset role="group" style="margin: 0;">
 			<input type="text" value="Worker Distribution" disabled />
 			<select
-				disabled={clientState.predictionMode}
 				bind:value={clientState.Decisions.Production.MachineAssignmentPattern}
 				onchange={() => {
 					updateDecisions(clientState.Decisions);
@@ -122,13 +125,14 @@
 		</fieldset>
 	</article>
 </div>
+
 <table style="max-height: calc(100vw - 100px);">
 	<thead>
 		<tr>
 			<th>Name </th>
 			<th>Production capacity</th>
 			<th>Minimum Worker Count</th>
-			<th>Optimal Worker Count</th>
+			<th>Assigned Workers</th>
 			<th>Assigned Product</th>
 			<th></th>
 		</tr>
@@ -148,7 +152,7 @@
 					<h2>{m.MinimumWorkers}</h2>
 				</td>
 				<td>
-					<h2>{m.RequiredWorkers}</h2>
+					<h2>{machineWorkerCount[i]}</h2>
 				</td>
 				<td>
 					<select
@@ -166,7 +170,6 @@
 				</td>
 				<td>
 					<button
-						disabled={clientState.predictionMode}
 						onclick={() => {
 							sellMachine(m);
 						}}
@@ -181,7 +184,6 @@
 
 <center>
 	<button
-		disabled={clientState.predictionMode}
 		onclick={() => {
 			newMachine(clientState.ExternalFactors.MachineOnOffer);
 		}}

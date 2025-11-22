@@ -90,6 +90,7 @@ func calculateProductionWrapped() js.Func {
 		})
 
 		machineProduction := make([]int, len(args1))
+		machineWorkerCount := make([]int, len(args1))
 
 		_, _, _, workerSurplus := simulation.ProduceProducts(
 			args[0].Int(),
@@ -98,13 +99,15 @@ func calculateProductionWrapped() js.Func {
 			args3,
 			productSpecificReportTemp,
 			machineProduction,
+			machineWorkerCount,
 			simulation.AssignmentPattern(args[4].Int()),
 		)
 
 		returnValue := struct {
-			WorkerSurplus     int
-			MachineProduction []int
-		}{workerSurplus, machineProduction}
+			WorkerSurplus      int
+			MachineProduction  []int
+			MachineWorkerCount []int
+		}{workerSurplus, machineProduction, machineWorkerCount}
 
 		json, err := json.Marshal(returnValue)
 		if err != nil {

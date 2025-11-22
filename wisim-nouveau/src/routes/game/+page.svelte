@@ -114,6 +114,9 @@
 	function togglePredictionMode() {
 		if (clientState.predictionMode) {
 			clientStateBase.Decisions = clientState.Decisions;
+			clientStateBase.Employees = clientState.Employees;
+			clientStateBase.Unemployed = clientState.Unemployed;
+
 			clientState = clientStateBase;
 
 			clientState.Company = syncCompanyWithDecisions(
@@ -706,6 +709,7 @@
 	#prediction {
 		position: absolute;
 		bottom: 0;
+		transform: scaleY(0);
 		right: 0;
 		opacity: 0%;
 		width: 10rem;
@@ -720,12 +724,14 @@
 
 		transition:
 			opacity 0.5s,
-			bottom 0.75s 0.5s;
+			bottom 0.75s 0.5s,
+			transform 0s 1s;
 	}
 
 	#ready-div:hover #prediction {
 		bottom: calc(100% + 1rem);
 		opacity: 100%;
+		transform: scaleY(1);
 		transition:
 			opacity 0.5s 0.25s,
 			bottom 0.75s;
