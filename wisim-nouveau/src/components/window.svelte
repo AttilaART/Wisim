@@ -74,33 +74,6 @@
 				text-align: center;
 				white-space: nowrap;
 			}
-
-			button {
-				float: right;
-				margin: 0;
-				margin-left: var(--pico-spacing);
-				padding: 0;
-				display: block;
-				width: 1rem;
-				height: 1rem;
-				margin-top: calc(var(--pico-spacing) * -1);
-				margin-bottom: var(--pico-spacing);
-				margin-left: auto;
-				border: none;
-				background-image: var(--pico-icon-close);
-				background-position: center;
-				background-size: auto 1rem;
-				background-repeat: no-repeat;
-				background-color: transparent;
-				opacity: 0.5;
-				transition: opacity var(--pico-transition);
-
-				margin: 0;
-				margin-left: 0px;
-				margin-left: var(--pico-spacing);
-				padding: 0;
-				float: right;
-			}
 		}
 		div {
 			resize: both;

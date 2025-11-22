@@ -1,0 +1,343 @@
+@charset "UTF-8";
+
+/* CSS RESET credit: https://www.joshwcomeau.com/css/custom-css-reset/ */
+/* 1. Use a more-intuitive box-sizing model */
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
+/* 2. Remove default margin */
+* {
+	margin: 0;
+}
+
+/* 3. Enable keyword animations */
+@media (prefers-reduced-motion: no-preference) {
+	html {
+		interpolate-size: allow-keywords;
+	}
+}
+
+body {
+	/* 4. Add accessible line-height */
+	line-height: 1.5;
+	/* 5. Improve text rendering */
+	-webkit-font-smoothing: antialiased;
+}
+
+/* 6. Improve media defaults */
+img,
+picture,
+video,
+canvas,
+svg {
+	display: block;
+	max-width: 100%;
+}
+
+/* 7. Inherit fonts for form controls */
+input,
+button,
+textarea,
+select {
+	font: inherit;
+}
+
+/* 8. Avoid text overflows */
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	overflow-wrap: break-word;
+}
+
+/* 9. Improve line wrapping */
+p {
+	text-wrap: pretty;
+}
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	text-wrap: balance;
+}
+
+/*
+  10. Create a root stacking context
+*/
+#root,
+#__next {
+	isolation: isolate;
+}
+
+/* STYLES */
+
+:root,
+:host,
+html {
+	--text: oklch(0.95 0 0);
+	--primary: #01aaff;
+	--spacing: 1rem;
+	--corner-radius: 0.25rem;
+	--background: color-mix(in oklab, oklch(0.175 0 0), var(--primary) 2.5%);
+	--transition: 0.5s;
+
+	--pico-font-family-sans-serif:
+		system-ui, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, Helvetica, Arial, 'Helvetica Neue',
+		sans-serif;
+	--pico-font-family-monospace:
+		ui-monospace, SFMono-Regular, 'SF Mono', Menlo, Consolas, 'Liberation Mono', monospace;
+
+	--pico-icon-loading: url("data:image/svg+xml,%3Csvg fill='none' height='24' width='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg' %3E%3Cstyle%3E g %7B animation: rotate 2s linear infinite; transform-origin: center center; %7D circle %7B stroke-dasharray: 75,100; stroke-dashoffset: -5; animation: dash 1.5s ease-in-out infinite; stroke-linecap: round; %7D @keyframes rotate %7B 0%25 %7B transform: rotate(0deg); %7D 100%25 %7B transform: rotate(360deg); %7D %7D @keyframes dash %7B 0%25 %7B stroke-dasharray: 1,100; stroke-dashoffset: 0; %7D 50%25 %7B stroke-dasharray: 44.5,100; stroke-dashoffset: -17.5; %7D 100%25 %7B stroke-dasharray: 44.5,100; stroke-dashoffset: -62; %7D %7D %3C/style%3E%3Cg%3E%3Ccircle cx='12' cy='12' r='10' fill='none' stroke='rgb(136, 145, 164)' stroke-width='4' /%3E%3C/g%3E%3C/svg%3E");
+	--pico-icon-close: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='rgb(136, 145, 164)' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='18' y1='6' x2='6' y2='18'%3E%3C/line%3E%3Cline x1='6' y1='6' x2='18' y2='18'%3E%3C/line%3E%3C/svg%3E");
+
+	color: var(--text);
+	font-family: var(--pico-font-family-sans-serif);
+
+	background-color: var(--background);
+	transition: var(--transition);
+}
+
+.grid {
+	display: flex;
+	gap: var(--spacing);
+
+	* {
+		flex: 1 1 100%;
+	}
+
+	button {
+		margin: var(--spacing) 0;
+	}
+}
+
+button:disabled,
+input:disabled {
+	opacity: 0.5;
+}
+
+button {
+	padding: calc(var(--spacing) * 0.75) var(--spacing);
+	margin: calc(var(--spacing) * 0.5) 0;
+	border-radius: var(--corner-radius);
+
+	border: none;
+
+	color: var(--text);
+
+	--button-scheme: var(--primary);
+	--button-color: color-mix(in oklab, var(--button-scheme), black 25%);
+	--button-highlight-color: color-mix(in oklab, var(--button-scheme), black 10%);
+
+	background: var(--button-color);
+	box-shadow: 0px 0px 5px 5px oklch(0.05 0 0 / 0.05);
+
+	transition: background var(--transition);
+
+	&:hover,
+	&:active,
+	&:focus {
+		background: var(--button-highlight-color);
+	}
+}
+
+button.contrast {
+	--button-scheme: var(--text);
+	--button-color: color-mix(in oklab, var(--button-scheme), black 15%);
+}
+
+button.secondary {
+	--button-scheme: gray;
+}
+
+button.outline {
+	background: transparent;
+	border: 1px solid var(--button-color);
+	color: var(--button-color);
+
+	transition:
+		color var(--transition),
+		border var(--transition);
+
+	box-shadow: 0px 0px 3px 3px color-mix(in oklch, var(--button-color), transparent 95%);
+	text-shadow: 0px 0px 3px 3px color-mix(in oklch, var(--button-color), transparent 95%);
+
+	&:hover,
+	&:active,
+	&:focus {
+		border: 1px solid var(--button-highlight-color);
+		color: var(--button-highlight-color);
+	}
+}
+
+article {
+	background-color: color-mix(in oklch, var(--background), white 05%);
+	padding: calc(0.5 * var(--spacing));
+	border-radius: var(--corner-radius);
+
+	box-shadow: 0px 0px 10px 10px oklch(0.05 0 0 / 0.05);
+
+	color: var(--text);
+
+	header {
+		margin: calc(-0.5 * var(--spacing));
+		margin-bottom: var(--spacing);
+		border-radius: var(--corner-radius) var(--corner-radius) 0 0;
+		background-color: color-mix(in oklch, var(--background), white 3%);
+		position: relative;
+		color: var(--text);
+		padding: 0.5rem;
+
+		button[rel='prev'] {
+			position: absolute;
+			padding: 0;
+			margin: 0;
+
+			width: 1.5rem;
+			height: 1.5rem;
+
+			background: var(--pico-icon-close);
+			background-size: 90%;
+			background-position: center;
+
+			top: 50%;
+			right: var(--spacing);
+			transform: translateY(-50%);
+
+			opacity: 0.5;
+			transition: opacity var(--transition);
+
+			&:hover,
+			&:active,
+			&:focus {
+				opacity: 1;
+			}
+		}
+	}
+}
+
+table {
+	border-collapse: collapse;
+
+	th,
+	td {
+		padding: calc(var(--spacing) / 2);
+
+		input,
+		select,
+		fieldset {
+			width: 100%;
+		}
+	}
+
+	thead th {
+		border-bottom: 2px solid oklch(0.5 0 0);
+	}
+
+	tfoot td {
+		border-top: 2px solid oklch(0.5 0 0);
+	}
+
+	thead th,
+	tfoot td {
+		font-weight: bold;
+	}
+
+	tbody td {
+		background: color-mix(in oklch, var(--background), rgba(0.2, 0.2, 0.2, 0.1) 20%);
+		border-bottom: 1px solid oklch(0.5 0 0 / 0.25);
+	}
+}
+
+fieldset[role='group'] {
+	border: none;
+	padding: 0;
+
+	display: flex block;
+	width: 100%;
+	margin: var(--spacing) 0;
+
+	input,
+	select,
+	button {
+		margin: 0;
+	}
+
+	input:not(:first-child):not(:last-child),
+	button:not(:first-child):not(:last-child),
+	select:not(:first-child):not(:last-child) {
+		border-radius: 0;
+	}
+
+	input:first-child:not(:last-child),
+	button:first-child:not(:last-child),
+	select:first-child:not(:last-child) {
+		border-radius: var(--corner-radius) 0 0 var(--corner-radius);
+	}
+
+	input:last-child:not(:first-child),
+	button:last-child:not(:first-child),
+	select:last-child:not(:first-child) {
+		border-radius: 0 var(--corner-radius) var(--corner-radius) 0;
+	}
+}
+
+input,
+select {
+	padding: calc(var(--spacing) * 0.5) var(--spacing);
+	margin: var(--spacing) 0;
+	border-radius: var(--corner-radius);
+	background: color-mix(in oklch, var(--background), var(--primary) 2.5%);
+	color: var(--text);
+
+	border: 1.5px solid color-mix(in oklch, var(--background), white 20%);
+}
+
+input:focus {
+	outline: 1px solid color-mix(in oklch, var(--primary), black 30%);
+}
+
+input:disabled,
+select:disabled {
+	color: color-mix(in srgb, var(--text), transparent 30%);
+}
+
+input:not([type='checkbox']) {
+	display: block;
+	width: 100%;
+}
+
+img {
+	display: inline-block;
+}
+
+dialog {
+	z-index: 100;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: color-mix(in oklab, var(--background), transparent 50%);
+	backdrop-filter: blur(1rem);
+	color: var(--text);
+
+	box-shadow: inset 0px 0px 10px 10px oklch(0.05 0 0 / 0.05);
+	border: none;
+
+	article {
+		position: absolute;
+		top: 50%;
+		left: 50%;
+		transform: translate(-50%, -50%);
+
+		width: clamp(20rem, 30%, 50rem);
+	}
+}

@@ -1,5 +1,5 @@
 <script>
-	import '@picocss/pico';
+	import '../dynamic-pico.css';
 	import '../app.css';
 
 	/** @type {{children: import('svelte').Snippet}} */
@@ -7,7 +7,7 @@
 </script>
 
 <svelte:boundary>
-	<div class="app">
+	<div class="app" data-theme="dark">
 		{@render children()}
 	</div>
 	{#snippet pending()}

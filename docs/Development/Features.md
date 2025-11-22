@@ -13,7 +13,6 @@ kanban-plugin: board
 - [ ] Add Icons
 - [ ] # Add different architypes of customers
 - [ ] # Implent deeper marketing
-- [ ] # Add projected incomes
 - [ ] # Package application
 
 
@@ -43,6 +42,7 @@ kanban-plugin: board
 - [ ] report.BalanceSheet.Assets only shows machines
 - [ ] # Marketing Quality Increases too much -> Products can be sold at insane prices
 - [ ] # Add ability to name company
+- [ ] # Add projected incomes
 - [ ] # Product creation screen
 	## Backend
 	- Implement backend framework for new product system

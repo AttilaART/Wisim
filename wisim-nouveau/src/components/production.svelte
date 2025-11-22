@@ -13,12 +13,17 @@
 
 	/** @param {import("$lib/javascript/simulation").Machine} machine */
 	function newMachine(machine) {
-		// console.log(clientState);
-		machine = JSON.parse(JSON.stringify(machine));
-		machine.ID = clientState.Company.Machines.length;
-		clientState.Company.Machines.push(machine);
-		clientState.Company.Balance -= machine.Value;
-		updateMachineDecision(machine, delta.Delta_New);
+		console.log(clientState);
+
+		if (clientState.Company.Machines == null) {
+			clientState.Company.Machines = [];
+		}
+
+		const newMachine = JSON.parse(JSON.stringify(machine));
+		newMachine.ID = clientState.Company.Machines.length + 1;
+		clientState.Company.Machines.push(newMachine);
+		clientState.Company.Balance -= newMachine.Value;
+		updateMachineDecision(newMachine, delta.Delta_New);
 	}
 
 	/** @param {import("$lib/javascript/simulation").Machine} machine */
@@ -66,7 +71,11 @@
 		updateDecisions(clientState.Decisions);
 	}
 
-	let { MachineProduction, WorkerSurplus: workerSurplus } = $derived.by(() => {
+	let {
+		MachineProduction,
+		WorkerSurplus: workerSurplus,
+		MachineWorkerCount: machineWorkerCount
+	} = $derived.by(() => {
 		return calculateProduction(
 			clientState.Company.ID,
 			clientState.Company.Machines,
@@ -75,6 +84,22 @@
 			clientState.Decisions.Production.MachineAssignmentPattern
 		);
 	});
+
+	/**
+	 * @param {import("$lib/javascript/simulation").Machine[]} machines
+	 * @returns {import("$lib/javascript/simulation").Machine[]}
+	 */
+	function removeDuplicates(machines) {
+		/** @type {import("$lib/javascript/simulation").Machine[]} */
+		let returnArray = [];
+		for (let m of machines) {
+			if (returnArray.findIndex((e) => e.ID == m.ID) == -1) {
+				returnArray.push(m);
+			}
+		}
+
+		return returnArray;
+	}
 </script>
 
 <div>
@@ -100,19 +125,20 @@
 		</fieldset>
 	</article>
 </div>
-<table>
+
+<table style="max-height: calc(100vw - 100px);">
 	<thead>
 		<tr>
 			<th>Name </th>
 			<th>Production capacity</th>
 			<th>Minimum Worker Count</th>
-			<th>Optimal Worker Count</th>
+			<th>Assigned Workers</th>
 			<th>Assigned Product</th>
 			<th></th>
 		</tr>
 	</thead>
 	<tbody>
-		{#each clientState.Company.Machines as m, i (m.ID)}
+		{#each removeDuplicates(clientState.Company.Machines) as m, i (m.ID)}
 			<tr>
 				<td>
 					Machine {m.ID}
@@ -126,7 +152,7 @@
 					<h2>{m.MinimumWorkers}</h2>
 				</td>
 				<td>
-					<h2>{m.RequiredWorkers}</h2>
+					<h2>{machineWorkerCount[i]}</h2>
 				</td>
 				<td>
 					<select

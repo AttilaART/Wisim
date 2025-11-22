@@ -29,6 +29,7 @@ export const Methods = {
 
 /** @type {import('./simulation').clientState}*/
 export const baseState = {
+	predictionMode: false,
 	Company: {
 		ID: 0,
 		Name: '',
@@ -52,7 +53,8 @@ export const baseState = {
 	},
 	Decisions: {
 		Predictions: {
-			SalesPrediction: 0
+			ProductSales: {},
+			Steps: 1
 		},
 		Finances: {
 			SetBankLoan: 0
@@ -66,7 +68,8 @@ export const baseState = {
 		Production: {
 			Production_goal: 0,
 			Machines: [], // array of Delta<Machine>
-			Logistics: [] // array of Delta<Warehouse>
+			Logistics: [], // array of Delta<Warehouse>
+			MachineAssignmentPattern: 0
 		},
 		Research: {
 			Quality: 0,
@@ -74,6 +77,9 @@ export const baseState = {
 			Ecology: 0,
 			Promotion: 0,
 			Production_cost: 0
+		},
+		General: {
+			CompanyName: ''
 		}
 	},
 	ExternalFactors: {
@@ -138,9 +144,10 @@ export const baseState = {
  * @param {eventHandler} eventHandler - Function that handles every event
  * @param {(event: CloseEvent)=>void} onClose - Do something when websocket closes
  * @param {(this: WebSocket, event: Event)=>void} onError - Do something when websocket errors
+ * @param {Object.<string, ()=>void>} hooks - Do something when websocket errors
  * @returns {Promise<{connection: Connection, clientState: import('./simulation').clientState}>}
  */
-export async function newConnection(url, eventHandler, onClose, onError) {
+export async function newConnection(url, eventHandler, onClose, onError, hooks) {
 	let websocket = new WebSocket(url);
 
 	websocket.addEventListener('message', (event) => {
@@ -247,6 +254,7 @@ export async function newConnection(url, eventHandler, onClose, onError) {
 		 * @param {import('./simulation').Decisions} decisions
 		 */
 		sDecisions: function (decisions) {
+			hooks['sDecisions'] != undefined ? hooks['sDecisions']() : '';
 			/**
 			 * @type {Message}
 			 */

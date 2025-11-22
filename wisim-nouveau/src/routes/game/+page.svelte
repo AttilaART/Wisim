@@ -5,15 +5,17 @@
 	import { baseState, Methods, newConnection } from '$lib/javascript/connection';
 	import Product from '../../components/product.svelte';
 	import Window from '../../components/window.svelte';
-	import '@picocss/pico';
-	import '../../app.css';
 	import Marketing from '../../components/marketing.svelte';
 	import Debt from '../../components/debt.svelte';
 	import { format } from '$lib/javascript/format';
 	import Employees from '../../components/employees.svelte';
 	import Reasearch from '../../components/reasearch.svelte';
 	import Production from '../../components/production.svelte';
-	import { preventPageReload } from '$lib/helper.svelte';
+	import {
+		preventPageReload,
+		simulateMockStep,
+		syncCompanyWithDecisions
+	} from '$lib/helper.svelte';
 	import MonthlyOverview from '../../components/monthlyOverview.svelte';
 
 	/** handle wasm import */
@@ -60,7 +62,7 @@
 	let companyDialogue = $state();
 	let isReady = $state();
 	let isSimulating = $state(false);
-	let overviewWindowOpen = $state(false);
+	let isSimulatingMock = $state(false);
 
 	/**
 	 * @type {number}
@@ -68,14 +70,71 @@
 	let companyIDUserFacing = $state(0);
 	let companyID = $derived(companyIDUserFacing - 1);
 
+	function handleMockSimulation() {
+		clientState = JSON.parse(JSON.stringify(clientStateBase));
+
+		isSimulatingMock = true;
+
+		clientState.Company = simulateMockStep(
+			clientState.Company,
+			clientState.Decisions,
+			clientState.ExternalFactors,
+			{ Employees: clientState.Employees, Unemployed: clientState.Unemployed },
+			() => {
+				isSimulatingMock = false;
+				clientState.predictionMode = true;
+			},
+			clientState.Decisions.Predictions.Steps,
+			clientState.productComponents
+		);
+
+		clientStateBase.Decisions = clientState.Decisions;
+	}
+
+	const hooks = {
+		sDecisions: () => {
+			if (clientState.predictionMode) {
+				handleMockSimulation();
+			}
+		}
+	};
+
 	/** @type {Promise<{connection: import("$lib/javascript/connection").Connection, clientState: import("$lib/javascript/simulation").clientState}>} */
 	let connectionPromise = $state(
-		newConnection(`ws://${data.serverAdress}`, handleConnection, onClose, onError)
+		newConnection(`ws://${data.serverAdress}`, handleConnection, onClose, onError, hooks)
 	);
 	/** @type {import("$lib/javascript/connection").Connection} */
 	let connection = $state(null);
 	/** @type {import("$lib/javascript/simulation").clientState} */
 	let clientState = $state(JSON.parse(JSON.stringify(baseState)));
+
+	/** @type {import("$lib/javascript/simulation").clientState} */
+	let clientStateBase = $state(JSON.parse(JSON.stringify(clientState)));
+
+	function togglePredictionMode() {
+		if (clientState.predictionMode) {
+			clientStateBase.Decisions = clientState.Decisions;
+			clientStateBase.Employees = clientState.Employees;
+			clientStateBase.Unemployed = clientState.Unemployed;
+
+			clientState = clientStateBase;
+
+			clientState.Company = syncCompanyWithDecisions(
+				clientState.Company,
+				clientState.Decisions,
+				clientState.productComponents
+			);
+
+			clientState.predictionMode = false;
+		} else {
+			clientStateBase = JSON.parse(JSON.stringify(clientState));
+
+			clientState.predictionMode = true;
+
+			handleMockSimulation();
+		}
+	}
+
 	/** @type {{Message: string, From: string}[]} */
 	let chats = $state([]);
 	/** @type {string} */
@@ -97,7 +156,8 @@
 			`ws://${data.serverAdress}`,
 			handleConnection,
 			onClose,
-			onError
+			onError,
+			hooks
 		);
 
 		({ connection, clientState } = await connectionPromise);
@@ -254,7 +314,16 @@
 		</dialog>
 	{/if}
 
-	<div id="ui">
+	{#if isSimulatingMock}
+		<dialog open>
+			<center>
+				<h2>Loading...</h2>
+				<p>Calculating Budget</p>
+			</center>
+		</dialog>
+	{/if}
+
+	<div id="ui" data-scheme={clientState.predictionMode ? 'prediction' : 'normal'}>
 		<div id="top-bar">
 			<span>{clientState.Company.Name}</span>
 			<span>Balance: {format.currency(clientState.Company.Balance, true, 0)}</span>
@@ -321,20 +390,89 @@
 			>
 				Reports
 			</button>
-			{#if !isReady}
-				<button
-					onclick={() => {
-						connection.sReady();
-						isReady = true;
-					}}>Ready</button
-				>{:else}
-				<button
-					class="secondary"
-					onclick={() => {
-						connection.sUnready();
-						isReady = false;
-					}}>Unready</button
-				>{/if}
+
+			{#snippet predictionMenu()}
+				<article id="prediction">
+					{#if clientState.Company.Offers != undefined && clientState.Decisions.Predictions.ProductSales != undefined}
+						{#each Object.entries(clientState.Company.Offers) as o}
+							{#if clientState.Decisions.Products[o[0]] != undefined}
+								{#if !clientState.Decisions.Products[o[0]].Outdated}
+									<label for="">
+										<strong>{o[1].Product.Name}</strong> demand
+										<input
+											bind:value={clientState.Decisions.Predictions.ProductSales[o[0]]}
+											onchange={() => {
+												connection.sDecisions(clientState.Decisions);
+											}}
+											type="number"
+											step="100"
+											min="0"
+										/>
+										{#if clientState.predictionMode && clientState.Decisions.Predictions.ProductSales[o[0]] > clientState.Company.Reports[clientState.Company.Reports.length - 1].ProductionReport.ProductSpecificReport[o[0]].TotalProductsProduced}
+											<small style="color: orange; display: block; margin-top: -0.5rem;"
+												>Predicted Demand is more than production.
+											</small>
+										{/if}
+									</label>
+								{/if}
+							{/if}
+						{/each}
+					{/if}
+					<fieldset role="group">
+						<input disabled type="text" value="Steps to calculate" />
+						<input
+							type="number"
+							bind:value={clientState.Decisions.Predictions.Steps}
+							min="1"
+							step="1"
+							onchange={() => {
+								connection.sDecisions(clientState.Decisions);
+							}}
+						/>
+					</fieldset>
+					<button
+						style="float: right;"
+						onclick={() => {
+							togglePredictionMode();
+						}}
+					>
+						{#if clientState.predictionMode}
+							Exit Budget Mode
+						{:else}
+							Enter Budget Mode
+						{/if}
+					</button>
+				</article>
+			{/snippet}
+
+			<div id="ready-div">
+				{#if clientState.predictionMode}
+					<button
+						style="float: right;"
+						onclick={() => {
+							togglePredictionMode();
+						}}>Exit Budget Mode</button
+					>
+					{@render predictionMenu()}
+				{:else if !isReady}
+					<button
+						id="ready"
+						onclick={() => {
+							connection.sReady();
+							isReady = true;
+						}}>Ready</button
+					>
+					{@render predictionMenu()}
+				{:else}
+					<button
+						class="secondary"
+						onclick={() => {
+							connection.sUnready();
+							isReady = false;
+						}}>Unready</button
+					>
+				{/if}
+			</div>
 		</div>
 	</div>
 {:catch error}
@@ -524,20 +662,6 @@
 	</Window>
 {/snippet}
 
-{#snippet monthlyOverview(/** @type {Number} id */ id)}
-	<Window
-		title="Monthly Report"
-		closeWindow={() => {
-			overviewWindowOpen = false;
-			deleteWindow(id);
-		}}
-	>
-		<span hidden>{(overviewWindowOpen = true)}</span>
-		<MonthlyOverview report={clientState.Company.Reports[clientState.Company.Reports.length - 1]}
-		></MonthlyOverview>
-	</Window>
-{/snippet}
-
 <style>
 	#ui {
 		display: flex;
@@ -550,13 +674,14 @@
 		flex: 0 0;
 		display: flex;
 		flex-direction: row;
-		gap: var(--pico-spacing);
-		padding: var(--pico-spacing);
+		gap: var(--spacing);
+		padding: calc(var(--spacing) * 0.5);
 		backdrop-filter: blur(10px);
-		border-top: 0.5px solid color-mix(in oklab, var(--pico-background-color), transparent 10%);
+		border-top: 0.5px solid color-mix(in oklab, var(--background), transparent 30%);
 		z-index: 99;
 
-		button {
+		button,
+		div {
 			flex: 1 1;
 		}
 	}
@@ -565,11 +690,50 @@
 		padding-top: 0.5rem;
 		display: flex;
 		backdrop-filter: blur(10px);
-		border-bottom: 0.5px solid color-mix(in oklab, var(--pico-background-color), transparent 10%);
+		border-bottom: 0.5px solid color-mix(in oklab, var(--background), transparent 30%);
 		z-index: 99;
 		* {
 			flex: 1 0;
 			text-align: center;
 		}
+	}
+
+	#ready-div {
+		position: relative;
+	}
+
+	#ready {
+		width: 100%;
+	}
+
+	#prediction {
+		position: absolute;
+		bottom: 0;
+		transform: scaleY(0);
+		right: 0;
+		opacity: 0%;
+		width: 10rem;
+
+		&:has(:first-child) {
+			width: 30rem;
+		}
+
+		&:not(:has(:first-child)) {
+			display: none;
+		}
+
+		transition:
+			opacity 0.5s,
+			bottom 0.75s 0.5s,
+			transform 0s 1s;
+	}
+
+	#ready-div:hover #prediction {
+		bottom: calc(100% + 1rem);
+		opacity: 100%;
+		transform: scaleY(1);
+		transition:
+			opacity 0.5s 0.25s,
+			bottom 0.75s;
 	}
 </style>

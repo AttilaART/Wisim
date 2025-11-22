@@ -15,6 +15,7 @@ export const assignmentPatterns = {
 
 /**
  * @typedef {Object} clientState
+ * @property {boolean} predictionMode
  * @property {Company} Company
  * @property {Decisions} Decisions
  * @property {ExternalFactors} ExternalFactors
@@ -26,7 +27,7 @@ export const assignmentPatterns = {
 /**
  * @typedef {Object} Decisions
  * @property {{CompanyName: string}} General
- * @property {{SalesPrediction: number}} Predictions
+ * @property {{ProductSales: Object.<string, number>, Steps: number}} Predictions
  * @property {{SetBankLoan: number}} Finances
  * @property {Object.<string ,Decisions_product>} Products
  * @property {{ProductionDeltas: Delta<Employee>[], MarketingDeltas: Delta<Employee>[], SeverancePay: number}} Employees

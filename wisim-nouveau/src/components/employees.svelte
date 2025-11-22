@@ -454,8 +454,8 @@
 	.tab-selector {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr;
-		gap: var(--pico-spacing);
-		margin-bottom: var(--pico-spacing);
+		gap: var(--spacing);
+		margin-bottom: 0;
 	}
 
 	.tab-selector.secondary {
