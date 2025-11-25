@@ -301,13 +301,36 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 		ProductionMinimumWage: 60000 / 12,
 		MarketingMinimumWage:  80000 / 12,
 
-		MachineOnOffer: Machine{
-			ProductionCapacity: 1500,
-			RequiredWorkers:    3,
-			MinimumWorkers:     1,
-			EnergyUse:          0.01,
-			Value:              10000,
-			MaintananceCost:    100,
+		MachinesOnOffer: []Machine{
+			{
+				ID:                 0,
+				ProductionCapacity: 1500,
+				RequiredWorkers:    3,
+				MinimumWorkers:     1,
+				EnergyUse:          0.01,
+				Value:              10000,
+				MaintananceCost:    100,
+			},
+
+			{
+				ID:                 1,
+				ProductionCapacity: 4000,
+				RequiredWorkers:    3,
+				MinimumWorkers:     2,
+				EnergyUse:          0.009,
+				Value:              225000,
+				MaintananceCost:    400,
+			},
+
+			{
+				ID:                 2,
+				ProductionCapacity: 10000,
+				RequiredWorkers:    5,
+				MinimumWorkers:     3,
+				EnergyUse:          0.008,
+				Value:              1200000,
+				MaintananceCost:    4000,
+			},
 		},
 	}
 

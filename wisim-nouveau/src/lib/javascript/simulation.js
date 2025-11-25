@@ -456,7 +456,7 @@ export const financeReportCategories = {
  * @property {number} ProductionMinimumWage
  * @property {number} MarketingMinimumWage
 
- * @property {Machine} MachineOnOffer
+ * @property {Machine[]} MachinesOnOffer
  * @property {number} ExternalStoragePrice
  * @property {number} EnergyPrice
  * @property {number} MaterialPrice

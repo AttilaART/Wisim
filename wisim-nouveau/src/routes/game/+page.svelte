@@ -378,11 +378,13 @@
 				}}>Research</button
 			>
 			<button>Market</button>
+			<!--
 			<button
 				onclick={() => {
 					newWindow(chat);
 				}}>Chat</button
 			>
+      -->
 			<button
 				onclick={() => {
 					newWindow(reports);
@@ -632,6 +634,7 @@
 	</Window>
 {/snippet}
 
+<!--
 {#snippet chat(/** @type {Number} id */ id)}
 	<Window
 		title="Chat"
@@ -660,7 +663,8 @@
 			<input type="submit" style="display: none" />
 		</form>
 	</Window>
-{/snippet}
+{/snippet}/
+-->
 
 <style>
 	#ui {

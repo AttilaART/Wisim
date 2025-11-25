@@ -13,7 +13,7 @@
       "ProductionCost": 1,
       "MaterialUse": 1
     },
-    "Balance": 500000
+    "Balance": 200000
   },
   "Population_size": 1000000,
   "Min_base_need": 1,
