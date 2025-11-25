@@ -182,15 +182,13 @@
 	</tbody>
 </table>
 
-<center>
-	<button
-		onclick={() => {
-			newMachine(clientState.ExternalFactors.MachineOnOffer);
-		}}
-		>Buy Machines ({format.currency(
-			clientState.ExternalFactors.MachineOnOffer.Value,
-			false,
-			2
-		)})</button
-	>
+<center class="grid">
+	{#each clientState.ExternalFactors.MachinesOnOffer as m}
+		<button
+			disabled={clientState.Company.Balance < m.Value}
+			onclick={() => {
+				newMachine(m);
+			}}>Buy Machines ({format.currency(m.Value, false, 2)})</button
+		>
+	{/each}
 </center>

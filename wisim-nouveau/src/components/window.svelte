@@ -47,7 +47,7 @@
 		<button class="windowHeader" onclick={closeWindow} rel="prev" aria-label="Close"></button>
 		<span class="windowHeader">{title}</span>
 	</header>
-	<div style="overflow: auto; max-height: calc(100vh - 136px - 58px - var(--pico-spacing)*2);">
+	<div style="overflow: auto; max-height: calc(100vh - 136px - 58px - var(--spacing)*2);">
 		{@render children()}
 	</div>
 </article>

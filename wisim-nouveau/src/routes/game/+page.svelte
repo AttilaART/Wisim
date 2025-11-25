@@ -378,11 +378,17 @@
 					newWindow(research);
 				}}>Research</button
 			>
+<<<<<<< HEAD
+=======
+			<button>Market</button>
+			<!--
+>>>>>>> refs/remotes/origin/main
 			<button
 				onclick={() => {
 					newWindow(market);
 				}}>Market</button
 			>
+      -->
 			<button
 				onclick={() => {
 					newWindow(reports);
@@ -651,6 +657,7 @@
 	</Window>
 {/snippet}
 
+<!--
 {#snippet chat(/** @type {Number} id */ id)}
 	<Window
 		title="Chat"
@@ -679,7 +686,8 @@
 			<input type="submit" style="display: none" />
 		</form>
 	</Window>
-{/snippet}
+{/snippet}/
+-->
 
 <style>
 	#ui {

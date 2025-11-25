@@ -689,7 +689,7 @@ type ExternalFactors struct {
 	MarketingMinimumWage  float32
 
 	// Prdoction
-	MachineOnOffer       Machine
+	MachinesOnOffer      []Machine
 	ExternalStoragePrice float32 // per item
 	EnergyPrice          float32 // per unit of energy
 	MaterialPrice        float32 // per unit of material
