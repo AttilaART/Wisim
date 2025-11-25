@@ -125,6 +125,7 @@ export const assignmentPatterns = {
  * @typedef {Object} Company
  *
  * @property {number} ID
+ * @property {string} CEO
  * @property {string} Name
  * @property {number} Balance - Current financial balance
  * @property {number} Loans - Outstanding loans
@@ -426,6 +427,8 @@ export const financeReportCategories = {
 
 /**
  * @typedef {Object} Marketing_statistics
+ * @property {string} Name
+ *
  * @property {number} Quality
  * @property {number} Durabilty
 
@@ -443,6 +446,36 @@ export const financeReportCategories = {
  * @property {Sales_statistics} ProductSalesStatistics
  * @property {Marketing_statistics} MarketingStatistics
  */
+
+/**
+@typedef {Object} CompanyMarketStatistics 
+	@property {number} CompanyID
+	@property {number} Step
+	@property {string} CEO
+	@property {string} Name
+	@property {ArrayBuffer} Logo              
+	@property {number} EmployeeCount
+	@property {number} QuartalyNetIncome
+	@property {number} Assets
+	@property {number} Value
+	@property {number} MarketShare
+	@property {number} MonthlySales
+	@property {number} TotalSales
+	@property {number} TotalValueOfSales
+
+	@property { Object.<string, CompanyMarketStatisticsProduct> } Products 
+*/
+
+/**
+@typedef {Object} CompanyMarketStatisticsProduct  
+	@property {string} ID
+
+	@property {Marketing_statistics} Marketing_statistics
+	@property {number} MarketShare
+	@property {number} MonthlySales
+	@property {number} TotalSales
+	@property {number} TotalValueOfSales
+*/
 
 /**
  * @typedef {Object} ExternalFactors

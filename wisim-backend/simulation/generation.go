@@ -287,27 +287,29 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 	gameState.GameName = gameName
 	gameState.Employees = make(Employee_pool)
 
-	gameState.ExternalFactors = ExternalFactors{
-		Inflation:               0.005,
-		EconomicSituationIndex:  1,
-		TaxRate:                 0.147,
-		MaterialPrice:           3.5,
-		EnergyPrice:             96.2,
-		MachineDepreciationRate: 0.1,
+	gameState.ExternalFactors = []ExternalFactors{
+		{
+			Inflation:               0.005,
+			EconomicSituationIndex:  1,
+			TaxRate:                 0.147,
+			MaterialPrice:           3.5,
+			EnergyPrice:             96.2,
+			MachineDepreciationRate: 0.1,
 
-		IntrestRate:            0.04,
-		BridgeLoansIntrestRate: 0.08,
+			IntrestRate:            0.04,
+			BridgeLoansIntrestRate: 0.08,
 
-		ProductionMinimumWage: 60000 / 12,
-		MarketingMinimumWage:  80000 / 12,
+			ProductionMinimumWage: 60000 / 12,
+			MarketingMinimumWage:  80000 / 12,
 
-		MachineOnOffer: Machine{
-			ProductionCapacity: 1500,
-			RequiredWorkers:    3,
-			MinimumWorkers:     1,
-			EnergyUse:          0.01,
-			Value:              10000,
-			MaintananceCost:    100,
+			MachineOnOffer: Machine{
+				ProductionCapacity: 1500,
+				RequiredWorkers:    3,
+				MinimumWorkers:     1,
+				EnergyUse:          0.01,
+				Value:              10000,
+				MaintananceCost:    100,
+			},
 		},
 	}
 
@@ -354,7 +356,7 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 	gameState.Companies = gameState.generateCompanies(
 		simConfig.Default_company,
 		numberOfCompanies,
-		gameState.ExternalFactors,
+		gameState.ExternalFactors[len(gameState.ExternalFactors)-1],
 		8,
 		1,
 	)

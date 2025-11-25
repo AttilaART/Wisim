@@ -282,3 +282,42 @@ func scalar_product32(a, b, result []float32) float32 {
 	}
 	return product
 }
+
+func sumFunc[V any](s []V, v func(V) float64) float64 {
+	total := 0.
+	for _, e := range s {
+		total += v(e)
+	}
+
+	return total
+}
+
+func CompanyValuation(quartarlyCashflow, totalAssets, interestRate float64) float64 {
+	cashflowPerYear := quartarlyCashflow * 4
+	const years = 5
+
+	return cashflowPerYear/(1+interestRate)*years + totalAssets
+}
+
+func quartarlyCashflow(c Company) float64 {
+	reports := c.Reports[max(len(c.Reports)-4, 0):len(c.Reports)]
+
+	totalCashflow := 0.
+	for _, r := range reports {
+		totalCashflow += r.FinancialReport.Totals.Cashflow
+	}
+
+	if len(reports) != 4 {
+		totalCashflow = (totalCashflow * 4) / float64(len(reports))
+	}
+
+	return totalCashflow
+}
+
+func zeroIfNaN[float float64 | float32](v float) float {
+	if math.IsNaN(float64(v)) {
+		return 0
+	}
+
+	return v
+}

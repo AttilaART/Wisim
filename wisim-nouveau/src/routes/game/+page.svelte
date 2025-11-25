@@ -21,6 +21,7 @@
 	/** handle wasm import */
 	import { wasm_exec } from '$lib/wasm_exec.js';
 	import Reports from '../../components/reports.svelte';
+	import Market from '../../components/market.svelte';
 
 	wasm_exec();
 
@@ -377,11 +378,10 @@
 					newWindow(research);
 				}}>Research</button
 			>
-			<button>Market</button>
 			<button
 				onclick={() => {
-					newWindow(chat);
-				}}>Chat</button
+					newWindow(market);
+				}}>Market</button
 			>
 			<button
 				onclick={() => {
@@ -584,6 +584,25 @@
 	</Window>
 {/snippet}
 
+{#snippet market(/** @type {Number} id */ id)}
+	<Window
+		title="Reports"
+		closeWindow={() => {
+			deleteWindow(id);
+		}}
+	>
+		<Market
+			bind:clientState
+			updateDecisions={(decisions) => {
+				connection.sDecisions(decisions);
+			}}
+			{newWindow}
+			{deleteWindow}
+			serverAdress={data.serverAdress}
+		></Market>
+	</Window>
+{/snippet}
+
 {#snippet employees(/** @type {Number} id */ id)}
 	<Window
 		title="Employees"
@@ -700,6 +719,9 @@
 
 	#ready-div {
 		position: relative;
+		button {
+			width: 100%;
+		}
 	}
 
 	#ready {

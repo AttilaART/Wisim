@@ -30,7 +30,7 @@ type GameState struct {
 	CurrentDecisions      []Decisions
 	DecisionsSubmitted    []bool
 	MarketSalesStatistics []Sales_statistics
-	ExternalFactors       ExternalFactors
+	ExternalFactors       []ExternalFactors
 	ProductComponents     ProductComponents
 }
 
@@ -75,6 +75,7 @@ type Sim_config struct {
 type Company struct {
 	// General
 	ID                int
+	CEO               string
 	Name              string
 	Balance           float64
 	Loans             float64
@@ -290,8 +291,6 @@ type Effect struct {
 	// Effect_function *Effect_Function
 }
 
-type Effect_Function func(int)
-
 type Report struct {
 	Month int
 
@@ -331,6 +330,101 @@ type Financial_report struct {
 		NetIncome                 float64
 		Cashflow                  float64
 	}
+}
+
+type CompanyMarketStatistics struct {
+	CompanyID         int
+	Step              int
+	CEO               string
+	Name              string
+	Logo              []byte
+	EmployeeCount     int
+	QuartalyNetIncome float64
+	Assets            float64
+	Value             float64
+	MarketShare       float64
+	MonthlySales      int
+	TotalSales        int
+	TotalValueOfSales int
+
+	Products map[string]CompanyMarketStatisticsProduct
+}
+
+type CompanyMarketStatisticsProduct struct {
+	ID string
+
+	MarketingStatistics Marketing_statistics
+	MarketShare         float64
+	MonthlySales        int
+	TotalSales          int
+	TotalValueOfSales   float64
+}
+
+func CompileMarketStatistics(c Company, externalFactors ExternalFactors, totalMarketSales int, step int) CompanyMarketStatistics {
+	var stats CompanyMarketStatistics
+
+	stats.CompanyID = c.ID
+	stats.Step = step
+	stats.CEO = c.CEO
+	stats.Name = c.Name
+	// stats.Logo = c.Logo
+	var report *Report
+	if step >= 1 {
+		report = &c.Reports[step-2]
+		c.Reports = c.Reports[0 : step-1]
+	} else {
+		report = &Report{}
+	}
+
+	stats.EmployeeCount = report.PersonelleReport.General.NumberOfEmployees
+	stats.Assets = sumFunc(report.BalanceSheet.Assets, func(e FinanceReportEntry) float64 {
+		return e.Value
+	})
+
+	stats.Value = CompanyValuation(quartarlyCashflow(c), stats.Assets, float64(externalFactors.IntrestRate))
+
+	stats.Products = make(map[string]CompanyMarketStatisticsProduct)
+
+	totalSalesThatMonth := 0
+	for id, p := range report.SalesReport {
+		totalSalesThatMonth += p.ProductSalesStatistics.ProductsSold
+
+		productMarketStatistics := CompanyMarketStatisticsProduct{
+			ID:                  id,
+			MarketingStatistics: p.MarketingStatistics,
+			MarketShare:         zeroIfNaN(float64(p.ProductSalesStatistics.ProductsSold) / float64(totalMarketSales)),
+			MonthlySales:        p.ProductSalesStatistics.ProductsSold,
+			TotalSales:          0,
+			TotalValueOfSales:   0,
+		}
+
+		productMarketStatistics.MarketingStatistics.ImpressionCount = 0
+		productMarketStatistics.MarketingStatistics.PromotionQuality = 0
+		productMarketStatistics.MarketingStatistics.PromotionQuantity = 0
+
+		stats.Products[id] = productMarketStatistics
+	}
+
+	totalSales := 0
+	totalValueOfSales := 0.
+	for _, report := range c.Reports {
+		for id, p := range report.SalesReport {
+			totalSales += p.ProductSalesStatistics.ProductsSold
+			totalValueOfSales += float64(p.ProductSalesStatistics.ProductsSold) * p.MarketingStatistics.Price
+			productMarketStatistics := stats.Products[id]
+
+			productMarketStatistics.TotalSales += p.ProductSalesStatistics.ProductsSold
+			productMarketStatistics.TotalValueOfSales += float64(p.ProductSalesStatistics.ProductsSold) * p.MarketingStatistics.Price
+			stats.Products[id] = productMarketStatistics
+
+		}
+	}
+
+	stats.MarketShare = zeroIfNaN(float64(totalSalesThatMonth) / float64(totalMarketSales))
+	stats.MonthlySales = totalSalesThatMonth
+	stats.TotalSales = totalSales
+
+	return stats
 }
 
 func (f *Balance_sheet) add_to_income_statement(name string, group int, info string, cash_cost bool, value float64) *FinanceReportEntry {
@@ -524,6 +618,7 @@ type Sales_statistics struct {
 }
 
 type Marketing_statistics struct {
+	Name      string
 	Quality   float32
 	Durabilty int
 	// Coolness  float32
@@ -651,7 +746,9 @@ func (c Company) Mock_simulate_step(decisions Decisions, external_factors Extern
 func (game_state *GameState) SimulateStep() error {
 	game_state.Step += 1
 
-	game_state.ExternalFactors.Month = game_state.Step
+	game_state.ExternalFactors = append(game_state.ExternalFactors, game_state.ExternalFactors[len(game_state.ExternalFactors)-1])
+
+	game_state.ExternalFactors[len(game_state.ExternalFactors)-1].Month = game_state.Step
 
 	if len(game_state.Companies) != len(game_state.CurrentDecisions) {
 		return errors.New("amount of decisions does not match number of companies")
@@ -661,7 +758,7 @@ func (game_state *GameState) SimulateStep() error {
 
 	println("=============== Simulating companies ==============")
 	for i := range game_state.Companies {
-		game_state.Companies[i].prepareCompany(game_state.CurrentDecisions[i], game_state.ExternalFactors, game_state.Employees)
+		game_state.Companies[i].prepareCompany(game_state.CurrentDecisions[i], game_state.ExternalFactors[len(game_state.ExternalFactors)-1], game_state.Employees)
 	}
 
 	println("Simulating companies done!")
@@ -672,7 +769,7 @@ func (game_state *GameState) SimulateStep() error {
 	promotionImpression := make(map[string]int)
 	err := game_state.Population.simulateEconomy(
 		game_state.Companies,
-		game_state.ExternalFactors,
+		game_state.ExternalFactors[len(game_state.ExternalFactors)-1],
 		purchasingStatistics,
 		promotionImpression,
 	)
@@ -720,7 +817,7 @@ func (game_state *GameState) SimulateStep() error {
 			promotionImpression,
 			game_state.MarketSalesStatistics[len(game_state.MarketSalesStatistics)-1],
 
-			game_state.ExternalFactors,
+			game_state.ExternalFactors[len(game_state.ExternalFactors)-1],
 		)
 
 	}
@@ -1029,6 +1126,8 @@ func (c *Company) compileSalesReport(
 		salesStatistics.AvrBangForBuckFactor = productSpecificPurchasingStatiscs.AvrPurchasingFactors[propertiesBangForBuck]
 
 		marketingStatistics := Marketing_statistics{}
+
+		marketingStatistics.Name = c.Offers[productID].Product.Name
 		marketingStatistics.Quality = c.Offers[productID].ProductStats.Quality
 		marketingStatistics.Durabilty = int(c.Offers[productID].ProductStats.Durability)
 		marketingStatistics.Ethics = c.Offers[productID].ProductStats.Ethics
@@ -1053,25 +1152,7 @@ func (c *Company) compileSalesReport(
 // ########## |_| |_| |_| \__,_||_||_| |_| ##########
 // ##################################################
 
-func Get_decisions_from_file(saveLocation string, numberOfCompanies int) ([]Decisions, error) {
-	decisions := make([]Decisions, numberOfCompanies)
-	for i := range decisions {
-		decisions_json, err := os.ReadFile(fmt.Sprintf("%s/decisions_company_%d.json", saveLocation, i))
-		// println(string(decisions_json))
-		if err != nil {
-			return decisions, err
-		}
-
-		err = json.Unmarshal(decisions_json, &decisions[i])
-		if err != nil {
-			return nil, err
-		}
-	}
-
-	return decisions, nil
-}
-
-func (game_state GameState) Save_game(location string, compress bool) error {
+func (game_state GameState) SaveGame(location string, compress bool) error {
 	filename := fmt.Sprintf(
 		"%s-%d.json",
 		game_state.GameName,

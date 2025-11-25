@@ -195,6 +195,34 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply.Data = &company
 }
 
+func getMarketStatistics(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+
+	marketStatistics := make(map[int]simulation.CompanyMarketStatistics)
+
+	totalMarketSales := 0
+	for _, c := range gamestate.Companies {
+		for _, r := range c.Reports[len(c.Reports)-1].SalesReport {
+			totalMarketSales += r.ProductSalesStatistics.ProductsSold
+		}
+	}
+
+	for _, c := range gamestate.Companies {
+		marketStatistics[c.ID] = simulation.CompileMarketStatistics(c, gamestate.ExternalFactors[len(gamestate.ExternalFactors)-1], totalMarketSales, gamestate.Step)
+	}
+
+	json, err := json.Marshal(marketStatistics)
+	if err != nil {
+		_, err := fmt.Fprintf(w, "An error has occured: %s", err.Error())
+		if err != nil {
+			panic(err)
+		}
+	}
+
+	w.Write(json)
+}
+
 func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply := Message[simulation.ExternalFactors]{Method: message.Method, IsResponse: true}
 	defer func() {
@@ -204,7 +232,7 @@ func getExternalFactors(s *Server, ws *websocket.Conn, message Message[any]) {
 		}
 	}()
 
-	externalFactors := gamestate.ExternalFactors
+	externalFactors := gamestate.ExternalFactors[len(gamestate.ExternalFactors)-1]
 	reply.Data = &externalFactors
 }
 
@@ -332,12 +360,12 @@ func getUnemployedEmployees(s *Server, ws *websocket.Conn, message Message[any])
 
 	// update unemployed
 	gamestate.RefillUnemployed(10,
-		gamestate.ExternalFactors.ProductionMinimumWage,
+		gamestate.ExternalFactors[len(gamestate.ExternalFactors)-1].ProductionMinimumWage,
 		8,
 		simulation.Employee_type_production,
 		1)
 	gamestate.RefillUnemployed(10,
-		gamestate.ExternalFactors.MarketingMinimumWage,
+		gamestate.ExternalFactors[len(gamestate.ExternalFactors)-1].MarketingMinimumWage,
 		8,
 		simulation.Employee_type_marketing,
 		1)
@@ -629,7 +657,9 @@ func main() {
 
 	server.addMethod("bChat", sendChat)
 
-	http.HandleFunc("GET /", func(w http.ResponseWriter, r *http.Request) {
+	http.HandleFunc("GET /market/", getMarketStatistics)
+
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			println("Upgrade failed", err.Error())
