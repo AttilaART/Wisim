@@ -229,6 +229,7 @@ table {
 	th,
 	td {
 		padding: calc(var(--spacing) / 2);
+		text-align: center;
 
 		input,
 		select,
@@ -293,6 +294,7 @@ input,
 select {
 	padding: calc(var(--spacing) * 0.5) var(--spacing);
 	margin: var(--spacing) 0;
+	margin-top: calc(var(--spacing) / 2);
 	border-radius: var(--corner-radius);
 	background: color-mix(in oklch, var(--background), var(--primary) 2.5%);
 	color: var(--text);

@@ -74,9 +74,11 @@ type Sim_config struct {
 
 type Company struct {
 	// General
-	ID                int
-	CEO               string
-	Name              string
+	ID        int
+	CEO       string
+	Name      string
+	Activated bool
+
 	Balance           float64
 	Loans             float64
 	BridgeLoans       float64
@@ -333,19 +335,20 @@ type Financial_report struct {
 }
 
 type CompanyMarketStatistics struct {
-	CompanyID         int
-	Step              int
-	CEO               string
-	Name              string
-	Logo              []byte
-	EmployeeCount     int
-	QuartalyNetIncome float64
-	Assets            float64
-	Value             float64
-	MarketShare       float64
-	MonthlySales      int
-	TotalSales        int
-	TotalValueOfSales int
+	CompanyID           int
+	Step                int
+	CEO                 string
+	Name                string
+	Logo                []byte
+	EmployeeCount       int
+	QuartalyNetIncome   float64
+	Assets              float64
+	Value               float64
+	MarketShare         float64
+	MonthlySales        int
+	ValueOfMonthlySales float64
+	TotalSales          int
+	TotalValueOfSales   int
 
 	Products map[string]CompanyMarketStatisticsProduct
 }
@@ -356,6 +359,7 @@ type CompanyMarketStatisticsProduct struct {
 	MarketingStatistics Marketing_statistics
 	MarketShare         float64
 	MonthlySales        int
+	ValueOfMonthlySales float64
 	TotalSales          int
 	TotalValueOfSales   float64
 }
@@ -386,14 +390,17 @@ func CompileMarketStatistics(c Company, externalFactors ExternalFactors, totalMa
 	stats.Products = make(map[string]CompanyMarketStatisticsProduct)
 
 	totalSalesThatMonth := 0
+	totalValueOfSalesThatMonth := 0.
 	for id, p := range report.SalesReport {
 		totalSalesThatMonth += p.ProductSalesStatistics.ProductsSold
+		totalValueOfSalesThatMonth += float64(p.ProductSalesStatistics.ProductsSold) * p.MarketingStatistics.Price
 
 		productMarketStatistics := CompanyMarketStatisticsProduct{
 			ID:                  id,
 			MarketingStatistics: p.MarketingStatistics,
 			MarketShare:         zeroIfNaN(float64(p.ProductSalesStatistics.ProductsSold) / float64(totalMarketSales)),
 			MonthlySales:        p.ProductSalesStatistics.ProductsSold,
+			ValueOfMonthlySales: float64(p.ProductSalesStatistics.ProductsSold) * p.MarketingStatistics.Price,
 			TotalSales:          0,
 			TotalValueOfSales:   0,
 		}
@@ -423,6 +430,7 @@ func CompileMarketStatistics(c Company, externalFactors ExternalFactors, totalMa
 	stats.MarketShare = zeroIfNaN(float64(totalSalesThatMonth) / float64(totalMarketSales))
 	stats.MonthlySales = totalSalesThatMonth
 	stats.TotalSales = totalSales
+	stats.ValueOfMonthlySales = totalValueOfSalesThatMonth
 
 	return stats
 }

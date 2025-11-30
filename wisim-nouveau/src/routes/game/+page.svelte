@@ -378,17 +378,11 @@
 					newWindow(research);
 				}}>Research</button
 			>
-<<<<<<< HEAD
-=======
-			<button>Market</button>
-			<!--
->>>>>>> refs/remotes/origin/main
 			<button
 				onclick={() => {
 					newWindow(market);
 				}}>Market</button
 			>
-      -->
 			<button
 				onclick={() => {
 					newWindow(reports);

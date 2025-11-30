@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"log"
+	"maps"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
@@ -199,6 +200,11 @@ func getMarketStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 
+	if gamestate.Step < 2 {
+		fmt.Fprint(w, "No Data")
+		return
+	}
+
 	marketStatistics := make(map[int]simulation.CompanyMarketStatistics)
 
 	totalMarketSales := 0
@@ -211,6 +217,10 @@ func getMarketStatistics(w http.ResponseWriter, r *http.Request) {
 	for _, c := range gamestate.Companies {
 		marketStatistics[c.ID] = simulation.CompileMarketStatistics(c, gamestate.ExternalFactors[len(gamestate.ExternalFactors)-1], totalMarketSales, gamestate.Step)
 	}
+
+	maps.DeleteFunc(marketStatistics, func(k int, v simulation.CompanyMarketStatistics) bool {
+		return !gamestate.Companies[k].Activated
+	})
 
 	json, err := json.Marshal(marketStatistics)
 	if err != nil {
@@ -462,6 +472,8 @@ func setCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	player := s.conns[ws]
 	player.Company = requestedCompanyID
 	s.conns[ws] = player
+
+	gamestate.Companies[requestedCompanyID].Activated = true
 }
 
 func setDecisions(s *Server, ws *websocket.Conn, message Message[any]) {

@@ -7,6 +7,8 @@
 	import MonthlyOverview from './monthlyOverview.svelte';
 	import SalesReport from './salesReport.svelte';
 	import BalanceSheet from './balanceSheet.svelte';
+	import { position, transform } from '@neodrag/svelte';
+	import Leaderboard from './leaderboard.svelte';
 
 	/**
 	 * @typedef {Object} props
@@ -26,6 +28,9 @@
 		serverAdress
 	} = $props();
 
+	let tab = $state('overview');
+	let selectedCompanyID = $state(0);
+
 	async function getLatestMarketOverview() {
 		/** @type {Object.<string, import("$lib/javascript/simulation").CompanyMarketStatistics>}*/
 		let v = JSON.parse(
@@ -35,7 +40,78 @@
 		);
 		return v;
 	}
+
+	/**
+	 * @param {Object.<string, import("$lib/javascript/simulation").CompanyMarketStatistics>} MarketStatistics
+	 * @param {(p: import("$lib/javascript/simulation").CompanyMarketStatisticsProduct)=>(any)} getData
+	 * @returns {( number|string )[]}
+	 */
+	function getProductData(MarketStatistics, getData) {
+		let returnList = [];
+		for (let c of Object.values(MarketStatistics)) {
+			for (let p of Object.values(c.Products)) {
+				returnList.push(getData(p));
+			}
+		}
+
+		return returnList;
+	}
 </script>
+
+<div style="min-width: 50rem;">
+	<div class="grid" style="margin-bottom: 1rem;">
+		<button
+			class={tab == 'all' ? '' : 'outline'}
+			onclick={() => {
+				tab = 'all';
+			}}>All</button
+		>
+		<button
+			class={tab == 'overview' ? '' : 'outline'}
+			onclick={() => {
+				tab = 'overview';
+			}}>Overview</button
+		>
+		<button
+			class={tab == 'finances' ? '' : 'outline'}
+			onclick={() => {
+				tab = 'finances';
+			}}>Finances</button
+		>
+		<button
+			class={tab == 'sales' ? '' : 'outline'}
+			onclick={() => {
+				tab = 'sales';
+			}}>Sales</button
+		>
+	</div>
+	{#key clientState.ExternalFactors.Month}
+		{#await getLatestMarketOverview() then marketOverview}
+			{#if tab != 'all'}
+				<select bind:value={selectedCompanyID} name="company" id="">
+					{#each Object.values(marketOverview) as c}
+						<option value={c.CompanyID}>{c.Name} ({c.CEO})</option>
+					{/each}
+				</select>
+			{/if}
+
+			{#if tab == 'all'}
+				{@render all(marketOverview)}
+			{:else if tab == 'overview'}
+				{@render overview(marketOverview[selectedCompanyID])}
+			{:else if tab == 'finances'}
+				{@render finances(marketOverview[selectedCompanyID])}
+			{:else}
+				{@render sales(marketOverview[selectedCompanyID])}
+			{/if}
+		{:catch}
+			<center style="margin: 2rem">
+				<h1>No Data</h1>
+				Wait until the next turn to see data
+			</center>
+		{/await}
+	{/key}
+</div>
 
 {#snippet overview(
 	/** @type {import("$lib/javascript/simulation").CompanyMarketStatistics}*/ CompanyMarketStatistics
@@ -50,7 +126,7 @@
 			<tbody>
 				<tr>
 					<td>CEO: </td>
-					<td>PLAYER NAME</td>
+					<td>{CompanyMarketStatistics.CEO}</td>
 				</tr>
 
 				<tr>
@@ -77,10 +153,146 @@
 	</div>
 {/snippet}
 
-{#key clientState.ExternalFactors.Month}
-	{#await getLatestMarketOverview() then marketOverview}
-		{#each Object.entries(marketOverview) as c}
-			{@render overview(c[1])}
-		{/each}
-	{/await}
-{/key}
+{#snippet all(
+	/** @type {Object.<string, import("$lib/javascript/simulation").CompanyMarketStatistics>}*/ MarketStatistics
+)}
+	<div class="grid">
+		<Leaderboard {MarketStatistics}></Leaderboard>
+	</div>
+	<div class="grid">
+		{#if Object.values(MarketStatistics)
+			.map((c) => {
+				return { value: c.MonthlySales, name: `${c.Name}` + '\u200B'.repeat(c.CompanyID) };
+			})
+			.filter((v) => v.value > 0).length >= 1}
+			<div
+				use:chart={{
+					title: {
+						text: 'Market Share (Sales)'
+					},
+					tooltip: {},
+					series: [
+						{
+							name: 'Monthly Sales',
+							type: 'pie',
+							data: Object.values(MarketStatistics)
+								.map((c) => {
+									return {
+										value: c.MonthlySales,
+										name: `${c.Name}` + '\u200B'.repeat(c.CompanyID)
+									};
+								})
+								.filter((v) => v.value > 0)
+						}
+					]
+				}}
+				style="height: 20rem"
+			></div>
+
+			<div
+				use:chart={{
+					title: {
+						text: 'Market Share (Value)'
+					},
+					tooltip: {},
+					series: [
+						{
+							name: 'Value of Monthly Sales (CHF)',
+							type: 'pie',
+							data: Object.values(MarketStatistics)
+								.map((c) => {
+									return {
+										value: c.ValueOfMonthlySales,
+										name: `${c.Name}` + '\u200B'.repeat(c.CompanyID)
+									};
+								})
+								.filter((v) => v.value > 0)
+						}
+					]
+				}}
+				style="height: 20rem"
+			></div>
+		{:else}
+			<div class="chart-placeholder">
+				<span> No Sales </span>
+			</div>
+			<div class="chart-placeholder">
+				<span> No Sales </span>
+			</div>
+		{/if}
+	</div>
+
+	<div class="grid">
+		{#if getProductData(MarketStatistics, (p) => p).length >= 1}
+			<div
+				use:chart={{
+					title: {
+						text: 'Product Prices'
+					},
+					tooltip: {},
+					series: [
+						{
+							name: 'Price',
+							type: 'bar',
+							data: getProductData(MarketStatistics, (e) => {
+								return { value: e.Marketing_statistics.Price, name: e.Marketing_statistics.Name };
+							})
+						}
+					]
+				}}
+				style="height: 20rem"
+			></div>
+		{:else}
+			<div class="chart-placeholder">
+				<span> No Products </span>
+			</div>
+		{/if}
+
+		<div
+			use:chart={{
+				title: {
+					text: 'Market Share (Value)'
+				},
+				tooltip: {},
+				series: [
+					{
+						name: 'Value of Monthly Sales (CHF)',
+						type: 'pie',
+						data: Object.values(MarketStatistics).map((c) => {
+							return {
+								value: c.ValueOfMonthlySales,
+								name: `${c.Name}` + '\u200B'.repeat(c.CompanyID)
+							};
+						})
+					}
+				]
+			}}
+			style="height: 20rem"
+		></div>
+	</div>
+{/snippet}
+
+{#snippet finances(
+	/** @type {import("$lib/javascript/simulation").CompanyMarketStatistics}*/ CompanyMarketStatistics
+)}{/snippet}
+
+{#snippet sales(
+	/** @type {import("$lib/javascript/simulation").CompanyMarketStatistics}*/ CompanyMarketStatistics
+)}{/snippet}
+
+<style>
+	.grid {
+		margin-bottom: var(--spacing);
+	}
+	.chart-placeholder {
+		position: relative;
+		height: 20rem;
+		background: rgba(0, 0, 0, 0.5);
+		span {
+			position: absolute;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+	}
+</style>

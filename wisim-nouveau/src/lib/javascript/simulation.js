@@ -460,6 +460,7 @@ export const financeReportCategories = {
 	@property {number} Value
 	@property {number} MarketShare
 	@property {number} MonthlySales
+  @property {number} ValueOfMonthlySales
 	@property {number} TotalSales
 	@property {number} TotalValueOfSales
 
@@ -473,6 +474,7 @@ export const financeReportCategories = {
 	@property {Marketing_statistics} Marketing_statistics
 	@property {number} MarketShare
 	@property {number} MonthlySales
+  @property {number} ValueOfMonthlySales
 	@property {number} TotalSales
 	@property {number} TotalValueOfSales
 */
