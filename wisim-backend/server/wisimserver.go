@@ -196,6 +196,25 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply.Data = &company
 }
 
+func getSaveGame(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[[]byte]{Method: message.Method, IsResponse: true}
+
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("getCompany: Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	savegame, err := gamestate.SaveGame()
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	reply.Data = &savegame
+}
+
 func getMarketStatistics(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
 	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
@@ -604,6 +623,32 @@ func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
 	println("Company ", player.Company, "unready!")
 }
 
+func setSaveGame(s *Server, ws *websocket.Conn, message Message[any]) {
+	reply := Message[any]{Method: message.Method, IsResponse: true}
+
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("getCompany: Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	saveGame := struct{ data []byte }{}
+	err := mapstructure.Decode(*message.Data, &saveGame)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	savedGameState, err := simulation.LoadGame(saveGame.data)
+	if err != nil {
+		reply.Error = err.Error()
+		return
+	}
+
+	gamestate = savedGameState
+}
+
 func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply := Message[struct {
 		Message string
@@ -661,11 +706,13 @@ func main() {
 	server.addMethod("gEmployees", getEmployees)
 	server.addMethod("gUnemployedEmployees", getUnemployedEmployees)
 	server.addMethod("gProductComponents", getProductComponents)
+	server.addMethod("gSaveGame", getSaveGame)
 
 	server.addMethod("sCompany", setCompany)
 	server.addMethod("sDecisions", setDecisions)
 	server.addMethod("sReady", setReady)
 	server.addMethod("sUnready", setUnReady)
+	server.addMethod("sSaveGame", setSaveGame)
 
 	server.addMethod("bChat", sendChat)
 

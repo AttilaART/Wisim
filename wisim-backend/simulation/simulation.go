@@ -1,13 +1,8 @@
 package simulation
 
 import (
-	"archive/zip"
-	"bytes"
-	"encoding/gob"
-	"encoding/json"
 	"errors"
 	"fmt"
-	"os"
 	"slices"
 
 	"golang.org/x/text/language"
@@ -1149,78 +1144,4 @@ func (c *Company) compileSalesReport(
 
 		salesReportsMap[productID] = Sales_report{salesStatistics, marketingStatistics}
 	}
-}
-
-// ##################################################
-// ##########                    _         ##########
-// ##########                   (_)        ##########
-// ##########  _ __ ___    __ _  _  _ __   ##########
-// ########## | '_ ` _ \  / _` || || '_ \  ##########
-// ########## | | | | | || (_| || || | | | ##########
-// ########## |_| |_| |_| \__,_||_||_| |_| ##########
-// ##################################################
-
-func (game_state GameState) SaveGame(location string, compress bool) error {
-	filename := fmt.Sprintf(
-		"%s-%d.json",
-		game_state.GameName,
-		game_state.Step,
-	)
-
-	var save SaveGame
-
-	var populationBuffer bytes.Buffer
-	encoder := gob.NewEncoder(&populationBuffer)
-	err := encoder.Encode(game_state.Population.Population)
-	if err != nil {
-		return err
-	}
-	save.Population = populationBuffer.Bytes()
-	game_state.Population = Population{}
-
-	save.GameState = game_state
-
-	saveFile, err := json.MarshalIndent(save, "", "    ")
-	if err != nil {
-		return err
-	}
-
-	// Turning file into zip
-	// (IDK what's happening)
-
-	if compress {
-
-		zipFileBuffer := new(bytes.Buffer)
-
-		w := zip.NewWriter(zipFileBuffer)
-
-		file, err := w.Create(filename)
-		if err != nil {
-			return err
-		}
-
-		_, err = file.Write(saveFile)
-		if err != nil {
-			return err
-		}
-
-		err = w.Close()
-		if err != nil {
-			return err
-		}
-
-		err = os.WriteFile(fmt.Sprint(location, "/", filename, ".zip"), zipFileBuffer.Bytes(), 0644)
-		if err != nil {
-			return err
-		}
-
-		return nil
-	} // else if !compress {
-
-	err = os.WriteFile(fmt.Sprint(location, "/", filename), saveFile, 0644)
-	if err != nil {
-		return err
-	}
-
-	return nil
 }

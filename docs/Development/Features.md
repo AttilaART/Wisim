@@ -6,7 +6,7 @@ kanban-plugin: board
 
 ## 
 
-- [ ] # Multi Machines on offer
+- [ ] 
 - [ ] # (Singlplayer) Add win / loss conditions
 - [ ] # Warehouse
 - [ ] # Complex research screen
@@ -19,11 +19,14 @@ kanban-plugin: board
 ## Bugs
 
 - [ ] # Fix window system bugs
+- [ ] 
+- [ ] 
 - [ ] # Fix random reloading
 
 
 ## In Progress
 
+- [ ] # Add ability to save and load files
 
 
 ## Done
@@ -48,6 +51,7 @@ kanban-plugin: board
 - [ ] # Add Monthly overview
 	Show most important values from the past month:
 	- Show how much money was made
+- [ ] # Multi Machines on offer
 
 
 ## Need Rework
