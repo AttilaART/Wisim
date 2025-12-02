@@ -4,6 +4,7 @@ import (
 	"WiSim/simulation"
 	"encoding/json"
 	"fmt"
+	"io"
 	"log"
 	"maps"
 	"net/http"
@@ -12,6 +13,7 @@ import (
 	"slices"
 	"strconv"
 	"sync"
+	"time"
 
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
@@ -196,23 +198,22 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	reply.Data = &company
 }
 
-func getSaveGame(s *Server, ws *websocket.Conn, message Message[any]) {
-	reply := Message[[]byte]{Method: message.Method, IsResponse: true}
+func getSaveGame(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 
-	defer func() {
-		err := ws.WriteJSON(reply)
-		if err != nil {
-			println("getCompany: Error writing JSON to websocket: ", err.Error())
-		}
-	}()
+	println("saving")
 
 	savegame, err := gamestate.SaveGame()
 	if err != nil {
-		reply.Error = err.Error()
+		w.Write(([]byte)(err.Error()))
 		return
 	}
 
-	reply.Data = &savegame
+	w.Header().Set("Content-Disposition", "attachment; filename="+fmt.Sprintf("WisimSaveGame-%s.notajson", time.Now().Format("2006-01-02-15-04-05")))
+	w.Header().Set("Content-Type", r.Header.Get("Content-Type"))
+
+	w.Write(savegame)
 }
 
 func getMarketStatistics(w http.ResponseWriter, r *http.Request) {
@@ -623,30 +624,36 @@ func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
 	println("Company ", player.Company, "unready!")
 }
 
-func setSaveGame(s *Server, ws *websocket.Conn, message Message[any]) {
-	reply := Message[any]{Method: message.Method, IsResponse: true}
+func setSaveGame(w http.ResponseWriter, r *http.Request, s *Server) {
+	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
 
-	defer func() {
-		err := ws.WriteJSON(reply)
-		if err != nil {
-			println("getCompany: Error writing JSON to websocket: ", err.Error())
-		}
-	}()
+	println("loading save")
 
-	saveGame := struct{ data []byte }{}
-	err := mapstructure.Decode(*message.Data, &saveGame)
+	broadcast(s, Message[any]{Method: "bServerBusy", IsResponse: false})
+
+	defer broadcast(s, Message[any]{Method: "bServerReady", IsResponse: false})
+
+	saveData, err := io.ReadAll(r.Body)
 	if err != nil {
-		reply.Error = err.Error()
+		fmt.Fprint(w, err.Error())
+		fmt.Printf(err.Error())
 		return
 	}
 
-	savedGameState, err := simulation.LoadGame(saveGame.data)
+	savedGameState, err := simulation.LoadGame(saveData)
 	if err != nil {
-		reply.Error = err.Error()
+		errStr := err.Error()
+		println(errStr)
+		fmt.Fprint(w, errStr)
 		return
 	}
+
+	println("Number of companies: ", len(savedGameState.Companies))
 
 	gamestate = savedGameState
+
+	fmt.Fprint(w, "Save loaded successfully")
 }
 
 func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
@@ -694,8 +701,6 @@ func main() {
 		log.Fatalf("Error: %s \n", err.Error())
 	}
 
-	gamestate = simulation.NewGame(sim_config, PLAYER_COUNT, "TempGameName")
-
 	// Prepare server
 
 	server := NewServer()
@@ -706,17 +711,38 @@ func main() {
 	server.addMethod("gEmployees", getEmployees)
 	server.addMethod("gUnemployedEmployees", getUnemployedEmployees)
 	server.addMethod("gProductComponents", getProductComponents)
-	server.addMethod("gSaveGame", getSaveGame)
 
 	server.addMethod("sCompany", setCompany)
 	server.addMethod("sDecisions", setDecisions)
 	server.addMethod("sReady", setReady)
 	server.addMethod("sUnready", setUnReady)
-	server.addMethod("sSaveGame", setSaveGame)
 
 	server.addMethod("bChat", sendChat)
 
 	http.HandleFunc("GET /market/", getMarketStatistics)
+	http.HandleFunc("GET /save/", getSaveGame)
+	http.HandleFunc("POST /save", func(w http.ResponseWriter, r *http.Request) { setSaveGame(w, r, server) })
+	http.HandleFunc("GET /new/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+
+		for c := range server.conns {
+			delete(server.conns, c)
+		}
+		gamestate = simulation.NewGame(sim_config, PLAYER_COUNT, "TempGameName")
+	})
+
+	http.HandleFunc("GET /quit/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		gamestate = simulation.GameState{}
+	})
+
+	http.HandleFunc("GET /exit/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		os.Exit(0)
+	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
 		conn, err := upgrader.Upgrade(w, r, nil)

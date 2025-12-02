@@ -433,8 +433,6 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 }
 
 func LoadGame(saveFile []byte) (GameState, error) {
-	println("Loading game")
-
 	saveFileReaderCompressed := bytes.NewReader(saveFile)
 
 	r, err := zip.NewReader(saveFileReaderCompressed, saveFileReaderCompressed.Size())
@@ -448,35 +446,21 @@ func LoadGame(saveFile []byte) (GameState, error) {
 	}
 	defer saveFileReader.Close()
 
-	saveFileDecompressed, err := io.ReadAll(saveFileReader)
-	if err != nil {
-		return GameState{}, err
-	}
-
-	var save SaveGame
-	err = json.Unmarshal(saveFileDecompressed, &save)
-	if err != nil {
-		return GameState{}, err
-	}
-
 	var gameState GameState
-	populationBuffer := bytes.NewBuffer(save.Population)
-	decoder := gob.NewDecoder(populationBuffer)
+	decoder := gob.NewDecoder(saveFileReader)
 
-	var population Population
-	err = decoder.Decode(&population.Population)
+	err = decoder.Decode(&gameState)
 	if err != nil {
 		return GameState{}, err
 	}
-
-	gameState = save.GameState
 
 	for i := range gameState.Companies {
 		// fix employee pointer stuff
+		println(i, gameState.Companies[i].Offers)
 		gameState.Companies[i].employeePool = gameState.Employees
+		gameState.Companies[i].productComponents = &gameState.ProductComponents
+		assignCompanySlicesAndMaps(&gameState.Companies[i])
 	}
-
-	gameState.Population = population
 
 	if len(gameState.Population.Population) == 0 {
 		return gameState, errors.New("failed to load population")
@@ -484,37 +468,19 @@ func LoadGame(saveFile []byte) (GameState, error) {
 
 	println("Successfully opened ", gameState.GameName)
 
-	s, err := json.MarshalIndent(gameState.ExternalFactors, "", "    ")
-	if err != nil {
-		return gameState, err
-	}
-
-	println(string(s))
-
 	return gameState, nil
 }
 
 func (game_state GameState) SaveGame() ([]byte, error) {
 	filename := fmt.Sprintf(
-		"%s-%d.json",
+		"%s-%d.gob",
 		game_state.GameName,
 		game_state.Step,
 	)
 
-	var save SaveGame
-
-	var populationBuffer bytes.Buffer
-	encoder := gob.NewEncoder(&populationBuffer)
-	err := encoder.Encode(game_state.Population.Population)
-	if err != nil {
-		return nil, err
-	}
-	save.Population = populationBuffer.Bytes()
-	game_state.Population = Population{}
-
-	save.GameState = game_state
-
-	saveFile, err := json.MarshalIndent(save, "", "    ")
+	var saveFileBuffer bytes.Buffer
+	encoder := gob.NewEncoder(&saveFileBuffer)
+	err := encoder.Encode(game_state)
 	if err != nil {
 		return nil, err
 	}
@@ -531,7 +497,7 @@ func (game_state GameState) SaveGame() ([]byte, error) {
 		return nil, err
 	}
 
-	_, err = file.Write(saveFile)
+	_, err = io.Copy(file, &saveFileBuffer)
 	if err != nil {
 		return nil, err
 	}

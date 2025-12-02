@@ -1,11 +1,10 @@
 import { dev } from '$app/environment';
-export const prerender = true;
+import fs from 'fs';
+import os from 'os';
 
 export function load({ url }) {
-	let serverAdress = url.searchParams.entries().toArray()[0][0];
-
 	return {
-		serverAdress: serverAdress
+		serverAdress: url.searchParams.entries().toArray()[0][0]
 	};
 }
 

@@ -11,6 +11,7 @@
 	import Employees from '../../components/employees.svelte';
 	import Reasearch from '../../components/reasearch.svelte';
 	import Production from '../../components/production.svelte';
+	import { beforeNavigate } from '$app/navigation';
 	import {
 		preventPageReload,
 		simulateMockStep,
@@ -22,6 +23,8 @@
 	import { wasm_exec } from '$lib/wasm_exec.js';
 	import Reports from '../../components/reports.svelte';
 	import Market from '../../components/market.svelte';
+	import { on } from 'svelte/events';
+	import { redirect } from '@sveltejs/kit';
 
 	wasm_exec();
 
@@ -64,6 +67,15 @@
 	let isReady = $state();
 	let isSimulating = $state(false);
 	let isSimulatingMock = $state(false);
+	let mainMenuOpen = $state(false);
+	let quitDialogueOpen = $derived(!mainMenuOpen);
+
+	/** @param {KeyboardEvent} event */
+	function onKeyUp(event) {
+		if (event.key == 'Escape') {
+			mainMenuOpen = !mainMenuOpen;
+		}
+	}
 
 	/**
 	 * @type {number}
@@ -152,6 +164,9 @@
 	 * @param {CloseEvent?} event
 	 */
 	async function onClose(event) {
+		if (event?.code == 1000) {
+			return;
+		}
 		console.log(`WebSocket Closed. Reconnecting \n ${event}`);
 		connectionPromise = newConnection(
 			`ws://${data.serverAdress}`,
@@ -259,6 +274,10 @@
 		connection.gProductComponents();
 	}
 
+	beforeNavigate(() => {
+		connection.socket.close(1000);
+	});
+
 	function totalProductsSold() {
 		let total = 0;
 		for (let r of clientState.Company.Reports) {
@@ -274,6 +293,8 @@
 	<title>Singlplayer</title>
 	<meta name="description" content="About this app" />
 </svelte:head>
+
+<svelte:window onkeyup={onKeyUp} />
 
 {#await connectionPromise}
 	<dialog open>
@@ -322,6 +343,48 @@
 				<p>Calculating Budget</p>
 			</center>
 		</dialog>
+	{/if}
+
+	{#if mainMenuOpen}
+		<dialog open>
+			<article>
+				<h1>Main Menu</h1>
+				<div style="display: flex; flex-direction: column;">
+					<a href="http://{data.serverAdress}/save/" target="_blank"><button>Save</button></a>
+					<button
+						onclick={() => {
+							quitDialogueOpen = !quitDialogueOpen;
+						}}>Quit</button
+					>
+				</div>
+			</article>
+		</dialog>
+
+		{#if quitDialogueOpen}
+			<dialog open>
+				<article>
+					<h1>Are you sure you want to quit</h1>
+					<p>Any unsaved data will be lost</p>
+					<footer class="grid">
+						<a
+							href="/"
+							onclick={() => {
+								if (
+									data.serverAdress.includes('localhost') ||
+									data.serverAdress.includes('127.0.0.1')
+								)
+									fetch(`http://${data.serverAdress}/quit/`);
+							}}><button class="outline">Quit</button></a
+						>
+						<button
+							onclick={() => {
+								quitDialogueOpen = !quitDialogueOpen;
+							}}>Go back</button
+						>
+					</footer>
+				</article>
+			</dialog>
+		{/if}
 	{/if}
 
 	<div id="ui" data-scheme={clientState.predictionMode ? 'prediction' : 'normal'}>

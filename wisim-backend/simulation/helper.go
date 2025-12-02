@@ -168,6 +168,14 @@ func assignCompanySlicesAndMaps(company *Company) {
 		company.Machines = make([]Machine, 0)
 	}
 
+	if company.Offers == nil {
+		company.Offers = make(map[string]Offer)
+	}
+
+	if company.Reports == nil {
+		company.Reports = make([]Report, 0)
+	}
+
 	for i := range company.Reports {
 		if company.Reports[i].BalanceSheet.Assets == nil {
 			company.Reports[i].BalanceSheet.Assets = make([]FinanceReportEntry, 0)

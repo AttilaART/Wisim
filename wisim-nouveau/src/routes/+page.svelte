@@ -1,3 +1,7 @@
+<script>
+	let saveFile = $state('');
+</script>
+
 <svelte:head>
 	<title>Home</title>
 	<meta name="description" content="Svelte demo app" />
@@ -7,10 +11,21 @@
 	<article id="main-menu">
 		<h1>Wisim</h1>
 		<div id="buttons">
-			<button disabled>Continue</button>
-			<a href="/multiplayer"><button>Multiplayer</button></a>
-			<a href="/game?localhost:8000"><button>Singleplayer</button></a>
-			<button class="secondary">Exit</button>
+			<a
+				href="/game?localhost:8000"
+				onclick={() => {
+					fetch('http://localhost:8000/new/');
+				}}><button>New Game</button></a
+			>
+			<a href="/multiplayer"><button>Join Game</button></a>
+			<a href="/loadGame?localhost:8000"><button>Load Game</button></a>
+			<button
+				class="secondary"
+				onclick={() => {
+					fetch('http://localhost:8000/exit/');
+					window.close();
+				}}>Exit</button
+			>
 		</div>
 	</article>
 </section>

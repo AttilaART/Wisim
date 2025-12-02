@@ -105,6 +105,16 @@ html {
 	transition: var(--transition);
 }
 
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-bottom: var(--spacing);
+}
+
 .grid {
 	display: flex;
 	gap: var(--spacing);
@@ -113,8 +123,13 @@ html {
 		flex: 1 1 100%;
 	}
 
+	a:has(> button),
 	button {
-		margin: var(--spacing) 0;
+		margin: calc(var(--spacing) * 0.5) 0;
+	}
+
+	a > button {
+		margin: 0;
 	}
 }
 
@@ -123,11 +138,14 @@ input:disabled {
 	opacity: 0.5;
 }
 
+button:not(a > button),
+a {
+	margin: calc(var(--spacing) * 0.5) 0;
+}
+
 button {
 	padding: calc(var(--spacing) * 0.75) var(--spacing);
-	margin: calc(var(--spacing) * 0.5) 0;
 	border-radius: var(--corner-radius);
-
 	border: none;
 
 	color: var(--text);
@@ -146,6 +164,12 @@ button {
 	&:focus {
 		background: var(--button-highlight-color);
 	}
+}
+
+a > button {
+	width: 100%;
+	height: 100%;
+	margin: 0;
 }
 
 button.contrast {
@@ -267,7 +291,9 @@ fieldset[role='group'] {
 
 	input,
 	select,
-	button {
+	button,
+	a,
+	button > a {
 		margin: 0;
 	}
 
@@ -341,5 +367,45 @@ dialog {
 		transform: translate(-50%, -50%);
 
 		width: clamp(20rem, 30%, 50rem);
+	}
+}
+
+/**
+ * Container
+ */
+.container,
+.container-fluid {
+	width: 100%;
+	margin-right: auto;
+	margin-left: auto;
+	padding-right: var(--pico-spacing);
+	padding-left: var(--pico-spacing);
+}
+
+@media (min-width: 576px) {
+	.container {
+		max-width: 510px;
+		padding-right: 0;
+		padding-left: 0;
+	}
+}
+@media (min-width: 768px) {
+	.container {
+		max-width: 700px;
+	}
+}
+@media (min-width: 1024px) {
+	.container {
+		max-width: 950px;
+	}
+}
+@media (min-width: 1280px) {
+	.container {
+		max-width: 1200px;
+	}
+}
+@media (min-width: 1536px) {
+	.container {
+		max-width: 1450px;
 	}
 }

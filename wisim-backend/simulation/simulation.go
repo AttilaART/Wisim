@@ -9,11 +9,6 @@ import (
 	"golang.org/x/text/message"
 )
 
-type SaveGame struct {
-	Population []byte // Binary
-	GameState  GameState
-}
-
 type GameState struct {
 	Step     int
 	GameName string
