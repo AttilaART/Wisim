@@ -206,6 +206,18 @@ func randomName(seed int) string {
 		"Earnest",
 		"Gwendilyn",
 		"Patrik",
+		"Christina",
+		"Ikarus",
+		"Jack",
+		"Algernon",
+		"Beatricen",
+		"Aahdam",
+		"Älias",
+		"Daria",
+		"Salvadore",
+		"Ivan",
+		"Nikolai",
+		"Gregor",
 	}
 	lastNames := []string{
 		"Smith",
@@ -222,6 +234,9 @@ func randomName(seed int) string {
 		"Pluss",
 		"The Great",
 		"Bunbury",
+		"Gängster",
+		"Tschernow",
+		"Tehteh",
 	}
 
 	randomiser := rand.New(rand.NewSource(int64(seed)))

@@ -23,15 +23,16 @@
 			}
 			console.log(saveFile);
 
-			if (!saveFile.name.endsWith('.notajson')) {
-				errorText = "incorrect file format: expected '.notajson'";
+			// @ts-ignore
+			if (!saveFile.name.endsWith('.imlee')) {
+				errorText = "incorrect file format: expected '.imlee'";
 				return;
 			}
 
 			let response = await fetch(`http://${data.serverAdress}/save`, {
 				method: 'POST',
 				// @ts-ignore
-				body: await saveFile.bytes()
+				body: await saveFile.arrayBuffer()
 			});
 
 			let responseText = await response.text();
