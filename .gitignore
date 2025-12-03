@@ -1,2 +1,13 @@
 docs/.obsidian/workspace.json
 wisim-nouveau/build
+build
+
+wisim-nouveau/static/node-linux-amd64
+wisim-nouveau/static/node-windows-amd64.exe
+wisim-nouveau/static/node-darwin-amd64
+wisim-nouveau/static/node-darwin-arm64
+
+wisim-nouveau/static/wisimserver-linux-amd64
+wisim-nouveau/static/wisimserver-windows-amd64.exe
+wisim-nouveau/static/wisimserver-darwin-amd64
+wisim-nouveau/static/wisimserver-darwin-arm64

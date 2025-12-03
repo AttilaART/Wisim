@@ -10,7 +10,6 @@ import (
 	"io"
 	"log"
 	"math/rand"
-	"os"
 	"runtime"
 	"sync"
 
@@ -20,19 +19,14 @@ import (
 
 // Game setup functions
 
-func Load_sim_config(path string) (Sim_config, error) {
-	sim_config_file, err := os.ReadFile(path)
-	if err != nil {
-		return Sim_config{}, errors.New("error loading sim_config at '" + path + "'")
-	}
-
-	var sim_config Sim_config
-	err = json.Unmarshal(sim_config_file, &sim_config)
+func LoadSimConfig(simConfigFile []byte) (Sim_config, error) {
+	var simConfig Sim_config
+	err := json.Unmarshal(simConfigFile, &simConfig)
 	if err != nil {
 		return Sim_config{}, errors.New("error in sim_config.json")
 	}
 
-	return sim_config, nil
+	return simConfig, nil
 }
 
 func generatePopulation(
@@ -297,7 +291,7 @@ func (g *GameState) generateCompanies(
 	return companies
 }
 
-func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameState {
+func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string, componentsFile []byte) GameState {
 	var gameState GameState
 
 	gameState.Step = 1
@@ -352,12 +346,8 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string) GameS
 	}
 
 	// Load product components
-	bComponents, err := os.ReadFile("../../common/components.json")
-	if err != nil {
-		log.Fatal(err)
-	}
 
-	err = json.Unmarshal(bComponents, &gameState.ProductComponents)
+	err := json.Unmarshal(componentsFile, &gameState.ProductComponents)
 	if err != nil {
 		log.Fatal(err)
 	}

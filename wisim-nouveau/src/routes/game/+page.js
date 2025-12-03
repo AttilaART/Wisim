@@ -1,5 +1,4 @@
 import { dev } from '$app/environment';
-export const prerender = true;
 
 export function load({ url }) {
 	let serverAdress = url.searchParams.entries().toArray()[0][0];

@@ -2,6 +2,7 @@ package main
 
 import (
 	"WiSim/simulation"
+	_ "embed"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -18,6 +19,12 @@ import (
 	"github.com/gorilla/websocket"
 	"github.com/mitchellh/mapstructure"
 )
+
+//go:embed config/sim_config.json
+var simConfigFile []byte
+
+//go:embed config/components.json
+var componentsFile []byte
 
 type Server struct {
 	conns      map[*websocket.Conn]Player
@@ -696,7 +703,7 @@ func main() {
 	}
 
 	// load sim_config & start game
-	sim_config, err = simulation.Load_sim_config("../simulation/config/sim_config.json")
+	sim_config, err = simulation.LoadSimConfig(simConfigFile)
 	if err != nil {
 		log.Fatalf("Error: %s \n", err.Error())
 	}
@@ -729,7 +736,7 @@ func main() {
 		for c := range server.conns {
 			delete(server.conns, c)
 		}
-		gamestate = simulation.NewGame(sim_config, PLAYER_COUNT, "TempGameName")
+		gamestate = simulation.NewGame(sim_config, PLAYER_COUNT, "TempGameName", componentsFile)
 	})
 
 	http.HandleFunc("GET /quit/", func(w http.ResponseWriter, r *http.Request) {
