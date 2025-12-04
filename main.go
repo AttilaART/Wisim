@@ -73,7 +73,10 @@ func main() {
 	switch platform {
 	case "linux", "darwin":
 		binPath := fmt.Sprintf("%s/client/wisimserver-%s-%s", tempDir, platform, arch)
-		os.Chmod(binPath, 0755)
+		err := os.Chmod(binPath, 0755)
+		if err != nil {
+			log.Fatalln(err)
+		}
 		wisimServerCMD = exec.Command(binPath, "8000", "10", "1")
 	case "windows":
 		wisimServerCMD = exec.Command(fmt.Sprintf("%s\\client\\wisimserver-%s-%s.exe", tempDir, platform, arch), "8000", "10", "1")
@@ -83,7 +86,10 @@ func main() {
 	switch platform {
 	case "linux", "darwin":
 		binPath := fmt.Sprintf("%s/client/node-%s-%s", tempDir, platform, arch)
-		os.Chmod(binPath, 0755)
+		err := os.Chmod(binPath, 0755)
+		if err != nil {
+			log.Fatalln(err)
+		}
 		nodeServerCMD = exec.Command(binPath, fmt.Sprintf("%s/index.js", tempDir))
 	case "windows":
 		nodeServerCMD = exec.Command(fmt.Sprintf("%s\\client\\node-%s-%s.exe", tempDir, platform, arch), fmt.Sprintf("%s\\index.js", tempDir))
@@ -96,9 +102,9 @@ func main() {
 
 	switch platform {
 	case "linux", "darwin":
-		exec.Command("xdg-open", "http://0.0.0.0:3000").Run()
+		_ = exec.Command("xdg-open", "http://0.0.0.0:3000").Run()
 	case "windows":
-		exec.Command("start", "http://0.0.0.0:3000").Run()
+		_ = exec.Command("start", "http://0.0.0.0:3000").Run()
 	}
 
 	<-done
@@ -112,7 +118,9 @@ func runPipe(done chan bool, cmd *exec.Cmd) {
 
 	err := cmd.Run()
 	if err != nil {
-		log.Fatal(err.Error())
+		fmt.Println(err.Error())
+		done <- false
+		return
 	}
 
 	done <- true
