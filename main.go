@@ -98,10 +98,17 @@ func main() {
 		nodeServerCMD = exec.Command(fmt.Sprintf("%s\\client\\node-%s-%s.exe", tempDir, platform, arch), fmt.Sprintf("%s\\index.js", tempDir))
 	}
 
+	defer os.Exit(0)
+
 	done := make(chan bool, 1)
 
 	go runPipe(done, nodeServerCMD)
 	go runPipe(done, wisimServerCMD)
+
+	defer func() {
+		nodeServerCMD.Process.Kill()
+		wisimServerCMD.Process.Kill()
+	}()
 
 	switch platform {
 	case "linux", "darwin":
@@ -111,8 +118,6 @@ func main() {
 	}
 
 	<-done
-
-	os.Exit(0)
 }
 
 func runPipe(done chan bool, cmd *exec.Cmd) {
