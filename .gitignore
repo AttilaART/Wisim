@@ -11,3 +11,8 @@ wisim-nouveau/static/wisimserver-linux-amd64
 wisim-nouveau/static/wisimserver-windows-amd64.exe
 wisim-nouveau/static/wisimserver-darwin-amd64
 wisim-nouveau/static/wisimserver-darwin-arm64
+
+
+wisim-nouveau/static/main.wasm
+wisim-backend/wasm/main.wasm
+wisim-backend/server/wisimserver

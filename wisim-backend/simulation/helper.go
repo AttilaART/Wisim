@@ -150,8 +150,17 @@ func SynchroniseCompanyWithDecisions(company Company, decisions Decisions) Compa
 	}
 
 	company.Machines = slices.Clone(company.Machines)
+
+MachineLoop:
 	for _, d := range decisions.Production.Machines {
 		if d.Change == Delta_New {
+
+			for _, m := range company.Machines {
+				if d.Item.ID == m.ID {
+					continue MachineLoop
+				}
+			}
+
 			company.Machines = append(company.Machines, d.Item)
 		}
 	}
