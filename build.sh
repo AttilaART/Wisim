@@ -9,8 +9,8 @@ cd wisim-nouveau &&
     GOOS=darwin GOARCH=amd64 go build -o wisimserver-darwin-amd64 wisimserver.go &
     GOOS=darwin GOARCH=arm64 go build -o wisimserver-darwin-arm64 wisimserver.go &
     GOOS=linux GOARCH=amd64 go build -o wisimserver-linux-amd64 wisimserver.go
-  )
-cd ../../ &&
+  ) &&
+  cd ../../ &&
   cd wisim-backend/wasm &&
   GOOS=js GOARCH=wasm go build -o main.wasm main.go &&
   cd ../../ &&

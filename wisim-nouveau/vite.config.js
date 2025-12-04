@@ -27,5 +27,5 @@ const compileWASM = {
 
 export default defineConfig({
 	plugins: [enhancedImages(), sveltekit(), compileWASM],
-	base: 'http://0.0.0.0:3000'
+  base: "/"
 });

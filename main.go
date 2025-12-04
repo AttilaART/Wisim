@@ -13,8 +13,11 @@ import (
 
 //go:embed wisim-nouveau/build
 //go:embed wisim-nouveau/build/client/_app
+//go:embed wisim-nouveau/build/server/chunks/_page.*
 //go:embed wisim-nouveau/build/server/chunks/_*
 var content embed.FS
+
+// go:embed wisim-nouveau/build/client/_app/immutable/chunks/_*
 
 var (
 	platform = runtime.GOOS

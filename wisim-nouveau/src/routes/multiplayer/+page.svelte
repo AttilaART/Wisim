@@ -1,4 +1,6 @@
 <script>
+	import { goto } from '$app/navigation';
+
 	let serverAdress = $state('');
 </script>
 
@@ -11,7 +13,8 @@
 	<article>
 		<form
 			onsubmit={() => {
-				window.location.href = `http://localhost:5173/game?${serverAdress}`;
+				console.log('connecting');
+				window.location.replace(`/game?${serverAdress}/`);
 			}}
 		>
 			<label for="">
