@@ -251,7 +251,7 @@ func (g *GameState) generateCompanies(
 	for i := range numberOfCompanies {
 		companies[i] = defaultCompany
 		companies[i].ID = i
-		companies[i].Name = "Unnamed Company"
+		companies[i].Name = fmt.Sprintf("Unnamed Company %d", i+1)
 		companies[i].Activated = false
 		companies[i].Reports = make([]Report, 0)
 		companies[i].DecisionHistory = make([]Decisions, 0)
@@ -393,8 +393,12 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string, compo
 
 	for i := range gameState.CurrentDecisions {
 		gameState.CurrentDecisions[i] = Decisions{
-			General: struct{ CompanyName string }{
+			General: struct {
+				CompanyName string
+				CEO         string
+			}{
 				CompanyName: gameState.Companies[i].Name,
+				CEO:         "",
 			},
 			Predictions: struct {
 				ProductSales map[string]int

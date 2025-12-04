@@ -26,7 +26,7 @@ export const assignmentPatterns = {
 
 /**
  * @typedef {Object} Decisions
- * @property {{CompanyName: string}} General
+ * @property {{CompanyName: string, CEO: string}} General
  * @property {{ProductSales: Object.<string, number>, Steps: number}} Predictions
  * @property {{SetBankLoan: number}} Finances
  * @property {Object.<string ,Decisions_product>} Products

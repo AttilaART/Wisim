@@ -8,11 +8,13 @@ import (
 	"io"
 	"log"
 	"maps"
+	"net"
 	"net/http"
 	_ "net/http/pprof"
 	"os"
 	"slices"
 	"strconv"
+	"strings"
 	"sync"
 	"time"
 
@@ -51,6 +53,10 @@ func (s *Server) handleWS(ws *websocket.Conn) {
 	s.connsMutex.Lock()
 	s.conns[ws] = Player{true, false, -1}
 	s.connsMutex.Unlock()
+
+	hostAddress := fmt.Sprintf("%s:%d", getIPaddress(), PORT)
+	ws.WriteJSON(Message[string]{Method: "bServerAddress", IsResponse: false, Error: "", Data: &hostAddress})
+	sendGameCompanies(s, ws)
 
 	s.readLoop(ws)
 }
@@ -107,6 +113,39 @@ func (s *Server) readLoop(ws *websocket.Conn) {
 
 		methodFunc(s, ws, message)
 	}
+}
+
+func getIPaddress() string {
+	reservedIPs := []string{
+		"127.0.0.1",
+		"172.17.0.1",
+	}
+
+	ifaces, err := net.Interfaces()
+	if err != nil {
+		panic("No network interface found")
+	}
+
+	for _, iface := range ifaces {
+		addrs, err := iface.Addrs()
+		if err != nil {
+			continue
+		}
+
+		for _, addr := range addrs {
+			addrString := strings.Split(addr.String(), "/")[0]
+
+			if strings.Contains(addrString, ":") {
+				continue
+			} else if slices.Contains(reservedIPs, addrString) {
+				continue
+			}
+
+			return addrString
+		}
+	}
+
+	return ""
 }
 
 type Player struct {
@@ -500,6 +539,10 @@ func setCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 	player.Company = requestedCompanyID
 	s.conns[ws] = player
 
+	for conn := range s.conns {
+		sendGameCompanies(s, conn)
+	}
+
 	gamestate.Companies[requestedCompanyID].Activated = true
 }
 
@@ -685,6 +728,46 @@ func sendChat(s *Server, ws *websocket.Conn, message Message[any]) {
 	}
 }
 
+func sendGameCompanies(s *Server, ws *websocket.Conn) {
+	type BasicCompanyInfo struct {
+		ID      int
+		Name    string
+		Balance float64
+		Taken   bool
+	}
+
+	reply := Message[[]BasicCompanyInfo]{Method: "bGameCompanies", IsResponse: false}
+	defer func() {
+		err := ws.WriteJSON(reply)
+		if err != nil {
+			println("bGameCompanies: Error writing JSON to websocket: ", err.Error())
+		}
+	}()
+
+	companies := make([]BasicCompanyInfo, len(gamestate.Companies))
+
+	companyTaken := func(id int) bool {
+		for _, p := range s.conns {
+			if p.Company == id {
+				return true
+			}
+		}
+
+		return false
+	}
+
+	for i, c := range gamestate.Companies {
+		companies[i] = BasicCompanyInfo{
+			ID:      c.ID,
+			Name:    c.Name,
+			Balance: c.Balance,
+			Taken:   companyTaken(c.ID),
+		}
+	}
+
+	reply.Data = &companies
+}
+
 func main() {
 	// Check args, format "[EXECUTABLE NAME] <PORT> <Number of Players>"
 	if len(os.Args) < 4 {
@@ -757,6 +840,11 @@ func main() {
 			println("Upgrade failed", err.Error())
 			return
 		}
+
+		if gamestate.GameName == "" {
+			gamestate = simulation.NewGame(sim_config, PLAYER_COUNT, "TempGameName", componentsFile)
+		}
+
 		server.handleWS(conn)
 	})
 

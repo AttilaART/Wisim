@@ -285,7 +285,7 @@
 			<tbody>
 				<tr>
 					<td>CEO: </td>
-					<td>PLAYER NAME</td>
+					<td>{clientState.Company.CEO}</td>
 				</tr>
 
 				<tr>

@@ -25,6 +25,7 @@
 	import Market from '../../components/market.svelte';
 	import { on } from 'svelte/events';
 	import { redirect } from '@sveltejs/kit';
+	import { number } from 'echarts/core';
 
 	wasm_exec();
 
@@ -69,6 +70,7 @@
 	let isSimulatingMock = $state(false);
 	let mainMenuOpen = $state(false);
 	let quitDialogueOpen = $derived(!mainMenuOpen);
+	let host = $state('');
 
 	/** @param {KeyboardEvent} event */
 	function onKeyUp(event) {
@@ -187,6 +189,13 @@
 		console.log(`WebSocket Closed. \n ${event}`);
 	}
 
+	let invalidCompany = $state(false);
+	let renamedCompany = $state(false);
+	let namedCEO = $state(false);
+
+	/** @type {{ID: number,Name: string,Balance: number,Taken: boolean}[]} */
+	let gameCompanies = $state([]);
+
 	/**
 	 * @param {MessageEvent} event
 	 */
@@ -255,6 +264,10 @@
 					break;
 				case Methods.Broadcast_chat:
 					chats.push(dataJSON.Data);
+				case Methods.Broadcast_server_address:
+					host = dataJSON.Data;
+				case Methods.Broadcast_game_companies:
+					gameCompanies = dataJSON.Data;
 			}
 		}
 	}
@@ -309,23 +322,77 @@
 			<header>
 				<p>Choose Your Company</p>
 			</header>
-			<form
-				use:preventPageReload
-				onsubmit={() => {
-					connection.sCompany(companyID);
-				}}
-			>
-				<input
-					bind:value={companyIDUserFacing}
-					type="number"
-					required
-					placeholder="Company ID"
-					min="0"
-				/>
-				<input type="submit" value="Confirm" />
-			</form>
+
+			{#if gameCompanies == []}
+				<h4>Loading ...</h4>
+			{:else}
+				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing);">
+					{#each gameCompanies as c}
+						<button
+							class="contrast outline"
+							style="{c.Taken ? 'opacity: 0.5;' : ''} text-align: left;"
+							onclick={() => {
+								connection.sCompany(c.ID);
+							}}
+						>
+							<h2>{c.Name}</h2>
+							<small>Balance: {format.currency(c.Balance, true, 0)}</small>
+						</button>
+					{/each}
+				</div>
+				{#if invalidCompany}
+					<small style="color: red;">Invalid company chosen</small>
+				{/if}
+			{/if}
 		</article>
 	</dialog>
+
+	{#if !renamedCompany && clientState.Company.Name.includes('Unnamed Company')}
+		<dialog open>
+			<article>
+				<h2>Name Company</h2>
+				<form
+					use:preventPageReload
+					onsubmit={() => {
+						clientState.Company.Name = clientState.Decisions.General.CompanyName;
+						renamedCompany = true;
+
+						connection.sDecisions(clientState.Decisions);
+					}}
+				>
+					<input
+						type="text"
+						onfocus={(event) => event.target.select()}
+						bind:value={clientState.Decisions.General.CompanyName}
+					/>
+					<input type="submit" value="Set Company Name" />
+				</form>
+			</article>
+		</dialog>
+	{:else if !namedCEO && clientState.Company.CEO == '' && clientState.Company.Name.length > 0}
+		<dialog open>
+			<article>
+				<h2>Name CEO</h2>
+				<form
+					use:preventPageReload
+					onsubmit={() => {
+						clientState.Company.CEO = clientState.Decisions.General.CEO;
+						renamedCompany = true;
+
+						connection.sDecisions(clientState.Decisions);
+					}}
+				>
+					<input
+						type="text"
+						onfocus={(event) => event.target.select()}
+						bind:value={clientState.Decisions.General.CEO}
+					/>
+					<small>You cannot change this later</small>
+					<input type="submit" value="Set CEO Name" />
+				</form>
+			</article>
+		</dialog>
+	{/if}
 
 	{#if isSimulating}
 		<dialog open>
@@ -350,13 +417,21 @@
 			<article>
 				<h1>Main Menu</h1>
 				<div style="display: flex; flex-direction: column;">
+					<button
+						onclick={() => {
+							mainMenuOpen = !mainMenuOpen;
+						}}>Back to Game</button
+					>
 					<a href="http://{data.serverAdress}/save/" target="_blank"><button>Save</button></a>
 					<button
+						class="outline contrast"
 						onclick={() => {
 							quitDialogueOpen = !quitDialogueOpen;
 						}}>Quit</button
 					>
 				</div>
+
+				{#if host != ''}<small>Server address: {host}</small>{/if}
 			</article>
 		</dialog>
 
@@ -414,6 +489,19 @@
 					: 0}
 			</span>
 		</div>
+
+		<button
+			class="contrast outline"
+			style="height: 2.5rem; width: 2.5rem; margin: 0.5rem; border-radius: 100px; z-index: 99; text-align: center; font-size: 2rem; position: absolute; top: 0.5rem; right: 0.5rem;"
+			onclick={() => {
+				mainMenuOpen = !mainMenuOpen;
+			}}
+		>
+			<span
+				style="position: absolute; top: 50%; left: 50%; transform: translate(calc(-50% + 0.01rem), calc(-50% - 0.05rem));"
+				>≡</span
+			></button
+		>
 
 		<Canvas>
 			{#each Object.entries(windows) as w (w[0])}

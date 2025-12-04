@@ -22,6 +22,8 @@ export const Methods = {
 	Get_product_components: 'gProductComponents',
 
 	Broadcast_chat: 'bChat',
+	Broadcast_server_address: 'bServerAddress',
+	Broadcast_game_companies: 'bGameCompanies',
 
 	Sim_starting: 'bSim_starting',
 	Sim_done: 'bSim_done'
@@ -31,6 +33,7 @@ export const Methods = {
 export const baseState = {
 	predictionMode: false,
 	Company: {
+		CEO: '',
 		ID: 0,
 		Name: '',
 		Balance: 0,

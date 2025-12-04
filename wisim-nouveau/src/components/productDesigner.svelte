@@ -1,4 +1,5 @@
 <script>
+	import ProductionIcon from '$lib/images/production.svg';
 	import { format } from '$lib/javascript/format';
 	import noIcon from '$lib/images/noIcon.svg';
 	import Increment from './increment.svelte';
@@ -145,7 +146,7 @@
 	}
 </script>
 
-<div style="min-width: 50rem;">
+<div style="min-width: 55rem;">
 	<div class="main-grid">
 		<div>
 			<input
@@ -182,7 +183,7 @@
 			</div>
 		</div>
 		<div>
-			<table>
+			<table style="width: 100%;">
 				<thead>
 					<tr>
 						<th colspan="2"> <h3>Manufacturing Stats</h3> </th>
@@ -191,9 +192,15 @@
 				</thead>
 				<tbody>
 					<tr>
-						<td>Production Cost:</td>
-						<td
-							>{format.number(productStats.ProductionCost, false, 1)}
+						<td> Production Cost:</td>
+						<td>
+							<img
+								class="inlineIcon"
+								style="height: 1.2rem; translate: 0 0.1rem ;"
+								src={ProductionIcon}
+								alt=""
+							/>
+							{format.number(productStats.ProductionCost, false, 1)}
 							{@render showHoverDifference(
 								productStats.ProductionCost,
 								hoverProductStats.ProductionCost,
@@ -287,18 +294,6 @@
 								false
 							)}
 						</td>
-					</tr>
-					<tr>
-						<td></td>
-						<td></td>
-						<td>Weight:</td>
-						<td
-							><!--{format.number(
-								clientState.Company.Offers[newProductID].productStats.Weight,
-								false,
-								1
-							)}--></td
-						>
 					</tr>
 				</tbody>
 			</table>
@@ -715,6 +710,7 @@
 	.parts-grid {
 		display: grid;
 		grid-template-columns: 1fr 1fr 1fr 1fr;
+		margin-bottom: 1.5rem;
 
 		button {
 			font-size: 2rem;

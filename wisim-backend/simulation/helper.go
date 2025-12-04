@@ -122,6 +122,7 @@ func (d *Decisions) resetDecisions() {
 
 func SynchroniseCompanyWithDecisions(company Company, decisions Decisions) Company {
 	company.Name = decisions.General.CompanyName
+	company.CEO = decisions.General.CEO
 
 	for ID, d := range decisions.Products {
 		offer := company.Offers[ID]

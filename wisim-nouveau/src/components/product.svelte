@@ -132,20 +132,11 @@
 						style="position: absolute; pointer-events: none; left: 50%; top: 50%; transform: translate(-50%, calc(-50% + 0.5rem)); height: 6rem; mix-blend-mode: lighten;"
 					/>
 					<div>
-						{#snippet configurePromotionOfProduct(/** @type {number}*/ windowID)}
-							{@render configurePromotion(windowID, offer[0])}
-						{/snippet}
-						<button
-							onclick={(e) => {
-								e.stopPropagation();
-								newWindow(configurePromotionOfProduct);
-							}}
-							class="inlineIcon marketingIcon"
-							aria-label="Marketing"
-						></button>
 						<h4 style="display: inline;">
 							{offer[1].Product.Name}
 						</h4>
+
+						<br />
 					</div>
 					<div style="text-align: right;">
 						<h4>{format.currency(offer[1].Price, false, 0)}</h4>
@@ -163,7 +154,7 @@
 						<div>
 							<img
 								class="inlineIcon"
-								style="height: 1.2rem; translate: 0 -0.1rem ;"
+								style="height: 1.2rem; translate: 0 0.35rem ;"
 								src={ProductionIcon}
 								alt=""
 							/>
@@ -203,19 +194,33 @@
 						Mark as outdated
 					</label>
 
-					{#snippet newProductWithExistingProduct(/** @type {number}*/ windowID)}
-						{@render newProduct(windowID, offer[1].Product, false)}
-					{/snippet}
-					<button
-						onclick={(e) => {
-							e.stopPropagation();
-							newWindow(newProductWithExistingProduct);
-						}}
-						class="contrast outline"
-						style="position: absolute; bottom: 0.5rem; right: 0.5rem; padding: 0.5rem; line-height: 1rem;"
-					>
-						Make a copy
-					</button>
+					<div style="position: absolute; bottom: 0.5rem; right: 0.5rem;" class="grid">
+						{#snippet newProductWithExistingProduct(/** @type {number}*/ windowID)}
+							{@render newProduct(windowID, offer[1].Product, false)}
+						{/snippet}
+						<button
+							onclick={(e) => {
+								e.stopPropagation();
+								newWindow(newProductWithExistingProduct);
+							}}
+							class="contrast outline"
+							style="padding: 0.5rem; line-height: 1rem; width: 10rem;"
+						>
+							Make a copy
+						</button>
+
+						{#snippet configurePromotionOfProduct(/** @type {number}*/ windowID)}
+							{@render configurePromotion(windowID, offer[0])}
+						{/snippet}
+						<button
+							class="outline"
+							style="padding: 0.5rem; line-height: 1rem;"
+							onclick={(e) => {
+								e.stopPropagation();
+								newWindow(configurePromotionOfProduct);
+							}}>Marketing</button
+						>
+					</div>
 				</article>
 			{/if}
 		{/each}
@@ -286,6 +291,8 @@
 			border: solid 1px silver;
 			padding: 0.5rem;
 			margin: 0;
+
+			min-height: 11rem;
 
 			transition:
 				--top-color 0.5s,

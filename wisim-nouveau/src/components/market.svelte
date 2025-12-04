@@ -73,12 +73,14 @@
 			}}>Overview</button
 		>
 		<button
+			disabled
 			class={tab == 'finances' ? '' : 'outline'}
 			onclick={() => {
 				tab = 'finances';
 			}}>Finances</button
 		>
 		<button
+			disabled
 			class={tab == 'sales' ? '' : 'outline'}
 			onclick={() => {
 				tab = 'sales';

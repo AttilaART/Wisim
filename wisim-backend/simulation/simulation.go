@@ -106,6 +106,7 @@ type TechLevels struct {
 type Decisions struct {
 	General struct {
 		CompanyName string
+		CEO         string
 	}
 	Predictions struct {
 		ProductSales map[string]int
@@ -938,6 +939,7 @@ func (c *Company) prepareCompany(decisions Decisions, externalFactors ExternalFa
 
 	// renaming company
 	c.Name = decisions.General.CompanyName
+	c.CEO = decisions.General.CEO
 
 	fmt.Printf("--------------- Simulating company %d -------------- \n", c.ID)
 
