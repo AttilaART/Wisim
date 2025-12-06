@@ -835,6 +835,9 @@ func main() {
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
+		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
 			println("Upgrade failed", err.Error())

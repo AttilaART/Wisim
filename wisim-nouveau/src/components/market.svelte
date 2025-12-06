@@ -35,7 +35,7 @@
 		/** @type {Object.<string, import("$lib/javascript/simulation").CompanyMarketStatistics>}*/
 		let v = JSON.parse(
 			await (
-				await fetch('http://' + serverAdress.replace('localhost', '127.0.0.1') + '/market/')
+				await fetch('http://' + serverAdress.replace('localhost', '127.0.0.1') + 'market/')
 			).text()
 		);
 		return v;
