@@ -245,8 +245,7 @@ func getCompany(s *Server, ws *websocket.Conn, message Message[any]) {
 }
 
 func getSaveGame(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	enableCORS(w)
 
 	println("saving")
 
@@ -263,8 +262,7 @@ func getSaveGame(w http.ResponseWriter, r *http.Request) {
 }
 
 func getMarketStatistics(w http.ResponseWriter, r *http.Request) {
-	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	enableCORS(w)
 
 	if gamestate.Step < 2 {
 		fmt.Fprint(w, "No Data")
@@ -675,8 +673,7 @@ func setUnReady(s *Server, ws *websocket.Conn, message Message[any]) {
 }
 
 func setSaveGame(w http.ResponseWriter, r *http.Request, s *Server) {
-	w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	enableCORS(w)
 
 	println("loading save")
 
@@ -768,6 +765,12 @@ func sendGameCompanies(s *Server, ws *websocket.Conn) {
 	reply.Data = &companies
 }
 
+func enableCORS(w http.ResponseWriter) {
+	w.Header().Set("Access-Control-Allow-Origin", "*")
+	w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+	w.Header().Set("Access-Control-Allow-Headers", "Content-Type,Authorization")
+}
+
 func main() {
 	// Check args, format "[EXECUTABLE NAME] <PORT> <Number of Players>"
 	if len(os.Args) < 4 {
@@ -813,8 +816,7 @@ func main() {
 	http.HandleFunc("GET /save/", getSaveGame)
 	http.HandleFunc("POST /save", func(w http.ResponseWriter, r *http.Request) { setSaveGame(w, r, server) })
 	http.HandleFunc("GET /new/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		enableCORS(w)
 
 		for c := range server.conns {
 			delete(server.conns, c)
@@ -823,20 +825,19 @@ func main() {
 	})
 
 	http.HandleFunc("GET /quit/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		enableCORS(w)
+
 		gamestate = simulation.GameState{}
 	})
 
 	http.HandleFunc("GET /exit/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		enableCORS(w)
+
 		os.Exit(0)
 	})
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-		w.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+		enableCORS(w)
 
 		conn, err := upgrader.Upgrade(w, r, nil)
 		if err != nil {
