@@ -63,8 +63,13 @@
 	}
 </script>
 
-{#if !productExists}
-	This Product didn't exist yet.
+{#if selectedProduct == ''}
+	No product selected
+{:else if !productExists}
+	<div>
+		{selectedProduct}
+		This Product didn't exist yet.
+	</div>
 {:else}
 	<div class="grid" style="margin-bottom: 1rem;">
 		<div

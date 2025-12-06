@@ -7,8 +7,11 @@ import (
 	"log"
 	"os"
 	"os/exec"
+	"os/signal"
 	"path/filepath"
 	"runtime"
+	"syscall"
+	"time"
 )
 
 //go:embed wisim-nouveau/build
@@ -98,23 +101,34 @@ func main() {
 		nodeServerCMD = exec.Command(fmt.Sprintf("%s\\client\\node-%s-%s.exe", tempDir, platform, arch), fmt.Sprintf("%s\\index.js", tempDir))
 	}
 
-	defer os.Exit(0)
-
 	done := make(chan bool, 1)
+	signals := make(chan os.Signal, 1)
 
 	go runPipe(done, nodeServerCMD)
 	go runPipe(done, wisimServerCMD)
+
+	signal.Notify(signals, syscall.SIGINT, syscall.SIGTERM, os.Interrupt)
+
+	go func() {
+		sig := <-signals
+		fmt.Printf("\nRecieved signal: %s\n", sig.String())
+		done <- true
+	}()
 
 	defer func() {
 		nodeServerCMD.Process.Kill()
 		wisimServerCMD.Process.Kill()
 	}()
 
+	time.Sleep(time.Second * 5)
+
 	switch platform {
-	case "linux", "darwin":
-		_ = exec.Command("xdg-open", "http://0.0.0.0:3000").Run()
+	case "linux":
+		_ = exec.Command("xdg-open", "http://localhost:3000").Run()
+	case "darwin":
+		_ = exec.Command("open", "http://localhost:3000").Run()
 	case "windows":
-		_ = exec.Command("start", "http://0.0.0.0:3000").Run()
+		_ = exec.Command("start", "http://localhost:3000").Run()
 	}
 
 	<-done

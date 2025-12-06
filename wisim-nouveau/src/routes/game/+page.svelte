@@ -23,6 +23,7 @@
 	import { wasm_exec } from '$lib/wasm_exec.js';
 	import Reports from '../../components/reports.svelte';
 	import Market from '../../components/market.svelte';
+	import ColorProperty from '../../components/colorProperty.svelte';
 	import { on } from 'svelte/events';
 	import { redirect } from '@sveltejs/kit';
 	import { number } from 'echarts/core';
@@ -318,7 +319,7 @@
 	</dialog>
 {:then}
 	<dialog bind:this={companyDialogue} open>
-		<article>
+		<article style="min-height: 30rem; max-height: 60%; overflow-y: auto; width: 60vw;;">
 			<header>
 				<p>Choose Your Company</p>
 			</header>
@@ -326,7 +327,7 @@
 			{#if gameCompanies == []}
 				<h4>Loading ...</h4>
 			{:else}
-				<div style="display: grid; grid-template-columns: 1fr 1fr; gap: var(--spacing);">
+				<div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: var(--spacing); ">
 					{#each gameCompanies as c}
 						<button
 							class="contrast outline"
@@ -347,7 +348,7 @@
 		</article>
 	</dialog>
 
-	{#if !renamedCompany && clientState.Company.Name.includes('Unnamed Company')}
+	{#if !renamedCompany && clientState.Company.Name.includes('\r')}
 		<dialog open>
 			<article>
 				<h2>Name Company</h2>
@@ -465,16 +466,24 @@
 	<div id="ui" data-scheme={clientState.predictionMode ? 'prediction' : 'normal'}>
 		<div id="top-bar">
 			<span>{clientState.Company.Name}</span>
-			<span>Balance: {format.currency(clientState.Company.Balance, true, 0)}</span>
 			<span
-				>Cashflow: {clientState.Company.Reports.length >= 1
-					? format.currency(
-							clientState.Company.Reports[clientState.Company.Reports.length - 1].FinancialReport
-								.Totals.Cashflow,
-							true,
-							0
-						)
-					: '0 CHF'}</span
+				>Balance: <ColorProperty
+					value={clientState.Company.Balance}
+					invert={false}
+					formatter={(v) => format.currency(v, true, 0)}
+				></ColorProperty></span
+			>
+			<span
+				>Monthly Cashflow: <ColorProperty
+					value={clientState.Company.Reports.length >= 1
+						? clientState.Company.Reports[clientState.Company.Reports.length - 1].FinancialReport
+								.Totals.Cashflow
+						: 0}
+					invert={false}
+					formatter={(/** @type {number}*/ v) => {
+						return format.currency(v, true, 0);
+					}}
+				></ColorProperty></span
 			>
 			<span>
 				Employees: {format.number(
@@ -737,7 +746,7 @@
 
 {#snippet market(/** @type {Number} id */ id)}
 	<Window
-		title="Reports"
+		title="Market"
 		closeWindow={() => {
 			deleteWindow(id);
 		}}

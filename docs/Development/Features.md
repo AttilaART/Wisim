@@ -6,14 +6,9 @@ kanban-plugin: board
 
 ## 
 
-- [ ] 
 - [ ] # (Singlplayer) Add win / loss conditions
-- [ ] # Warehouse
-- [ ] # Complex research screen
 - [ ] Add Icons
-- [ ] # Add different architypes of customers
-- [ ] # Implent deeper marketing
-- [ ] # Package application
+- [ ] Add tooltip to explain worker distribution
 
 
 ## Bugs
@@ -21,7 +16,6 @@ kanban-plugin: board
 - [ ] # Fix window system bugs
 - [ ] 
 - [ ] 
-- [ ] # Fix random reloading
 
 
 ## In Progress
@@ -31,6 +25,14 @@ kanban-plugin: board
 
 ## Done
 
+- [ ] Add label to production line cost
+- [ ] Add selling price
+- [ ] Add tooltip to explain maxial machine efficiencies
+- [ ] (explain production cost)
+- [ ] Add label to parts
+- [ ] Add production icon in machines
+- [ ] # Package application
+- [ ] # Fix random reloading
 - [ ] # Rework reports
 - [ ] report.BalanceSheet.Assets only shows machines
 - [ ] # Marketing Quality Increases too much -> Products can be sold at insane prices
@@ -74,6 +76,10 @@ kanban-plugin: board
 ## Won't fix
 
 - [ ] # Renaming company doesn't show in chat
+- [ ] # Add different architypes of customers
+- [ ] # Warehouse
+- [ ] # Implent deeper marketing
+- [ ] # Complex research screen
 
 
 

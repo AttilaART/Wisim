@@ -251,7 +251,7 @@ func (g *GameState) generateCompanies(
 	for i := range numberOfCompanies {
 		companies[i] = defaultCompany
 		companies[i].ID = i
-		companies[i].Name = fmt.Sprintf("Unnamed Company %d", i+1)
+		companies[i].Name = fmt.Sprintf("Slot %d \r", i+1)
 		companies[i].Activated = false
 		companies[i].Reports = make([]Report, 0)
 		companies[i].DecisionHistory = make([]Decisions, 0)

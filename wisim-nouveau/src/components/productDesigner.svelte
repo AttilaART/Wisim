@@ -3,6 +3,7 @@
 	import { format } from '$lib/javascript/format';
 	import noIcon from '$lib/images/noIcon.svg';
 	import Increment from './increment.svelte';
+	import ColorProperty from './colorProperty.svelte';
 
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
@@ -146,7 +147,7 @@
 	}
 </script>
 
-<div style="min-width: 55rem;">
+<div>
 	<div class="main-grid">
 		<div>
 			<input
@@ -182,7 +183,7 @@
 				</center>
 			</div>
 		</div>
-		<div>
+		<div style="width: 100%;">
 			<table style="width: 100%;">
 				<thead>
 					<tr>
@@ -252,18 +253,18 @@
 					<tr>
 						<td>Material cost:</td>
 						<td
-							>{format.number(
+							>{format.currency(
 								productStats.MaterialUse * clientState.ExternalFactors.MaterialPrice,
 								false,
-								1
+								2
 							)}
 							{@render showHoverDifference(
 								productStats.MaterialUse * clientState.ExternalFactors.MaterialPrice,
 								hoverProductStats.MaterialUse * clientState.ExternalFactors.MaterialPrice,
 								(value) => {
-									return format.number(value, true, 1);
+									return format.currency(value, true, 2);
 								},
-								false
+								true
 							)}
 						</td>
 						<td>Ethics: </td>
@@ -280,8 +281,21 @@
 						</td>
 					</tr>
 					<tr>
-						<td></td>
-						<td></td>
+						<td data-tooltip="The cost to develop the product and production line tooling"
+							>Development cost:</td
+						>
+						<td
+							>{format.currency(hoverProductionLineCost, false, 0)}
+							{@render showHoverDifference(
+								productionLineCost,
+								hoverProductionLineCost,
+								(value) => {
+									return format.currency(value, true, 0);
+								},
+								false
+							)}
+						</td>
+
 						<td>Durability: </td>
 						<td
 							>{productStats.Durability}
@@ -343,11 +357,14 @@
 				if (!productDecisions.Product.Components.Mechanism) return true;
 				if (!productDecisions.Product.Components.Frame) return true;
 				return false;
-			})()}>Confirm {!viewOnly ? format.currency(-hoverProductionLineCost, true, 2) : ''}</button
+			})()}
+			>Confirm <span data-tooltip="The cost to develop the product and production line tooling"
+				>{!viewOnly ? format.currency(-hoverProductionLineCost, true, 2) : ''}</span
+			></button
 		>
 		<dialog bind:this={machinesDialogue}>
 			<article>
-				<p>Would you like to also assign some machines to your product?</p>
+				<p>Would you like to also assign some production machines machines to your product?</p>
 				<footer>
 					<button
 						onclick={() => {
@@ -475,6 +492,9 @@
 
 {#snippet formFactor()}
 	<div class="component-grid">
+		<center>
+			<h3>Form Factor</h3>
+		</center>
 		<div>
 			{#each Object.entries(clientState.productComponents.FormFactor) as c}
 				{@render renderComponent('FormFactor', c)}
@@ -485,6 +505,9 @@
 
 {#snippet frame()}
 	<div class="component-grid">
+		<center>
+			<h3>Frame</h3>
+		</center>
 		<div>
 			{#each Object.entries(clientState.productComponents.Frame) as c}
 				{@render renderComponent('Frame', c)}
@@ -495,6 +518,9 @@
 
 {#snippet body()}
 	<div class="component-grid">
+		<center>
+			<h3>Body</h3>
+		</center>
 		<div>
 			{#each Object.entries(clientState.productComponents.Body) as c}
 				{@render renderComponent('Body', c)}
@@ -505,6 +531,9 @@
 
 {#snippet mechanism()}
 	<div class="component-grid">
+		<center>
+			<h3>Coffee Mechanism</h3>
+		</center>
 		<div>
 			{#each Object.entries(clientState.productComponents.Mechanism) as c}
 				{@render renderComponent('Mechanism', c)}
@@ -528,6 +557,9 @@
 
 {#snippet misc(/** @type {number} */ slot)}
 	<div class="component-grid">
+		<center>
+			<h3>Miscelaneous</h3>
+		</center>
 		<div>
 			{#each Object.entries(clientState.productComponents.Misc) as c}
 				<button
@@ -543,7 +575,11 @@
 						hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 					}}
 				>
-					<img src={'/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+					{#if c[1].Image != ''}
+						<img src={'/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+					{:else}
+						<small>{c[1].Name}</small>
+					{/if}
 					{@render componentTooltip(c)}
 				</button>
 			{/each}
@@ -586,7 +622,11 @@
 			hoverProductDecisions = JSON.parse(JSON.stringify(productDecisions));
 		}}
 	>
-		<img src={'/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+		{#if c[1].Image != ''}
+			<img src={'/' + c[1].Image} alt="" style="mix-blend-mode: lighten;" />
+		{:else}
+			<small>{c[1].Name}</small>
+		{/if}
 		{@render componentTooltip(c)}
 	</button>
 {/snippet}
@@ -600,19 +640,17 @@
 			{#each [{ value: c[1].MiscSlots, name: 'Miscelaneous slots' }, { value: c[1].ProductionCost, name: 'ProductionCost', invert: true }, { value: c[1].MaterialUse, name: 'MaterialUse', invert: true }, { value: c[1].Ecology, name: 'Ecology' }, { value: c[1].Ethics, name: 'Ethics' }, { value: c[1].Quality, name: 'Quality' }, { value: c[1].Durability, name: 'Durability' }, { value: c[1].ProductionLineCost, name: 'ProductionLineCost', invert: true }] as p}
 				{#if p.value != 0}
 					<li>
-						{@render colorProperty(p.value, p.invert)}
+						<ColorProperty
+							value={p.value}
+							invert={p.invert}
+							formatter={(v) => format.number(v, true, 0)}
+						></ColorProperty>
 						{p.name}
 					</li>
 				{/if}
 			{/each}
 		</ul>
 	</article>
-{/snippet}
-
-{#snippet colorProperty(/** @type {number} */ value, /** @type {boolean | undefined} */ invert)}
-	<span class={value * (invert ? -1 : 1) > 0 ? 'green' : 'red'}
-		>{format.number(value, true, 0)}</span
-	>
 {/snippet}
 
 {#snippet showHoverDifference(
@@ -639,20 +677,15 @@
 	/** @type {string?}*/ field
 )}
 	{#if !field}
-		+
+		<span style="font-size: 2rem;">+</span>
+	{:else if imageSource[field]?.Image != ''}
+		<img src={'/' + `${imageSource[field]?.Image}`} alt="" style="mix-blend-mode: lighten;" />
 	{:else}
-		<img src={'/' + `${imageSource[field]?.Image}`} alt="" />
+		<small>{imageSource[field]?.Name}</small>
 	{/if}
 {/snippet}
 
 <style>
-	span.red {
-		color: red;
-	}
-	span.green {
-		color: green;
-	}
-
 	.tooltip {
 		display: none;
 		text-align: left;
@@ -674,6 +707,7 @@
 	}
 
 	.main-grid {
+		width: 60rem;
 		display: grid;
 		grid-template-columns: 1fr 1fr;
 		gap: 1rem;
@@ -713,7 +747,6 @@
 		margin-bottom: 1.5rem;
 
 		button {
-			font-size: 2rem;
 			padding: 0 1rem;
 		}
 

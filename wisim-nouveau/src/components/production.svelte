@@ -1,4 +1,5 @@
 <script>
+	import ProductionIcon from '$lib/images/production.svg';
 	import { calculateProduction } from '$lib/helper.svelte';
 	import { format } from '$lib/javascript/format';
 	import { assignmentPatterns, delta, financeReportCategories } from '$lib/javascript/simulation';
@@ -106,9 +107,18 @@
 	<article class="grid">
 		<span style="line-height: 200%;">
 			{#if workerSurplus > 0}
-				You have <strong>{workerSurplus}</strong> production employees too many.
+				<span
+					data-tooltip="Some employees can't work because there are not enough production machines"
+					data-placement="right"
+					>You have <strong>{workerSurplus}</strong> production employees too many.</span
+				>
 			{:else if workerSurplus < 0}
-				You are missing <strong>{-workerSurplus}</strong> production employees!
+				<span
+					data-tooltip="Some machines are not working at full capacity because there are not enough employees"
+					data-placement="right"
+				>
+					You are missing <strong>{-workerSurplus}</strong> production employees!</span
+				>
 			{/if}
 		</span>
 		<fieldset role="group" style="margin: 0;">
@@ -145,7 +155,25 @@
 				</td>
 				<td>
 					<h2 style={MachineProduction[i] >= m.ProductionCapacity ? '' : 'color: red;'}>
-						{MachineProduction[i]}
+						<img
+							class="inlineIcon"
+							style="height: 1.2rem; translate: 0 0.15rem ;"
+							src={ProductionIcon}
+							alt=""
+						/>
+						{#if MachineProduction[i] == m.ProductionCapacity}
+							<span>{MachineProduction[i]}</span>
+						{:else if MachineProduction[i] > m.ProductionCapacity}
+							<span
+								data-tooltip="Bonus Production thanks to skilled, motivated workers"
+								data-placement="right">{MachineProduction[i]}</span
+							>
+						{:else}
+							<span
+								data-tooltip={'This machine is not working at full efficieny because not enough workers are assigned to it'}
+								data-placement="right">{MachineProduction[i]}</span
+							>
+						{/if}
 					</h2>
 				</td>
 				<td>
@@ -174,7 +202,7 @@
 							sellMachine(m);
 						}}
 					>
-						Sell
+						Sell ({format.currency(m.Value, false, 0)})
 					</button>
 				</td>
 			</tr>
@@ -188,7 +216,7 @@
 			disabled={clientState.Company.Balance < m.Value}
 			onclick={() => {
 				newMachine(m);
-			}}>Buy Machines ({format.currency(m.Value, false, 2)})</button
+			}}>Buy Machines ({format.currency(m.Value, false, 0)})</button
 		>
 	{/each}
 </center>

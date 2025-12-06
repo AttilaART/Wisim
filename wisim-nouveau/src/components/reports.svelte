@@ -374,7 +374,6 @@
 	{/key}
 
 	<h1>Key Metrics</h1>
-	=
 	{#if clientState.Company.Reports.length >= 1}
 		<article id="key-metrics">
 			<label for="">

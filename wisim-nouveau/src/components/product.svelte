@@ -309,26 +309,4 @@
 			}
 		}
 	}
-	img.inlineIcon,
-	button.inlineIcon {
-		min-height: 0 !important;
-		height: 1.5rem !important;
-	}
-
-	.marketingIcon {
-		min-height: 0 !important;
-		height: 1.5rem !important;
-		translate: 0 -0.5rem;
-		background-color: transparent;
-		background-image: url($lib/images/marketing.svg);
-		background-color: transparent;
-		background-position: center;
-		background-size: 100% 100%;
-		border: none;
-
-		&:active {
-			border: none !important;
-			outline: none !important;
-		}
-	}
 </style>
