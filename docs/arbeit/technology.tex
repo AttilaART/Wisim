@@ -1,0 +1,22 @@
+\section{Technology}
+
+When you start developing a piece of software of any kind, you have to pick a stack, that being choosing which
+technologies you're going to base you project around. This choice is probably the single most important decision of any
+project (right after choosing what to build); getting this wrong can lead to headaches for months to come.
+
+This project experienced two major rewrites where I swapped platform! The back-end, where the \textit{real calculations}
+take place is written in "Go" (commonly referred to as Golang), for those who aren't familiar with it, it's like if
+Python (Tygerjython) and C \footnote{The "C" programming language is the basis of most modern software infrastructure,
+	being used by every operating system. It's very performant, however it has very few features, making the developer have
+	to develop many things from scratch} had a baby; it has a simple syntax like python with 90\% of the performance of C.
+The front-end (what the user actually sees) was originally written in HTML, CSS \& JavaScript using "Wails" to connect
+the front- and back-ends. A few months into development I was experiencing too many issues with this setup: random
+crashes, tight coupling \footnote{Coupling in software refers to how when one part of the software is changed, another
+	related part also has to be as well. } and unexplainable bugs. This frustrated me to such an extent that I just stopped
+working on the project for multiple weeks. Eventually I decided to completely rewrite the front-end in Godot, a free
+game engine; the problem? I didn't know Godot. The smallest of changes required hours of reading the docs and struggling
+around.
+
+In the end I came back to my senses and tried developing the front-end in JavaScript, this time without Wails. As any
+developer knows, the 3rd time you write something is always better than the first two times. And so I stuck with this
+right until the end.
