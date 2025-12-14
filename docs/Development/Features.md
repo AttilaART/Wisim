@@ -9,6 +9,8 @@ kanban-plugin: board
 - [ ] # (Singlplayer) Add win / loss conditions
 - [ ] Add Icons
 - [ ] Add tooltip to explain worker distribution
+- [ ] Make sales screen more clear
+- [ ] Make outdated products have no marketing
 
 
 ## Bugs

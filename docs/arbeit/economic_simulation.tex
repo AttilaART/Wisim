@@ -1,4 +1,4 @@
-\section{Economic Simulation}
+\section{Simulation}
 
 When attempting to simulate a consumer market, there are quite a few approaches
 you could choose between. The vast majority of models fall into 2 categories:
@@ -41,9 +41,44 @@ to, without necessarily major changes. This was the deciding factor for me, as
 the development of the game would take time, during which I would inevitably want
 to rework aspects of the simulation to optimise certain aspects.
 
-\subsection{The Market}
+\subsection{How it works}
 
-\subsubsection*{The customers}
+The game works in 2 phases: the decisions phase and the simulation phase. During the decisions phase players can
+analyise the data provided to them and ajust their companies, designing new products, hiring workers, purchasing
+production machines, etc. When every player is ready, the simulation phase begins, during which the decisions made in
+the previous phase are executed.
+
+\subsubsection*{Products}
+
+Players will develop many products during the course of the game. The products are made up of various comoonents, these
+comoonents along with the research levels of the company impact the properties of the product, for example using wooden
+construction will make you product slightly more ecological whereas using plastic will make it less so.
+
+Players have to balance quality, ecology, durability and ethics with the manufacturing difficulty, design costs and price.
+This forces players to attempt to target a specific customer base lest they lose agaist someone who does. For example:
+the product that objectively has the best stats may be so expensive to produce that it has to be sold for multiple
+thousands of Francs, making it out of reach for most of the consumer base.
+
+\subsubsection*{Production}
+
+Along with developing a product, companies of course have to produce them. To do so they need 3 things: production
+machines, employees and money. Every product has a so called "production cost", this refers to how difficult the
+product is to produce; a production machine will produce more products with low production cost per month than products with a
+high cost all else being equal. Every machine has a specific "production capacity", as you might expect, this refers to
+how much "production" can be produced per month, thus how many of a specific product.
+
+The second ingredient of production is employees, without them machines won't run. The key gameplay impact of employees
+is that as well as their salaries, the product of their skill and motivation determines how efficiently they work. If
+a machine has highly skilled, motivated workers it will produce even more than its listed production capacity. This
+encourages players to retain their best workers and treating them well. If they are over-worked they can burn out and
+become virtually useless. However, if you fire them, they might be snatched up by your competition, with them perhaps
+profiting off years of investment.
+
+Last but not least is money. As with any physical good, they have to be made out of something and this something costs
+money. In fact during hard economic times the cost materials can increase dramatically, which, depending on the
+buisiness strategy, can impact the company's profits.
+
+\subsubsection*{Consumers}
 
 The customer is simulated as a bundle of different characteristics, preferences,
 and needs; these all combine to produce unique behaviors for each individual
@@ -92,22 +127,6 @@ even multiple, if they perceive it to be unique and high quality. On the other
 hand, "the Everyman" will prefer a simpler, cheaper, long-lasting product.
 
 	{\small archetypes have not yet been fleshed out}
-
-\subsubsection*{The Companies}
-
-During the decisions phase, companies were able to develop products and set up
-production chains. Now the products made by companies are put on the market
-along with corresponding marketing campaigns.
-
-\subsubsection*{External Factors}
-
-Since the simulation is limited to the customers and products, external factors
-are able to add extra challenge and variety to the game. There are external
-factors that influence, for example, how easily people will spend money,
-resembling the \href{https://en.wikipedia.org/wiki/Credit_cycle}
-{ credit cycle } experienced in real life, where after a period of high
-consumer spending there is a period of low spending while consumers save back up
-and pay off loans.
 
 \subsection{The Marketing Phase}
 
