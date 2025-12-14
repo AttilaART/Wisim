@@ -43,9 +43,9 @@ to rework aspects of the simulation to optimise certain aspects.
 
 \subsection{How it works}
 
-The game works in 2 phases: the decisions phase and the simulation phase. During the decisions phase players can
+The game works in 2 phases: the decisions phase and the purchasing phase. During the decisions phase players can
 analyise the data provided to them and ajust their companies, designing new products, hiring workers, purchasing
-production machines, etc. When every player is ready, the simulation phase begins, during which the decisions made in
+production machines, etc. When every player is ready, the purchasing phase begins, during which the decisions made in
 the previous phase are executed.
 
 \subsubsection*{Products}
@@ -74,9 +74,18 @@ encourages players to retain their best workers and treating them well. If they 
 become virtually useless. However, if you fire them, they might be snatched up by your competition, with them perhaps
 profiting off years of investment.
 
-Last but not least is money. As with any physical good, they have to be made out of something and this something costs
-money. In fact during hard economic times the cost materials can increase dramatically, which, depending on the
-buisiness strategy, can impact the company's profits.
+Last but not least is money. As with any physical good, they have to be made out of something and that something costs
+money. In fact during hard economic times the cost materials could increase dramatically \footnote{This feature, along
+	with most other external factor related features, is not implemented}, which, depending on the business strategy, can
+impact the company's profits.
+
+\subsubsection*{Marketing}
+
+For people to buy a product, they have to know it exists. With marketing you can spread the word of your product and
+influence peoples' views on it at the same time. By investing large amounts in marketing quantity, you increase how many
+people see your product; later, when deciding which product to buy, customers only choose between the products they
+know. You can also influence how the product is perceived by configuring the marketing style. Marketing style along with
+marketing quality will positively impact how potential customers see the promoted properties of the product.
 
 \subsubsection*{Consumers}
 
@@ -99,6 +108,9 @@ properties: \footnote{The names provided the table may not be accurate to the
 		Owned Products       & List[number]       & Keeps track of the remaining
 		durability of owned products.                                                  \\
 
+		Known Products       & List[number]       & Keeps track of which products
+		the customer knows about.                                                      \\
+
 		Purchasing Threshold & Number             & How attractive a product has to
 		be for the customer to buy it.                                                 \\
 
@@ -115,74 +127,39 @@ properties: \footnote{The names provided the table may not be accurate to the
 		prices more than they do the quality of the product.                           \\ \bottomrule
 	\end{tabular}}
 
-Originally the preferences were determined by sampling a \textit{weighted normal
-	distribution}; however, after some playtesting and reading
-\href{https://en.wikipedia.org/wiki/The_Tipping_Point}{ The Tipping Point } by
-Malcom Gladwell, I reworked the generation of customers by instead creating
-\textit{archetypes} and slightly modifying their preferences randomly.
+The preferences of each customer is determined when the game is created using samples of a normal distribution for each
+of their preferences, these are then weighted and shifted based on results of playtesting. This means that for most
+properties most people don't necessarily care all that much however when looking at an individual, they might care a
+extremely about getting the best value product there is.
 
-Each of the archetypes has some preferences boosted and others diminished. For
-example, "the enthusiast" will not shy away from buying an expensive product,
-even multiple, if they perceive it to be unique and high quality. On the other
-hand, "the Everyman" will prefer a simpler, cheaper, long-lasting product.
+I planned to eventually implement a system of archetypes as described in Malcom Gladwell's The Tipping Point, such that
+each archetype has some preset preferences and others that are more muted like for example some extremely knowledgable
+people that recommend the best products to everyone else (like influencers), but this was cut due to time issues.
 
-	{\small archetypes have not yet been fleshed out}
+\subsection{Purchasing phase}
 
-\subsection{The Marketing Phase}
+When all companies are ready, the internal workings of the companies are simulated and marketing impressions are calculated,
+each customer makes a decision on which product (if any) they buy.
 
-In this phase, the marketing campaigns of companies are simulated. Each
-marketing campaign has a style, a quality and a quantity.
+Customers purchase the product they perceive is the best, that is the one that aligns the best with their preferences.
+This is calculated for each product using the following formula.
+\begin{align}
+	\text{product opinion}  = & \begin{pmatrix}
+		                            \text{ product quality } \cdot \text{ marketing style quality} \\
+		                            ...                                                            \\
+		                            \text{ product durability } \cdot \text{ marketing style durability}
+	                            \end{pmatrix}                \\
+	                          & \cdot \begin{pmatrix}
+		                                  \text{ quality preference } \\
+		                                  ...                         \\
+		                                  \text{ durability preference }
+	                                  \end{pmatrix} \frac{ \text{marketing quality} }{ \text{customer savviness} }
+\end{align}
 
-The style is determined by the player, which can influence the perception of the
-product. This can be used to round out the \textit{less} attractive parts of the
-product. For example, if a player had a high quality product that they wanted to
-market to a more eco-focused audience, instead of having to undertake the
-difficult and expensive process of actually producing in an environmentally
-friendly manner, they can just focus on promoting the product as eco-friendly.
-\footnote{This technique is often labelled as
-	\href{https://en.wikipedia.org/wiki/Greenwashing}{Greenwashing}.
-	The most famous example is Volkswagen's "clean diesel" emissions scandal in 2015
-	where Volkswagen programmed diesel engined cars to run efficiently when they
-	were being tested while reverting to "dirty" operation when driven on the road.
+{\small Explaining the formula: The calculates the dot product of the product's properties and the marketing style
+(putting the focus on what was mentioned in the marketing). The dot product is used here as it can be used to calculate
+how "aligned" to vectors are; two orthogonal vectors will have a dot product of 0 while two collinear vectors will have
+a dot of their products. This is all then multiplied by how affected the customer is by the marking.}
 
-	\noindent Further reading:
-	\href{https://en.wikipedia.org/wiki/Volkswagen_emissions_scandal}
-	{https://en.wikipedia.org/wiki/Volkswagen\_emissions\_scandal}
-}
-
-The quality of a campaign influences how much the perception of the product is
-changed. This is mostly determined by the skill and motivation of the companies
-marketing staff.
-
-Lastly, the quantity of a campaign, expressed in a monetary amount, determines
-who even sees the campaign. A high quantity of marketing means there is a high
-chance that people know about a product. A campaign could theoretically be
-extremely effective, however if no-one sees it, it isn’t actually successful
-since there are still few people who even know about the product’s existence.
-
-All of these factors are mixed in with each customer's "savviness" stat. People
-with more savviness are generally more informed on a market and thus have a
-higher chance of knowing about a product, however they are also less effected
-by marketing and thus perceive it more objectively. Other people with lower
-savviness will easily be swayed by effective marketing.
-
-\subsection{The Purchasing Phase}
-
-After the effects of marketing are evaluated, if the customer needs a product,
-it will evaluate the dot product of its preferences and the product's properties
-(the decision factors) for each product.
-
-$$
-	\text{decision factors} = \begin{pmatrix}
-		\text{ quality } \\
-		...              \\
-		\text{ durability }
-	\end{pmatrix} \cdot \begin{pmatrix}
-		\text{ quality preference } \\
-		...                         \\
-		\text{ durability preference }
-	\end{pmatrix}
-$$
-
-The customer then checks if the product is still available; if so, they try to
-buy enough to fulfill their needs.
+Finally the customer tries to buy as many of their chosen product as they need. If the product is not in stock, they
+don't buy anything.

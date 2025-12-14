@@ -16,3 +16,6 @@ wisim-nouveau/static/wisimserver-darwin-arm64
 wisim-nouveau/static/main.wasm
 wisim-backend/wasm/main.wasm
 wisim-backend/server/wisimserver
+
+docs/arbeit/main.aux
+docs/arbeit/main.log

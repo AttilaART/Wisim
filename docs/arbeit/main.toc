@@ -6,7 +6,6 @@
 \contentsline {section}{\numberline {5}Iteration}{6}{section.5}%
 \contentsline {section}{\numberline {6}Simulation}{6}{section.6}%
 \contentsline {subsection}{\numberline {6.1}How it works}{7}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}The Marketing Phase}{9}{subsection.6.2}%
-\contentsline {subsection}{\numberline {6.3}The Purchasing Phase}{10}{subsection.6.3}%
+\contentsline {subsection}{\numberline {6.2}Purchasing phase}{10}{subsection.6.2}%
 \contentsline {section}{\numberline {7}Actually making it fun}{10}{section.7}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 
