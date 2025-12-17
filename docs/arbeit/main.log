@@ -1,4 +1,4 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.10) (preloaded format=xelatex 2025.9.7)  14 DEC 2025 22:41
+This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.10) (preloaded format=xelatex 2025.9.7)  17 DEC 2025 23:28
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -733,15 +733,32 @@ LaTeX Warning: `!h' float specifier changed to `!ht'.
 
 [4]
 
-[5])
-Overfull \hbox (8.54208pt too wide) in paragraph at lines 20--43
+[5]
+Overfull \hbox (8.54208pt too wide) in paragraph at lines 20--23
 []\TU/SFNSText-Regular.otf(0)/m/n/10.95 In the end I came back to my senses and
  tried developing the front-end in JavaScript,
  []
 
-(economic_simulation.tex
+
+Overfull \hbox (12.41367pt too wide) in paragraph at lines 26--28
+\TU/SFNSText-Regular.otf(0)/m/n/10.95 that were learnt along the way. One of th
+e key lessons I learnt during the development
+ []
+
+
 
 [6]
+File: assets/interface_combined.png Graphic file (type bmp)
+<assets/interface_combined.png>
+)
+Overfull \hbox (31.49341pt too wide) in paragraph at lines 63--43
+\TU/SFNSText-Regular.otf(0)/m/n/10.95 took multiple pages and the program itsel
+f was hundreds of lines long. This misadventure
+ []
+
+
+
+[7] (economic_simulation.tex
 Overfull \hbox (2.95903pt too wide) in paragraph at lines 14--19
 \TU/SFNSText-Regular.otf(0)/m/n/10.95 results, and performance, unless the impl
 ementer makes grave mistakes, statistical
@@ -764,6 +781,8 @@ ucts, hiring workers, purchasing production
  []
 
 
+
+[8]
 Overfull \hbox (10.46112pt too wide) in paragraph at lines 57--61
 []\TU/SFNSText-Regular.otf(0)/m/n/10.95 Players have to balance quality, ecolog
 y, durability and ethics with the manufacturing
@@ -771,9 +790,7 @@ y, durability and ethics with the manufacturing
 
 
 
-[7]
-
-[8]
+[9]
 Underfull \hbox (badness 1888) in paragraph at lines 105--107
 []\TU/SFNSText-Regular.otf(0)/m/n/10 The amount of products a customer
  []
@@ -799,6 +816,8 @@ Overfull \hbox (0.77753pt too wide) in paragraph at lines 102--129
  []
 
 
+
+[10]
 Overfull \hbox (8.62968pt too wide) in paragraph at lines 135--138
 \TU/SFNSText-Regular.otf(0)/m/n/10.95 Gladwell’s The Tipping Point, such that e
 ach archetype has some preset preferences
@@ -810,11 +829,9 @@ Overfull \hbox (3.8302pt too wide) in paragraph at lines 141--143
 l workings of the companies are simulated
  []
 
+)
 
-
-[9])
-
-[10] (main.aux)
+[11] (main.aux)
  ***********
 LaTeX2e <2025-06-01> patch level 1
 L3 programming layer <2025-08-13>
@@ -825,12 +842,12 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
  ) 
 Here is how much of TeX's memory you used:
- 18657 strings out of 405216
- 406231 string characters out of 5493734
+ 18670 strings out of 405216
+ 406595 string characters out of 5493734
  1091380 words of memory out of 5000000
- 46756 multiletter control sequences out of 15000+600000
- 632567 words of font info for 94 fonts, out of 8000000 for 9000
+ 46765 multiletter control sequences out of 15000+600000
+ 632575 words of font info for 95 fonts, out of 8000000 for 9000
  0 hyphenation exceptions out of 8191
- 113i,20n,110p,11230b,491s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 113i,20n,110p,11230b,435s stack positions out of 10000i,1000n,20000p,200000b,200000s
 
-Output written on main.pdf (10 pages).
+Output written on main.pdf (11 pages).
