@@ -32,21 +32,72 @@ dashboard. It was very helpful for testing out various aspects of the simulation
 to be immersive all the while many operations were painfully slow and some mechanics could not reasonably be implemented
 while following the existing designs (such as individual management of personnel and machines).
 
+Concretely I didn't find it fun to play and think few other people would have found it fun.
+
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.45\textwidth]{wisimLayout1.png}
+	\includegraphics[width=0.80\textwidth]{assets/wisimLayout1.png}
 	\caption{The first UI I made for the game}
 \end{figure}
 
 \subsubsection{Attempt \#2: Desktop Management system}
 
-\subsection{Product Designer}
+The second attempt came a few weeks later after I saw a video on Youtube where someone was developing their own economic
+simulation \footnote{I Programmed an Economy Simulator | conaticus | \href{youtu.be/BBIpAyUZq5U?si=H2j5L-wdBHYlHaUZ}
+	{https://youtu.be/BBIpAyUZq5U?si=H2j5L-wdBHYlHaUZ}} (a different aspect of the economy). They used multiple windows on
+an in game desktop to represent the various actions you can make. This system allows for a lot more flexibility and more
+conducive to gameplay. From this point onwards I would generally follow this layout, however in different
+configurations.
 
-One example: the product designer. In early versions of the game, the product designer was simply a menu of sliders, all
-of which changed a certain stat in an unpredicatable and unrepeatable manner. This design was an unspectacular mix of
-boring, unintuative and intimidating. During early playtesting players repeatedly asked what each slider did and
-\textit{why} it did it. Understanding what was actually happening was tremendously difficult and theoretical (like
-playing and Excel table).
+This attempt would ultimately fail due to technical difficulties (further described in "Technology" chapter).
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.80\textwidth]{assets/wisimLayout2.png}
+	\caption{The second attempt at the User Interface}
+\end{figure}
+
+\subsubsection{Attempt \#3: Desktop Management system Godot}
+
+Due to the technical difficulties I experienced in the previous attempt, I tried switching to Godot due to the technical
+frustrations of the previous attempt. This had similar, but different technical problems and came to an end not very
+long after it started.
+
+\subsubsection{Attempt \#4: Desktop Management: Finale}
+
+Finally I implemented a simplified version of the second attempt, this time with many technical and architectural
+improvements. Taking inspiration from games like Rimworld, Hearts of Iron 4 and Transport Fever 2, I added more graphics
+to the game to help the game feel more concrete and less theoretical. This version of the game, also included the
+product designer, which forced me to decide which product to produce (coffee machines). This version would receive the
+most continuous investment from me and in my opinion was the most successful of the four.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.80\textwidth]{assets/wisimLayout4.png}
+	\caption{The final version of the user interface}
+\end{figure}
+
+\subsection{Key Design Elements}
+
+In this section I would like to showcase certain elements of the game which took more time and were more complex to
+develop than other parts of the game.
+
+\subsubsection{Product Designer}
+
+The final version of the product designer was one of the most time consuming design elements of the whole game, as it
+not only required more complex code but also required rather deep changes to the game.
+
+In early versions of the game, the product designer was less of a product \textit{designer} and more of a product
+\textit{configurator}; the product designer was a collection of sliders, each of which would modify a certain aspect or
+multiple assets of the product. This system had multiple flaws such as:
+
+\begin{itemize}
+	\item Being unintuitive and intimidating to new players as it just hit the player with a wall of sliders
+	\item Being kind of boing, since you were just modifying sliders and it didn't feel like you were truly designing your
+	      own product
+	\item Being hard to balance; balancing the effects of each slider involved complex math with various complex curves
+	      not cause some fixed combination to become over powered.
+\end{itemize}
 
 \begin{figure}[h!]
 	\centering
@@ -54,21 +105,41 @@ playing and Excel table).
 	\caption{The original product designer}
 \end{figure}
 
+Thinking of how to fix the above problems, I remembered Hearts of Iron 4 (HOI4). HOI4 is a World War 2 simulation game and it
+suffers from the same problem of making an Excel table fun to play. One of their early updates included a new tank designer
+in which the player chose specific components to put in their tank. This system decreases the abstractness of the
+content while still allowing for lots of creativity. Inspired by HOI4 I also added a similar designer system, except
+this time for your companies products.
+
+Implementing the new product designer did require some major changes to the game's scope: the most important of which being that
+I needed to choose which product would be produced (instead of a generic product), otherwise the whole product designer wouldn't
+make any sense. And so after (very short) deliberation, I decided that companies would produce coffee machines, for no
+deeper reason than there was a coffee machine sitting right in front of me.
+
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.85\textwidth]{product-designer-hoi4-wisim.png}
-	\caption{The tank designer from Hearts of Iron 4 (left) and product designer from Wisim (right)}
+	\includegraphics[width=0.85\textwidth]{assets/product-designer-hoi4-wisim.png}
+	\caption{Left: tank designer from HOI4, right: new product designer from Wisim}
 \end{figure}
 
-Thinking of how to fix the above problems, I remembered Hearts of Iron 4. Hearts of Iron is a WW2 simulation game and it
-suffers from the same problem of making an Excel table fun to play. One of their early DLCs included a new tank designer
-in which the player chose specific components to put in their tank. This system decreases the abstractness of the
-content while still allowing for lots of creativity. Seeing the similarities between the 2 games I promptly adapted the
-system to my game.
+\subsubsection{Prediction mode}
 
-The product designer designer system did, however, require some major changes: the most important of which being that it needed a
-concrete product to be produced. At this stage in the games development, each company was developing a generic
-\textit{product}. And so after (very short) delibaration, I picked coffee machines, for no deeper reason than there was
-a coffee machine sitting right in front of me.
+One of the fundamental problems I and other early play testers experienced when testing early versions of the game was
+that it was extremely difficult to estimate how much money they would make with a certain set of decisions. They would
+either just take a blind guess as to whether they would make money or have to pull out a calculator and a notebook. The
+game made it very difficult to find out if your products were priced well or poorly and how decisions would impact the
+long term.
 
+To solve this problem, I added "budget mode". When you hover your mouse over the "Ready" button you get the option to
+set a sales target for each product, then you can press the "Enter Budget Mode" button. When you pressed the button the
+colour scheme of the game would change and in the "Reports" window and at the top of the screen you would be able to see
+the \textit{predicted} results of your decisions (assuming everything went according to plan). This system is probably
+the most useful tool for setting your prices, because it allows the player to make sure they can make money given their
+prices and production.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=0.85\textwidth]{assets/predictionMode.png}
+	\caption{Prediction mode. The latest numbers shown in the graph represent the expected earnings. }
+\end{figure}
 

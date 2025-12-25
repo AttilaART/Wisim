@@ -6,22 +6,26 @@
 \contentsline {subsection}{\numberline {3.1}Design Philosophy and Layout}{4}{subsection.3.1}%
 \contentsline {subsubsection}{\numberline {3.1.1}Attempt \#1: Tabular Dashboard}{5}{subsubsection.3.1.1}%
 \contentsline {subsubsection}{\numberline {3.1.2}Attempt \#2: Desktop Management system}{5}{subsubsection.3.1.2}%
-\contentsline {subsection}{\numberline {3.2}Product Designer}{5}{subsection.3.2}%
-\contentsline {section}{\numberline {4}Technology}{6}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Implementation Details}{7}{subsection.4.1}%
-\contentsline {subsubsection}{\numberline {4.1.1}Web-Sockets and Inter-process communication}{8}{subsubsection.4.1.1}%
-\contentsline {subsubsection}{\numberline {4.1.2}Implementing Web-Sockets}{9}{subsubsection.4.1.2}%
-\contentsline {subsubsection}{\numberline {4.1.3}WebAssebly}{10}{subsubsection.4.1.3}%
-\contentsline {section}{\numberline {5}Simulation}{10}{section.5}%
-\contentsline {subsection}{\numberline {5.1}How it works}{12}{subsection.5.1}%
-\contentsline {subsubsection}{\numberline {5.1.1}Products}{12}{subsubsection.5.1.1}%
-\contentsline {subsubsection}{\numberline {5.1.2}Production}{12}{subsubsection.5.1.2}%
-\contentsline {subsubsection}{\numberline {5.1.3}Marketing}{13}{subsubsection.5.1.3}%
-\contentsline {subsubsection}{\numberline {5.1.4}Consumers}{13}{subsubsection.5.1.4}%
-\contentsline {subsection}{\numberline {5.2}Purchasing phase}{14}{subsection.5.2}%
-\contentsline {section}{\numberline {6}Tweaks and Balancing}{15}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Economic Balancing}{15}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Research and Development}{16}{subsection.6.2}%
-\contentsline {section}{\numberline {7}What I Learned}{16}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Premature Optimisation}{16}{subsection.7.1}%
+\contentsline {subsubsection}{\numberline {3.1.3}Attempt \#3: Desktop Management system Godot}{6}{subsubsection.3.1.3}%
+\contentsline {subsubsection}{\numberline {3.1.4}Attempt \#4: Desktop Management: Finale}{6}{subsubsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.2}Key Design Elements}{7}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Product Designer}{7}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Prediction mode}{9}{subsubsection.3.2.2}%
+\contentsline {section}{\numberline {4}Technology}{9}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Implementation Details}{10}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Web-Sockets and Inter-process communication}{11}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Implementing Web-Sockets}{12}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.3}WebAssebly}{13}{subsubsection.4.1.3}%
+\contentsline {section}{\numberline {5}Simulation}{13}{section.5}%
+\contentsline {subsection}{\numberline {5.1}How it works}{15}{subsection.5.1}%
+\contentsline {subsubsection}{\numberline {5.1.1}Products}{15}{subsubsection.5.1.1}%
+\contentsline {subsubsection}{\numberline {5.1.2}Production}{15}{subsubsection.5.1.2}%
+\contentsline {subsubsection}{\numberline {5.1.3}Marketing}{16}{subsubsection.5.1.3}%
+\contentsline {subsubsection}{\numberline {5.1.4}Consumers}{16}{subsubsection.5.1.4}%
+\contentsline {subsection}{\numberline {5.2}Purchasing phase}{17}{subsection.5.2}%
+\contentsline {section}{\numberline {6}Tweaks and Balancing}{18}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Economic Balancing}{18}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Research and Development}{19}{subsection.6.2}%
+\contentsline {section}{\numberline {7}What I Learned}{19}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Premature Optimisation}{19}{subsection.7.1}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

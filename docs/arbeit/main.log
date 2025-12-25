@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.14.0 (MiKTeX 22.1) (format=lualatex 2025.9.11)  25 DEC 2025 03:27
+This is LuaHBTeX, Version 1.14.0 (MiKTeX 22.1) (format=lualatex 2025.9.11)  25 DEC 2025 21:26
  restricted system commands enabled.
 **main.tex
 (./main.tex
@@ -934,46 +934,76 @@ on input line 35.
 [3]) (./design.tex
 
 [4]
-<wisimLayout1.png, id=76, 1198.4775pt x 892.33376pt>
-File: wisimLayout1.png Graphic file (type png)
-<use wisimLayout1.png>
-Package luatex.def Info: wisimLayout1.png  used on input line 37.
-(luatex.def)             Requested size: 188.21371pt x 140.13483pt.
-<product.png, id=77, 738.76pt x 495.8525pt>
+<assets/wisimLayout1.png, id=86, 1198.4775pt x 892.33376pt>
+File: assets/wisimLayout1.png Graphic file (type png)
+<use assets/wisimLayout1.png>
+Package luatex.def Info: assets/wisimLayout1.png  used on input line 39.
+(luatex.def)             Requested size: 334.60571pt x 249.13011pt.
+
+Overfull \hbox (32.47603pt too wide) in paragraph at lines 47--47
+  [][][]\TU/SFNSText-Regular.otf(0)/m/n/9 I Pro-grammed an Econ-omy Sim-u-la-tor
+ | conati-cus | [][]|   [][][]| 
+ []
+
+
+
+[5<./assets/wisimLayout1.png>]
+<assets/wisimLayout2.png, id=97, 1443.3925pt x 936.49875pt>
+File: assets/wisimLayout2.png Graphic file (type png)
+<use assets/wisimLayout2.png>
+Package luatex.def Info: assets/wisimLayout2.png  used on input line 56.
+(luatex.def)             Requested size: 334.60571pt x 217.09067pt.
+
+Overfull \hbox (3.38087pt too wide) in paragraph at lines 62--65
+\TU/SFNSText-Regular.otf(0)/m/n/10.95 Due to the tech-ni-cal dif-fi-cul-ties I 
+ex-pe-ri-enced in the pre-vi-ous at-tempt, I tried switch-
+ []
+
+
+
+[6<./assets/wisimLayout2.png>]
+<assets/wisimLayout4.png, id=104, 1445.4pt x 854.19125pt>
+File: assets/wisimLayout4.png Graphic file (type png)
+<use assets/wisimLayout4.png>
+Package luatex.def Info: assets/wisimLayout4.png  used on input line 76.
+(luatex.def)             Requested size: 334.60571pt x 197.73718pt.
+
+
+[7<./assets/wisimLayout4.png>]
+<product.png, id=111, 738.76pt x 495.8525pt>
 File: product.png Graphic file (type png)
 <use product.png>
-Package luatex.def Info: product.png  used on input line 53.
+Package luatex.def Info: product.png  used on input line 104.
 (luatex.def)             Requested size: 188.21371pt x 126.32344pt.
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-<product-designer-hoi4-wisim.png, id=78, 902.37125pt x 261.97874pt>
-File: product-designer-hoi4-wisim.png Graphic file (type png)
-<use product-designer-hoi4-wisim.png>
-Package luatex.def Info: product-designer-hoi4-wisim.png  used on input line 59
-.
+<assets/product-designer-hoi4-wisim.png, id=112, 902.37125pt x 261.97874pt>
+File: assets/product-designer-hoi4-wisim.png Graphic file (type png)
+<use assets/product-designer-hoi4-wisim.png>
+Package luatex.def Info: assets/product-designer-hoi4-wisim.png  used on input 
+line 121.
 (luatex.def)             Requested size: 355.51976pt x 103.21463pt.
 
-LaTeX Warning: `!h' float specifier changed to `!ht'.
 
+[8<./product.png><./assets/product-designer-hoi4-wisim.png>]
+<assets/predictionMode.png, id=121, 1445.4pt x 850.17625pt>
+File: assets/predictionMode.png Graphic file (type png)
+<use assets/predictionMode.png>
+Package luatex.def Info: assets/predictionMode.png  used on input line 142.
+(luatex.def)             Requested size: 355.51976pt x 209.10579pt.
+) (./technology.tex
 
-
-[5<./wisimLayout1.png>]) (./technology.tex
-
-[6<./product.png><./product-designer-hoi4-wisim.png>]
+[9<./assets/predictionMode.png>]
 Overfull \hbox (8.54218pt too wide) in paragraph at lines 20--23
 []\TU/SFNSText-Regular.otf(0)/m/n/10.95 In the end I came back to my senses and tried de-vel-op-ing the front-end in JavaScript,
  []
 
 
 
-[7]
+[10]
 
-[8]
+[11]
 
-[9]
-<assets/WebassemblyExample.png, id=120, 669.50125pt x 630.355pt>
+[12]
+<assets/WebassemblyExample.png, id=155, 669.50125pt x 630.355pt>
 File: assets/WebassemblyExample.png Graphic file (type png)
 <use assets/WebassemblyExample.png>
 Package luatex.def Info: assets/WebassemblyExample.png  used on input line 136.
@@ -985,7 +1015,7 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 ) (./economic_simulation.tex
 
-[10]
+[13]
 Overfull \hbox (1.0838pt too wide) in paragraph at lines 35--35
 \TU/SFNSText-Regular.otf(0)/m/n/9 Link to ar-ti-cle: [][]|   [][][] 
  []
@@ -1002,9 +1032,9 @@ Overfull \hbox (9.0pt too wide) in paragraph at lines 35--35
 
 
 
-[11<./assets/WebassemblyExample.png>]
+[14<./assets/WebassemblyExample.png>]
 
-[12]
+[15]
 Underfull \hbox (badness 1888) in paragraph at lines 107--109
 []\TU/SFNSText-Regular.otf(0)/m/n/10 The amount of prod-ucts a cus-tomer
  []
@@ -1021,12 +1051,12 @@ Overfull \hbox (0.77753pt too wide) in paragraph at lines 104--131
 
 
 
-[13]
+[16]
 
-[14]) (./tweaks_and_balancing.tex)
+[17]) (./tweaks_and_balancing.tex)
 
-[15]
-<assets/interface_combined.png, id=168, 760.34062pt x 380.17032pt>
+[18]
+<assets/interface_combined.png, id=202, 760.34062pt x 380.17032pt>
 File: assets/interface_combined.png Graphic file (type png)
 <use assets/interface_combined.png>
 Package luatex.def Info: assets/interface_combined.png  used on input line 70.
@@ -1037,9 +1067,9 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 
-[16]
+[19]
 
-[17<./assets/interface_combined.png>] (./main.aux)
+[20<./assets/interface_combined.png>] (./main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-03-26>
@@ -1051,16 +1081,16 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 )
 
 Here is how much of LuaTeX's memory you used:
- 19618 strings out of 471954
+ 19665 strings out of 471954
  100000,1373583 words of node,token memory allocated
- 722 words of node memory still in use:
-   7 hlist, 2 vlist, 2 rule, 14 glue, 4 kern, 1 glyph, 37 attribute, 63 glue_spe
-c, 20 attribute_list, 1 write nodes
-   avail lists: 1:1,2:1614,3:384,4:212,5:939,6:126,7:7370,8:53,9:633,10:15,11:42
-9
- 45763 multiletter control sequences out of 65536+600000
+ 735 words of node memory still in use:
+   7 hlist, 2 vlist, 2 rule, 15 glue, 4 kern, 1 glyph, 39 attribute, 63 glue_spe
+c, 21 attribute_list, 1 write nodes
+   avail lists: 1:1,2:1866,3:452,4:252,5:869,6:141,7:6876,8:63,9:677,10:15,11:48
+6
+ 45788 multiletter control sequences out of 65536+600000
  78 fonts using 7500127 bytes
- 113i,21n,104p,11227b,557s stack positions out of 10000i,1000n,20000p,200000b,200000s
+ 113i,21n,104p,11227b,574s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/fonts/ope
 ntype/public/lm/lmmono10-regular.otf><./SFNSText-Bold.otf><./SFNSText-RegularIta
 lic.otf></Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/f
@@ -1071,9 +1101,9 @@ Application Support/MiKTeX/texmfs/install/fonts/type1/public/amsfonts/cm/cmmi10.
 pfb></Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/fonts
 /type1/public/amsfonts/cm/cmr10.pfb></Users/attilapinter/Library/Application Sup
 port/MiKTeX/texmfs/install/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on main.pdf (17 pages, 1761758 bytes).
+Output written on main.pdf (20 pages, 2558752 bytes).
 
-PDF statistics: 316 PDF objects out of 1000 (max. 8388607)
- 64 named destinations out of 1000 (max. 131072)
- 201 words of extra memory for PDF output out of 10000 (max. 100000000)
+PDF statistics: 363 PDF objects out of 1000 (max. 8388607)
+ 75 named destinations out of 1000 (max. 131072)
+ 233 words of extra memory for PDF output out of 10000 (max. 100000000)
 
