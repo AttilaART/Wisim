@@ -23,43 +23,116 @@ right until the end.
 
 \subsection{Implementation Details}
 
-As with any software project, there are few things that go to plan and many lessons that were learnt along the way. One
-of the key lessons I learnt during the  development of this project  is to avoid \textit{premature optimisation}.
+The whole game is split into 4 modules:
 
-\subsubsection*{Premature Optimisation}
+\begin{itemize}
+	\item the Front-end,
+	\item a webserver,
+	\item the simulation,
+	\item the game server
+	\item and finally the orchestrator
+\end{itemize}
 
-\begin{quote}
-	Premature optimization is the root of all evil (or at least most of it) in programming.
+This may seem complex at first glance, that's because it is. However, this strong separation of concerns has some quite positive
+emergent properties. Before I can get into those, we first have to understand what the concerns in question are.
 
-	\raggedleft{\textbf{Donald Knuth}}
-\end{quote}
+(1) The first and most obvious concern is the simulation: the simulation is the core of the game however it doesn't stand on its
+own. The simulation expects clean, input all at once, which is antithetical to how humans work. (2) The next is that since
+this is a \textit{multi-player} game, we need to handle input from multiple players at once. (3) Next up we there needs to
+be a way for the user to input data, also known as playing the game. (4) Finally needs to be something that co-ordinates all
+these processes.
 
-Premature optimisation is the act of devoting a significant amount of optimising for task you might not truly need to
-optimise for.
+The first two problems are solved with the game server. The game server connects to each client (the front-end) using
+Web-Sockets (We'll cover this later) and acts as a cache between the simulation and the front-end. The game server
+sanitises all the data from the simulation, removing unsupported values and saving decisions made on the front-end.
+For example when a player hires a new employee, the game server registers that the player did that. If their game
+crashes, they exit or any other issue, their changes are registered and when they rejoin they'll have the exact same
+state (and won't have to redo everything they had done previously). Eventually, when every player is ready, the server
+starts the simulation and simultaneously informs each client.
 
-A funny example of this was while developing budget mode. In budget mode the player is able to see the predicted outcome
-of the decisions they are about to make. To be able to clearly differentiate between budget mode and normal mode, I
-wanted the colour scheme to change such that instead of blue being the primary colour, green was.
+The 3\textsuperscript{rd} problem is solved with the Front-end and webserver. The front-end provides a user interface
+for players to play the game through. Since the front-end is coded in Svelte \footnote{Svelte is a front-end JavaScript
+	and HTML framework, frameworks greatly simplify the process of developing a web-application}, there also has to be a
+server to tell the browser what to display.
+
+Finally, the orchestrator neatly packs everything into one single binary, handles errors of both servers and cleans up
+after you stopped playing.
+
+\subsubsection{Web-Sockets and Inter-process communication}
+
+One of the first non-trivial problems you experience when using multiple programming languages is how to send data from
+one to the other, or more generally how to send data from one program to another. This is when Inter-process
+communication (IPC) comes into play. Thanks to modern operating systems there are many ways to share data between
+programs, some of the most common are signals, sockets and pipes; all these systems are universally available and able
+to transfer data asynchronously, however not all are suited to all tasks. To understand which method to use, we need, we
+need to understand what they are.
+
+The simplest IPC is probably the signal. Signals are sent through the operating system, interrupt the program at a
+certain point and run some function (by default exiting the program). What is done when a signal is received has to be
+registered by the recipient in advance. For example, when you you close a program you send the "kill" signal, the
+execution of the program is interrupted and the registered action is run; this typically entails saving unsaved data,
+cleanly stopping the program to make sure no data is corrupted. Signals are very easily implemented, however their main
+downside is a deal-breaker for the game: the fact that they cannot transmit additional data other than their name.
+
+Far more versatile are pipes. Pipes are buffers that one process can write to and the other can read from. Imagine
+someone sharing their screen on a call, the other person can see what's happening but can't edit what's happening. So
+for two process to have a two way communication channel, they need to pipes: one to the other program and another from
+it. The main advantage of pipes is that they are simple to implement, thanks to the fact that the operating system
+handles most of the hard work. Pipes are also often used by sys-admins to chain commands together: for example on MacOS
+or Linux you can get a sorted list of files in folder by entering \texttt{ls | sort}. Pipes are really useful tool to
+understand, however in this instance they are unsuitable because they only work on the local machine.
+
+The most versatile are sockets, which use can use the network to receive data using internet protocols such as TCP or
+UDP. Sockets are like a letterbox in a large office: each employee has an assigned letterbox and can receive letters
+from the internal mail service or by post. These letterboxes are called ports and only a single process can own a given
+port but can receive from many processes. Using sockets a program can also receive data from other computers on the
+network: for example when you open a website, your browser sends a packet (letter) to the server on port 443, along with
+this packet there is a return port (eg. 31222), the server then replies with a packet containing the data that was
+requested sent to the port written in the request. This is the method used in Wisim. The great thing about sockets is
+that there is a huge amount of tools built on top of it, specifically for this project: Web-Sockets.
+
+Web-Socket is a protocol built on top TCP that allows for the easy creation of a 2-way pipe between the server and
+a browser. They use a socket on both the client and server however they are able to bypass what I like to call the "port
+problem": namely that the server is (usually) not allowed to query the client \footnote{Typically the firewall on the
+	client device will block all incoming connections unless they are replying to a client request.}. It does this by having
+the client send an HTTP request to the server, the server then "upgrades" the request to a Web-Socket and instead of
+replying and closing the connection, it just leaves it open. Web-Sockets are by-far the easiest way to get a full-duplex
+( bi-direction ) connection with a web-browser.
+
+\subsubsection{Implementing Web-Sockets}
+
+While Web-Sockets are very simple to implement, they have a totally different data-flow compared to HTTP: on the client
+you usually make an HTTP request and await a response, this is quite easy to implement, when you need data you ask for
+it and wait. With Web-Sockets you have to implement asynchronous event handling because you never know when the server
+is going to send a new message.
+
+On top of the previous, Web-Sockets is a binary format, that being that messages are not cleanly formatted like in HTTP
+with designated headers and status codes, instead they are just raw text, how the data is formatted is up to the
+developer. With me being \textit{the developer}, that gives me a lot of room for stupid decisions. For example I spent a
+day inventing my own data encoding protocol which mimicked a command prompt. This might not sound all that dumb until
+you realise that both JavaScript and my Go back-end include functions for parsing JSON encoded messages.
+
+\subsubsection{WebAssebly}
+
+Since the game has some parts written in Go and some in JavaScript there will almost inevitably be some code that needs
+to be shared, lest I code 2 versions of the same function and \textit{try very hard} to keep both versions in sync.
+For example the \verb|CalculateProductStats| function which is used to (now this is going to surprise you) calculate the
+properties of products based on their components and the company. This function has to be identical on the front and
+back-end, otherwise players might get misled into thinking that their products are more or less good than they really
+are. Thankfully, other people have already had this problem and even came up with a solution. The solution, as you might
+guess by the section header, is called WebAssebly.
+
+WebAssembly is a runtime for running non-JavaScript code on the browser. It is designed as a compile target for other
+language so that they can run in a standardised, architecture agnostic\footnote{Every CPU is based on a certain Architecture such
+	as ARM or x86. Code built for ARM cannot run on x86 or vice-versa. What WebAssembly does is that it translates
+	WebAssebly code to compatible machine code either just in time or ahead of time } way inside a browser.
+
+Using WebAssembly along with some glue code \footnote{Since JavaScript is a dynamically typed language, there has to be
+	some code that converts JS variables into statically typed Go variables}, I was able to ensure that functions running on
+the frontend were \textit{identical} to those running on the server.
 
 \begin{figure}[h]
 	\centering
-	\includegraphics[width=0.9\textwidth]{assets/interface_combined.png}
-	\caption{What I wanted to achieve}
+	\includegraphics[ width=0.9\textwidth ]{assets/WebassemblyExample.png}
+	\caption{Glue code for the WebAssebly version of \texttt{CalculateProductStats} }
 \end{figure}
-
-Having heard of relative colours using the CSS\footnote{CSS is the technology used to style websites and web apps.
-	CSS files are also referred to as style sheets.} \verb|color()| and \verb|color-mix| functions I wanted to adapt my
-current style sheet to use these relative colours. I just had one problem: the style sheet I was using was multiple
-hundreds of lines long (quite long!) and I didn't want to manually edit all of that! So what is the logical answer to
-this predicament? Is it to just make a new style sheet that approximated the previous one except that it had these
-relative colours, given that I was using a very small subset of the features of the style sheet? NO! The answer is to
-write a small program that reads, parses and extracts colours from a CSS file, converts the colours to relative colours
-(if possible) and finally rewrites the new CSS file. This, in fact, was not the most logical solution. It is not only
-unnecessarily trying to automate a task that realistically takes a half hour, but it also steps into the
-\textit{extremely complex}\footnote{For more info on digital colours see: "Everything About Color in 25 Minutes" by Juxtopposed.
-	\href{https://www.youtube.com/watch?v=srRI7yMjGz0\&t=6s}{https://www.youtube.com/watch?v=srRI7yMjGz0\&t=6s}} domain of digital colours,
-a domain that I had almost no knowledge in.
-
-I ended up wasting a week of time calculating and coding this "simple" app to convert colours. The maths to derive the
-relative components of a colour already took multiple pages and the program itself was hundreds of lines long. This
-misadventure thoroughly taught me not to try to prematurely optimise something that, in the end, I didn't even need.

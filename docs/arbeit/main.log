@@ -1,33 +1,74 @@
-This is XeTeX, Version 3.141592653-2.6-0.999997 (MiKTeX 25.10) (preloaded format=xelatex 2025.9.7)  17 DEC 2025 23:28
-entering extended mode
- restricted \write18 enabled.
- %&-line parsing enabled.
-**./main.tex
-(main.tex
-LaTeX2e <2025-06-01> patch level 1
-L3 programming layer <2025-08-13>
-(template.tex
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrartcl.cls
-Document Class: scrartcl 2025/09/09 v3.48 KOMA-Script document class (article)
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrkbase.sty
-Package: scrkbase 2025/09/09 v3.48 KOMA-Script package (KOMA-Script-dependent b
+This is LuaHBTeX, Version 1.14.0 (MiKTeX 22.1) (format=lualatex 2025.9.11)  25 DEC 2025 03:27
+ restricted system commands enabled.
+**main.tex
+(./main.tex
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-03-26>
+Lua module: luaotfload 2024-12-03 v3.29 Lua based OpenType font support
+Lua module: lualibs 2023-07-13 v2.76 ConTeXt Lua standard libraries.
+Lua module: lualibs-extended 2023-07-13 v2.76 ConTeXt Lua libraries -- extended 
+collection.
+luaotfload | conf : Root cache directory is "/Users/attilapinter/Library/Applica
+tion Support/MiKTeX/texmfs/data/luatex-cache/generic/names".
+luaotfload | init : Loading fontloader "fontloader-2023-12-28.lua" from kpse-res
+olved path "/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/instal
+l/tex/luatex/luaotfload/fontloader-2023-12-28.lua".
+Lua-only attribute luaotfload@noligature = 1
+luaotfload | init : Context OpenType loader version 3.134
+Inserting `luaotfload.node_processor' in `pre_linebreak_filter'.
+Inserting `luaotfload.node_processor' in `hpack_filter'.
+Inserting `luaotfload.glyph_stream' in `glyph_stream_provider'.
+Inserting `luaotfload.define_font' in `define_font'.
+Lua-only attribute luaotfload_color_attribute = 2
+luaotfload | conf : Root cache directory is "/Users/attilapinter/Library/Applica
+tion Support/MiKTeX/texmfs/data/luatex-cache/generic/names".
+Inserting `luaotfload.harf.strip_prefix' in `find_opentype_file'.
+Inserting `luaotfload.harf.strip_prefix' in `find_truetype_file'.
+Removing  `luaotfload.glyph_stream' from `glyph_stream_provider'.
+Inserting `luaotfload.harf.glyphstream' in `glyph_stream_provider'.
+Inserting `luaotfload.harf.finalize_vlist' in `post_linebreak_filter'.
+Inserting `luaotfload.harf.finalize_hlist' in `hpack_filter'.
+Inserting `luaotfload.cleanup_files' in `wrapup_run'.
+Inserting `luaotfload.harf.finalize_unicode' in `finish_pdffile'.
+Inserting `luaotfload.glyphinfo' in `glyph_info'.
+Lua-only attribute luaotfload.letterspace_done = 3
+Inserting `luaotfload.aux.set_sscale_dimens' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.set_font_index' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.patch_cambria_domh' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.fixup_fontdata' in `luaotfload.patch_font_unsafe'.
+Inserting `luaotfload.aux.set_capheight' in `luaotfload.patch_font'.
+Inserting `luaotfload.aux.set_xheight' in `luaotfload.patch_font'.
+Inserting `luaotfload.rewrite_fontname' in `luaotfload.patch_font'.
+Inserting `tracingstacklevels' in `input_level_string'. (./template.tex
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrartcl.cls"
+Document Class: scrartcl 2025/08/28 v3.47 KOMA-Script document class (article)
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrkbase.sty"
+Package: scrkbase 2025/08/28 v3.47 KOMA-Script package (KOMA-Script-dependent b
 asics and keyval usage)
 
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrbase.sty
-Package: scrbase 2025/09/09 v3.48 KOMA-Script package (KOMA-Script-independent 
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrbase.sty"
+Package: scrbase 2025/08/28 v3.47 KOMA-Script package (KOMA-Script-independent 
 basics and keyval usage)
 
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlfile.sty
-Package: scrlfile 2025/09/09 v3.48 KOMA-Script package (file load hooks)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrlfile.sty"
+Package: scrlfile 2025/08/28 v3.47 KOMA-Script package (file load hooks)
 
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlfile-hook.sty
-Package: scrlfile-hook 2025/09/09 v3.48 KOMA-Script package (using LaTeX hooks)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrlfile-hook.sty"
+Package: scrlfile-hook 2025/08/28 v3.47 KOMA-Script package (using LaTeX hooks)
 
 
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlogo.sty
-Package: scrlogo 2025/09/09 v3.48 KOMA-Script package (logo)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrlogo.sty"
+Package: scrlogo 2025/08/28 v3.47 KOMA-Script package (logo)
 )))
-(/home/attila/.miktex/texmfs/install/tex/latex/graphics/keyval.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/graphics/keyval.sty"
 Package: keyval 2022/05/29 v1.15 key=value parser (DPC)
 \KV@toks@=\toks17
 )
@@ -35,8 +76,9 @@ Applying: [2021/05/01] Usage of raw or classic option list on input line 254.
 Already applied: [0000/00/00] Usage of raw or classic option list on input line
  370.
 ))
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/tocbasic.sty
-Package: tocbasic 2025/09/09 v3.48 KOMA-Script package (handling toc-files)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/tocbasic.sty"
+Package: tocbasic 2025/08/28 v3.47 KOMA-Script package (handling toc-files)
 \scr@dte@tocline@numberwidth=\skip49
 \scr@dte@tocline@numbox=\box53
 )
@@ -45,16 +87,20 @@ Package tocbasic Info: omitting babel extension for `toc'
 (tocbasic)             for `toc' on input line 141.
 Class scrartcl Info: File `scrsize11pt.clo' used instead of
 (scrartcl)           file `scrsize11.clo' to setup font sizes on input line 248
-6.
+5.
 
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrsize11pt.clo
-File: scrsize11pt.clo 2025/09/09 v3.48 KOMA-Script font size class option (11pt
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrsize11pt.clo"
+File: scrsize11pt.clo 2025/08/28 v3.47 KOMA-Script font size class option (11pt
 )
-)
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/typearea.sty
-Package: typearea 2025/09/09 v3.48 KOMA-Script package (type area)
+luaotfload | db : Font names database loaded from /Users/attilapinter/Library/Ap
+plication Support/MiKTeX/texmfs/data/luatex-cache/generic/names/luaotfload-names
+.luc.gz)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/typearea.sty"
+Package: typearea 2025/08/28 v3.47 KOMA-Script package (type area)
 \ta@bcor=\skip50
-\ta@div=\count271
+\ta@div=\count195
 \ta@hblk=\skip51
 \ta@vblk=\skip52
 \ta@temp=\skip53
@@ -75,99 +121,108 @@ Package typearea Info: These are the values describing the layout:
 (typearea)              \topskip        = 11.0pt
 (typearea)              \footskip       = 47.6pt
 (typearea)              \baselineskip   = 13.6pt
-(typearea)              on input line 1807.
+(typearea)              on input line 1806.
 )
-\c@part=\count272
-\c@section=\count273
-\c@subsection=\count274
-\c@subsubsection=\count275
-\c@paragraph=\count276
-\c@subparagraph=\count277
+\c@part=\count196
+\c@section=\count197
+\c@subsection=\count198
+\c@subsubsection=\count199
+\c@paragraph=\count266
+\c@subparagraph=\count267
 \scr@dte@section@maxnumwidth=\skip55
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\section on input line 5161.
+(scrartcl)           for `\section on input line 5160.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\section on input line 5161.
+(scrartcl)           for `\section on input line 5160.
 \scr@dte@part@maxnumwidth=\skip56
 Class scrartcl Info: using compatibility default `afterindent=false'
-(scrartcl)           for `\part on input line 5169.
+(scrartcl)           for `\part on input line 5168.
 \scr@dte@subsection@maxnumwidth=\skip57
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\subsection on input line 5179.
+(scrartcl)           for `\subsection on input line 5178.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\subsection on input line 5179.
+(scrartcl)           for `\subsection on input line 5178.
 \scr@dte@subsubsection@maxnumwidth=\skip58
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\subsubsection on input line 5189.
+(scrartcl)           for `\subsubsection on input line 5188.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\subsubsection on input line 5189.
+(scrartcl)           for `\subsubsection on input line 5188.
 \scr@dte@paragraph@maxnumwidth=\skip59
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\paragraph on input line 5200.
+(scrartcl)           for `\paragraph on input line 5199.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\paragraph on input line 5200.
+(scrartcl)           for `\paragraph on input line 5199.
 \scr@dte@subparagraph@maxnumwidth=\skip60
 Class scrartcl Info: using compatibility default `runin=bysign'
-(scrartcl)           for `\subparagraph on input line 5210.
+(scrartcl)           for `\subparagraph on input line 5209.
 Class scrartcl Info: using compatibility default `afterindent=bysign'
-(scrartcl)           for `\subparagraph on input line 5210.
+(scrartcl)           for `\subparagraph on input line 5209.
 \abovecaptionskip=\skip61
 \belowcaptionskip=\skip62
 \c@pti@nb@sid@b@x=\box54
 Package tocbasic Info: omitting babel extension for `lof'
 (tocbasic)             because of feature `nobabel' available
-(tocbasic)             for `lof' on input line 6410.
+(tocbasic)             for `lof' on input line 6409.
 \scr@dte@figure@maxnumwidth=\skip63
-\c@figure=\count278
+\c@figure=\count268
 Package tocbasic Info: omitting babel extension for `lot'
 (tocbasic)             because of feature `nobabel' available
-(tocbasic)             for `lot' on input line 6422.
+(tocbasic)             for `lot' on input line 6421.
 \scr@dte@table@maxnumwidth=\skip64
-\c@table=\count279
-Class scrartcl Info: Redefining `\numberline' on input line 6592.
-\bibindent=\dimen148
+\c@table=\count269
+Class scrartcl Info: Redefining `\numberline' on input line 6591.
+\bibindent=\dimen145
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/fontspec/fontspec.sty
-(/home/attila/.miktex/texmfs/install/tex/latex/l3packages/xparse/xparse.sty
-(/home/attila/.miktex/texmfs/install/tex/latex/l3kernel/expl3.sty
-Package: expl3 2025-08-13 L3 programming layer (loader) 
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/fontspec/fontspec.sty"
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/l3packages/xparse/xparse.sty"
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/l3kernel/expl3.sty"
+Package: expl3 2025-03-26 L3 programming layer (loader) 
 
-(/home/attila/.miktex/texmfs/install/tex/latex/l3backend/l3backend-xetex.def
-File: l3backend-xetex.def 2025-06-09 L3 backend support: XeTeX
-\g__graphics_track_int=\count280
-\g__pdfannot_backend_int=\count281
-\g__pdfannot_backend_link_int=\count282
-))
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/l3backend/l3backend-luatex.def"
+File: l3backend-luatex.def 2025-03-14 L3 backend support: PDF output (LuaTeX)
+\l__color_backend_stack_int=\count270
+Inserting `l3color' in `luaotfload.parse_color'.))
 Package: xparse 2024-08-16 L3 Experimental document command parser
 )
 Package: fontspec 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaTeX
-(/home/attila/.miktex/texmfs/install/tex/latex/fontspec/fontspec-xetex.sty
-Package: fontspec-xetex 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaTe
-X
-\l__fontspec_script_int=\count283
-\l__fontspec_language_int=\count284
-\l__fontspec_strnum_int=\count285
-\l__fontspec_tmp_int=\count286
-\l__fontspec_tmpa_int=\count287
-\l__fontspec_tmpb_int=\count288
-\l__fontspec_tmpc_int=\count289
-\l__fontspec_em_int=\count290
-\l__fontspec_emdef_int=\count291
-\l__fontspec_strong_int=\count292
-\l__fontspec_strongdef_int=\count293
-\l__fontspec_tmpa_dim=\dimen149
-\l__fontspec_tmpb_dim=\dimen150
-\l__fontspec_tmpc_dim=\dimen151
+Lua module: fontspec 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaTeX
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/fontspec/fontspec-luatex.sty"
+Package: fontspec-luatex 2024/05/11 v2.9e Font selection for XeLaTeX and LuaLaT
+eX
+\l__fontspec_script_int=\count271
+\l__fontspec_language_int=\count272
+\l__fontspec_strnum_int=\count273
+\l__fontspec_tmp_int=\count274
+\l__fontspec_tmpa_int=\count275
+\l__fontspec_tmpb_int=\count276
+\l__fontspec_tmpc_int=\count277
+\l__fontspec_em_int=\count278
+\l__fontspec_emdef_int=\count279
+\l__fontspec_strong_int=\count280
+\l__fontspec_strongdef_int=\count281
+\l__fontspec_tmpa_dim=\dimen146
+\l__fontspec_tmpb_dim=\dimen147
+\l__fontspec_tmpc_dim=\dimen148
 
-(/home/attila/.miktex/texmfs/install/tex/latex/base/fontenc.sty
-Package: fontenc 2024/12/21 v2.1c Standard LaTeX package
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/base/fontenc.sty"
+Package: fontenc 2021/04/29 v2.0v Standard LaTeX package
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/fontspec/fontspec.cfg)))
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlayer-scrpage.sty
-Package: scrlayer-scrpage 2025/09/09 v3.48 KOMA-Script package (end user interf
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/fontspec/fontspec.cfg")))
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrlayer-scrpage.sty"
+Package: scrlayer-scrpage 2025/08/28 v3.47 KOMA-Script package (end user interf
 ace for scrlayer)
-(/home/attila/.miktex/texmfs/install/tex/latex/koma-script/scrlayer.sty
-Package: scrlayer 2025/09/09 v3.48 KOMA-Script package (defining layers and pag
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/koma-script/scrlayer.sty"
+Package: scrlayer 2025/08/28 v3.47 KOMA-Script package (defining layers and pag
 e styles)
 Package scrlayer Info: patching LaTeX kernel macro \pagestyle on input line 217
 9.
@@ -175,19 +230,24 @@ Package scrlayer Info: patching LaTeX kernel macro \pagestyle on input line 217
 Package scrlayer-scrpage Info: Makeing stand-alone element `pagehead' from
 (scrlayer-scrpage)             alias to `pageheadfoot' on input line 1106.
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/xcolor/xcolor.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/xcolor/xcolor.sty"
 Package: xcolor 2024/09/29 v3.02 LaTeX color extensions (UK)
 
-(/home/attila/.miktex/texmfs/install/tex/latex/graphics-cfg/color.cfg
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/graphics-cfg/color.cfg"
 File: color.cfg 2016/01/02 v1.6 sample color configuration
 )
-Package xcolor Info: Driver file: xetex.def on input line 274.
+Package xcolor Info: Driver file: luatex.def on input line 274.
 
-(/home/attila/.miktex/texmfs/install/tex/latex/graphics-def/xetex.def
-File: xetex.def 2022/09/22 v5.0n Graphics/color driver for xetex
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/graphics-def/luatex.def"
+File: luatex.def 2024/04/13 v1.2e Graphics/color driver for luatex
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/graphics/mathcolor.ltx)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/graphics/mathcolor.ltx")
 Package xcolor Info: Model `cmy' substituted by `cmy0' on input line 1349.
+Package xcolor Info: Model `hsb' substituted by `rgb' on input line 1353.
 Package xcolor Info: Model `RGB' extended on input line 1365.
 Package xcolor Info: Model `HTML' substituted by `rgb' on input line 1367.
 Package xcolor Info: Model `Hsb' substituted by `hsb' on input line 1368.
@@ -196,194 +256,238 @@ Package xcolor Info: Model `HSB' substituted by `hsb' on input line 1370.
 Package xcolor Info: Model `Gray' substituted by `gray' on input line 1371.
 Package xcolor Info: Model `wave' substituted by `hsb' on input line 1372.
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/booktabs/booktabs.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/booktabs/booktabs.sty"
 Package: booktabs 2020/01/12 v1.61803398 Publication quality tables
-\heavyrulewidth=\dimen152
-\lightrulewidth=\dimen153
-\cmidrulewidth=\dimen154
-\belowrulesep=\dimen155
-\belowbottomsep=\dimen156
-\aboverulesep=\dimen157
-\abovetopsep=\dimen158
-\cmidrulesep=\dimen159
-\cmidrulekern=\dimen160
-\defaultaddspace=\dimen161
-\@cmidla=\count294
-\@cmidlb=\count295
-\@aboverulesep=\dimen162
-\@belowrulesep=\dimen163
-\@thisruleclass=\count296
-\@lastruleclass=\count297
-\@thisrulewidth=\dimen164
+\heavyrulewidth=\dimen149
+\lightrulewidth=\dimen150
+\cmidrulewidth=\dimen151
+\belowrulesep=\dimen152
+\belowbottomsep=\dimen153
+\aboverulesep=\dimen154
+\abovetopsep=\dimen155
+\cmidrulesep=\dimen156
+\cmidrulekern=\dimen157
+\defaultaddspace=\dimen158
+\@cmidla=\count282
+\@cmidlb=\count283
+\@aboverulesep=\dimen159
+\@belowrulesep=\dimen160
+\@thisruleclass=\count284
+\@lastruleclass=\count285
+\@thisrulewidth=\dimen161
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/graphics/graphicx.sty
-Package: graphicx 2024/12/31 v1.2e Enhanced LaTeX Graphics (DPC,SPQR)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/graphics/graphicx.sty"
+Package: graphicx 2021/09/16 v1.2d Enhanced LaTeX Graphics (DPC,SPQR)
 
-(/home/attila/.miktex/texmfs/install/tex/latex/graphics/graphics.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/graphics/graphics.sty"
 Package: graphics 2024/08/06 v1.4g Standard LaTeX Graphics (DPC,SPQR)
 
-(/home/attila/.miktex/texmfs/install/tex/latex/graphics/trig.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/graphics/trig.sty"
 Package: trig 2023/12/02 v1.11 sin cos tan (DPC)
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/graphics-cfg/graphics.cfg
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/graphics-cfg/graphics.cfg"
 File: graphics.cfg 2016/06/04 v1.11 sample graphics configuration
 )
-Package graphics Info: Driver file: xetex.def on input line 106.
+Package graphics Info: Driver file: luatex.def on input line 106.
 )
-\Gin@req@height=\dimen165
-\Gin@req@width=\dimen166
+\Gin@req@height=\dimen162
+\Gin@req@width=\dimen163
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/href-ul/href-ul.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/href-ul/href-ul.sty"
 Package: href-ul 2025/03/07 0.5.2 Underlined Hyperlinks
 
-(/home/attila/.miktex/texmfs/install/tex/latex/pgfopts/pgfopts.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/pgfopts/pgfopts.sty"
 Package: pgfopts 2014/07/10 v2.1a LaTeX package options with pgfkeys
 
-(/home/attila/.miktex/texmfs/install/tex/latex/pgf/utilities/pgfkeys.sty
-(/home/attila/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfkeys.code.tex
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/pgf/utilities/pgfkeys.sty"
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/pgf/utilities/pgfkeys.code.tex"
 \pgfkeys@pathtoks=\toks18
 \pgfkeys@temptoks=\toks19
 
-(/home/attila/.miktex/texmfs/install/tex/generic/pgf/utilities/pgfkeyslibraryfi
-ltered.code.tex
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/pgf/utilities/pgfkeyslibraryfiltered.code.tex"
 \pgfkeys@tmptoks=\toks20
 )))
 \pgfopts@list@add@a@toks=\toks21
 \pgfopts@list@add@b@toks=\toks22
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/ulem/ulem.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/ulem/ulem.sty"
 \UL@box=\box55
 \UL@hyphenbox=\box56
 \UL@skip=\skip65
 \UL@hook=\toks23
-\UL@height=\dimen167
-\UL@pe=\count298
-\UL@pixel=\dimen168
+\UL@height=\dimen164
+\UL@pe=\count286
+\UL@pixel=\dimen165
 \ULC@box=\box57
 Package: ulem 2019/11/18
-\ULdepth=\dimen169
+\ULdepth=\dimen166
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/hyperref.sty
-Package: hyperref 2025-07-12 v7.01o Hypertext links for LaTeX
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/hyperref/hyperref.sty"
+Package: hyperref 2024-11-05 v7.01l Hypertext links for LaTeX
 
-(/home/attila/.miktex/texmfs/install/tex/generic/iftex/iftex.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/iftex/iftex.sty"
 Package: iftex 2024/12/12 v1.0g TeX engine tests
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/kvsetkeys/kvsetkeys.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/kvsetkeys/kvsetkeys.sty"
 Package: kvsetkeys 2022-10-05 v1.19 Key value parser (HO)
 )
-(/home/attila/.miktex/texmfs/install/tex/generic/kvdefinekeys/kvdefinekeys.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/kvdefinekeys/kvdefinekeys.sty"
 Package: kvdefinekeys 2019-12-19 v1.6 Define keys (HO)
-) (/home/attila/.miktex/texmfs/install/tex/generic/pdfescape/pdfescape.sty
+)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/pdfescape/pdfescape.sty"
 Package: pdfescape 2019/12/09 v1.15 Implements pdfTeX's escape features (HO)
 
-(/home/attila/.miktex/texmfs/install/tex/generic/ltxcmds/ltxcmds.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/ltxcmds/ltxcmds.sty"
 Package: ltxcmds 2023-12-04 v1.26 LaTeX kernel commands for general use (HO)
 )
-(/home/attila/.miktex/texmfs/install/tex/generic/pdftexcmds/pdftexcmds.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/pdftexcmds/pdftexcmds.sty"
 Package: pdftexcmds 2020-06-27 v0.33 Utility functions of pdfTeX for LuaTeX (HO
 )
 
-(/home/attila/.miktex/texmfs/install/tex/generic/infwarerr/infwarerr.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/infwarerr/infwarerr.sty"
 Package: infwarerr 2019/12/03 v1.5 Providing info/warning/error messages (HO)
 )
 Package pdftexcmds Info: \pdf@primitive is available.
 Package pdftexcmds Info: \pdf@ifprimitive is available.
-Package pdftexcmds Info: \pdfdraftmode not found.
+Package pdftexcmds Info: \pdfdraftmode found.
+\pdftexcmds@toks=\toks24
 ))
-(/home/attila/.miktex/texmfs/install/tex/latex/hycolor/hycolor.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/hycolor/hycolor.sty"
 Package: hycolor 2020-01-27 v1.10 Color options for hyperref/bookmark (HO)
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/nameref.sty
-Package: nameref 2025-06-21 v2.57 Cross-referencing by name of section
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/hyperref/nameref.sty"
+Package: nameref 2023-11-26 v2.56 Cross-referencing by name of section
 
-(/home/attila/.miktex/texmfs/install/tex/latex/refcount/refcount.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/refcount/refcount.sty"
 Package: refcount 2019/12/15 v3.6 Data extraction from label references (HO)
 )
-(/home/attila/.miktex/texmfs/install/tex/generic/gettitlestring/gettitlestring.
-sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/gettitlestring/gettitlestring.sty"
 Package: gettitlestring 2019/12/15 v1.6 Cleanup title references (HO)
- (/home/attila/.miktex/texmfs/install/tex/latex/kvoptions/kvoptions.sty
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/kvoptions/kvoptions.sty"
 Package: kvoptions 2022-06-15 v3.15 Key value format for package options (HO)
 ))
-\c@section@level=\count299
+\c@section@level=\count287
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/etoolbox/etoolbox.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/etoolbox/etoolbox.sty"
 Package: etoolbox 2025/02/11 v2.5l e-TeX tools for LaTeX (JAW)
-\etb@tempcnta=\count300
+\etb@tempcnta=\count288
 )
-(/home/attila/.miktex/texmfs/install/tex/generic/stringenc/stringenc.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/stringenc/stringenc.sty"
 Package: stringenc 2019/11/29 v1.12 Convert strings between diff. encodings (HO
 )
 )
-\@linkdim=\dimen170
-\Hy@linkcounter=\count301
-\Hy@pagecounter=\count302
+\@linkdim=\dimen167
+\Hy@linkcounter=\count289
+\Hy@pagecounter=\count290
 
-(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/pd1enc.def
-File: pd1enc.def 2025-07-12 v7.01o Hyperref: PDFDocEncoding definition (HO)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/hyperref/pd1enc.def"
+File: pd1enc.def 2024-11-05 v7.01l Hyperref: PDFDocEncoding definition (HO)
 )
-(/home/attila/.miktex/texmfs/install/tex/generic/intcalc/intcalc.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/intcalc/intcalc.sty"
 Package: intcalc 2019/12/15 v1.3 Expandable calculations with integers (HO)
 )
-\Hy@SavedSpaceFactor=\count303
+\Hy@SavedSpaceFactor=\count291
 
-(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/puenc.def
-File: puenc.def 2025-07-12 v7.01o Hyperref: PDF Unicode definition (HO)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/hyperref/puenc.def"
+File: puenc.def 2024-11-05 v7.01l Hyperref: PDF Unicode definition (HO)
 )
-Package hyperref Info: Hyper figures OFF on input line 4195.
-Package hyperref Info: Link nesting OFF on input line 4200.
-Package hyperref Info: Hyper index ON on input line 4203.
-Package hyperref Info: Plain pages OFF on input line 4210.
-Package hyperref Info: Backreferencing OFF on input line 4215.
+Package hyperref Info: Hyper figures OFF on input line 4157.
+Package hyperref Info: Link nesting OFF on input line 4162.
+Package hyperref Info: Hyper index ON on input line 4165.
+Package hyperref Info: Plain pages OFF on input line 4172.
+Package hyperref Info: Backreferencing OFF on input line 4177.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
-Package hyperref Info: Bookmarks ON on input line 4462.
-\c@Hy@tempcnt=\count304
+Package hyperref Info: Bookmarks ON on input line 4424.
+\c@Hy@tempcnt=\count292
 
-(/home/attila/.miktex/texmfs/install/tex/latex/url/url.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/url/url.sty"
 \Urlmuskip=\muskip17
 Package: url 2013/09/16  ver 3.4  Verb mode for urls, etc.
 )
-LaTeX Info: Redefining \url on input line 4801.
-\XeTeXLinkMargin=\dimen171
+LaTeX Info: Redefining \url on input line 4763.
+\XeTeXLinkMargin=\dimen168
 
-(/home/attila/.miktex/texmfs/install/tex/generic/bitset/bitset.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/bitset/bitset.sty"
 Package: bitset 2019/12/09 v1.3 Handle bit-vector datatype (HO)
 
-(/home/attila/.miktex/texmfs/install/tex/generic/bigintcalc/bigintcalc.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/bigintcalc/bigintcalc.sty"
 Package: bigintcalc 2019/12/15 v1.5 Expandable calculations on big integers (HO
 )
 ))
-\Fld@menulength=\count305
-\Field@Width=\dimen172
-\Fld@charsize=\dimen173
-Package hyperref Info: Hyper figures OFF on input line 6078.
-Package hyperref Info: Link nesting OFF on input line 6083.
-Package hyperref Info: Hyper index ON on input line 6086.
-Package hyperref Info: backreferencing OFF on input line 6093.
-Package hyperref Info: Link coloring OFF on input line 6098.
-Package hyperref Info: Link coloring with OCG OFF on input line 6103.
-Package hyperref Info: PDF/A mode OFF on input line 6108.
-\Hy@abspage=\count306
-\c@Item=\count307
-\c@Hfootnote=\count308
+\Fld@menulength=\count293
+\Field@Width=\dimen169
+\Fld@charsize=\dimen170
+Package hyperref Info: Hyper figures OFF on input line 6042.
+Package hyperref Info: Link nesting OFF on input line 6047.
+Package hyperref Info: Hyper index ON on input line 6050.
+Package hyperref Info: backreferencing OFF on input line 6057.
+Package hyperref Info: Link coloring OFF on input line 6062.
+Package hyperref Info: Link coloring with OCG OFF on input line 6067.
+Package hyperref Info: PDF/A mode OFF on input line 6072.
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/base/atbegshi-ltx.sty"
+Package: atbegshi-ltx 2021/01/10 v1.0c Emulation of the original atbegshi
+package with kernel methods
 )
-Package hyperref Info: Driver (autodetected): hxetex.
+\Hy@abspage=\count294
+\c@Item=\count295
+\c@Hfootnote=\count296
+)
+Package hyperref Info: Driver (autodetected): hluatex.
 
-(/home/attila/.miktex/texmfs/install/tex/latex/hyperref/hxetex.def
-File: hxetex.def 2025-07-12 v7.01o Hyperref driver for XeTeX
-\pdfm@box=\box58
-\c@Hy@AnnotLevel=\count309
-\HyField@AnnotCount=\count310
-\Fld@listcount=\count311
-\c@bookmark@seq@number=\count312
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/hyperref/hluatex.def"
+File: hluatex.def 2024-11-05 v7.01l Hyperref driver for luaTeX
 
-(/home/attila/.miktex/texmfs/install/tex/latex/rerunfilecheck/rerunfilecheck.st
-y
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/base/atveryend-ltx.sty"
+Package: atveryend-ltx 2020/08/19 v1.0a Emulation of the original atveryend pac
+kage
+with kernel methods
+)
+\Fld@listcount=\count297
+\c@bookmark@seq@number=\count298
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/rerunfilecheck/rerunfilecheck.sty"
 Package: rerunfilecheck 2025-06-21 v1.11 Rerun checks for auxiliary files (HO)
 
-(/home/attila/.miktex/texmfs/install/tex/generic/uniquecounter/uniquecounter.st
-y
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/uniquecounter/uniquecounter.sty"
 Package: uniquecounter 2019/12/15 v1.4 Provide unlimited unique counter (HO)
 )
 Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
@@ -391,7 +495,12 @@ Package uniquecounter Info: New unique counter `rerunfilecheck' on input line 2
 )
 \Hy@SectionHShift=\skip66
 ))
-Package hyperref Info: Option `colorlinks' set `true' on input line 22.
+Package hyperref Info: Option `colorlinks' set `true' on input line 24.
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/xurl/xurl.sty"
+Package: xurl 2022/01/09 v 0.10 modify URL breaks
+)
 
 Package fontspec Info: 
 (fontspec)             Font family 'SFNSText-Regular.otf(0)' created for font
@@ -403,17 +512,17 @@ SFNSText-RegularItalic.otf},BoldItalicFont={SFNSText-BoldItalic.otf}].
 (fontspec)             series/shapes:
 (fontspec)              
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <->"[SFNSText-Regular.otf]/OT:script=latn;language=dflt;
-mapping=tex-text;"
+(fontspec)             <->"[SFNSText-Regular.otf]:mode=node;script=latn;languag
+e=dflt;+tlig;"
 (fontspec)             - 'bold' (b/n) with NFSS spec.:
-(fontspec)             <->"[SFNSText-Bold.otf]/OT:script=latn;language=dflt;map
-ping=tex-text;"
+(fontspec)             <->"[SFNSText-Bold.otf]:mode=node;script=latn;language=d
+flt;+tlig;"
 (fontspec)             - 'italic' (m/it) with NFSS spec.:
-(fontspec)             <->"[SFNSText-RegularItalic.otf]/OT:script=latn;language
-=dflt;mapping=tex-text;"
+(fontspec)             <->"[SFNSText-RegularItalic.otf]:mode=node;script=latn;l
+anguage=dflt;+tlig;"
 (fontspec)             - 'bold italic' (b/it) with NFSS spec.:
-(fontspec)             <->"[SFNSText-BoldItalic.otf]/OT:script=latn;language=df
-lt;mapping=tex-text;"
+(fontspec)             <->"[SFNSText-BoldItalic.otf]:mode=node;script=latn;lang
+uage=dflt;+tlig;"
 
 
 Package fontspec Info: 
@@ -424,8 +533,8 @@ Package fontspec Info:
 (fontspec)             series/shapes:
 (fontspec)              
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <->"[ClashGrotesk-Bold.ttf]/OT:script=latn;language=dflt
-;"
+(fontspec)             <->"[ClashGrotesk-Bold.ttf]:mode=node;script=latn;langua
+ge=dflt;"
 
 
 Package fontspec Info: 
@@ -436,124 +545,217 @@ Package fontspec Info:
 (fontspec)             series/shapes:
 (fontspec)              
 (fontspec)             - 'normal' (m/n) with NFSS spec.:
-(fontspec)             <->"[ClashGrotesk-Semibold.ttf]/OT:script=latn;language=
-dflt;"
+(fontspec)             <->"[ClashGrotesk-Semibold.ttf]:mode=node;script=latn;la
+nguage=dflt;"
 
-) (/home/attila/.miktex/texmfs/install/tex/latex/lipsum/lipsum.sty
-(/home/attila/.miktex/texmfs/install/tex/latex/l3packages/l3keys2e/l3keys2e.sty
+)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/lipsum/lipsum.sty"
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/l3packages/l3keys2e/l3keys2e.sty"
 Package: l3keys2e 2024-08-16 LaTeX2e option processing using LaTeX3 keys
 )
 Package: lipsum 2021-09-20 v2.7 150 paragraphs of Lorem Ipsum dummy text
-\g__lipsum_par_int=\count313
-\l__lipsum_a_int=\count314
-\l__lipsum_b_int=\count315
- (/home/attila/.miktex/texmfs/install/tex/latex/lipsum/lipsum.ltd.tex))
-(/home/attila/.miktex/texmfs/install/tex/generic/babel/babel.sty
-Package: babel 2025/08/03 v25.12 The multilingual framework for LuaLaTeX, pdfLa
-TeX and XeLaTeX
-\babel@savecnt=\count316
-LaTeX Encoding Info:    Redeclaring text command \ij (encoding OT1) on input li
-ne 2045.
-LaTeX Encoding Info:    Redeclaring text command \IJ (encoding OT1) on input li
-ne 2047.
-LaTeX Encoding Info:    Redeclaring text command \ij (encoding T1) on input lin
-e 2049.
-LaTeX Encoding Info:    Redeclaring text command \IJ (encoding T1) on input lin
-e 2050.
-LaTeX Encoding Info:    Ignoring declaration for text command \ij (encoding ?) 
-on input line 2051.
-LaTeX Encoding Info:    Ignoring declaration for text command \IJ (encoding ?) 
-on input line 2053.
-LaTeX Encoding Info:    Ignoring declaration for text command \SS (encoding ?) 
-on input line 2078.
-\U@D=\dimen174
-\l@unhyphenated=\language1
+\g__lipsum_par_int=\count299
+\l__lipsum_a_int=\count300
+\l__lipsum_b_int=\count301
 
-(/home/attila/.miktex/texmfs/install/tex/generic/babel/xebabel.def)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/lipsum/lipsum.ltd.tex"))
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/babel/babel.sty"
+Package: babel 2025/03/27 v25.6 The multilingual framework for pdfLaTeX, LuaLaT
+eX and XeLaTeX
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/babel/luababel.def"
 \bbl@readstream=\read2
-\bbl@dirlevel=\count317
+\l@afrikaans=\language2
+Package babel Info: Non-standard hyphenation setup on input line 118.
+\l@ancientgreek=\language3
+\l@armenian=\language4
+\l@assamese=\language5
+\l@basque=\language6
+\l@belarusian=\language7
+\l@bengali=\language8
+\l@bokmal=\language9
+\l@bulgarian=\language10
+\l@catalan=\language11
+\l@churchslavonic=\language12
+\l@classiclatin=\language13
+\l@coptic=\language14
+\l@croatian=\language15
+\l@czech=\language16
+\l@danish=\language17
+\l@dutch=\language18
+\l@esperanto=\language19
+\l@estonian=\language20
+\l@ethiopic=\language21
+\l@finnish=\language22
+\l@french=\language23
+\l@friulan=\language24
+\l@galician=\language25
+\l@georgian=\language26
+\l@german=\language27
+\l@greek=\language28
+\l@gujarati=\language29
+\l@hindi=\language30
+\l@hungarian=\language31
+\l@icelandic=\language32
+\l@indonesian=\language33
+\l@interlingua=\language34
+\l@irish=\language35
+\l@italian=\language36
+\l@kannada=\language37
+\l@kurmanji=\language38
+\l@latin=\language39
+\l@latvian=\language40
+\l@lithuanian=\language41
+\l@liturgicallatin=\language42
+\l@macedonian=\language43
+\l@malayalam=\language44
+\l@marathi=\language45
+\l@mongolian=\language46
+\l@mongolianlmc=\language47
+\l@monogreek=\language48
+\l@ngerman=\language49
+\l@nynorsk=\language50
+\l@occitan=\language51
+\l@oriya=\language52
+\l@pali=\language53
+\l@panjabi=\language54
+\l@piedmontese=\language55
+\l@polish=\language56
+\l@portuguese=\language57
+\l@romanian=\language58
+\l@romansh=\language59
+\l@russian=\language60
+\l@sanskrit=\language61
+\l@serbian=\language62
+\l@serbianc=\language63
+\l@slovak=\language64
+\l@slovenian=\language65
+\l@spanish=\language66
+\l@swedish=\language67
+\l@swissgerman=\language68
+\l@tamil=\language69
+\l@telugu=\language70
+\l@thai=\language71
+\l@turkish=\language72
+\l@turkmen=\language73
+\l@ukenglish=\language74
+\l@ukrainian=\language75
+\l@uppersorbian=\language76
+\l@usenglishmax=\language77
+\l@welsh=\language78
+\babelcatcodetablenum=\catcodetable14
+\bbl@pattcodes=\catcodetable15
+)
+\babel@savecnt=\count302
+\U@D=\dimen171
+\l@unhyphenated=\language79
 
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/babel/luababel.def"
+\bbl@attr@locale=\attribute4
+)
 *************************************
 * Local config file bblopts.cfg used
 *
-(/home/attila/.miktex/texmfs/install/tex/latex/arabi/bblopts.cfg
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/arabi/bblopts.cfg"
 File: bblopts.cfg 2005/09/08 v0.1 add Arabic and Farsi to "declared" options of
  babel
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/babel-english/english.ldf
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/babel-english/english.ldf"
 Language: english 2017/06/06 v3.3r English support from the babel system
-
-(/home/attila/.miktex/texmfs/install/tex/generic/babel/locale/en/babel-english.
-tex
+Package babel Info: Hyphen rules for 'canadian' set to \l@english
+(babel)             (\language0). Reported on input line 102.
+Package babel Info: Hyphen rules for 'australian' set to \l@ukenglish
+(babel)             (\language74). Reported on input line 105.
+Package babel Info: Hyphen rules for 'newzealand' set to \l@ukenglish
+(babel)             (\language74). Reported on input line 108.
+))
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/gen
+eric/babel/locale/en/babel-english.tex"
 Package babel Info: Importing font and identification data for english
-(babel)             from babel-en.ini. Reported on input line 12.
-))) (/home/attila/.miktex/texmfs/install/tex/latex/amsmath/amsmath.sty
-Package: amsmath 2025/06/16 v2.17y AMS math features
+(babel)             from babel-en.ini. Reported on input line 11.
+)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/amsmath/amsmath.sty"
+Package: amsmath 2024/11/05 v2.17t AMS math features
 \@mathmargin=\skip67
 
 For additional information on amsmath, use the `?' option.
-(/home/attila/.miktex/texmfs/install/tex/latex/amsmath/amstext.sty
-Package: amstext 2024/11/17 v2.01 AMS text
 
-(/home/attila/.miktex/texmfs/install/tex/latex/amsmath/amsgen.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/amsmath/amstext.sty"
+Package: amstext 2021/08/26 v2.01 AMS text
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/amsmath/amsgen.sty"
 File: amsgen.sty 1999/11/30 v2.0 generic functions
-\@emptytoks=\toks24
-\ex@=\dimen175
+\@emptytoks=\toks25
+\ex@=\dimen172
 ))
-(/home/attila/.miktex/texmfs/install/tex/latex/amsmath/amsbsy.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/amsmath/amsbsy.sty"
 Package: amsbsy 1999/11/29 v1.2d Bold Symbols
-\pmbraise@=\dimen176
+\pmbraise@=\dimen173
 )
-(/home/attila/.miktex/texmfs/install/tex/latex/amsmath/amsopn.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/amsmath/amsopn.sty"
 Package: amsopn 2022/04/08 v2.04 operator names
 )
-\inf@bad=\count318
-LaTeX Info: Redefining \frac on input line 233.
-\uproot@=\count319
-\leftroot@=\count320
+\inf@bad=\count303
+LaTeX Info: Redefining \frac on input line 235.
+\uproot@=\count304
+\leftroot@=\count305
 LaTeX Info: Redefining \overline on input line 398.
 LaTeX Info: Redefining \colon on input line 409.
-\classnum@=\count321
-\DOTSCASE@=\count322
+\classnum@=\count306
+\DOTSCASE@=\count307
 LaTeX Info: Redefining \ldots on input line 495.
 LaTeX Info: Redefining \dots on input line 498.
 LaTeX Info: Redefining \cdots on input line 619.
-\Mathstrutbox@=\box59
-\strutbox@=\box60
+\Mathstrutbox@=\box58
+\strutbox@=\box59
 LaTeX Info: Redefining \big on input line 721.
 LaTeX Info: Redefining \Big on input line 722.
 LaTeX Info: Redefining \bigg on input line 723.
 LaTeX Info: Redefining \Bigg on input line 724.
-\big@size=\dimen177
+\big@size=\dimen174
 LaTeX Font Info:    Redeclaring font encoding OML on input line 742.
 LaTeX Font Info:    Redeclaring font encoding OMS on input line 743.
-\macc@depth=\count323
+\macc@depth=\count308
 LaTeX Info: Redefining \bmod on input line 904.
 LaTeX Info: Redefining \pmod on input line 909.
 LaTeX Info: Redefining \smash on input line 939.
 LaTeX Info: Redefining \relbar on input line 969.
 LaTeX Info: Redefining \Relbar on input line 970.
-\c@MaxMatrixCols=\count324
+\c@MaxMatrixCols=\count309
 \dotsspace@=\muskip18
-\c@parentequation=\count325
-\dspbrk@lvl=\count326
-\tag@help=\toks25
-\row@=\count327
-\column@=\count328
-\maxfields@=\count329
-\andhelp@=\toks26
-\eqnshift@=\dimen178
-\alignsep@=\dimen179
-\tagshift@=\dimen180
-\tagwidth@=\dimen181
-\totwidth@=\dimen182
-\lineht@=\dimen183
-\@envbody=\toks27
+\c@parentequation=\count310
+\dspbrk@lvl=\count311
+\tag@help=\toks26
+\row@=\count312
+\column@=\count313
+\maxfields@=\count314
+\andhelp@=\toks27
+\eqnshift@=\dimen175
+\alignsep@=\dimen176
+\tagshift@=\dimen177
+\tagwidth@=\dimen178
+\totwidth@=\dimen179
+\lineht@=\dimen180
+\@envbody=\toks28
 \multlinegap=\skip68
 \multlinetaggap=\skip69
-\mathdisplay@stack=\toks28
-LaTeX Info: Redefining \[ on input line 2949.
-LaTeX Info: Redefining \] on input line 2950.
+\mathdisplay@stack=\toks29
+LaTeX Info: Redefining \[ on input line 2953.
+LaTeX Info: Redefining \] on input line 2954.
 )
 Class scrartcl Info: loading recommended package `bookmark'.
 (scrartcl)           Using `bookmark' together with `hyperref' is recommended,
@@ -564,15 +766,17 @@ Class scrartcl Info: loading recommended package `bookmark'.
 (scrartcl)             \usepackage{bookmark}
 (scrartcl)           before \begin{document} on input line 10.
 
-(/home/attila/.miktex/texmfs/install/tex/latex/bookmark/bookmark.sty
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/bookmark/bookmark.sty"
 Package: bookmark 2023-12-10 v1.31 PDF bookmarks (HO)
 
-(/home/attila/.miktex/texmfs/install/tex/latex/bookmark/bkm-dvipdfm.def
-File: bkm-dvipdfm.def 2023-12-10 v1.31 bookmark driver for dvipdfm (HO)
-\BKM@id=\count330
-))
-(main.aux)
-\openout1 = `main.aux'.
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/bookmark/bkm-pdftex.def"
+File: bkm-pdftex.def 2023-12-10 v1.31 bookmark driver for pdfTeX and luaTeX (HO
+)
+\BKM@id=\count315
+)) (./main.aux)
+\openout1 = main.aux
 
 LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 10.
 LaTeX Font Info:    ... okay on input line 10.
@@ -667,187 +871,209 @@ LaTeX Font Info:    Overwriting math alphabet `\mathsf' in version `bold'
 (Font)                  OT1/cmss/bx/n --> TU/lmss/b/n on input line 10.
 LaTeX Font Info:    Overwriting math alphabet `\mathtt' in version `bold'
 (Font)                  OT1/cmtt/m/n --> TU/lmtt/b/n on input line 10.
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/con
+text/base/mkii/supp-pdf.mkii"
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count316
+\scratchdimen=\dimen181
+\scratchbox=\box60
+\nofMPsegments=\count317
+\nofMParguments=\count318
+\everyMPshowfont=\toks30
+\MPscratchCnt=\count319
+\MPscratchDim=\dimen182
+\MPnumerator=\count320
+\makeMPintoPDFobject=\count321
+\everyMPtoPDFconversion=\toks31
+)
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/epstopdf-pkg/epstopdf-base.sty"
+Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/grfext/grfext.sty"
+Package: grfext 2019/12/03 v1.3 Manage graphics extensions (HO)
+)
+Package epstopdf-base Info: Redefining graphics rule for `.eps' on input line 4
+85.
+Package grfext Info: Graphics extension search list:
+(grfext)             [.pdf,.png,.jpg,.mps,.jpeg,.jbig2,.jb2,.PDF,.PNG,.JPG,.JPE
+G,.JBIG2,.JB2,.eps]
+(grfext)             \AppendGraphicsExtensions on input line 504.
+
+("/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/tex/lat
+ex/00miktex/epstopdf-sys.cfg"
+File: epstopdf-sys.cfg 2021/03/18 v2.0 Configuration of epstopdf for MiKTeX
+))
 Package hyperref Info: Link coloring ON on input line 10.
 
 
 [1
 
-]
+{/Users/attilapinter/Library/Application Support/MiKTeX/texmfs/data/fonts/map/pd
+ftex/pdftex.map}]
 
 LaTeX Font Warning: Font shape `TU/ClashGrotesk-Semibold.ttf(0)/bx/n' undefined
 
 (Font)              using `TU/ClashGrotesk-Semibold.ttf(0)/m/n' instead on inpu
 t line 32.
 
-(main.toc)
+(./main.toc)
 \tf@toc=\write3
-\openout3 = `main.toc'.
 
+\openout3 = main.toc
 
 
 LaTeX Font Info:    Font shape `TU/SFNSText-Regular.otf(0)/m/sl' in size <10.95
 > not available
 (Font)              Font shape `TU/SFNSText-Regular.otf(0)/m/it' tried instead 
 on input line 35.
-[2] (motivation.tex
-Overfull \hbox (33.9259pt too wide) in paragraph at lines 3--9
-\TU/SFNSText-Regular.otf(0)/m/it/10.95 administration\TU/SFNSText-Regular.otf(0
-)/m/n/10.95 , we \TU/SFNSText-Regular.otf(0)/m/it/10.95 played \TU/SFNSText-Reg
-ular.otf(0)/m/n/10.95 a game, where you were the board of a company manufacturi
-ng
- []
+[2] (./motivation.tex) (./concept.tex
 
-) (concept.tex
-Overfull \hbox (2.69382pt too wide) in paragraph at lines 3--7
-\TU/SFNSText-Regular.otf(0)/m/n/10.95 creates and runs a company that manufactu
-res and sells a product while competing
- []
-
-File: conceptualStructure.png Graphic file (type bmp)
-<conceptualStructure.png>
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-) (design.tex
-File: wisimLayout1.png Graphic file (type bmp)
-<wisimLayout1.png>
-
-
-LaTeX Warning: `h' float specifier changed to `ht'.
-
-
-
-[3]
-File: product.png Graphic file (type bmp)
-<product.png>
-
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-File: product-designer-hoi4-wisim.png Graphic file (type bmp)
-<product-designer-hoi4-wisim.png>
-
-LaTeX Warning: `!h' float specifier changed to `!ht'.
-
-) (technology.tex
+[3]) (./design.tex
 
 [4]
+<wisimLayout1.png, id=76, 1198.4775pt x 892.33376pt>
+File: wisimLayout1.png Graphic file (type png)
+<use wisimLayout1.png>
+Package luatex.def Info: wisimLayout1.png  used on input line 37.
+(luatex.def)             Requested size: 188.21371pt x 140.13483pt.
+<product.png, id=77, 738.76pt x 495.8525pt>
+File: product.png Graphic file (type png)
+<use product.png>
+Package luatex.def Info: product.png  used on input line 53.
+(luatex.def)             Requested size: 188.21371pt x 126.32344pt.
 
-[5]
-Overfull \hbox (8.54208pt too wide) in paragraph at lines 20--23
-[]\TU/SFNSText-Regular.otf(0)/m/n/10.95 In the end I came back to my senses and
- tried developing the front-end in JavaScript,
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+<product-designer-hoi4-wisim.png, id=78, 902.37125pt x 261.97874pt>
+File: product-designer-hoi4-wisim.png Graphic file (type png)
+<use product-designer-hoi4-wisim.png>
+Package luatex.def Info: product-designer-hoi4-wisim.png  used on input line 59
+.
+(luatex.def)             Requested size: 355.51976pt x 103.21463pt.
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+
+
+[5<./wisimLayout1.png>]) (./technology.tex
+
+[6<./product.png><./product-designer-hoi4-wisim.png>]
+Overfull \hbox (8.54218pt too wide) in paragraph at lines 20--23
+[]\TU/SFNSText-Regular.otf(0)/m/n/10.95 In the end I came back to my senses and tried de-vel-op-ing the front-end in JavaScript,
  []
 
 
-Overfull \hbox (12.41367pt too wide) in paragraph at lines 26--28
-\TU/SFNSText-Regular.otf(0)/m/n/10.95 that were learnt along the way. One of th
-e key lessons I learnt during the development
- []
 
-
-
-[6]
-File: assets/interface_combined.png Graphic file (type bmp)
-<assets/interface_combined.png>
-)
-Overfull \hbox (31.49341pt too wide) in paragraph at lines 63--43
-\TU/SFNSText-Regular.otf(0)/m/n/10.95 took multiple pages and the program itsel
-f was hundreds of lines long. This misadventure
- []
-
-
-
-[7] (economic_simulation.tex
-Overfull \hbox (2.95903pt too wide) in paragraph at lines 14--19
-\TU/SFNSText-Regular.otf(0)/m/n/10.95 results, and performance, unless the impl
-ementer makes grave mistakes, statistical
- []
-
-
-Overfull \hbox (48.35138pt too wide) in paragraph at lines 33--33
- \TU/SFNSText-Regular.otf(0)/m/n/9 Link to article: [][]|   [][][]; 
- []
-
-
-Overfull \hbox (48.97833pt too wide) in paragraph at lines 33--33
- \TU/SFNSText-Regular.otf(0)/m/n/9 World record: [][]|   [][][]| 
- []
-
-
-Overfull \hbox (17.05284pt too wide) in paragraph at lines 46--50
-\TU/SFNSText-Regular.otf(0)/m/n/10.95 ajust their companies, designing new prod
-ucts, hiring workers, purchasing production
- []
-
-
+[7]
 
 [8]
-Overfull \hbox (10.46112pt too wide) in paragraph at lines 57--61
-[]\TU/SFNSText-Regular.otf(0)/m/n/10.95 Players have to balance quality, ecolog
-y, durability and ethics with the manufacturing
- []
-
-
 
 [9]
-Underfull \hbox (badness 1888) in paragraph at lines 105--107
-[]\TU/SFNSText-Regular.otf(0)/m/n/10 The amount of products a customer
+<assets/WebassemblyExample.png, id=120, 669.50125pt x 630.355pt>
+File: assets/WebassemblyExample.png Graphic file (type png)
+<use assets/WebassemblyExample.png>
+Package luatex.def Info: assets/WebassemblyExample.png  used on input line 136.
+
+(luatex.def)             Requested size: 376.42744pt x 354.42953pt.
+
+
+LaTeX Warning: `h' float specifier changed to `ht'.
+
+) (./economic_simulation.tex
+
+[10]
+Overfull \hbox (1.0838pt too wide) in paragraph at lines 35--35
+\TU/SFNSText-Regular.otf(0)/m/n/9 Link to ar-ti-cle: [][]|   [][][] 
  []
 
 
-Underfull \hbox (badness 5147) in paragraph at lines 111--113
-[]\TU/SFNSText-Regular.otf(0)/m/n/10 Keeps track of which products the
+Overfull \hbox (4.38263pt too wide) in paragraph at lines 35--35
+\TU/SFNSText-Regular.otf(0)/m/n/9 World record: [][]|   [][][] 
  []
 
 
-Underfull \hbox (badness 7362) in paragraph at lines 122--124
-[]\TU/SFNSText-Regular.otf(0)/m/n/10 How much the customer’s loyalties
+Overfull \hbox (9.0pt too wide) in paragraph at lines 35--35
+  [][][]$[]$| 
  []
 
 
-Underfull \hbox (badness 1742) in paragraph at lines 125--127
-\TU/SFNSText-Regular.otf(0)/m/n/10 customer’s decisions the most. For
+
+[11<./assets/WebassemblyExample.png>]
+
+[12]
+Underfull \hbox (badness 1888) in paragraph at lines 107--109
+[]\TU/SFNSText-Regular.otf(0)/m/n/10 The amount of prod-ucts a cus-tomer
  []
 
 
-Overfull \hbox (0.77753pt too wide) in paragraph at lines 102--129
+Underfull \hbox (badness 1742) in paragraph at lines 127--129
+\TU/SFNSText-Regular.otf(0)/m/n/10 cus-tomer’s de-ci-sions the most. For
+ []
+
+
+Overfull \hbox (0.77753pt too wide) in paragraph at lines 104--131
 [][] 
  []
 
 
 
-[10]
-Overfull \hbox (8.62968pt too wide) in paragraph at lines 135--138
-\TU/SFNSText-Regular.otf(0)/m/n/10.95 Gladwell’s The Tipping Point, such that e
-ach archetype has some preset preferences
- []
+[13]
+
+[14]) (./tweaks_and_balancing.tex)
+
+[15]
+<assets/interface_combined.png, id=168, 760.34062pt x 380.17032pt>
+File: assets/interface_combined.png Graphic file (type png)
+<use assets/interface_combined.png>
+Package luatex.def Info: assets/interface_combined.png  used on input line 70.
+(luatex.def)             Requested size: 376.42744pt x 188.21678pt.
 
 
-Overfull \hbox (3.8302pt too wide) in paragraph at lines 141--143
-\TU/SFNSText-Regular.otf(0)/m/n/10.95 When all companies are ready, the interna
-l workings of the companies are simulated
- []
+LaTeX Warning: `h' float specifier changed to `ht'.
 
-)
 
-[11] (main.aux)
+
+[16]
+
+[17<./assets/interface_combined.png>] (./main.aux)
  ***********
-LaTeX2e <2025-06-01> patch level 1
-L3 programming layer <2025-08-13>
+LaTeX2e <2024-11-01> patch level 2
+L3 programming layer <2025-03-26>
  ***********
 
 
 LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 
- ) 
-Here is how much of TeX's memory you used:
- 18670 strings out of 405216
- 406595 string characters out of 5493734
- 1091380 words of memory out of 5000000
- 46765 multiletter control sequences out of 15000+600000
- 632575 words of font info for 95 fonts, out of 8000000 for 9000
- 0 hyphenation exceptions out of 8191
- 113i,20n,110p,11230b,435s stack positions out of 10000i,1000n,20000p,200000b,200000s
+)
 
-Output written on main.pdf (11 pages).
+Here is how much of LuaTeX's memory you used:
+ 19618 strings out of 471954
+ 100000,1373583 words of node,token memory allocated
+ 722 words of node memory still in use:
+   7 hlist, 2 vlist, 2 rule, 14 glue, 4 kern, 1 glyph, 37 attribute, 63 glue_spe
+c, 20 attribute_list, 1 write nodes
+   avail lists: 1:1,2:1614,3:384,4:212,5:939,6:126,7:7370,8:53,9:633,10:15,11:42
+9
+ 45763 multiletter control sequences out of 65536+600000
+ 78 fonts using 7500127 bytes
+ 113i,21n,104p,11227b,557s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/fonts/ope
+ntype/public/lm/lmmono10-regular.otf><./SFNSText-Bold.otf><./SFNSText-RegularIta
+lic.otf></Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/f
+onts/opentype/public/lm/lmsans12-regular.otf><./ClashGrotesk-Semibold.ttf><./SFN
+SText-Regular.otf></Users/attilapinter/Library/Application Support/MiKTeX/texmfs
+/install/fonts/type1/public/amsfonts/cm/cmex10.pfb></Users/attilapinter/Library/
+Application Support/MiKTeX/texmfs/install/fonts/type1/public/amsfonts/cm/cmmi10.
+pfb></Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/fonts
+/type1/public/amsfonts/cm/cmr10.pfb></Users/attilapinter/Library/Application Sup
+port/MiKTeX/texmfs/install/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
+Output written on main.pdf (17 pages, 1761758 bytes).
+
+PDF statistics: 316 PDF objects out of 1000 (max. 8388607)
+ 64 named destinations out of 1000 (max. 131072)
+ 201 words of extra memory for PDF output out of 10000 (max. 100000000)
+
