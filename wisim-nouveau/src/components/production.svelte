@@ -12,6 +12,23 @@
 	/** @type {props} */
 	let { clientState = $bindable(), updateDecisions } = $props();
 
+	function newMachineID() {
+		/**
+		 * @type {number} machine
+		 */
+		let id = 0;
+		while (
+			id != 0 &&
+			!clientState.Company.Machines.findIndex((m) => {
+				m.ID == id;
+			})
+		) {
+			id = Math.round(Math.random() * 100000);
+		}
+
+		return id;
+	}
+
 	/** @param {import("$lib/javascript/simulation").Machine} machine */
 	function newMachine(machine) {
 		console.log(clientState);
@@ -21,7 +38,7 @@
 		}
 
 		const newMachine = JSON.parse(JSON.stringify(machine));
-		newMachine.ID = clientState.Company.Machines.length + 1;
+		newMachine.ID = newMachineID();
 		clientState.Company.Machines.push(newMachine);
 		clientState.Company.Balance -= newMachine.Value;
 		updateMachineDecision(newMachine, delta.Delta_New);
@@ -210,13 +227,16 @@
 	</tbody>
 </table>
 
-<center class="grid">
+<div
+	class="grid"
+	data-tooltip={clientState.predictionMode ? 'Cannot buy machines in budget mode' : ''}
+>
 	{#each clientState.ExternalFactors.MachinesOnOffer as m}
 		<button
-			disabled={clientState.Company.Balance < m.Value}
+			disabled={clientState.Company.Balance < m.Value || clientState.predictionMode}
 			onclick={() => {
 				newMachine(m);
 			}}>Buy Machines ({format.currency(m.Value, false, 0)})</button
 		>
 	{/each}
-</center>
+</div>

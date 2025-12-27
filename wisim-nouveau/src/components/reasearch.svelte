@@ -21,21 +21,36 @@
 
 	<label for="">
 		Ecology Research
-		<input type="number" step="10000" bind:value={clientState.Decisions.Research.Ecology} />
+		<input type="number" min="0" step="1000" bind:value={clientState.Decisions.Research.Ecology} />
 	</label>
 
 	<label for="">
 		Production Speed Research
-		<input type="number" step="10000" bind:value={clientState.Decisions.Research.Production_cost} />
+		<input
+			type="number"
+			min="0"
+			step="1000"
+			bind:value={clientState.Decisions.Research.Production_cost}
+		/>
 	</label>
 
 	<label for="">
 		Durability Research
-		<input type="number" step="10000" bind:value={clientState.Decisions.Research.Durability} />
+		<input
+			type="number"
+			min="0"
+			step="1000"
+			bind:value={clientState.Decisions.Research.Durability}
+		/>
 	</label>
 
 	<label for="">
 		Marketing Research
-		<input type="number" step="10000" bind:value={clientState.Decisions.Research.Promotion} />
+		<input
+			type="number"
+			min="0"
+			step="1000"
+			bind:value={clientState.Decisions.Research.Promotion}
+		/>
 	</label>
 </form>

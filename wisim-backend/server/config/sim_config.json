@@ -13,7 +13,7 @@
       "ProductionCost": 1,
       "MaterialUse": 1
     },
-    "Balance": 200000
+    "Balance": 800000
   },
   "Population_size": 100000,
   "Min_base_need": 1,
@@ -24,7 +24,7 @@
   "Ecology_spread": 3,
   "Coolness_bias": 1,
   "Coolness_spread": 1,
-  "Price_bias": 6,
+  "Price_bias": 5,
   "Price_spread": 2,
   "Bang_for_buck_bias": 3,
   "Bang_for_buck_spread": 1,

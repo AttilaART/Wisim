@@ -1,7 +1,7 @@
 <script>
 	import { draggable, controls, ControlFrom, Compartment, position, events } from '@neodrag/svelte';
 	import { render } from 'svelte/server';
-	let { title, closeWindow, children } = $props();
+	let { title, closeWindow, children, onmousedown } = $props();
 	/** @type {{x: number, y: number}}*/
 	let viewportSize = $derived({
 		x: document.documentElement.clientWidth,
@@ -42,6 +42,7 @@
 		positionComp,
 		eventsComp
 	])}
+	{onmousedown}
 >
 	<header class="windowHeader">
 		<button class="windowHeader" onclick={closeWindow} rel="prev" aria-label="Close"></button>

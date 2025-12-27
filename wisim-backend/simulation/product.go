@@ -109,7 +109,7 @@ func promotionQuality(employeePool Employee_pool, baseMarketingStrength float32,
 		totalPersonelleStrength += employeePool[id].Motivation * employeePool[id].Skill * (employeePool[id].WorkingHours / 8.0)
 	}
 
-	promotionQuality := baseMarketingStrength + float32(math.Sqrt(float64(totalPersonelleStrength)))
+	promotionQuality := baseMarketingStrength + float32(math.Sqrt(float64(totalPersonelleStrength))*1.5)
 
 	println(promotionQuality)
 

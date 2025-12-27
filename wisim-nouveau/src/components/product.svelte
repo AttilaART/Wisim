@@ -11,8 +11,8 @@
 	/** @typedef {Object} Props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState,
 	 * @property {(Decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions,
-	 * @property {(contents: import("svelte").Snippet<[number]>)=>number} newWindow,
-	 * @property {(windowId: number)=>void} deleteWindow,
+	 * @property {(contents: import("svelte").Snippet<[string]>)=>string} newWindow,
+	 * @property {(windowId: string)=>void} deleteWindow,
 	 * @property {()=>void} openProduction
 	 */
 

@@ -39,25 +39,46 @@
 	/** @type {{data: {serverAdress: string}}}*/
 	let { data } = $props();
 
-	/** @type {Object.<string, (id: number)=>ReturnType<import("svelte").Snippet>>} */
+	/** @typedef {{window: (id: string, onmousedown: (id: string)=>void,  zindex: number)=>ReturnType<import("svelte").Snippet>, zindex: number}} Window*/
+
+	/** @type {Object.<string, Window>} */
 	let windows = $state({});
 
 	/**
-	 *@param {(id: number)=>ReturnType<import("svelte").Snippet>} snippet
-	 * @returns {number} window ID
+	 *@param {(id: string, onmousedown: (id: string)=>void,  zindex: number)=>ReturnType<import("svelte").Snippet>} snippet
+	 * @returns {string} window ID
 	 */
 	function newWindow(snippet) {
-		let id = Math.round(Math.random() * 100000);
+		let id = Math.round(Math.random() * 100000).toString();
 
 		if (windows[id] != undefined) {
 			return newWindow(snippet);
 		}
-		windows[id] = snippet;
+		windows[id] = { window: snippet, zindex: Object.keys(windows).length + 1 };
 		return id;
 	}
 
 	/**
-	 *@param {number} id
+	 * @param  {string}  id
+	 */
+
+	function windowToTop(id) {
+		console.log('Widow to  top');
+
+		for (let i of Object.keys(windows)) {
+			if (i == id) continue;
+
+			if (windows[i].zindex >= windows[id].zindex) {
+				windows[i].zindex -= 1;
+			}
+			console.log(i, windows[i].zindex);
+		}
+
+		windows[id].zindex = Object.keys(windows).length;
+	}
+
+	/**
+	 *@param {string} id
 	 * @returns {void}
 	 */
 	function deleteWindow(id) {
@@ -304,7 +325,7 @@
 </script>
 
 <svelte:head>
-	<title>Singlplayer</title>
+	<title>Wisim</title>
 	<meta name="description" content="About this app" />
 </svelte:head>
 
@@ -514,7 +535,9 @@
 
 		<Canvas>
 			{#each Object.entries(windows) as w (w[0])}
-				{@render w[1](Number(w[0]))}
+				<div style="position: relative; z-index: {w[1].zindex + 10};">
+					{@render w[1].window(w[0], windowToTop, w[1].zindex)}
+				</div>
 			{/each}
 		</Canvas>
 		<div id="bottom-menu">
@@ -673,11 +696,14 @@
 	</dialog>
 {/await}
 
-{#snippet product(/** @type {Number} id */ id)}
+{#snippet product(/** @type {string} id */ id, /** @type {(id: string)=>void}*/ onmousedown)}
 	<Window
 		title="Product"
 		closeWindow={() => {
 			deleteWindow(id);
+		}}
+		onmousedown={() => {
+			onmousedown(id);
 		}}
 	>
 		<Product
@@ -694,11 +720,14 @@
 	</Window>
 {/snippet}
 
-{#snippet marketing(/** @type {Number} id */ id)}
+{#snippet marketing(/** @type {string} id */ id, /** @type {(id: string)=>void}*/ onmousedown)}
 	<Window
 		title="Marketing"
 		closeWindow={() => {
 			deleteWindow(id);
+		}}
+		onmousedown={() => {
+			onmousedown(id);
 		}}
 	>
 		<Marketing
@@ -710,11 +739,14 @@
 	</Window>
 {/snippet}
 
-{#snippet debt(/** @type {Number} id */ id)}
+{#snippet debt(/** @type {string} id */ id, /** @type {(id: string)=>void}*/ onmousedown)}
 	<Window
 		title="Debt"
 		closeWindow={() => {
 			deleteWindow(id);
+		}}
+		onmousedown={() => {
+			onmousedown(id);
 		}}
 	>
 		<Debt
@@ -726,11 +758,14 @@
 	</Window>
 {/snippet}
 
-{#snippet reports(/** @type {Number} id */ id)}
+{#snippet reports(/** @type {string} id */ id, /** @type {(id: string)=>void}*/ onmousedown)}
 	<Window
 		title="Reports"
 		closeWindow={() => {
 			deleteWindow(id);
+		}}
+		onmousedown={() => {
+			onmousedown(id);
 		}}
 	>
 		<Reports
@@ -744,11 +779,14 @@
 	</Window>
 {/snippet}
 
-{#snippet market(/** @type {Number} id */ id)}
+{#snippet market(/** @type {string} id */ id, /** @type {(id: string)=>void}*/ onmousedown)}
 	<Window
 		title="Market"
 		closeWindow={() => {
 			deleteWindow(id);
+		}}
+		onmousedown={() => {
+			onmousedown(id);
 		}}
 	>
 		<Market
@@ -763,11 +801,14 @@
 	</Window>
 {/snippet}
 
-{#snippet employees(/** @type {Number} id */ id)}
+{#snippet employees(/** @type {string} id */ id, /** @type {(id: string)=>void}*/ onmousedown)}
 	<Window
 		title="Employees"
 		closeWindow={() => {
 			deleteWindow(id);
+		}}
+		onmousedown={() => {
+			onmousedown(id);
 		}}
 	>
 		<Employees
@@ -779,11 +820,14 @@
 	</Window>
 {/snippet}
 
-{#snippet production(/** @type {Number} id */ id)}
+{#snippet production(/** @type {string} id */ id, /** @type {(id: string)=>void}*/ onmousedown)}
 	<Window
 		title="Production"
 		closeWindow={() => {
 			deleteWindow(id);
+		}}
+		onmousedown={() => {
+			onmousedown(id);
 		}}
 	>
 		<Production
@@ -795,11 +839,14 @@
 	</Window>
 {/snippet}
 
-{#snippet research(/** @type {Number} id */ id)}
+{#snippet research(/** @type {string} id */ id, /** @type {(id: string)=>void}*/ onmousedown)}
 	<Window
 		title="Research"
 		closeWindow={() => {
 			deleteWindow(id);
+		}}
+		onmousedown={() => {
+			onmousedown(id);
 		}}
 	>
 		<Reasearch

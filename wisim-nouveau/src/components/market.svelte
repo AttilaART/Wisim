@@ -14,8 +14,8 @@
 	 * @typedef {Object} props
 	 * @property {import("$lib/javascript/simulation").clientState} clientState
 	 * @property {(decisions: import("$lib/javascript/simulation").Decisions)=>void} updateDecisions
-	 * @property {(contents: import("svelte").Snippet<[number]>)=>number} newWindow,
-	 * @property {(windowId: number)=>void} deleteWindow,
+	 * @property {(contents: import("svelte").Snippet<[string]>)=>string} newWindow,
+	 * @property {(windowId: string)=>void} deleteWindow,
 	 * @property {string} serverAdress
 	 */
 
@@ -35,7 +35,7 @@
 		/** @type {Object.<string, import("$lib/javascript/simulation").CompanyMarketStatistics>}*/
 		let v = JSON.parse(
 			await (
-				await fetch('http://' + serverAdress.replace('localhost', '127.0.0.1') + 'market/')
+				await fetch('http://' + serverAdress.replace('localhost', '127.0.0.1') + '/' + 'market/')
 			).text()
 		);
 		return v;
@@ -87,7 +87,7 @@
 			}}>Sales</button
 		>
 	</div>
-	{#key clientState.ExternalFactors.Month}
+	{#key clientState.ExternalFactors}
 		{#await getLatestMarketOverview() then marketOverview}
 			{#if tab != 'all'}
 				<select bind:value={selectedCompanyID} name="company" id="">
@@ -106,10 +106,11 @@
 			{:else}
 				{@render sales(marketOverview[selectedCompanyID])}
 			{/if}
-		{:catch}
+		{:catch error}
 			<center style="margin: 2rem">
 				<h1>No Data</h1>
 				Wait until the next turn to see data
+				{error}
 			</center>
 		{/await}
 	{/key}
