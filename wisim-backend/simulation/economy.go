@@ -77,7 +77,7 @@ func (population *Population) simulateEconomy(
 		offersProperties[i][propertiesQuality] = o.ProductStats.Quality
 		offersProperties[i][propertiesEcology] = o.ProductStats.Ecology
 		offersProperties[i][propertiesEthics] = o.ProductStats.Ethics
-		offersProperties[i][propertiesPrice] = isCheap(o, marketExpectedPrice)
+		offersProperties[i][propertiesPrice] = normalisedPrice(o, marketExpectedPrice)
 		offersProperties[i][propertiesBangForBuck] = o.ProductStats.Quality / o.Price
 		if o.Price <= 0 {
 			offersProperties[i][propertiesPrice] = 10
@@ -304,12 +304,12 @@ func simulatePopulationSegment(
 	wg.Done()
 }
 
-func isCheap(offer Offer, avrPrice float32) float32 {
+func normalisedPrice(offer Offer, avrPrice float32) float32 {
 	if offer.Price == avrPrice {
 		return 0.5
 	}
 
-	return 0.5 + (avrPrice - offer.Price)
+	return 0.5 + (avrPrice-offer.Price)/avrPrice
 }
 
 func chooseProduct(decisionFactors []float32, purchasingThreshold float32) int {

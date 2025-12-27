@@ -1,4 +1,4 @@
-This is LuaHBTeX, Version 1.14.0 (MiKTeX 22.1) (format=lualatex 2025.9.11)  25 DEC 2025 21:26
+This is LuaHBTeX, Version 1.14.0 (MiKTeX 22.1) (format=lualatex 2025.9.11)  27 DEC 2025 17:44
  restricted system commands enabled.
 **main.tex
 (./main.tex
@@ -934,7 +934,7 @@ on input line 35.
 [3]) (./design.tex
 
 [4]
-<assets/wisimLayout1.png, id=86, 1198.4775pt x 892.33376pt>
+<assets/wisimLayout1.png, id=90, 1198.4775pt x 892.33376pt>
 File: assets/wisimLayout1.png Graphic file (type png)
 <use assets/wisimLayout1.png>
 Package luatex.def Info: assets/wisimLayout1.png  used on input line 39.
@@ -948,7 +948,7 @@ Overfull \hbox (32.47603pt too wide) in paragraph at lines 47--47
 
 
 [5<./assets/wisimLayout1.png>]
-<assets/wisimLayout2.png, id=97, 1443.3925pt x 936.49875pt>
+<assets/wisimLayout2.png, id=101, 1443.3925pt x 936.49875pt>
 File: assets/wisimLayout2.png Graphic file (type png)
 <use assets/wisimLayout2.png>
 Package luatex.def Info: assets/wisimLayout2.png  used on input line 56.
@@ -962,7 +962,7 @@ ex-pe-ri-enced in the pre-vi-ous at-tempt, I tried switch-
 
 
 [6<./assets/wisimLayout2.png>]
-<assets/wisimLayout4.png, id=104, 1445.4pt x 854.19125pt>
+<assets/wisimLayout4.png, id=108, 1445.4pt x 854.19125pt>
 File: assets/wisimLayout4.png Graphic file (type png)
 <use assets/wisimLayout4.png>
 Package luatex.def Info: assets/wisimLayout4.png  used on input line 76.
@@ -970,12 +970,12 @@ Package luatex.def Info: assets/wisimLayout4.png  used on input line 76.
 
 
 [7<./assets/wisimLayout4.png>]
-<product.png, id=111, 738.76pt x 495.8525pt>
+<product.png, id=115, 738.76pt x 495.8525pt>
 File: product.png Graphic file (type png)
 <use product.png>
 Package luatex.def Info: product.png  used on input line 104.
 (luatex.def)             Requested size: 188.21371pt x 126.32344pt.
-<assets/product-designer-hoi4-wisim.png, id=112, 902.37125pt x 261.97874pt>
+<assets/product-designer-hoi4-wisim.png, id=116, 902.37125pt x 261.97874pt>
 File: assets/product-designer-hoi4-wisim.png Graphic file (type png)
 <use assets/product-designer-hoi4-wisim.png>
 Package luatex.def Info: assets/product-designer-hoi4-wisim.png  used on input 
@@ -984,7 +984,7 @@ line 121.
 
 
 [8<./product.png><./assets/product-designer-hoi4-wisim.png>]
-<assets/predictionMode.png, id=121, 1445.4pt x 850.17625pt>
+<assets/predictionMode.png, id=125, 1445.4pt x 850.17625pt>
 File: assets/predictionMode.png Graphic file (type png)
 <use assets/predictionMode.png>
 Package luatex.def Info: assets/predictionMode.png  used on input line 142.
@@ -1003,7 +1003,7 @@ Overfull \hbox (8.54218pt too wide) in paragraph at lines 20--23
 [11]
 
 [12]
-<assets/WebassemblyExample.png, id=155, 669.50125pt x 630.355pt>
+<assets/WebassemblyExample.png, id=159, 669.50125pt x 630.355pt>
 File: assets/WebassemblyExample.png Graphic file (type png)
 <use assets/WebassemblyExample.png>
 Package luatex.def Info: assets/WebassemblyExample.png  used on input line 136.
@@ -1053,10 +1053,12 @@ Overfull \hbox (0.77753pt too wide) in paragraph at lines 104--131
 
 [16]
 
-[17]) (./tweaks_and_balancing.tex)
+[17]
 
-[18]
-<assets/interface_combined.png, id=202, 760.34062pt x 380.17032pt>
+[18]) (./tweaks_and_balancing.tex
+
+[19])
+<assets/interface_combined.png, id=220, 760.34062pt x 380.17032pt>
 File: assets/interface_combined.png Graphic file (type png)
 <use assets/interface_combined.png>
 Package luatex.def Info: assets/interface_combined.png  used on input line 70.
@@ -1067,9 +1069,9 @@ LaTeX Warning: `h' float specifier changed to `ht'.
 
 
 
-[19]
+[20]
 
-[20<./assets/interface_combined.png>] (./main.aux)
+[21<./assets/interface_combined.png>] (./main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-03-26>
@@ -1081,14 +1083,14 @@ LaTeX Font Warning: Some font shapes were not available, defaults substituted.
 )
 
 Here is how much of LuaTeX's memory you used:
- 19665 strings out of 471954
+ 19679 strings out of 471954
  100000,1373583 words of node,token memory allocated
- 735 words of node memory still in use:
-   7 hlist, 2 vlist, 2 rule, 15 glue, 4 kern, 1 glyph, 39 attribute, 63 glue_spe
-c, 21 attribute_list, 1 write nodes
-   avail lists: 1:1,2:1866,3:452,4:252,5:869,6:141,7:6876,8:63,9:677,10:15,11:48
+ 767 words of node memory still in use:
+   7 hlist, 2 vlist, 2 rule, 17 glue, 4 kern, 1 glyph, 45 attribute, 63 glue_spe
+c, 24 attribute_list, 1 write nodes
+   avail lists: 1:1,2:1959,3:480,4:268,5:870,6:147,7:6874,8:67,9:705,10:15,11:48
 6
- 45788 multiletter control sequences out of 65536+600000
+ 45792 multiletter control sequences out of 65536+600000
  78 fonts using 7500127 bytes
  113i,21n,104p,11227b,574s stack positions out of 10000i,1000n,20000p,200000b,200000s
 </Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/fonts/ope
@@ -1100,10 +1102,12 @@ SText-Regular.otf></Users/attilapinter/Library/Application Support/MiKTeX/texmfs
 Application Support/MiKTeX/texmfs/install/fonts/type1/public/amsfonts/cm/cmmi10.
 pfb></Users/attilapinter/Library/Application Support/MiKTeX/texmfs/install/fonts
 /type1/public/amsfonts/cm/cmr10.pfb></Users/attilapinter/Library/Application Sup
-port/MiKTeX/texmfs/install/fonts/type1/public/amsfonts/cm/cmsy10.pfb>
-Output written on main.pdf (20 pages, 2558752 bytes).
+port/MiKTeX/texmfs/install/fonts/type1/public/amsfonts/cm/cmsy10.pfb></Users/att
+ilapinter/Library/Application Support/MiKTeX/texmfs/install/fonts/type1/public/a
+msfonts/cm/cmsy8.pfb>
+Output written on main.pdf (21 pages, 2577985 bytes).
 
-PDF statistics: 363 PDF objects out of 1000 (max. 8388607)
- 75 named destinations out of 1000 (max. 131072)
- 233 words of extra memory for PDF output out of 10000 (max. 100000000)
+PDF statistics: 391 PDF objects out of 1000 (max. 8388607)
+ 85 named destinations out of 1000 (max. 131072)
+ 249 words of extra memory for PDF output out of 10000 (max. 100000000)
 

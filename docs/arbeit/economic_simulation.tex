@@ -144,7 +144,8 @@ When all companies are ready, the internal workings of the companies are simulat
 each customer makes a decision on which product (if any) they buy.
 
 Customers purchase the product they perceive is the best, that is the one that aligns the best with their preferences.
-This is calculated for each product using the following formula.
+This is calculated for each product using the following formula\footnote{Note: There might be slight differences in the
+	implentationk. For simplicity's sake some edge cases and optimisation are not handled. }.
 \begin{align}
 	\text{product opinion}  = & \begin{pmatrix}
 		                            \text{ product quality } \cdot \text{ marketing style quality} \\
@@ -165,3 +166,63 @@ a dot of their products. This is all then multiplied by how affected the custome
 
 Finally the customer tries to buy as many of their chosen product as they need. If the product is not in stock, they
 don't buy anything.
+
+\subsection{An Example}
+
+There is a potential customer "John". The marketing of the products he has heard of gives John the following \textit{perception} of the
+products:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{l c c c c r}
+		\toprule
+		Product        & Quality & Ecology & Ethics & Durability & Price (CHF) \\ \midrule
+		Bean Squeezer  & 12      & 11      & 5      & 3          & 1'000       \\
+		Coffee Supreme & 28      & 28      & 12     & 5          & 1'800       \\
+		Eco Coffee 150 & 55      & 15      & 4      & 8          & 20'000      \\ \bottomrule
+	\end{tabular}
+\end{table}
+
+John has the following preferences:
+
+\begin{itemize}
+	\item Quality: 1.4
+	\item Ecology: 1.8
+	\item Ethics: 2.0
+	\item Durability: 0.4
+	\item Price: 5.5
+\end{itemize}
+
+This means that his most important criteria is that the product is well priced. John also has a purchasing threshold of
+80 meaning that he will only buy products that he feels align heavily with his preferences.
+
+When John analyises all the products he knows about, he will check how well the products align with his preferences.
+When he looks at "Bean Squeezer" it aligns well with his preferences:
+$$
+	avrPrice = \frac{1'000 + 1'800 + 20'000}{ 3 } = 7600 \\
+$$
+
+\begin{align}
+	oppinion = & 12 \cdot 1.4                                     \\
+	           & + 11 \cdot 1.8                                   \\
+	           & + 5 \cdot 2                                      \\
+	           & + 3 \cdot 0.4                                    \\
+	           & + (0.5 + (avrPrice - 1'000)/ avrPrice) \cdot 3.5 \\
+	=          & 52.58
+\end{align}
+
+For each of the other products he has the following oppinions:
+
+\begin{table}[h]
+	\centering
+	\begin{tabular}{l c c }
+		\toprule
+		Product        & Oppinion & Rank \\ \midrule
+		Coffee Supreme & 120.02   & 1    \\
+		Eco Coffee 150 & 105.97   & 2    \\
+		Bean Squeezer  & 52.58    & 3    \\ \bottomrule
+	\end{tabular}
+\end{table}
+
+John likes "Coffee Supreme" the most and so he tries to go and buy it, upon trying to buy it he realises it's out of
+stock so settles for the "Eco Coffee 150".
