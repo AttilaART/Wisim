@@ -35,11 +35,11 @@
 		Outdated: false,
 		Promotion: {
 			Quantity: 1000,
-			Quality: 0.2,
-			Durability: 0.2,
-			Price: 0.2,
-			Ecology: 0.2,
-			Ethics: 0.2
+			Quality: 0.4472135955,
+			Durability: 0.4472135955,
+			Price: 0.4472135955,
+			Ecology: 0.4472135955,
+			Ethics: 0.4472135955
 		},
 		Product: {
 			ID: `${Math.trunc(Math.random() * 100000000)}`,

@@ -470,8 +470,10 @@ export const financeReportCategories = {
 /**
 @typedef {Object} CompanyMarketStatisticsProduct  
 	@property {string} ID
+	@property {number} CompanyID
+	@property {string} CompanyName
 
-	@property {Marketing_statistics} Marketing_statistics
+	@property {Marketing_statistics} MarketingStatistics
 	@property {number} MarketShare
 	@property {number} MonthlySales
   @property {number} ValueOfMonthlySales

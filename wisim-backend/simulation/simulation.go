@@ -345,7 +345,9 @@ type CompanyMarketStatistics struct {
 }
 
 type CompanyMarketStatisticsProduct struct {
-	ID string
+	ID          string
+	CompanyID   int
+	CompanyName string
 
 	MarketingStatistics Marketing_statistics
 	MarketShare         float64
@@ -387,7 +389,10 @@ func CompileMarketStatistics(c Company, externalFactors ExternalFactors, totalMa
 		totalValueOfSalesThatMonth += float64(p.ProductSalesStatistics.ProductsSold) * p.MarketingStatistics.Price
 
 		productMarketStatistics := CompanyMarketStatisticsProduct{
-			ID:                  id,
+			ID:          id,
+			CompanyID:   c.ID,
+			CompanyName: c.Name,
+
 			MarketingStatistics: p.MarketingStatistics,
 			MarketShare:         zeroIfNaN(float64(p.ProductSalesStatistics.ProductsSold) / float64(totalMarketSales)),
 			MonthlySales:        p.ProductSalesStatistics.ProductsSold,

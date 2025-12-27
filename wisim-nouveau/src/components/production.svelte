@@ -18,21 +18,21 @@
 		 */
 		let id = 0;
 		while (
-			id != 0 &&
-			!clientState.Company.Machines.findIndex((m) => {
+			id == 0 ||
+			clientState.Company.Machines.findIndex((m) => {
 				m.ID == id;
-			})
+			}) != -1
 		) {
 			id = Math.round(Math.random() * 100000);
+			console.log(id);
 		}
 
+		console.log(id);
 		return id;
 	}
 
 	/** @param {import("$lib/javascript/simulation").Machine} machine */
 	function newMachine(machine) {
-		console.log(clientState);
-
 		if (clientState.Company.Machines == null) {
 			clientState.Company.Machines = [];
 		}
@@ -187,7 +187,7 @@
 							>
 						{:else}
 							<span
-								data-tooltip={'This machine is not working at full efficieny because not enough workers are assigned to it'}
+								data-tooltip={'This machine is not working at full efficieny'}
 								data-placement="right">{MachineProduction[i]}</span
 							>
 						{/if}
@@ -200,18 +200,26 @@
 					<h2>{machineWorkerCount[i]}</h2>
 				</td>
 				<td>
-					<select
-						bind:value={m.AssignedProductID}
-						onchange={() => {
-							updateMachineDecision(m, delta.Delta_Change);
-						}}
+					<span
+						data-tooltip={clientState.predictionMode
+							? 'Cannot modify machines in budget mode'
+							: 'Select which product this machine will produce'}
+						data-placement="left"
 					>
-						{#if m.AssignedProductID && clientState.Company.Offers[m.AssignedProductID]}{clientState
-								.Company.Offers[m.AssignedProductID].Product.Name}{:else}None{/if}
-						{#each Object.entries(clientState.Company.Offers) as offer}
-							<option value={offer[0]}>{offer[1].Product.Name}</option>
-						{/each}
-					</select>
+						<select
+							disabled={clientState.predictionMode}
+							bind:value={m.AssignedProductID}
+							onchange={() => {
+								updateMachineDecision(m, delta.Delta_Change);
+							}}
+						>
+							{#if m.AssignedProductID && clientState.Company.Offers[m.AssignedProductID]}{clientState
+									.Company.Offers[m.AssignedProductID].Product.Name}{:else}None{/if}
+							{#each Object.entries(clientState.Company.Offers) as offer}
+								<option value={offer[0]}>{offer[1].Product.Name}</option>
+							{/each}
+						</select>
+					</span>
 				</td>
 				<td>
 					<button

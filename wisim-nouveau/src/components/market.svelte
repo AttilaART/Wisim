@@ -28,7 +28,7 @@
 		serverAdress
 	} = $props();
 
-	let tab = $state('overview');
+	let tab = $state('all');
 	let selectedCompanyID = $state(0);
 
 	async function getLatestMarketOverview() {
@@ -80,7 +80,6 @@
 			}}>Finances</button
 		>
 		<button
-			disabled
 			class={tab == 'sales' ? '' : 'outline'}
 			onclick={() => {
 				tab = 'sales';
@@ -89,7 +88,7 @@
 	</div>
 	{#key clientState.ExternalFactors}
 		{#await getLatestMarketOverview() then marketOverview}
-			{#if tab != 'all'}
+			{#if tab != 'all' && tab != 'sales'}
 				<select bind:value={selectedCompanyID} name="company" id="">
 					{#each Object.values(marketOverview) as c}
 						<option value={c.CompanyID}>{c.Name} ({c.CEO})</option>
@@ -104,13 +103,17 @@
 			{:else if tab == 'finances'}
 				{@render finances(marketOverview[selectedCompanyID])}
 			{:else}
-				{@render sales(marketOverview[selectedCompanyID])}
+				{@render sales(marketOverview)}
 			{/if}
 		{:catch error}
 			<center style="margin: 2rem">
 				<h1>No Data</h1>
 				Wait until the next turn to see data
-				{error}
+				<div style="opacity: 0.5;">
+					<small>
+						{error}
+					</small>
+				</div>
 			</center>
 		{/await}
 	{/key}
@@ -233,12 +236,18 @@
 						text: 'Product Prices'
 					},
 					tooltip: {},
+					xAxis: {
+						data: getProductData(MarketStatistics, (e) => {
+							return e.MarketingStatistics.Name;
+						})
+					},
+					yAxis: {},
 					series: [
 						{
 							name: 'Price',
 							type: 'bar',
 							data: getProductData(MarketStatistics, (e) => {
-								return { value: e.Marketing_statistics.Price, name: e.Marketing_statistics.Name };
+								return e.MarketingStatistics.Price;
 							})
 						}
 					]
@@ -280,8 +289,62 @@
 )}{/snippet}
 
 {#snippet sales(
-	/** @type {import("$lib/javascript/simulation").CompanyMarketStatistics}*/ CompanyMarketStatistics
-)}{/snippet}
+	/** @type {Object.<string, import("$lib/javascript/simulation").CompanyMarketStatistics>} */ MarketStatistics
+)}
+	<table style="width: 100%;">
+		<thead>
+			<tr>
+				<th> Name </th>
+				<th> Company </th>
+				<th> Price </th>
+				<th> Montly Sales</th>
+				<th> Market Share (Sales) </th>
+				<th> Market Share (Value) </th>
+			</tr>
+		</thead>
+		<tbody>
+			{#each getProductData(MarketStatistics, (e) => e) as product}
+				<tr>
+					<td>
+						{product.MarketingStatistics.Name}
+						{console.log(product)}
+					</td>
+					<td>
+						{product.CompanyName}
+					</td>
+					<td>
+						{format.currency(product.MarketingStatistics.Price, false, 0)}
+					</td>
+					<td>
+						{product.MonthlySales}
+					</td>
+					<td>
+						{format.number(
+							(product.MonthlySales /
+								getProductData(MarketStatistics, (e) => {
+									return e.MonthlySales;
+								}).reduce((a, b) => a + b)) *
+								100,
+							false,
+							1
+						)}%
+					</td>
+					<td>
+						{format.number(
+							((product.MonthlySales * product.MarketingStatistics.Price) /
+								getProductData(MarketStatistics, (e) => {
+									return e.MonthlySales * e.MarketingStatistics.Price;
+								}).reduce((a, b) => a + b)) *
+								100,
+							false,
+							1
+						)}%
+					</td>
+				</tr>
+			{/each}
+		</tbody>
+	</table>
+{/snippet}
 
 <style>
 	.grid {
