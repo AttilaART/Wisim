@@ -18,22 +18,18 @@ models almost always outperform (in terms of speed) agent-based models of the sa
 caliber.
 
 For example, the cult classic city builder SimCity 4 was able to simulate regions
-with populations up to 100 million with very minor performance issues,
-\footnote{
-	\begin{minipage}{\textwidth}
-		This Kotaku article from 2014 shows off a city of over 100 million
-		inhabitants, the Guinness world record, without any performance problems.
+with populations up to 100 million with very minor performance issues\footnote{
+	This Kotaku article from 2014 shows off a city of over 100 million
+	inhabitants, the Guinness world record, without any performance problems.
 
-		\noindent  Link to article:
-		\href{https://kotaku.com/simcity-megacity-has-over-100-000-000-million-people-li-1629131314}
-		{kotaku.com/simcity-megacity-has-over-100-000-000-million-people-li-1629131314}
+	\noindent  Link to article:
+	\href{https://kotaku.com/simcity-megacity-has-over-100-000-000-million-people-li-1629131314}
+	{kotaku.com/simcity-megacity-has-over-100-000-000-million-people-li-1629131314}
 
-		\noindent World record:
-		\href{https://www.guinnessworldrecords.com/world-records/418977-largest-simcity-4-city-region}
-		{www.guinnessworldrecords.com/world-records/418977-largest-simcity-4-city-region}
-	\end{minipage}
-}
-while over 20 years later, games like Cities: Skylines 2 are still plagued by
+	\noindent World record:
+	\href{https://www.guinnessworldrecords.com/world-records/418977-largest-simcity-4-city-region}
+	{www.guinnessworldrecords.com/world-records/418977-largest-simcity-4-city-region}
+}, while over 20 years later, games like Cities: Skylines 2 are still plagued by
 performance issues from simulating just 100'000 agents on modern multi-core
 hardware.
 
@@ -52,12 +48,12 @@ the previous phase are executed.
 
 \subsubsection{Products}
 
-Players will develop many products during the course of the game. The products are made up of various comoonents, these
-comoonents along with the research levels of the company impact the properties of the product, for example using wooden
-construction will make you product slightly more ecological whereas using plastic will make it less so.
+Players will develop many products during the course of the game. The products are made up of various components, these
+components along with the research levels of the company impact the properties of the product, for example using wooden
+construction will make you product slightly more ecological, whereas using plastic will make it less so.
 
 Players have to balance quality, ecology, durability and ethics with the manufacturing difficulty, design costs and price.
-This forces players to attempt to target a specific customer base lest they lose agaist someone who does. For example:
+This forces players to attempt to target a specific customer base lest they lose against someone who does. For example:
 the product that objectively has the best stats may be so expensive to produce that it has to be sold for multiple
 thousands of Francs, making it out of reach for most of the consumer base.
 
@@ -66,7 +62,7 @@ thousands of Francs, making it out of reach for most of the consumer base.
 Along with developing a product, companies of course have to produce them. To do so they need 3 things: production
 machines, employees and money. Every product has a so called "production cost", this refers to how difficult the
 product is to produce; a production machine will produce more products with low production cost per month than products with a
-high cost all else being equal. Every machine has a specific "production capacity", as you might expect, this refers to
+high cost all else being equal. Every machine has a specific "production capacity". As you might expect, this refers to
 how much "production" can be produced per month, thus how many of a specific product.
 
 The second ingredient of production is employees, without them machines won't run. The key gameplay impact of employees
@@ -77,7 +73,7 @@ become virtually useless. However, if you fire them, they might be snatched up b
 profiting off years of investment.
 
 Last but not least is money. As with any physical good, they have to be made out of something and that something costs
-money. In fact during hard economic times the cost materials could increase dramatically \footnote{This feature, along
+money. In fact during hard economic times the cost materials could increase dramatically\footnote{This feature, along
 	with most other external factor related features, is not implemented}, which, depending on the business strategy, can
 impact the company's profits.
 
@@ -86,15 +82,19 @@ impact the company's profits.
 For people to buy a product, they have to know it exists. With marketing you can spread the word of your product and
 influence peoples' views on it at the same time. By investing large amounts in marketing quantity, you increase how many
 people see your product; later, when deciding which product to buy, customers only choose between the products they
-know. You can also influence how the product is perceived by configuring the marketing style. Marketing style along with
+know. You can also influence how the product is perceived by configuring the marketing style. Marketing
+quantity is determined by the skill, motivation and quantity of marketing employees. Marketing style along with
 marketing quality will positively impact how potential customers see the promoted properties of the product.
+
+For example, you might be able to have a lot of people buy a bad product (low quality, ecology, etc at a high price) if
+your marketing is widespread and high quality enough to convince people that the product is good.
 
 \subsubsection{Consumers}
 
 The customer is simulated as a bundle of different characteristics, preferences,
 and needs; these all combine to produce unique behaviors for each individual
 agent. Taking inspiration from Economy Week, each customer has the following
-properties: \footnote{The names provided the table may not be accurate to the
+properties:\footnote{The names provided the table may not be accurate to the
 	corresponding implementations found in the code to simplify the explanation,
 	as the implementation contains subtle differences for performance and
 	technological reasons.
@@ -116,13 +116,14 @@ properties: \footnote{The names provided the table may not be accurate to the
 		Purchasing Threshold & Number             & How attractive a product has to
 		be for the customer to buy it.                                                 \\
 
-		Savviness            & Number             & How well informed the customer is. \\
+		Savviness            & Number             & How well informed the customer is.
+		The savvier the person, the less influenced they are by marketing and loyalty  \\
 
 		Loyalties            & List[number]       & How loyal the customer is to a
 		certain company.                                                               \\
 
 		Loyalty Factor       & Number             & How much the customer's loyalties
-		influence their                                                                \\
+		influence their purchasing decision   (Note: Loyalty is not fully implemented) \\
 
 		Preferences          & Dictionary[number] & Which aspects of a product impact
 		the customer's decisions the most. For example, a customer could value low
@@ -145,18 +146,18 @@ each customer makes a decision on which product (if any) they buy.
 
 Customers purchase the product they perceive is the best, that is the one that aligns the best with their preferences.
 This is calculated for each product using the following formula\footnote{Note: There might be slight differences in the
-	implentationk. For simplicity's sake some edge cases and optimisation are not handled. }.
+	implementation. For simplicity's sake some edge cases and optimisation are not mentioned or handled in this text. }.
 \begin{align}
 	\text{product opinion}  = & \begin{pmatrix}
 		                            \text{ product quality } \cdot \text{ marketing style quality} \\
 		                            ...                                                            \\
 		                            \text{ product durability } \cdot \text{ marketing style durability}
-	                            \end{pmatrix}                \\
+	                            \end{pmatrix}                                                \\
 	                          & \cdot \begin{pmatrix}
 		                                  \text{ quality preference } \\
 		                                  ...                         \\
 		                                  \text{ durability preference }
-	                                  \end{pmatrix} \frac{ \text{marketing quality} }{ \text{customer savviness} }
+	                                  \end{pmatrix} \frac{ \text{marketing quality} \cdot \text{loyalty to company} }{ \text{customer savviness} }
 \end{align}
 
 {\small Explaining the formula: The calculates the dot product of the product's properties and the marketing style
@@ -170,7 +171,7 @@ don't buy anything.
 \subsection{An Example}
 
 There is a potential customer "John". The marketing of the products he has heard of gives John the following \textit{perception} of the
-products:
+products (effects of marketing and loyalty are pre-calculated):
 
 \begin{table}[h]
 	\centering
@@ -178,8 +179,8 @@ products:
 		\toprule
 		Product        & Quality & Ecology & Ethics & Durability & Price (CHF) \\ \midrule
 		Bean Squeezer  & 12      & 11      & 5      & 3          & 1'000       \\
-		Coffee Supreme & 28      & 28      & 12     & 5          & 1'800       \\
-		Eco Coffee 150 & 55      & 15      & 4      & 8          & 20'000      \\ \bottomrule
+		Eco Coffee 150 & 28      & 28      & 12     & 5          & 1'800       \\
+		Coffee Supreme & 55      & 15      & 4      & 8          & 20'000      \\ \bottomrule
 	\end{tabular}
 \end{table}
 
@@ -199,30 +200,30 @@ This means that his most important criteria is that the product is well priced. 
 When John analyises all the products he knows about, he will check how well the products align with his preferences.
 When he looks at "Bean Squeezer" it aligns well with his preferences:
 $$
-	avrPrice = \frac{1'000 + 1'800 + 20'000}{ 3 } = 7600 \\
+	\text{avrPrice} = \frac{1'000 + 1'800 + 20'000}{ 3 } = 7600 \\
 $$
 
 \begin{align}
-	oppinion = & 12 \cdot 1.4                                     \\
-	           & + 11 \cdot 1.8                                   \\
-	           & + 5 \cdot 2                                      \\
-	           & + 3 \cdot 0.4                                    \\
-	           & + (0.5 + (avrPrice - 1'000)/ avrPrice) \cdot 3.5 \\
-	=          & 52.58
+	\text{opinion} = & 12 \cdot 1.4                                                   \\
+	                 & + 11 \cdot 1.8                                                 \\
+	                 & + 5 \cdot 2                                                    \\
+	                 & + 3 \cdot 0.4                                                  \\
+	                 & + (0.5 + (\text{avrPrice} - 1'000)/ \text{avrPrice}) \cdot 3.5 \\
+	=                & 52.58
 \end{align}
 
-For each of the other products he has the following oppinions:
+For each of the other products he has the following opinions:
 
 \begin{table}[h]
 	\centering
 	\begin{tabular}{l c c }
 		\toprule
-		Product        & Oppinion & Rank \\ \midrule
-		Coffee Supreme & 120.02   & 1    \\
-		Eco Coffee 150 & 105.97   & 2    \\
-		Bean Squeezer  & 52.58    & 3    \\ \bottomrule
+		Product        & Opinion & Rank \\ \midrule
+		Eco Coffee 150 & 120.02  & 1    \\
+		Coffee Supreme & 105.97  & 2    \\
+		Bean Squeezer  & 52.58   & 3    \\ \bottomrule
 	\end{tabular}
 \end{table}
 
-John likes "Coffee Supreme" the most and so he tries to go and buy it, upon trying to buy it he realises it's out of
-stock so settles for the "Eco Coffee 150".
+John likes "Eco Coffee 150" the most and so he tries to go and buy it, upon trying to buy it he realises it's out of
+stock so settles for the "Coffee Supreme".

@@ -1,8 +1,8 @@
 \section{Design}
 
-Designing a user interface for such a game is not the simplest of endeavours because, unlike most games where the UI is
-an afterthought, in Wisim the user interface is a make or break factor for the game. As with many simulation games where
-the game acts as interface with which the player interacts with an underlying simulation like Hearts of Iron 4 or
+Designing a user interface for such a game is not the simplest of endeavours because, unlike most games, where the UI is
+an subordinate to gameplay, in Wisim the user interface is a make or break factor for the game. As with many simulation games where
+the game acts as an interface with which the player interacts with an underlying simulation like Hearts of Iron 4 or
 OpenTTD, the interface has to turn the abstract parameters and numbers of the simulation into concrete, understandable
 information that the player would understand in the context.
 
@@ -18,16 +18,16 @@ quickly:
 
 \begin{itemize}
 	\item A physical representation of the enterprise that shows how machines, offices, etc would exist physically
-	      \rightarrow Such a design would have a scope far outside of what is reasonable within half a year.
+	      \rightarrow  Such a design would have a scope far outside of what is reasonable within half a year.
 
-	\item A simple tabular layout that resembles how the data is represented in the back-end \rightarrow My judgment tells
+	\item A simple tabular layout that resembles how the data is represented in the back-end \rightarrow  My judgment tells
 	      me that a design like that would make the game rather boring and unintuitive. The values displayed would be too
 	      abstracted from what they represent and would just lead to confusion.
 \end{itemize}
 
 \subsubsection{Attempt \#1: Tabular Dashboard}
 
-The first attempt at a design was made in made in April 2025 with a tabular layout with hints of a more advanced
+The first attempt at a design was made in April 2025 with a tabular layout with hints of a more advanced
 dashboard. It was very helpful for testing out various aspects of the simulation, however it proved simply too abstract
 to be immersive all the while many operations were painfully slow and some mechanics could not reasonably be implemented
 while following the existing designs (such as individual management of personnel and machines).
@@ -49,7 +49,8 @@ an in game desktop to represent the various actions you can make. This system al
 conducive to gameplay. From this point onwards I would generally follow this layout, however in different
 configurations.
 
-This attempt would ultimately fail due to technical difficulties (further described in "Technology" chapter).
+This attempt would ultimately fail due to technical difficulties (further described in chapter \ref{sec:technology}
+Technology).
 
 \begin{figure}[h]
 	\centering
@@ -59,9 +60,9 @@ This attempt would ultimately fail due to technical difficulties (further descri
 
 \subsubsection{Attempt \#3: Desktop Management system Godot}
 
-Due to the technical difficulties I experienced in the previous attempt, I tried switching to Godot due to the technical
-frustrations of the previous attempt. This had similar, but different technical problems and came to an end not very
-long after it started.
+Due to the technical difficulties I experienced in the previous attempt, I tried switching to Godot, the free and open
+source game engine, due to the technical frustrations of the previous attempt. This had similar, but different technical
+problems and came to an end not very long after it started.
 
 \subsubsection{Attempt \#4: Desktop Management: Finale}
 
@@ -96,7 +97,7 @@ multiple assets of the product. This system had multiple flaws such as:
 	\item Being kind of boing, since you were just modifying sliders and it didn't feel like you were truly designing your
 	      own product
 	\item Being hard to balance; balancing the effects of each slider involved complex math with various complex curves
-	      not cause some fixed combination to become over powered.
+	      not cause some fixed combination to become over-powered.
 \end{itemize}
 
 \begin{figure}[h!]
@@ -109,7 +110,7 @@ Thinking of how to fix the above problems, I remembered Hearts of Iron 4 (HOI4).
 suffers from the same problem of making an Excel table fun to play. One of their early updates included a new tank designer
 in which the player chose specific components to put in their tank. This system decreases the abstractness of the
 content while still allowing for lots of creativity. Inspired by HOI4 I also added a similar designer system, except
-this time for your companies products.
+this time for your company's products.
 
 Implementing the new product designer did require some major changes to the game's scope: the most important of which being that
 I needed to choose which product would be produced (instead of a generic product), otherwise the whole product designer wouldn't
@@ -118,7 +119,7 @@ deeper reason than there was a coffee machine sitting right in front of me.
 
 \begin{figure}[h!]
 	\centering
-	\includegraphics[width=0.85\textwidth]{assets/product-designer-hoi4-wisim.png}
+	\includegraphics[width=\textwidth]{assets/product-designer-hoi4-wisim.png}
 	\caption{Left: tank designer from HOI4, right: new product designer from Wisim}
 \end{figure}
 
@@ -130,7 +131,7 @@ either just take a blind guess as to whether they would make money or have to pu
 game made it very difficult to find out if your products were priced well or poorly and how decisions would impact the
 long term.
 
-To solve this problem, I added "budget mode". When you hover your mouse over the "Ready" button you get the option to
+To solve this problem, I added "Budget Mode". When you hover your mouse over the "Ready" button you get the option to
 set a sales target for each product, then you can press the "Enter Budget Mode" button. When you pressed the button the
 colour scheme of the game would change and in the "Reports" window and at the top of the screen you would be able to see
 the \textit{predicted} results of your decisions (assuming everything went according to plan). This system is probably

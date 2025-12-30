@@ -1,4 +1,5 @@
 \section{Technology}
+\label{sec:technology}
 
 When you start developing a piece of software of any kind, you have to pick a stack, that being: choosing which
 technologies you're going to build your project on top of. This choice is probably the single most important decision of any
@@ -14,73 +15,89 @@ the front- and back-ends. A few months into development I was experiencing too m
 crashes, tight coupling \footnote{Coupling in software refers to how when one part of the software is changed, another
 	related part also has to be as well. } and unexplainable bugs. This frustrated me to such an extent that I just stopped
 working on the project for multiple weeks. Eventually I decided to completely rewrite the front-end in Godot, a free
-game engine; the problem? I didn't know Godot. The smallest of changes required hours of reading the docs and struggling
+game engine. The problem? I didn't know Godot. The smallest of changes required hours of reading the docs and struggling
 around.
 
-In the end I came back to my senses and tried developing the front-end in JavaScript, this time learning Web-Sockets . As any
-developer knows, the 3rd time you write something is always better than the first two times. And so I stuck with this
-right until the end.
+In the end I came back to my senses and tried developing the front-end in JavaScript, this time learning Web-Sockets.
+As any developer knows, the 3rd time you write something is always better than the first two times. And so I stuck with
+this version right until the end.
 
 \subsection{Implementation Details}
 
-The whole game is split into 4 modules:
+The implementation of each of the game's parts strongly follows the principle of separation of concerns driven by the
+what I learned through the game's 4 iterations.
 
-\begin{itemize}
-	\item the Front-end,
-	\item a webserver,
-	\item the simulation,
-	\item the game server
-	\item and finally the orchestrator
-\end{itemize}
+Over time the game was split into 3 distinct modules:
 
-This may seem complex at first glance, that's because it is. However, this strong separation of concerns has some quite positive
-emergent properties. Before I can get into those, we first have to understand what the concerns in question are.
+\subsubsection{The Server and Simulation}
 
-(1) The first and most obvious concern is the simulation: the simulation is the core of the game however it doesn't stand on its
-own. The simulation expects clean, input all at once, which is antithetical to how humans work. (2) The next is that since
-this is a \textit{multi-player} game, we need to handle input from multiple players at once. (3) Next up we there needs to
-be a way for the user to input data, also known as playing the game. (4) Finally needs to be something that co-ordinates all
-these processes.
+The simulation, out of all components, has had the most longevity not having been replaced or completely rewritten a
+single time. The problem is that the simulation is really just a library with little ability to be played or interacted
+with on its own.
 
-The first two problems are solved with the game server. The game server connects to each client (the front-end) using
-Web-Sockets (We'll cover this later) and acts as a cache between the simulation and the front-end. The game server
-sanitises all the data from the simulation, removing unsupported values and saving decisions made on the front-end.
-For example when a player hires a new employee, the game server registers that the player did that. If their game
-crashes, they exit or any other issue, their changes are registered and when they rejoin they'll have the exact same
-state (and won't have to redo everything they had done previously). Eventually, when every player is ready, the server
-starts the simulation and simultaneously informs each client.
+To fix this I added \textit{the server}. The server (also referred to as the game server) uses the "simulation"
+library and  acts as an interface between the front-end and the simulation: it sends data to and from the simulation
+to the front-end, caches user state to prevent users from having to redo all their changes if anything goes wrong between
+simulation steps, it sanitises input (makes sure no bad input gets into the simulation) and handles connections, saving
+/ loading and some other functions.
 
-The 3\textsuperscript{rd} problem is solved with the Front-end and webserver. The front-end provides a user interface
-for players to play the game through. Since the front-end is coded in Svelte \footnote{Svelte is a front-end JavaScript
-	and HTML framework, frameworks greatly simplify the process of developing a web-application}, there also has to be a
-server to tell the browser what to display.
+\subsubsection{User Interface}
 
-Finally, the orchestrator neatly packs everything into one single binary, handles errors of both servers and cleans up
-after you stopped playing.
+The problem of being able to interact with the game is not completely solved thanks to the server; unless you like
+typing out commands into a terminal.
 
-\subsubsection{Web-Sockets and Inter-process communication}
+Especially in the realm of video games, there are many ways to display a graphical user interface and with each solution
+you can \textit{eventually} reach the same end goal. And since I had never
+planned to have complex graphics that would require direct access to hardware, the main factor for deciding which
+technology to use is how well I know it. Every technology has its quirks and its share of weirdness, however I after
+struggling with Raylib \footnote{From \href{https://www.raylib.com/}{https://www.raylib.com/}: "Raylib is a simple and
+	easy-to-use library to enjoy videogames programming."}, Dear ImGui \footnote{From
+	\href{https://github.com/ocornut/imgui}{https://github.com/ocornut/imgui}: "Dear ImGui is a bloat-free graphical user
+	interface library for C++." Note:  ImGui has bindings for other languages} and even Godot game engine \footnote{Godot is
+	a free and open source game engine similar to Unity or Unreal Engine. It's an integrated environment for developing
+	games and comes with many tools to simplify the game making process}, I settled for what I know, even if it isn't
+necessarily the "best tool for the job".
+
+For the web interface I chose the SvelteKit framework for JavaScript. It has a relatively simple syntax, it's very
+powerful and is extremely performant thanks to the fact that it compiles to regular JavaScript, HTML and CSS.
+
+When using SvelteKit or any other web-based framework, you also need to have a web server to serve the layout to a
+browser, which brings us to the final component
+
+\subsubsection{The Orchestrator}
+
+The orchestrator ties everything together. It bundles everything the game needs to function into a single binary with a
+embedded file system. When it is run it writes the contents of its file system (the game server, web server, assets and
+some supporting files) into a temporary folder and runs both servers. When it's done (or one of the other servers
+crash), it cleans up after itself and deletes any files it created. Thanks to tools provided by Golang, this system
+makes it incredibly easy to compile versions for other operating systems.
+
+\subsection{Web-Sockets and Inter-process communication}
 
 One of the first non-trivial problems you experience when using multiple programming languages is how to send data from
-one to the other, or more generally how to send data from one program to another. This is when Inter-process
-communication (IPC) comes into play. Thanks to modern operating systems there are many ways to share data between
-programs, some of the most common are signals, sockets and pipes; all these systems are universally available and able
-to transfer data asynchronously, however not all are suited to all tasks. To understand which method to use, we need, we
-need to understand what they are.
+one program to the other. This is especially relevant in the context of this game because it has 2 separate processes
+running simultaneously (the  web server and the game server).  This is when Inter-process communication (IPC) comes into
+play and thanks to modern operating systems, there are many ways to share data between programs. Some of the most common
+are signals, sockets and pipes; all these systems are universally available, able to transfer data asynchronously and
+used in this project, however not all are suited to all tasks. To understand which method to use, we need to understand
+what they are.
 
 The simplest IPC is probably the signal. Signals are sent through the operating system, interrupt the program at a
 certain point and run some function (by default exiting the program). What is done when a signal is received has to be
-registered by the recipient in advance. For example, when you you close a program you send the "kill" signal, the
-execution of the program is interrupted and the registered action is run; this typically entails saving unsaved data,
-cleanly stopping the program to make sure no data is corrupted. Signals are very easily implemented, however their main
-downside is a deal-breaker for the game: the fact that they cannot transmit additional data other than their name.
+defined by the recipient in advance. For example, when you close a program you send the "kill" signal, the
+execution of the program is interrupted and the defined action is run; this typically entails saving unsaved data,
+cleanly stopping the program to make sure no data is corrupted. The orchestrator uses signals to know when to close the
+game and clean up, however signals aren't very useful for transferring larger amounts of data than a "kill" signal.
 
-Far more versatile are pipes. Pipes are buffers that one process can write to and the other can read from. Imagine
+Far more versatile are pipes. Pipes are buffers (shared memory) that one process can write to and the other can read from. Imagine
 someone sharing their screen on a call, the other person can see what's happening but can't edit what's happening. So
-for two process to have a two way communication channel, they need to pipes: one to the other program and another from
+for two process to have a two way communication channel, they need two pipes: one to the other program and another from
 it. The main advantage of pipes is that they are simple to implement, thanks to the fact that the operating system
-handles most of the hard work. Pipes are also often used by sys-admins to chain commands together: for example on MacOS
+handles most of the hard work. Pipes are also often used by sys-admins to chain commands together: for example, on MacOS
 or Linux you can get a sorted list of files in folder by entering \texttt{ls | sort}. Pipes are really useful tool to
-understand, however in this instance they are unsuitable because they only work on the local machine.
+understand, and they are used in the orchestrator to forward log messages from both servers, however  they are unsuitable
+for communication between the front-end and the game server as they only work on the machine and cannot communicate to
+other machines.
 
 The most versatile are sockets, which use can use the network to receive data using internet protocols such as TCP or
 UDP. Sockets are like a letterbox in a large office: each employee has an assigned letterbox and can receive letters
@@ -89,14 +106,14 @@ port but can receive from many processes. Using sockets a program can also recei
 network: for example when you open a website, your browser sends a packet (letter) to the server on port 443, along with
 this packet there is a return port (eg. 31222), the server then replies with a packet containing the data that was
 requested sent to the port written in the request. This is the method used in Wisim. The great thing about sockets is
-that there is a huge amount of tools built on top of it, specifically for this project: Web-Sockets.
+that there is a huge amount of tools built on top of it, specifically for this project I'm mostly using Web-Sockets.
 
 Web-Socket is a protocol built on top TCP that allows for the easy creation of a 2-way pipe between the server and
-a browser. They use a socket on both the client and server however they are able to bypass what I like to call the "port
+a browser. They use a socket on both the client and server and they are able to bypass what I like to call the "port
 problem": namely that the server is (usually) not allowed to query the client \footnote{Typically the firewall on the
 	client device will block all incoming connections unless they are replying to a client request.}. It does this by having
 the client send an HTTP request to the server, the server then "upgrades" the request to a Web-Socket and instead of
-replying and closing the connection, it just leaves it open. Web-Sockets are by-far the easiest way to get a full-duplex
+replying and closing the connection, it just leaves it open. Web-Sockets are by far the easiest way to get a full-duplex
 ( bi-direction ) connection with a web-browser.
 
 \subsubsection{Implementing Web-Sockets}
@@ -112,7 +129,7 @@ developer. With me being \textit{the developer}, that gives me a lot of room for
 day inventing my own data encoding protocol which mimicked a command prompt. This might not sound all that dumb until
 you realise that both JavaScript and my Go back-end include functions for parsing JSON encoded messages.
 
-\subsubsection{WebAssebly}
+\subsection{WebAssebly}
 
 Since the game has some parts written in Go and some in JavaScript there will almost inevitably be some code that needs
 to be shared, lest I code 2 versions of the same function and \textit{try very hard} to keep both versions in sync.
@@ -123,16 +140,19 @@ are. Thankfully, other people have already had this problem and even came up wit
 guess by the section header, is called WebAssebly.
 
 WebAssembly is a runtime for running non-JavaScript code on the browser. It is designed as a compile target for other
-language so that they can run in a standardised, architecture agnostic\footnote{Every CPU is based on a certain Architecture such
+languages so that they can run in a standardised, architecture agnostic\footnote{Every CPU is based on a certain Architecture such
 	as ARM or x86. Code built for ARM cannot run on x86 or vice-versa. What WebAssembly does is that it translates
-	WebAssebly code to compatible machine code either just in time or ahead of time } way inside a browser.
+	WebAssebly code to compatible machine code either just in time or ahead of time } way inside a
+browser.\footnote{For more info on what WebAssebly is and how it works see:
+	\href{https://developer.mozilla.org/en-US/docs/WebAssembly}{https://developer.mozilla.org/en-US/docs/WebAssembly}}
 
-Using WebAssembly along with some glue code \footnote{Since JavaScript is a dynamically typed language, there has to be
+Using WebAssembly along with some glue code\footnote{Since JavaScript is a dynamically typed language, there has to be
 	some code that converts JS variables into statically typed Go variables}, I was able to ensure that functions running on
-the frontend were \textit{identical} to those running on the server.
+the front-end were \textit{identical} to those running on the server. (See Figure \ref{fig:glue_gode})
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[ width=0.9\textwidth ]{assets/WebassemblyExample.png}
 	\caption{Glue code for the WebAssebly version of \texttt{CalculateProductStats} }
+	\label{fig:glue_gode}
 \end{figure}

@@ -2,6 +2,17 @@
 \usepackage{lipsum}
 \usepackage[english]{babel}
 \usepackage{amsmath}
+\usepackage[pages=some]{background}
+
+\backgroundsetup{
+scale=1,
+color=black,
+opacity=1,
+angle=0,
+contents={%
+  \includegraphics[width=\paperwidth,height=\paperheight]{assets/Cover.png}
+  }%
+}
 
 \title{}
 \author{Attila Pinter}
@@ -9,7 +20,10 @@
 
 \begin{document}
 
+\BgThispage
 \begin{titlepage}
+
+
 	Kantonsschule im Lee Winterthur\\
 	Maturitätsarbeit HS 2025/26
 
@@ -33,18 +47,28 @@
 
 \pagebreak
 
+\newpage
+\section{Abstract}
+
+\newpage
 \input{motivation.tex}
 
+\newpage
 \input{concept.tex}
 
+\newpage
 \input{design.tex}
 
+\newpage
 \input{technology.tex}
 
+\newpage
 \input{economic_simulation.tex}
 
+\newpage
 \input{tweaks_and_balancing.tex}
 
+\newpage
 \section{What I Learned}
 
 As with any software project, there are few things that go to plan and many lessons that were learnt along the way. One
@@ -53,7 +77,7 @@ of the key lessons I learnt during the  development of this project  is to avoid
 \subsection{Premature Optimisation}
 
 \begin{quote}
-	Premature optimization is the root of all evil (or at least most of it) in programming.
+	Premature optimisation is the root of all evil (or at least most of it) in programming.
 
 	\raggedleft{\textbf{Donald Knuth}}
 \end{quote}
@@ -88,6 +112,123 @@ I ended up wasting a week of time calculating and coding this "simple" app to co
 relative components of a colour already took multiple pages and the program itself was hundreds of lines long. This
 misadventure thoroughly taught me not to try to prematurely optimise something that, in the end, I didn't even need.
 
+\subsection{Testing Optimisations}
+
+While developing the economic simulation I spent a lot of time \textit{optimising} it, making it run quicker. Along the
+way I had learned about SIMD instructions. SIMD stands for "single instruction, multiple data", this means that in the
+time required for one operation, the CPU can do multiple. For example, instead of doing 8 "add" operations that each take 1
+cycle, it can do one "vector8 add" operation that adds two "vectors" of length 8\ in a single instruction.
+
+\begin{figure}[h]
+	\begin{center}
+		$$\begin{bmatrix}
+				1 \\
+				2 \\
+				3 \\
+				4 \\
+			\end{bmatrix} *
+			\begin{bmatrix}
+				5 \\
+				6 \\
+				7 \\
+				8 \\
+			\end{bmatrix} =
+			\begin{bmatrix}
+				5  \\
+				12 \\
+				21 \\
+				32 \\
+			\end{bmatrix}$$
+	\end{center}
+	\caption{An example of a SIMD multiply instruction}
+\end{figure}
+
+{\small Note: What SIMD instructions refer to as
+"vectors" are just arrays of a given length. The "vector multiply" operation, for example, would multiply the value at the first
+index of the first vector with that of the first index of the second vector and place it in the first index of the
+resulting vector.}
+
+Having learnt about these almost magical performance boosts, I set out to implement this in my game. I spent hours
+completely changing the order in which the simulation would calculate purchasing decisions, and making sure the data was
+in the right structure to work with SIMD.
+
+All that work for \textbf{worse performance}. That's right, worse performance. The problem is that converting the data
+structures I was using to compatible ones for SIMD took longer than the actual calculations.
+
+Sometimes, when programming, optimisations that you expect to increase the speed of your code dramatically perform just
+as well as the naive implementation, and sometimes worse. You often cannot rely on your intuition in matters of
+performance, especially when dealing with modern CPUs that have built-in optimisations that you would need a PhD to
+understand. You should always test optimisations to see if they really work.
+
 \subsection{Feature Creep}
+
+Whenever you start a big project, especially in programming, you have to fight a constant battle against what is called
+"feature creep". Feature creep is urge to constantly increase the scope of a project. For example, in this project,
+while reworking the product designer, I thought about a new, more advanced production line system that would completely
+change the way the game worked. It would involve creating entire production lines, sourcing materials, buying machines
+that could handle specific parts of the manufacturing process, slowly specialising as you grow, etc. This, to be honest,
+would have been pretty cool, however it would probably have extended the development cycle  of the game by a factor of
+two.
+
+When making a large project, you always have to fight this urge of adding "just one more feature".
+
+\newpage
+\section{Conclusion and Future}
+
+\newpage
+\section{Acknowledgements}
+
+\vspace*{\fill}
+
+\begin{center}
+
+	Many thanks to:
+
+	\vspace*{0.25cm}
+
+	{\huge \ClashGroteskSemibold \color{sectionColor} My Brother Félix, my Father and Felix Angerer} \\
+	for proofreading and playtesting,
+
+	\vspace*{0.25cm}
+
+	{\huge \ClashGroteskSemibold \color{sectionColor} Elias Brugger and Andrin Ganster} \\
+	for playtesting,
+
+	\vspace*{0.25cm}
+
+	{\huge \ClashGroteskSemibold \color{sectionColor} Patrick Hnilicka} \\
+	for playtesting and supervising and
+
+	\vspace*{0.25cm}
+
+	{\huge \ClashGroteskSemibold \color{sectionColor} You} \\
+	for reading.
+
+\end{center}
+
+\vspace*{\fill}
+
+\newpage
+\section{Appendix}
+
+\subsection{Download Game}
+
+If you want to try the game out for yourself, you can download the game files by going to the URL below, clicking on
+"Releases" on the right then downloading the correct binary for your device.
+
+\href{https://github.com/AttilaART/Wisim}{https://github.com/AttilaART/Wisim}
+
+{\small for windows download the ".exe" file, for newer Macs download the "darwin-arm64" version, for older Macs
+	download the "darwin-amd64" version and for Linux download the "linux" version.}
+
+MacOS and Linux users may have to make the file executable by running the command displayed below (replace
+"wisim-linux-amd64" with the name of the file you downloaded):
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.85\textwidth]{assets/linuxmakeexecutable.png}
+	\end{center}
+\end{figure}
+
 
 \end{document}
