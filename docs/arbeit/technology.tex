@@ -18,24 +18,24 @@ working on the project for multiple weeks. Eventually I decided to completely re
 game engine. The problem? I didn't know Godot. The smallest of changes required hours of reading the docs and struggling
 around.
 
-In the end I came back to my senses and tried developing the front-end in JavaScript, this time learning Web-Sockets.
+In the end, I came back to my senses and tried developing the front-end in JavaScript, this time learning Web-Sockets.
 As any developer knows, the 3rd time you write something is always better than the first two times. And so I stuck with
 this version right until the end.
 
 \subsection{Implementation Details}
 
-The implementation of each of the game's parts strongly follows the principle of separation of concerns driven by the
+The implementation of each of the game's parts strongly follows the principle of separation of concerns, driven by
 what I learned through the game's 4 iterations.
 
-Over time the game was split into 3 distinct modules:
+Over time, the game was split into 3 distinct modules:
 
 \subsubsection{The Server and Simulation}
 
-The simulation, out of all components, has had the most longevity not having been replaced or completely rewritten a
+The simulation, out of all components, has had the most longevity, not having been replaced or completely rewritten a
 single time. The problem is that the simulation is really just a library with little ability to be played or interacted
 with on its own.
 
-To fix this I added \textit{the server}. The server (also referred to as the game server) uses the "simulation"
+To fix this, I added \textit{the server}. The server (also referred to as the game server) uses the "simulation"
 library and  acts as an interface between the front-end and the simulation: it sends data to and from the simulation
 to the front-end, caches user state to prevent users from having to redo all their changes if anything goes wrong between
 simulation steps, it sanitises input (makes sure no bad input gets into the simulation) and handles connections, saving
@@ -50,15 +50,15 @@ Especially in the realm of video games, there are many ways to display a graphic
 you can \textit{eventually} reach the same end goal. And since I had never
 planned to have complex graphics that would require direct access to hardware, the main factor for deciding which
 technology to use is how well I know it. Every technology has its quirks and its share of weirdness, however I after
-struggling with Raylib \footnote{From \href{https://www.raylib.com/}{https://www.raylib.com/}: "Raylib is a simple and
-	easy-to-use library to enjoy videogames programming."}, Dear ImGui \footnote{From
+struggling with Raylib,\footnote{From \href{https://www.raylib.com/}{https://www.raylib.com/}: "Raylib is a simple and
+	easy-to-use library to enjoy videogames programming."} Dear ImGui \footnote{From
 	\href{https://github.com/ocornut/imgui}{https://github.com/ocornut/imgui}: "Dear ImGui is a bloat-free graphical user
-	interface library for C++." Note:  ImGui has bindings for other languages} and even Godot game engine \footnote{Godot is
+	interface library for C++." Note:  ImGui has bindings for other languages} and even Godot game engine,\footnote{Godot is
 	a free and open source game engine similar to Unity or Unreal Engine. It's an integrated environment for developing
-	games and comes with many tools to simplify the game making process}, I settled for what I know, even if it isn't
+	games and comes with many tools to simplify the game making process} I settled for what I know, even if it isn't
 necessarily the "best tool for the job".
 
-For the web interface I chose the SvelteKit framework for JavaScript. It has a relatively simple syntax, it's very
+For the web interface, I chose the SvelteKit framework for JavaScript. It has a relatively simple syntax, it's very
 powerful and is extremely performant thanks to the fact that it compiles to regular JavaScript, HTML and CSS.
 
 When using SvelteKit or any other web-based framework, you also need to have a web server to serve the layout to a
@@ -66,7 +66,7 @@ browser, which brings us to the final component
 
 \subsubsection{The Orchestrator}
 
-The orchestrator ties everything together. It bundles everything the game needs to function into a single binary with a
+The orchestrator ties everything together. It bundles everything the game needs to function into a single binary with an
 embedded file system. When it is run it writes the contents of its file system (the game server, web server, assets and
 some supporting files) into a temporary folder and runs both servers. When it's done (or one of the other servers
 crash), it cleans up after itself and deletes any files it created. Thanks to tools provided by Golang, this system
@@ -87,63 +87,63 @@ certain point and run some function (by default exiting the program). What is do
 defined by the recipient in advance. For example, when you close a program you send the "kill" signal, the
 execution of the program is interrupted and the defined action is run; this typically entails saving unsaved data,
 cleanly stopping the program to make sure no data is corrupted. The orchestrator uses signals to know when to close the
-game and clean up, however signals aren't very useful for transferring larger amounts of data than a "kill" signal.
+game and clean up, however, signals aren't very useful for transferring larger amounts of data than a "kill" signal.
 
 Far more versatile are pipes. Pipes are buffers (shared memory) that one process can write to and the other can read from. Imagine
 someone sharing their screen on a call, the other person can see what's happening but can't edit what's happening. So
-for two process to have a two way communication channel, they need two pipes: one to the other program and another from
+for two process to have a two-way communication channel, they need two pipes: one to the other program and another from
 it. The main advantage of pipes is that they are simple to implement, thanks to the fact that the operating system
-handles most of the hard work. Pipes are also often used by sys-admins to chain commands together: for example, on MacOS
-or Linux you can get a sorted list of files in folder by entering \texttt{ls | sort}. Pipes are really useful tool to
+handles most of the hard work. Pipes are also often used by sysadmins to chain commands together: for example, on macOS
+or Linux. you can get a sorted list of files in a folder by entering \texttt{ls | sort}. Pipes are a really useful tool to
 understand, and they are used in the orchestrator to forward log messages from both servers, however  they are unsuitable
 for communication between the front-end and the game server as they only work on the machine and cannot communicate to
 other machines.
 
 The most versatile are sockets, which use can use the network to receive data using internet protocols such as TCP or
 UDP. Sockets are like a letterbox in a large office: each employee has an assigned letterbox and can receive letters
-from the internal mail service or by post. These letterboxes are called ports and only a single process can own a given
+from the internal mail service or by post. These letterboxes are called ports, and only a single process can own a given
 port but can receive from many processes. Using sockets a program can also receive data from other computers on the
 network: for example when you open a website, your browser sends a packet (letter) to the server on port 443, along with
-this packet there is a return port (eg. 31222), the server then replies with a packet containing the data that was
+this packet there is a return port (e.g. 31222), the server then replies with a packet containing the data that was
 requested sent to the port written in the request. This is the method used in Wisim. The great thing about sockets is
 that there is a huge amount of tools built on top of it, specifically for this project I'm mostly using Web-Sockets.
 
-Web-Socket is a protocol built on top TCP that allows for the easy creation of a 2-way pipe between the server and
-a browser. They use a socket on both the client and server and they are able to bypass what I like to call the "port
-problem": namely that the server is (usually) not allowed to query the client \footnote{Typically the firewall on the
-	client device will block all incoming connections unless they are replying to a client request.}. It does this by having
+Web-Socket is a protocol built on top TCP that allows for the easy creation of a 2-way data link between the server and
+a browser. They use a socket on both the client and server, and they are able to bypass what I like to call the "port
+problem": namely that the server is (usually) not allowed to query the client. \footnote{Typically, the firewall on the
+	client device will block all incoming connections unless they are replying to a client request.} It does this by having
 the client send an HTTP request to the server, the server then "upgrades" the request to a Web-Socket and instead of
 replying and closing the connection, it just leaves it open. Web-Sockets are by far the easiest way to get a full-duplex
-( bi-direction ) connection with a web-browser.
+(bi-direction) connection with a web-browser.
 
 \subsubsection{Implementing Web-Sockets}
 
 While Web-Sockets are very simple to implement, they have a totally different data-flow compared to HTTP: on the client
 you usually make an HTTP request and await a response, this is quite easy to implement, when you need data you ask for
-it and wait. With Web-Sockets you have to implement asynchronous event handling because you never know when the server
+it and wait. With Web-Sockets, you have to implement asynchronous event handling because you never know when the server
 is going to send a new message.
 
 On top of the previous, Web-Sockets is a binary format, that being that messages are not cleanly formatted like in HTTP
 with designated headers and status codes, instead they are just raw text, how the data is formatted is up to the
-developer. With me being \textit{the developer}, that gives me a lot of room for stupid decisions. For example I spent a
+developer. With me being \textit{the developer}, that gives me a lot of room for stupid decisions. For example, I spent a
 day inventing my own data encoding protocol which mimicked a command prompt. This might not sound all that dumb until
 you realise that both JavaScript and my Go back-end include functions for parsing JSON encoded messages.
 
-\subsection{WebAssebly}
+\subsection{WebAssembly}
 
-Since the game has some parts written in Go and some in JavaScript there will almost inevitably be some code that needs
+Since the game has some parts written in Go and some in JavaScript, there will almost inevitably be some code that needs
 to be shared, lest I code 2 versions of the same function and \textit{try very hard} to keep both versions in sync.
-For example the \verb|CalculateProductStats| function which is used to (now this is going to surprise you) calculate the
+For example, the \verb|CalculateProductStats| function, which is used to (now this is going to surprise you) calculate the
 properties of products based on their components and the company. This function has to be identical on the front and
 back-end, otherwise players might get misled into thinking that their products are more or less good than they really
 are. Thankfully, other people have already had this problem and even came up with a solution. The solution, as you might
-guess by the section header, is called WebAssebly.
+guess by the section header, is called WebAssembly.
 
 WebAssembly is a runtime for running non-JavaScript code on the browser. It is designed as a compile target for other
-languages so that they can run in a standardised, architecture agnostic\footnote{Every CPU is based on a certain Architecture such
-	as ARM or x86. Code built for ARM cannot run on x86 or vice-versa. What WebAssembly does is that it translates
-	WebAssebly code to compatible machine code either just in time or ahead of time } way inside a
-browser.\footnote{For more info on what WebAssebly is and how it works see:
+languages so that they can run in a standardised, architecture agnostic\footnote{Every CPU is based on a certain Architecture, such
+	as ARM or x86. Code built for ARM cannot run on x86 or vice versa. What WebAssembly does is that it translates
+	WebAssembly code to compatible machine code, either just in time or ahead of time } way inside a
+browser.\footnote{For more info on what WebAssembly is and how it works, see:
 	\href{https://developer.mozilla.org/en-US/docs/WebAssembly}{https://developer.mozilla.org/en-US/docs/WebAssembly}}
 
 Using WebAssembly along with some glue code\footnote{Since JavaScript is a dynamically typed language, there has to be

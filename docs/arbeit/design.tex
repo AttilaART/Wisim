@@ -1,7 +1,7 @@
 \section{Design}
 
 Designing a user interface for such a game is not the simplest of endeavours because, unlike most games, where the UI is
-an subordinate to gameplay, in Wisim the user interface is a make or break factor for the game. As with many simulation games where
+subordinate to gameplay, in Wisim the user interface is a make-or-break factor for the game. As with many simulation games where
 the game acts as an interface with which the player interacts with an underlying simulation like Hearts of Iron 4 or
 OpenTTD, the interface has to turn the abstract parameters and numbers of the simulation into concrete, understandable
 information that the player would understand in the context.
@@ -9,7 +9,7 @@ information that the player would understand in the context.
 \subsection{Design Philosophy and Layout}
 
 The most fundamental question in designing the game is which philosophy and layout to choose. Should I use a tabular
-layout and simply lay the data out in an almost 1:1 connection to the simulation or should there be a sort of dashboard
+layout and simply lay the data out in an almost 1:1 connection to the simulation, or should there be a sort of dashboard
 representing what an executive might get on their desk or should the game's UI visually show the physical conditions of
 an enterprise?
 
@@ -18,7 +18,7 @@ quickly:
 
 \begin{itemize}
 	\item A physical representation of the enterprise that shows how machines, offices, etc would exist physically
-	      \rightarrow  Such a design would have a scope far outside of what is reasonable within half a year.
+	      \rightarrow  Such a design would have a scope far outside what is reasonable within half a year.
 
 	\item A simple tabular layout that resembles how the data is represented in the back-end \rightarrow  My judgment tells
 	      me that a design like that would make the game rather boring and unintuitive. The values displayed would be too
@@ -90,14 +90,14 @@ not only required more complex code but also required rather deep changes to the
 
 In early versions of the game, the product designer was less of a product \textit{designer} and more of a product
 \textit{configurator}; the product designer was a collection of sliders, each of which would modify a certain aspect or
-multiple assets of the product. This system had multiple flaws such as:
+multiple assets of the product. This system had multiple flaws, such as:
 
 \begin{itemize}
 	\item Being unintuitive and intimidating to new players as it just hit the player with a wall of sliders
-	\item Being kind of boing, since you were just modifying sliders and it didn't feel like you were truly designing your
+	\item Being kind of boring, since you were just modifying sliders and it didn't feel like you were truly designing your
 	      own product
-	\item Being hard to balance; balancing the effects of each slider involved complex math with various complex curves
-	      not cause some fixed combination to become over-powered.
+	\item Being hard to balance; balancing the effects of each slider involved complex maths with various complex curves
+	      which would cause some fixed combination to become over-powered.
 \end{itemize}
 
 \begin{figure}[h!]
@@ -106,10 +106,10 @@ multiple assets of the product. This system had multiple flaws such as:
 	\caption{The original product designer}
 \end{figure}
 
-Thinking of how to fix the above problems, I remembered Hearts of Iron 4 (HOI4). HOI4 is a World War 2 simulation game and it
+Thinking of how to fix the above problems, I remembered Hearts of Iron 4 (HOI4). HOI4 is a World War 2 simulation game, and it
 suffers from the same problem of making an Excel table fun to play. One of their early updates included a new tank designer
 in which the player chose specific components to put in their tank. This system decreases the abstractness of the
-content while still allowing for lots of creativity. Inspired by HOI4 I also added a similar designer system, except
+content while still allowing for lots of creativity. Inspired by HOI4, I also added a similar designer system, except
 this time for your company's products.
 
 Implementing the new product designer did require some major changes to the game's scope: the most important of which being that
@@ -127,11 +127,11 @@ deeper reason than there was a coffee machine sitting right in front of me.
 
 One of the fundamental problems I and other early play testers experienced when testing early versions of the game was
 that it was extremely difficult to estimate how much money they would make with a certain set of decisions. They would
-either just take a blind guess as to whether they would make money or have to pull out a calculator and a notebook. The
+either just take a blind guess as to whether they would make money, or have to pull out a calculator and a notebook. The
 game made it very difficult to find out if your products were priced well or poorly and how decisions would impact the
 long term.
 
-To solve this problem, I added "Budget Mode". When you hover your mouse over the "Ready" button you get the option to
+To solve this problem, I added "Budget Mode". When you hover your mouse over the "Ready" button, you get the option to
 set a sales target for each product, then you can press the "Enter Budget Mode" button. When you pressed the button the
 colour scheme of the game would change and in the "Reports" window and at the top of the screen you would be able to see
 the \textit{predicted} results of your decisions (assuming everything went according to plan). This system is probably
