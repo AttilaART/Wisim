@@ -1,10 +1,11 @@
 \section{Design}
 
-Designing a user interface for such a game is not the simplest of endeavours because, unlike most games, where the UI is
+Designing a user interface for such a game like Wisim is not the simplest of endeavours because, unlike most games, where the UI is
 subordinate to gameplay, in Wisim the user interface is a make-or-break factor for the game. As with many simulation games where
-the game acts as an interface with which the player interacts with an underlying simulation like Hearts of Iron 4 or
-OpenTTD, the interface has to turn the abstract parameters and numbers of the simulation into concret
-information that the player would understand in the context.
+the game acts as an interface with which the player interacts with an underlying simulation like Hearts of Iron 4\footnote{Hearts
+	of Iron 4 is a World War 2 simulation game, where players control nations from the 1930s to the 1950s } or
+OpenTTD,\footnote{OpenTTD is a free transport company management game.} the interface has to turn the abstract parameters and numbers
+of the simulation into concrete information that the player would understand in the context.
 
 \subsection{Design Philosophy and Layout}
 
@@ -34,7 +35,7 @@ while following the existing designs (such as individual management of personnel
 
 Concretely I didn't find it fun to play and think few other people would have found it fun.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.80\textwidth]{assets/wisimLayout1.png}
 	\caption{The first UI I made for the game}
@@ -45,14 +46,14 @@ Concretely I didn't find it fun to play and think few other people would have fo
 The second attempt came a few weeks later after I saw a video on Youtube where someone was developing their own economic
 simulation \footnote{I Programmed an Economy Simulator | conaticus | \href{youtu.be/BBIpAyUZq5U?si=H2j5L-wdBHYlHaUZ}
 	{https://youtu.be/BBIpAyUZq5U?si=H2j5L-wdBHYlHaUZ}} (a different aspect of the economy). They used multiple windows on
-an in game desktop to represent the various actions you can make. This system allows for a lot more flexibility and more
+an in game desktop to represent the various actions you can make. This system allows for a lot more flexibility and is more
 conducive to gameplay. From this point onwards I would generally follow this layout, however in different
 configurations.
 
-This attempt would ultimately fail due to technical difficulties (further described in chapter \ref{sec:technology}
+This attempt would ultimately fail due to (self imposed) technical difficulties (further described in chapter \ref{sec:technology}
 Technology).
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.80\textwidth]{assets/wisimLayout2.png}
 	\caption{The second attempt at the User Interface}
@@ -60,19 +61,21 @@ Technology).
 
 \subsubsection{Attempt \#3: Desktop Management system Godot}
 
-Due to the technical difficulties I experienced in the previous attempt, I tried switching to Godot, the free and open
-source game engine, due to the technical frustrations of the previous attempt. This had similar, but different technical
+Due to the technical difficulties I experienced in the second attempt, I tried switching to Godot, the free and open
+source game engine. This had similar, but different technical
 problems and came to an end not very long after it started.
 
 \subsubsection{Attempt \#4: Desktop Management: Finale}
 
 Finally I implemented a simplified version of the second attempt, this time with many technical and architectural
-improvements. Taking inspiration from games like Rimworld, Hearts of Iron 4 and Transport Fever 2, I added more graphics
+improvements. Taking inspiration from games like Rimworld,\footnote{Rimworld is a colony survival game with an AI
+	storyteller who will trigger positive or negative events to keep you on your feet.} Hearts of Iron 4 and Transport
+Fever 2,\footnote{Transport Fever 2 is a transport company management game similar to OpenTTD, but more modern.} I added more graphics
 to the game to help the game feel more concrete and less theoretical. This version of the game, also included the
 product designer, which forced me to decide which product to produce (coffee machines). This version would receive the
 most continuous investment from me and in my opinion was the most successful of the four.
 
-\begin{figure}[h]
+\begin{figure}[h!]
 	\centering
 	\includegraphics[width=0.80\textwidth]{assets/wisimLayout4.png}
 	\caption{The final version of the user interface}
@@ -97,7 +100,12 @@ multiple assets of the product. This system had multiple flaws, such as:
 	\item Being kind of boring, since you were just modifying sliders and it didn't feel like you were truly designing your
 	      own product
 	\item Being hard to balance; balancing the effects of each slider involved complex maths with various complex curves
-	      which would cause some fixed combination to become over-powered.
+	      \footnote{To give some extra context, the formula for quality of a product was:
+		      $$2 \cdot \sqrt{\text{material quality} \cdot \text{manufacturing tech level}} + \sqrt{\text{skill of production
+					      workers}}$$ and for the production cost the formula was
+		      $$1.1^{\text{manufacturing quality}} \cdot 0.1 + 1.1^{\text{manufacturing efficiency}} \cdot 0.1 + \frac{\text{durability}}{10}.$$
+		      You can see how reasoning about this would be hard.}
+	      which would sometimes make obscure combinations overpowered in unpredictable ways.
 \end{itemize}
 
 \begin{figure}[h!]
