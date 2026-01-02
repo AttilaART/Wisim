@@ -303,7 +303,7 @@
 			</tr>
 		</thead>
 		<tbody>
-			{#each getProductData(MarketStatistics, (e) => e) as product}
+			{#each getProductData(MarketStatistics, (e) => e).toSorted((a, b) => b.MonthlySales - a.MonthlySales) as product}
 				<tr>
 					<td>
 						{product.MarketingStatistics.Name}

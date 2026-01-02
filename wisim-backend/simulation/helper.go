@@ -146,6 +146,9 @@ func SynchroniseCompanyWithDecisions(company Company, decisions Decisions) Compa
 			d.Promotion.Durability,
 		}
 		offer.ProductStats, _ = CalculateProductStats(d.Product, *company.productComponents)
+		if len(offer.Product.Components.Misc) == 0 {
+			offer.Product.Components.Misc = make([]string, 0)
+		}
 
 		company.Offers[ID] = offer
 	}
