@@ -40,6 +40,7 @@
 		const newMachine = JSON.parse(JSON.stringify(machine));
 		newMachine.ID = newMachineID();
 		clientState.Company.Machines.push(newMachine);
+		clientState.Company.Machines.sort((a, b) => b.ProductionCapacity - a.ProductionCapacity);
 		clientState.Company.Balance -= newMachine.Value;
 		updateMachineDecision(newMachine, delta.Delta_New);
 	}
@@ -51,6 +52,7 @@
 			return m.ID == machine.ID;
 		});
 		clientState.Company.Machines.splice(index, 1);
+		clientState.Company.Machines.sort((a, b) => b.ProductionCapacity - a.ProductionCapacity);
 		clientState.Company.Balance += machine.Value;
 		updateMachineDecision(machine, delta.Delta_Remove);
 	}

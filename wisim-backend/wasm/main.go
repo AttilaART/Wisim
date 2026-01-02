@@ -85,8 +85,8 @@ func calculateProductionWrapped() js.Func {
 			BaseProductsProduced  int
 			BonusProductsProduced int
 
-			MaterialUsed float32
-			EnergyUsed   float32
+			MaterialUsed float64
+			EnergyUsed   float64
 		})
 
 		machineProduction := make([]int, len(args1))

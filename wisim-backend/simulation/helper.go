@@ -90,13 +90,13 @@ func (c *Company) SetProductComponents(components *ProductComponents) {
 	c.productComponents = components
 }
 
-func (employee_pool Employee_pool) Get_avr_skill(companyID int, employeeType Employee_type) (avgSkill float32) {
+func (employee_pool Employee_pool) Get_avr_skill(companyID int, employeeType Employee_type) (avgSkill float64) {
 	employeesIDs := employee_pool.Get_employees_of_company(companyID, employeeType)
 	for _, id := range employeesIDs {
 		avgSkill += employee_pool[id].Skill
 	}
 
-	return avgSkill / float32(len(employeesIDs))
+	return avgSkill / float64(len(employeesIDs))
 }
 
 func (g *GameState) resetCurrentDecisions() {
@@ -131,12 +131,12 @@ func SynchroniseCompanyWithDecisions(company Company, decisions Decisions) Compa
 		offer.Outdated = d.Outdated
 		offer.PromotionQuality = 0
 		offer.Promotion = struct {
-			Quantity   float32
-			Quality    float32
-			Price      float32
-			Ecology    float32
-			Ethics     float32
-			Durability float32
+			Quantity   float64
+			Quality    float64
+			Price      float64
+			Ecology    float64
+			Ethics     float64
+			Durability float64
 		}{
 			d.Promotion.Quantity,
 			d.Promotion.Quality,
@@ -291,10 +291,10 @@ func exponential(base, x, scale float64) float64 {
 	return math.Pow(base, x) * scale
 }
 
-func scalar_product32(a, b, result []float32) float32 {
-	var product float32
+func scalar_product64(a, b, result []float64) float64 {
+	var product float64
 
-	simd.MulFloat32(a, b, result)
+	simd.MulFloat64(a, b, result)
 	for _, s := range result {
 		product += s
 	}
@@ -332,7 +332,7 @@ func quartarlyCashflow(c Company) float64 {
 	return totalCashflow
 }
 
-func zeroIfNaN[float float64 | float32](v float) float {
+func zeroIfNaN[float float32 | float64](v float) float {
 	if math.IsNaN(float64(v)) {
 		return 0
 	}

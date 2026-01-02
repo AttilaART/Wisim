@@ -31,26 +31,24 @@ type Sim_config struct {
 	Min_base_need int
 	Max_base_need int
 
-	Quality_bias                float32 // "bias" parameters increase the mean of the normal distributions
-	Quality_spread              float32 // "spread" parameters increase the standard deviation of the normal distributions
-	Ecology_bias                float32
-	Ecology_spread              float32
-	Ethics_bias                 float32
-	Ethics_spread               float32
-	Coolness_bias               float32
-	Coolness_spread             float32
-	Price_bias                  float32
-	Price_spread                float32
-	Bang_for_buck_bias          float32
-	Bang_for_buck_spread        float32
-	Durabilty_bias              float32
-	Durability_spread           float32
-	Purchasing_threshold_bias   float32
-	Purchasing_threshold_spread float32
-	SavvynessBias               float32
-	SavvynessSpread             float32
-	Base_market_price           float32
-	Market_saturation           float32
+	Quality_bias                float64 // "bias" parameters increase the mean of the normal distributions
+	Quality_spread              float64 // "spread" parameters increase the standard deviation of the normal distributions
+	Ecology_bias                float64
+	Ecology_spread              float64
+	Ethics_bias                 float64
+	Ethics_spread               float64
+	Price_bias                  float64
+	Price_spread                float64
+	Bang_for_buck_bias          float64
+	Bang_for_buck_spread        float64
+	Durabilty_bias              float64
+	Durability_spread           float64
+	Purchasing_threshold_bias   float64
+	Purchasing_threshold_spread float64
+	SavvynessBias               float64
+	SavvynessSpread             float64
+	Base_market_price           float64
+	Market_saturation           float64
 }
 
 // ##########################################################################################
@@ -79,7 +77,7 @@ type Company struct {
 
 	Reports []Report
 	// Research and development
-	BaseMarketingStrength float32
+	BaseMarketingStrength float64
 	Tech                  TechLevels
 
 	// Product
@@ -96,11 +94,11 @@ type Company struct {
 // NOTE: Employees keep track of their employers, not the companies
 
 type TechLevels struct {
-	Quality        float32
-	Ecology        float32
-	Durability     float32
-	ProductionCost float32
-	MaterialUse    float32
+	Quality        float64
+	Ecology        float64
+	Durability     float64
+	ProductionCost float64
+	MaterialUse    float64
 }
 
 type Decisions struct {
@@ -123,7 +121,7 @@ type Decisions struct {
 		ProductionDeltas []Delta[Employee]
 		MarketingDeltas  []Delta[Employee]
 
-		SeverancePay float32
+		SeverancePay float64
 	}
 
 	Production struct {
@@ -138,25 +136,25 @@ type Decisions struct {
 type Decisions_product struct {
 	Name      string
 	Outdated  bool
-	Price     float32
+	Price     float64
 	Promotion struct {
-		Quantity   float32
-		Quality    float32
-		Price      float32
-		Ecology    float32
-		Ethics     float32
-		Durability float32
+		Quantity   float64
+		Quality    float64
+		Price      float64
+		Ecology    float64
+		Ethics     float64
+		Durability float64
 	}
 
 	Product Product
 }
 
 type Decisions_research struct {
-	Quality         float32
-	Durability      float32
-	Ecology         float32
-	Promotion       float32
-	Production_cost float32
+	Quality         float64
+	Durability      float64
+	Ecology         float64
+	Promotion       float64
+	Production_cost float64
 }
 
 type Delta[V any] struct {
@@ -174,15 +172,15 @@ type Offer struct {
 	Outdated         bool
 	Product          Product
 	ProductStats     ProductStats
-	Price            float32
-	PromotionQuality float32
+	Price            float64
+	PromotionQuality float64
 	Promotion        struct {
-		Quantity   float32
-		Quality    float32
-		Price      float32
-		Ecology    float32
-		Ethics     float32
-		Durability float32
+		Quantity   float64
+		Quality    float64
+		Price      float64
+		Ecology    float64
+		Ethics     float64
+		Durability float64
 	}
 }
 
@@ -208,13 +206,13 @@ type Product struct {
 
 type ProductStats struct {
 	MiscSlots      int
-	ProductionCost float32
-	MaterialUse    float32
+	ProductionCost float64
+	MaterialUse    float64
 
-	Quality    float32
-	Ecology    float32
-	Ethics     float32
-	Durability float32
+	Quality    float64
+	Ecology    float64
+	Ethics     float64
+	Durability float64
 }
 
 type Machine struct {
@@ -224,9 +222,9 @@ type Machine struct {
 	RequiredWorkers    int
 	MinimumWorkers     int
 	AssignedWorkersIDs []int
-	EnergyUse          float32
-	Value              float32
-	MaintananceCost    float32 // Monthly
+	EnergyUse          float64
+	Value              float64
+	MaintananceCost    float64 // Monthly
 	AssignedProductID  string
 }
 
@@ -237,8 +235,8 @@ func (m Machine) get_id() int {
 type Warehouse struct {
 	ID             int
 	Capacity       int
-	OperatingCosts float32
-	Value          float32
+	OperatingCosts float64
+	Value          float64
 }
 
 func (w Warehouse) get_id() int {
@@ -253,15 +251,15 @@ type Employee struct {
 
 	EmployeeType Employee_type
 
-	Motivation    float32
-	Skill         float32
-	ExtraTraining float32
+	Motivation    float64
+	Skill         float64
+	ExtraTraining float64
 
 	// Global_effect *Effect
 
-	Pay          float32
-	Bonus        float32
-	WorkingHours float32
+	Pay          float64
+	Bonus        float64
+	WorkingHours float64
 }
 
 type Employee_type int
@@ -530,34 +528,34 @@ type Personelle_sub_report struct {
 	NumberOfHires      int
 	NumberOfDepartures int
 
-	AvgPay         float32
-	MinimumPay     float32
-	MaximumPay     float32
-	StandardDevPay float32
+	AvgPay         float64
+	MinimumPay     float64
+	MaximumPay     float64
+	StandardDevPay float64
 
-	MinimumSkill     float32
-	MaximumSkill     float32
-	AvgSkill         float32
-	StandardDevSkill float32
+	MinimumSkill     float64
+	MaximumSkill     float64
+	AvgSkill         float64
+	StandardDevSkill float64
 
-	MinimumMotivation     float32
-	MaximumMotivation     float32
-	AvgMotivation         float32
-	StandardDevMotivation float32
+	MinimumMotivation     float64
+	MaximumMotivation     float64
+	AvgMotivation         float64
+	StandardDevMotivation float64
 
-	MinimumProductivity     float32
-	MaximumProductivity     float32
-	AvgProductivity         float32
-	StandardDevProductivity float32
+	MinimumProductivity     float64
+	MaximumProductivity     float64
+	AvgProductivity         float64
+	StandardDevProductivity float64
 }
 
 type Production_report struct {
 	MachinesPurchased      int
 	MachinesSold           int
 	WorkerSurplus          int
-	AvgMachineProductivity float32
-	// Max_machine_productivity float32
-	// Min_machine_productivity float32
+	AvgMachineProductivity float64
+	// Max_machine_productivity float64
+	// Min_machine_productivity float64
 
 	ProductSpecificReport map[string]struct {
 		TotalProduction  int
@@ -569,12 +567,12 @@ type Production_report struct {
 		BaseProductsProduced  int
 		BonusProductsProduced int
 
-		MaterialUsed float32
-		EnergyUsed   float32
+		MaterialUsed float64
+		EnergyUsed   float64
 	}
 
-	MaterialUsed float32
-	EnergyUsed   float32
+	MaterialUsed float64
+	EnergyUsed   float64
 
 	WarehousesBought int
 }
@@ -589,8 +587,8 @@ type Purchasing_statistics struct {
 	ProductsSold  int
 	ProductDemand int
 
-	AvrDecisionFactor      float32
-	AvrPurchasingThreshold float32
+	AvrDecisionFactor      float64
+	AvrPurchasingThreshold float64
 
 	AvrPurchasingFactors Properties
 }
@@ -600,34 +598,34 @@ type Research_statistics struct {
 	QualityDevelopmentInvestmentEffectiveness    float64
 	DurabilityDevelopmentInvestment              float64
 	DurabilityDevelopmentInvestmentEffectiveness float64
-	EcologicalProductionInvestment               float32 // Decreases material use
-	EcologicalProductionInvestmentEffectiveness  float32 // Decreases material use
+	EcologicalProductionInvestment               float64 // Decreases material use
+	EcologicalProductionInvestmentEffectiveness  float64 // Decreases material use
 }
 
 type Sales_statistics struct {
 	ProductsSold  int
 	ProductDemand int
-	MarketShare   float32
+	MarketShare   float64
 
-	AvrDecisionFactor      float32
-	AvrPurchasingThreshold float32
+	AvrDecisionFactor      float64
+	AvrPurchasingThreshold float64
 
-	AvrQualityFactor    float32
-	AvrDurabilityFactor float32
-	AvrEcologyFactor    float32
-	AvrPriceFactor      float32
-	AvrEthicsFactor     float32
-	/// Avr_coolness_factor      float32
-	AvrBangForBuckFactor float32
+	AvrQualityFactor    float64
+	AvrDurabilityFactor float64
+	AvrEcologyFactor    float64
+	AvrPriceFactor      float64
+	AvrEthicsFactor     float64
+	/// Avr_coolness_factor      float64
+	AvrBangForBuckFactor float64
 }
 
 type Marketing_statistics struct {
 	Name      string
-	Quality   float32
+	Quality   float64
 	Durabilty int
-	// Coolness  float32
-	Ethics            float32
-	Ecology           float32
+	// Coolness  float64
+	Ethics            float64
+	Ecology           float64
 	Price             float64
 	BangForBuck       float64
 	PromotionQuantity float64
@@ -643,16 +641,16 @@ type Customer struct {
 
 	// Preferences moved to sepeate array in gamestate
 
-	Purchashing_threshold float32
-	Max_price             float32
-	Savyness              float32
+	Purchashing_threshold float64
+	Max_price             float64
+	Savyness              float64
 	brandSatisfaction     []Satisfaction
 
-	Brand_loyalty_factor float32
-	Loyalties            []float32
+	Brand_loyalty_factor float64
+	Loyalties            []float64
 }
 
-type Properties [8]float32 // last 2 slots are left empty (for optimisation)
+type Properties [8]float64 // last 2 slots are left empty (for optimisation)
 
 const (
 	propertiesQuality = iota
@@ -675,30 +673,30 @@ type OwnedProduct struct {
 
 type Satisfaction struct {
 	ProductID      int
-	DecisionFactor float32
-	Satisfaction   float32
+	DecisionFactor float64
+	Satisfaction   float64
 }
 
 type ExternalFactors struct {
 	Month int
 	// Economy
-	Inflation              float32
-	IntrestRate            float32
-	BridgeLoansIntrestRate float32
-	EconomicSituationIndex float32
-	TaxRate                float32 // as decimal
+	Inflation              float64
+	IntrestRate            float64
+	BridgeLoansIntrestRate float64
+	EconomicSituationIndex float64
+	TaxRate                float64 // as decimal
 
 	// Personelle
-	ProductionMinimumWage float32
-	MarketingMinimumWage  float32
+	ProductionMinimumWage float64
+	MarketingMinimumWage  float64
 
 	// Prdoction
 	MachinesOnOffer      []Machine
-	ExternalStoragePrice float32 // per item
-	EnergyPrice          float32 // per unit of energy
-	MaterialPrice        float32 // per unit of material
+	ExternalStoragePrice float64 // per item
+	EnergyPrice          float64 // per unit of energy
+	MaterialPrice        float64 // per unit of material
 
-	MachineDepreciationRate float32 // in decimal
+	MachineDepreciationRate float64 // in decimal
 }
 
 type ProductComponents struct {
@@ -712,13 +710,13 @@ type ProductComponents struct {
 type Component struct {
 	Name               string
 	MiscSlots          int
-	ProductionCost     float32
-	MaterialUse        float32
-	Ecology            float32
-	Ethics             float32
-	Quality            float32
-	Durability         float32
-	ProductionLineCost float32
+	ProductionCost     float64
+	MaterialUse        float64
+	Ecology            float64
+	Ethics             float64
+	Quality            float64
+	Durability         float64
+	ProductionLineCost float64
 	Image              string
 }
 
@@ -1061,10 +1059,10 @@ func (c *Company) compilePersonelleSubreport(decisions Decisions, employeeType E
 		}
 	}
 
-	pay := make([]float32, len(employeeIDs))
-	skill := make([]float32, len(employeeIDs))
-	motivation := make([]float32, len(employeeIDs))
-	productivity := make([]float32, len(employeeIDs))
+	pay := make([]float64, len(employeeIDs))
+	skill := make([]float64, len(employeeIDs))
+	motivation := make([]float64, len(employeeIDs))
+	productivity := make([]float64, len(employeeIDs))
 	for i, e := range employeeIDs {
 		pay[i] = c.employeePool[e].Pay
 		skill[i] = c.employeePool[e].Skill
@@ -1114,7 +1112,7 @@ func (c *Company) compileSalesReport(
 		println("salesStatistics.ProductsSold: ", salesStatistics.ProductsSold, productID)
 		salesStatistics.ProductDemand = productSpecificPurchasingStatiscs.ProductDemand
 		if MarketProductsSold != 0 {
-			salesStatistics.MarketShare = (float32(productSpecificPurchasingStatiscs.ProductsSold) / float32(MarketProductsSold))
+			salesStatistics.MarketShare = (float64(productSpecificPurchasingStatiscs.ProductsSold) / float64(MarketProductsSold))
 		} else {
 			salesStatistics.MarketShare = 0
 		}

@@ -433,12 +433,12 @@ func getUnemployedEmployees(s *Server, ws *websocket.Conn, message Message[any])
 	reply.Data = &data
 
 	// update unemployed
-	gamestate.RefillUnemployed(4*len(s.conns),
+	gamestate.RefillUnemployed(5*len(s.conns),
 		gamestate.ExternalFactors[len(gamestate.ExternalFactors)-1].ProductionMinimumWage,
 		8,
 		simulation.Employee_type_production,
 		1)
-	gamestate.RefillUnemployed(10,
+	gamestate.RefillUnemployed(2*len(s.conns),
 		gamestate.ExternalFactors[len(gamestate.ExternalFactors)-1].MarketingMinimumWage,
 		8,
 		simulation.Employee_type_marketing,

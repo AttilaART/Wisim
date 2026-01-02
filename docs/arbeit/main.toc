@@ -36,6 +36,6 @@
 \contentsline {section}{\numberline {8}Conclusion and Future}{28}{section.8}%
 \contentsline {section}{\numberline {9}Acknowledgements}{29}{section.9}%
 \contentsline {section}{\numberline {10}Appendix}{30}{section.10}%
-\contentsline {subsection}{\numberline {10.1}Download Game}{30}{subsection.10.1}%
+\contentsline {subsection}{\numberline {10.1}Download the Game}{30}{subsection.10.1}%
 \contentsline {subsection}{\numberline {10.2}Images}{30}{subsection.10.2}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

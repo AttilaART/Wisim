@@ -37,7 +37,7 @@ func (c *Company) turnover(employeeIDs []int) {
 }
 
 func (c *Company) pay(employeeIDs []int) {
-	var totalPay float32
+	var totalPay float64
 	for _, ID := range employeeIDs {
 		totalPay += c.employeePool[ID].Pay
 
@@ -54,22 +54,22 @@ func (c *Company) pay(employeeIDs []int) {
 	println("Total employee pay:", totalPay)
 }
 
-func (c *Company) motivateAndTrain(employeeIDs []int, minimumWage, passiveTraining float32) {
-	var averagePay float32
+func (c *Company) motivateAndTrain(employeeIDs []int, minimumWage, passiveTraining float64) {
+	var averagePay float64
 
 	// Motivation
 	if len(employeeIDs) != 0 {
-		var totalPay float32 = 0
+		var totalPay float64 = 0
 
 		for _, ID := range employeeIDs {
 			totalPay += c.employeePool[ID].Pay
 		}
 
-		averagePay = totalPay / float32(len(employeeIDs))
+		averagePay = totalPay / float64(len(employeeIDs))
 	}
 
 	for _, ID := range employeeIDs {
-		var motivationFactor float32 = 0
+		var motivationFactor float64 = 0
 
 		motivationFactor += (c.employeePool[ID].Pay - averagePay) / 1000
 		motivationFactor += (c.employeePool[ID].Pay - minimumWage) / 100
@@ -85,7 +85,7 @@ func (c *Company) motivateAndTrain(employeeIDs []int, minimumWage, passiveTraini
 			return (-1/(1+factor) + 1) * maxvalue
 		}
 
-		c.employeePool[ID].Motivation += float32(scaleMotivationFactor(float64(motivationFactor), 1))
+		c.employeePool[ID].Motivation += float64(scaleMotivationFactor(float64(motivationFactor), 1))
 
 		// passive motivation normalisation
 		if c.employeePool[ID].Motivation > 1 {

@@ -35,26 +35,26 @@ func generatePopulation(
 	minBaseNeed int,
 	maxBaseNeed int,
 
-	qualityBias float32, // "bias" parameters increase the mean of the normal distributions
-	qualitySpread float32, // "spread" parameters increase the standard deviation of the normal distributions
-	ecologyBias float32,
-	ecologySpread float32,
-	ethicsBias float32,
-	ethicsSpread float32,
-	// coolnessBias float32,
-	// coolnessSpread float32,
-	priceBias float32,
-	priceSpread float32,
-	bangForBuckBias float32,
-	bangForBuckSpread float32,
-	durabiltyBias float32,
-	durabilitySpread float32,
-	purchasingThresholdBias float32,
-	purchasingThresholdSpread float32,
-	savvynessSpread float32,
-	savvynessBias float32,
-	baseMarketPrice float32,
-	marketSaturation float32,
+	qualityBias float64, // "bias" parameters increase the mean of the normal distributions
+	qualitySpread float64, // "spread" parameters increase the standard deviation of the normal distributions
+	ecologyBias float64,
+	ecologySpread float64,
+	ethicsBias float64,
+	ethicsSpread float64,
+	// coolnessBias float64,
+	// coolnessSpread float64,
+	priceBias float64,
+	priceSpread float64,
+	bangForBuckBias float64,
+	bangForBuckSpread float64,
+	durabiltyBias float64,
+	durabilitySpread float64,
+	purchasingThresholdBias float64,
+	purchasingThresholdSpread float64,
+	savvynessSpread float64,
+	savvynessBias float64,
+	baseMarketPrice float64,
+	marketSaturation float64,
 
 	number_of_companies int,
 ) ([]Customer, []Properties, error) {
@@ -86,17 +86,17 @@ func generatePopulation(
 				population[i] = Customer{
 					Base_need: rand.Intn(maxBaseNeed-minBaseNeed) + minBaseNeed,
 
-					Purchashing_threshold: float32(posNormFloat64())*purchasingThresholdSpread + purchasingThresholdBias,
-					Loyalties:             make([]float32, number_of_companies),
+					Purchashing_threshold: float64(posNormFloat64())*purchasingThresholdSpread + purchasingThresholdBias,
+					Loyalties:             make([]float64, number_of_companies),
 
-					Savyness: float32(posNormFloat64())*savvynessSpread + savvynessBias,
+					Savyness: float64(posNormFloat64())*savvynessSpread + savvynessBias,
 				}
-				populationPreferences[i][propertiesQuality] = float32(posNormFloat64())*qualitySpread + qualityBias
-				populationPreferences[i][propertiesEcology] = float32(posNormFloat64())*ecologySpread + ecologyBias
-				populationPreferences[i][propertiesEthics] = float32(posNormFloat64())*ethicsSpread + ethicsBias
-				populationPreferences[i][propertiesPrice] = float32(posNormFloat64())*priceSpread + priceBias
-				populationPreferences[i][propertiesBangForBuck] = float32(posNormFloat64())*bangForBuckSpread + bangForBuckBias
-				populationPreferences[i][propertiesDurability] = float32(posNormFloat64())*durabilitySpread + durabiltyBias
+				populationPreferences[i][propertiesQuality] = float64(posNormFloat64())*qualitySpread + qualityBias
+				populationPreferences[i][propertiesEcology] = float64(posNormFloat64())*ecologySpread + ecologyBias
+				populationPreferences[i][propertiesEthics] = float64(posNormFloat64())*ethicsSpread + ethicsBias
+				populationPreferences[i][propertiesPrice] = float64(posNormFloat64())*priceSpread + priceBias
+				populationPreferences[i][propertiesBangForBuck] = float64(posNormFloat64())*bangForBuckSpread + bangForBuckBias
+				populationPreferences[i][propertiesDurability] = float64(posNormFloat64())*durabilitySpread + durabiltyBias
 
 				number_of_owned_products := int(posNormFloat64()*float64(population[i].Base_need) + float64(marketSaturation))
 				for range number_of_owned_products {
@@ -105,7 +105,7 @@ func generatePopulation(
 							float64(marketSaturation))})
 				}
 
-				population[i].Max_price = ((baseMarketPrice * 1.5) / populationPreferences[i][propertiesPrice]) * float32(posNormFloat64())
+				population[i].Max_price = ((baseMarketPrice * 1.5) / populationPreferences[i][propertiesPrice]) * float64(posNormFloat64())
 				avr_max_price += float64(population[i].Max_price)
 
 				// fmt.Printf("|%6d|%6d|\n", i, customer.income)
@@ -137,7 +137,7 @@ func (g *GameState) Generate_new_employee_id() int {
 	return randID
 }
 
-func (g *GameState) Generate_employee(basePay float32, workingHours float32, employeeType Employee_type, baseMotivation float32) (int, *Employee) {
+func (g *GameState) Generate_employee(basePay float64, workingHours float64, employeeType Employee_type, baseMotivation float64) (int, *Employee) {
 	employeeeID := g.Generate_new_employee_id()
 
 	g.employeesArray = append(g.employeesArray, Employee{
@@ -145,7 +145,7 @@ func (g *GameState) Generate_employee(basePay float32, workingHours float32, emp
 		Name:         randomName(employeeeID),
 		EmployeeType: employeeType,
 		Motivation:   baseMotivation,
-		Skill:        float32(rand.NormFloat64()*0.1 + 1),
+		Skill:        float64(rand.NormFloat64()*0.1 + 1),
 		Pay:          basePay,
 		WorkingHours: workingHours,
 		Employer:     Employee_employer_none,
@@ -156,7 +156,7 @@ func (g *GameState) Generate_employee(basePay float32, workingHours float32, emp
 	return employeeeID, &g.employeesArray[len(g.employeesArray)-1]
 }
 
-func (g *GameState) RefillUnemployed(wantedNumberOfEmployees int, basePay float32, workingHours float32, employeeType Employee_type, baseMotivation float32) {
+func (g *GameState) RefillUnemployed(wantedNumberOfEmployees int, basePay float64, workingHours float64, employeeType Employee_type, baseMotivation float64) {
 	numEmployees := 0
 	for _, e := range g.Employees {
 		if e.EmployeeType == employeeType && e.Employer == Employee_employer_none {
@@ -242,7 +242,7 @@ func (g *GameState) generateCompanies(
 	defaultCompany Company,
 	numberOfCompanies int,
 	externalFactors ExternalFactors,
-	baseWorkingHours float32,
+	baseWorkingHours float64,
 	baseNumberOfMarketingPersonelle int,
 ) []Company {
 	// Make each company according to defaults & preferences
@@ -436,7 +436,7 @@ func NewGame(simConfig Sim_config, numberOfCompanies int, gameName string, compo
 			Employees: struct {
 				ProductionDeltas []Delta[Employee]
 				MarketingDeltas  []Delta[Employee]
-				SeverancePay     float32
+				SeverancePay     float64
 			}{
 				ProductionDeltas: make([]Delta[Employee], 0),
 				MarketingDeltas:  make([]Delta[Employee], 0),

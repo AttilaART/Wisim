@@ -9,7 +9,7 @@ This project experienced two major rewrites where I swapped platform! The back-e
 take place is written in "Go" (commonly referred to as Golang), for those who aren't familiar with it, it's like if
 Python (Tygerjython) and C \footnote{The "C" programming language is the basis of most modern software infrastructure,
 	being used extensively by every major operating system. It's very performant, however it has very few features, making the developer have
-	to develop many things from scratch.} had a baby; it has a simple syntax like python with 90\% of the performance of C.
+	to develop many things from scratch} had a baby; it has a simple syntax like python with 90\% of the performance of C.
 The front-end (what the user actually sees) was originally written in HTML, CSS \& JavaScript using "Wails" to connect
 the front- and back-ends. A few months into development I was experiencing too many issues with this setup: random
 crashes, tight coupling \footnote{Coupling in software refers to how when one part of the software is changed, another
@@ -19,7 +19,7 @@ game engine. The problem? I didn't know Godot. The smallest of changes required 
 around.
 
 In the end, I came back to my senses and tried developing the front-end in JavaScript, this time learning Web-Sockets.
-As any developer knows, the 4th time you write something is always better than the first three times. And so I stuck with
+As any developer knows, the 4th time you write something is always better than the first two times. And so I stuck with
 this version right until the end.
 
 \subsection{Implementation Details}
@@ -32,9 +32,7 @@ Over time, the game was split into 3 distinct modules:
 \subsubsection{The Server and Simulation}
 
 The simulation, out of all components, has had the most longevity, not having been replaced or completely rewritten a
-single time. The problem is that the simulation is really just a library\footnote{In programming, a library is collection
-of resources (usially code) that can be used during software development. \href{https://en.wikipedia.org/wiki/Library\_(computing)
-	{https://en.wikipedia.org/wiki/Library\_(computing)}} with little ability to be played or interacted
+single time. The problem is that the simulation is really just a library with little ability to be played or interacted
 with on its own.
 
 To fix this, I added \textit{the server}. The server (also referred to as the game server) uses the "simulation"
@@ -55,15 +53,13 @@ technology to use is how well I know it. Every technology has its quirks and its
 struggling with Raylib,\footnote{From \href{https://www.raylib.com/}{https://www.raylib.com/}: "Raylib is a simple and
 	easy-to-use library to enjoy videogames programming."} Dear ImGui \footnote{From
 	\href{https://github.com/ocornut/imgui}{https://github.com/ocornut/imgui}: "Dear ImGui is a bloat-free graphical user
-	interface library for C++." Note: ImGui also has bindings for other languages} and even Godot game engine,\footnote{Godot is
+	interface library for C++." Note:  ImGui has bindings for other languages} and even Godot game engine,\footnote{Godot is
 	a free and open source game engine similar to Unity or Unreal Engine. It's an integrated environment for developing
-	games and comes with many tools to simplify the game making process.} I settled for what I know, even if it isn't
+	games and comes with many tools to simplify the game making process} I settled for what I know, even if it isn't
 necessarily the "best tool for the job".
 
 For the web interface, I chose the SvelteKit framework for JavaScript. It is a front-end web framework with a relatively simple syntax. It's very
-powerful and is extremely performant thanks to the fact that it compiles to regular JavaScript, HTML and CSS.\footnote{JavaScript, HTML and CSS are
-	the technologies used to display modern websites on a browser. SvelteKit is special in this regard because, instead of running the entire SvelteKit
-	library on the front-end, it compiles your website into optimised JavaScript, allowing it to transmit a lot less the front-end.}
+powerful and is extremely performant thanks to the fact that it compiles to regular JavaScript, HTML and CSS.
 
 When using SvelteKit or any other web-based framework, you also need to have a web server to serve the layout to a
 browser, which brings us to the final component
@@ -81,10 +77,8 @@ makes it incredibly easy to compile versions for other operating systems.
 One of the first non-trivial problems you experience when using multiple programming languages is how to send data from
 one program to the other. This is especially relevant in the context of this game because it has 2 separate processes
 running simultaneously (the  web server and the game server).  This is when Inter-process communication (IPC) comes into
-play and, thanks to modern operating systems, there are many ways to share data between programs. Some of the most common
-are signals, sockets and pipes; all these systems are universally available, able to transfer data asynchronously\footnote{
-	Asynchronous communication in computing refers to non-blocking communication. This means that the program does not have to "wait"
-	for a signal, it can fetch it when it and the message is ready.} and
+play and thanks to modern operating systems, there are many ways to share data between programs. Some of the most common
+are signals, sockets and pipes; all these systems are universally available, able to transfer data asynchronously and
 used in this project, however not all are suited to all tasks. To understand which method to use, we need to understand
 what they are.
 
@@ -96,7 +90,7 @@ cleanly stopping the program to make sure no data is corrupted. The orchestrator
 game and clean up, however, signals aren't very useful for transferring larger amounts of data than a "kill" signal.
 
 Far more versatile are pipes. Pipes are buffers (shared memory) that one process can write to and the other can read from. Imagine
-someone sharing their screen on a call: the other person can see what's happening but can't directly change any of it. So
+someone sharing their screen on a call, the other person can see what's happening but can't edit what's happening. So
 for two process to have a two-way communication channel, they need two pipes: one to the other program and another from
 it. The main advantage of pipes is that they are simple to implement, thanks to the fact that the operating system
 handles most of the hard work. Pipes are also often used by sysadmins to chain commands together: for example, on macOS
@@ -105,14 +99,14 @@ understand, and they are used in the orchestrator to forward log messages from b
 for communication between the front-end and the game server as they only work on the machine and cannot communicate to
 other machines.
 
-The most versatile are sockets, which can use the network to receive data using internet protocols such as TCP or
+The most versatile are sockets, which use can use the network to receive data using internet protocols such as TCP or
 UDP. Sockets are like a letterbox in a large office: each employee has an assigned letterbox and can receive letters
 from the internal mail service or by post. These letterboxes are called ports, and only a single process can own a given
 port but can receive from many processes. Using sockets a program can also receive data from other computers on the
 network: for example when you open a website, your browser sends a packet (letter) to the server on port 443, along with
 this packet there is a return port (e.g. 31222), the server then replies with a packet containing the data that was
 requested sent to the port written in the request. This is the method used in Wisim. The great thing about sockets is
-that there is a huge amount of tools built on top of them, specifically for this project I'm mostly using Web-Sockets.
+that there is a huge amount of tools built on top of it, specifically for this project I'm mostly using Web-Sockets.
 
 Web-Socket is a protocol built on top TCP that allows for the easy creation of a 2-way data link between the server and
 a browser\footnote{For more information on Web-Sockets see \href{https://en.wikipedia.org/wiki/WebSocket}{https://en.wikipedia.org/wiki/WebSocket}
@@ -122,7 +116,7 @@ problem": namely that the server is (usually) not allowed to query the client. \
 	client device will block all incoming connections unless they are replying to a client request.} It does this by having
 the client send an HTTP request to the server, the server then "upgrades" the request to a Web-Socket and instead of
 replying and closing the connection, it just leaves it open. Web-Sockets are by far the easiest way to get a full-duplex
-(bi-directional) connection with a web-browser.
+(bi-direction) connection with a web-browser.
 
 \subsubsection{Implementing Web-Sockets}
 
@@ -135,9 +129,9 @@ On top of the previous, Web-Sockets is a binary format, that being that messages
 with designated headers and status codes, instead they are just raw text, how the data is formatted is up to the
 developer. With me being \textit{the developer}, that gives me a lot of room for stupid decisions. For example, I spent a
 day inventing my own data encoding protocol which mimicked a command prompt. This might not sound all that dumb until
-you realise that both JavaScript and my Go back-end include functions for decoding and encoding messages with JSON.\footnote{JSON (short for JavaScript
+you realise that both JavaScript and my Go back-end include functions for parsing JSON\footnote{JSON (short for JavaScript
 	Object Notation) is a plain text data encoding format often used on the web. For more information see
-	\href{https://en.wikipedia.org/wiki/JSON}{https://en.wikipedia.org/wiki/JSON}}
+	\href{https://en.wikipedia.org/wiki/JSON}{https://en.wikipedia.org/wiki/JSON}} encoded messages.
 
 \subsection{WebAssembly}
 

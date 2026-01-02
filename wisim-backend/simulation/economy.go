@@ -44,12 +44,12 @@ func (population *Population) simulateEconomy(
 	}
 
 	// Calculate purchases
-	var marketExpectedPrice float32
+	var marketExpectedPrice float64
 	for _, o := range offers {
 		marketExpectedPrice += o.Price
 	}
 
-	marketExpectedPrice = marketExpectedPrice / float32(len(offers))
+	marketExpectedPrice = marketExpectedPrice / float64(len(offers))
 	marketExpectedPrice *= 1.2
 
 	tBefore := time.Now()
@@ -65,7 +65,7 @@ func (population *Population) simulateEconomy(
 
 	wg.Add(numThreads)
 
-	offerPrices := make([]float32, len(offers))
+	offerPrices := make([]float64, len(offers))
 	offerDurabilities := make([]int, len(offers))
 	offersProperties := make([]Properties, len(offers))
 	offerMutexes := make([]sync.Mutex, len(offers))
@@ -83,7 +83,7 @@ func (population *Population) simulateEconomy(
 			offersProperties[i][propertiesPrice] = 10
 			offersProperties[i][propertiesBangForBuck] = 10
 		}
-		offersProperties[i][propertiesDurability] = float32(o.ProductStats.Durability)
+		offersProperties[i][propertiesDurability] = float64(o.ProductStats.Durability)
 
 		offerDurabilities[i] = int(offersProperties[i][propertiesDurability])
 
@@ -111,21 +111,21 @@ func (population *Population) simulateEconomy(
 	deltaTime := time.Since(tBefore)
 	println("#### Time to calculate: ", deltaTime.String())
 
-	divisionVector := [6]float32{
-		float32(len(population.Population)),
-		float32(len(population.Population)),
-		float32(len(population.Population)),
-		float32(len(population.Population)),
-		float32(len(population.Population)),
-		float32(len(population.Population)),
+	divisionVector := [6]float64{
+		float64(len(population.Population)),
+		float64(len(population.Population)),
+		float64(len(population.Population)),
+		float64(len(population.Population)),
+		float64(len(population.Population)),
+		float64(len(population.Population)),
 	}
 
 	for i := range len(purchasingStatistics) - 1 {
-		purchasingStatistics[i].AvrDecisionFactor /= float32(len(population.Population))
-		purchasingStatistics[i].AvrPurchasingThreshold /= float32(len(population.Population))
+		purchasingStatistics[i].AvrDecisionFactor /= float64(len(population.Population))
+		purchasingStatistics[i].AvrPurchasingThreshold /= float64(len(population.Population))
 
 		avrPurchasingFactors := purchasingStatistics[i].AvrPurchasingFactors
-		simd.DivFloat32(avrPurchasingFactors[:], divisionVector[:], purchasingStatistics[i].AvrPurchasingFactors[:])
+		simd.DivFloat64(avrPurchasingFactors[:], divisionVector[:], purchasingStatistics[i].AvrPurchasingFactors[:])
 
 		purchasingStatistics[len(purchasingStatistics)-1].ProductsSold += purchasingStatistics[i].ProductsSold
 		purchasingStatistics[len(purchasingStatistics)-1].ProductDemand += purchasingStatistics[i].ProductDemand
@@ -133,13 +133,13 @@ func (population *Population) simulateEconomy(
 		purchasingStatistics[len(purchasingStatistics)-1].AvrDecisionFactor += purchasingStatistics[i].AvrDecisionFactor
 		purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingThreshold += purchasingStatistics[i].AvrPurchasingThreshold
 
-		simd.AddFloat32(purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:], purchasingStatistics[i].AvrPurchasingFactors[:], purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:])
+		simd.AddFloat64(purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:], purchasingStatistics[i].AvrPurchasingFactors[:], purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:])
 	}
 
-	purchasingStatistics[len(purchasingStatistics)-1].AvrDecisionFactor /= float32(len(purchasingStatistics) - 1)
-	purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingThreshold /= float32(len(purchasingStatistics) - 1)
+	purchasingStatistics[len(purchasingStatistics)-1].AvrDecisionFactor /= float64(len(purchasingStatistics) - 1)
+	purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingThreshold /= float64(len(purchasingStatistics) - 1)
 
-	simd.DivFloat32(purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:], divisionVector[:], purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:])
+	simd.DivFloat64(purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:], divisionVector[:], purchasingStatistics[len(purchasingStatistics)-1].AvrPurchasingFactors[:])
 
 	for i, o := range offerIDs {
 		companies[o.Company].Reports[len(companies[o.Company].Reports)-1].BalanceSheet.add_to_income_statement("Sales of "+offers[i].Product.Name, sales, fmt.Sprintf("%d %ss were sold in strores", purchasingStatistics[i].ProductsSold, offers[i].Product.Name), true, float64(purchasingStatistics[i].ProductsSold*int(offers[i].Price)))
@@ -161,7 +161,7 @@ func simulatePopulationSegment(
 	populationSegmentPreferences []Properties,
 	offersProperties []Properties,
 	offers []Offer,
-	offerPrices []float32,
+	offerPrices []float64,
 	offerDurabilities []int,
 	offerMutexes []sync.Mutex,
 	offerExpectedImpressions []int,
@@ -172,7 +172,7 @@ func simulatePopulationSegment(
 	populationSize int,
 ) {
 	for i, customer := range populationSegment {
-		productsPurchasingFactors := make([]float32, len(offersProperties))
+		productsPurchasingFactors := make([]float64, len(offersProperties))
 		customer.Max_price *= 1 + externalFactors.Inflation
 
 		for i := range customer.Owned_products {
@@ -204,9 +204,9 @@ func simulatePopulationSegment(
 
 				var aligmentWithCustomerVec Properties
 
-				simd.MulFloat32(populationSegmentPreferences[i][:], adTalkingPoints[:], aligmentWithCustomerVec[:])
+				simd.MulFloat64(populationSegmentPreferences[i][:], adTalkingPoints[:], aligmentWithCustomerVec[:])
 
-				var aligmentWithCustomer float32 = 0
+				var aligmentWithCustomer float64 = 0
 				for _, x := range aligmentWithCustomerVec {
 					aligmentWithCustomer += x
 				}
@@ -217,7 +217,7 @@ func simulatePopulationSegment(
 					fmt.Printf("Add memerability: %f \n", (aligmentWithCustomer*offers[ii].PromotionQuality*customer.Savyness)*0.05)
 				*/
 
-				adWasMemorable = (aligmentWithCustomer*offers[ii].PromotionQuality*customer.Savyness)*0.05 > rand.Float32()
+				adWasMemorable = (aligmentWithCustomer*offers[ii].PromotionQuality*customer.Savyness)*0.05 > rand.Float64()
 
 				if adWasMemorable {
 					if !slices.Contains(populationSegment[i].KnownProducts, offers[ii].Product.ID) {
@@ -236,8 +236,8 @@ func simulatePopulationSegment(
 
 			if adWasMemorable {
 				var productPurchasingFactorsComponents Properties
-				simd.MulFloat32(populationSegmentPreferences[i][:], offersProperties[ii][:], productPurchasingFactorsComponents[:])
-				productPurchasingFactor := float32(int(productPurchasingFactorsComponents[5] +
+				simd.MulFloat64(populationSegmentPreferences[i][:], offersProperties[ii][:], productPurchasingFactorsComponents[:])
+				productPurchasingFactor := float64(int(productPurchasingFactorsComponents[5] +
 					productPurchasingFactorsComponents[4] +
 					productPurchasingFactorsComponents[3] +
 					productPurchasingFactorsComponents[2] +
@@ -249,7 +249,7 @@ func simulatePopulationSegment(
 
 				productsPurchasingFactors[ii] = productPurchasingFactor
 
-				simd.AddFloat32(productPurchasingFactorsComponents[:], purchasingStatistics[ii].AvrPurchasingFactors[:], purchasingStatistics[ii].AvrPurchasingFactors[:])
+				simd.AddFloat64(productPurchasingFactorsComponents[:], purchasingStatistics[ii].AvrPurchasingFactors[:], purchasingStatistics[ii].AvrPurchasingFactors[:])
 
 				purchasingStatistics[ii].AvrDecisionFactor += productPurchasingFactor
 				purchasingStatistics[ii].AvrPurchasingThreshold += populationSegment[i].Purchashing_threshold
@@ -304,7 +304,7 @@ func simulatePopulationSegment(
 	wg.Done()
 }
 
-func normalisedPrice(offer Offer, avrPrice float32) float32 {
+func normalisedPrice(offer Offer, avrPrice float64) float64 {
 	if offer.Price == avrPrice {
 		return 0.5
 	}
@@ -312,7 +312,7 @@ func normalisedPrice(offer Offer, avrPrice float32) float32 {
 	return 0.5 + (avrPrice-offer.Price)/avrPrice
 }
 
-func chooseProduct(decisionFactors []float32, purchasingThreshold float32) int {
+func chooseProduct(decisionFactors []float64, purchasingThreshold float64) int {
 	topProductsIndex := []int{}
 
 	for i, p := range decisionFactors {

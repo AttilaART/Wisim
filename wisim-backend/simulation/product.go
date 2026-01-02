@@ -53,16 +53,16 @@ func CalculateProductStats(
 		productionLineCost += float64(part.ProductionLineCost)
 	}
 
-	productStats.Durability = float32(math.Round(float64(productStats.Durability)))
+	productStats.Durability = float64(math.Round(float64(productStats.Durability)))
 
-	productStats.Durability += float32(product.ExtraDurability)
-	productStats.ProductionCost += float32(5 * product.ExtraDurability)
+	productStats.Durability += float64(product.ExtraDurability)
+	productStats.ProductionCost += float64(5 * product.ExtraDurability)
 
-	productStats.Quality += float32(product.ExtraQuality)
-	productStats.ProductionCost += float32(5 * product.ExtraQuality)
+	productStats.Quality += float64(product.ExtraQuality)
+	productStats.ProductionCost += float64(5 * product.ExtraQuality)
 
-	productStats.Quality += float32(product.MaterialQuality)
-	productStats.MaterialUse += float32(5 * product.MaterialQuality)
+	productStats.Quality += float64(product.MaterialQuality)
+	productStats.MaterialUse += float64(5 * product.MaterialQuality)
 
 	productStats.Durability *= product.TechLevels.Durability
 	productStats.Ecology *= product.TechLevels.Ecology
@@ -102,14 +102,14 @@ func (c *Company) calculatePromotion(decisions Decisions) {
 }
 
 // offer functions
-func promotionQuality(employeePool Employee_pool, baseMarketingStrength float32, marketingPersonelleIds []int) float32 {
+func promotionQuality(employeePool Employee_pool, baseMarketingStrength float64, marketingPersonelleIds []int) float64 {
 	// Temporary method
-	var totalPersonelleStrength float32 = 1.0
+	var totalPersonelleStrength float64 = 1.0
 	for _, id := range marketingPersonelleIds {
 		totalPersonelleStrength += employeePool[id].Motivation * employeePool[id].Skill * (employeePool[id].WorkingHours / 8.0)
 	}
 
-	promotionQuality := baseMarketingStrength + float32(math.Sqrt(float64(totalPersonelleStrength))*1.5)
+	promotionQuality := baseMarketingStrength + float64(math.Sqrt(float64(totalPersonelleStrength))*1.5)
 
 	println(promotionQuality)
 
