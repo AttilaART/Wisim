@@ -78,7 +78,7 @@ profiting off years of investment.
 
 Last but not least is money. As with any physical good, they have to be made out of something, and that something costs
 money. In fact, during hard economic times the cost of materials could increase dramatically\footnote{This feature, along
-	with most other external factor related features, is not implemented}, which, depending on the business strategy, can
+	with most other external factor related features, is not implemented.}, which, depending on the business strategy, can
 impact the company's profits.
 
 \subsubsection{Marketing}
@@ -90,7 +90,7 @@ know. You can also influence how the product is perceived by configuring the mar
 quantity is determined by the skill, motivation and quantity of marketing employees. Marketing style along with
 marketing quality will positively impact how potential customers see the promoted properties of the product.
 
-For example, you might be able to have a lot of people buy a bad product (low quality, ecology, etc at a high price) if
+For example, you might be able to have a lot of people buy a bad product (low quality, ecology, etc. at a high price) if
 your marketing is widespread and high quality enough to convince people that the product is good.
 
 \subsubsection{Consumers}
@@ -106,32 +106,32 @@ properties:\footnote{The names provided in the table may not be accurate to the
 
 {\small
 	\begin{tabular}{l l p{0.45\textwidth}} \toprule
-		Property             & Type               & Description                        \\ \midrule
+		Property             & Type               & Description                                \\ \midrule
 
 		Base Need            & Number             & The amount of products a customer
-		wants. When their existing products wear out, they buy more.                   \\
+		wants. When their existing products wear out, they buy more.                           \\
 
 		Owned Products       & List[number]       & Keeps track of the remaining
-		durability of owned products.                                                  \\
+		durability of owned products.                                                          \\
 
 		Known Products       & List[number]       & Keeps track of which products
-		the customer knows about.                                                      \\
+		the customer knows about.                                                              \\
 
 		Purchasing Threshold & Number             & How attractive a product has to
-		be for the customer to buy it.                                                 \\
+		be for the customer to buy it.                                                         \\
 
 		Savviness            & Number             & How well informed the customer is.
-		The savvier the person, the less influenced they are by marketing and loyalty  \\
+		The savvier the person, the less influenced they are by marketing.                     \\
 
 		Loyalties            & List[number]       & How loyal the customer is to a
-		certain company.                                                               \\
+		certain company.                                                                       \\
 
 		Loyalty Factor       & Number             & How much the customer's loyalties
-		influence their purchasing decision   (Note: Loyalty is not fully implemented) \\
+		influence their purchasing decision. \footnote{Note: Loyalty is not fully implemented} \\
 
 		Preferences          & Dictionary[number] & Which aspects of a product impact
 		the customer's decisions the most. For example, a customer could value low
-		prices more than they do the quality of the product.                           \\ \bottomrule
+		prices more than they do the quality of the product.                                   \\ \bottomrule
 	\end{tabular}}
 
 The preferences of each customer are determined when the game is created using samples of a normal distribution for each
@@ -142,8 +142,8 @@ lot about a certain property, like getting the best value product there is.
 I planned to eventually implement a system of personas as described in Malcolm Gladwell's The Tipping Point\footnote{The Tipping
 	Point by Malcolm Gladwell is a non-fiction book that attempts to explain sudden, seemingly mysterious sociological changes that
 	mark everyday life. Source: Wikipedia \href{https://en.wikipedia.org/wiki/The\_Tipping\_Point}{https://en.wikipedia.org/wiki/The\_Tipping\_Point}}, such that
-each archetype has some preset preferences and others that are more muted like for example some extremely knowledgeable
-people that recommend the best products to everyone else (like influencers), but this was cut due to time issues.
+each persona has some strong preferences others that are more muted. For example people would be some extremely knowledgeable
+and recommend the best products to everyone else (like influencers). This was cut due to time issues.
 
 \subsection{Simulation phase}
 
@@ -151,8 +151,8 @@ When all companies are ready, the internal workings of the companies are simulat
 each customer makes a decision on which product (if any) they buy.
 
 Customers purchase the product they perceive is the best, that is the one that aligns the best with their preferences.
-This is calculated for each product using the following formula\footnote{Note: There might be slight differences in the
-	implementation. For simplicity's sake, some edge cases and optimisation are not mentioned or handled in this text. }.
+This is calculated for each product using the following formula: \footnote{Note: There might be slight differences in the
+	implementation. For simplicity's sake, some edge cases and optimisation are not mentioned or handled in this text. }
 \begin{align}
 	\text{product opinion}  = & \begin{pmatrix}
 		                            \text{ product quality } \cdot \text{ marketing style quality} \\
@@ -167,10 +167,10 @@ This is calculated for each product using the following formula\footnote{Note: T
 	                          & \cdot \text{max} \left(\frac{\text{loyalty to company}}{\text{susceptibility to loyalty}}, 1\right)
 \end{align}
 
-{\small Explaining the formula: The calculates the dot product of the product's properties and the marketing style
+{\small Explaining the formula: The formula calculates the dot product of the product's properties and the marketing style
 (putting the focus on what was mentioned in the marketing). The dot product is used here as it can be used to calculate
 how "aligned" two vectors are; two orthogonal vectors will have a dot product of 0 while two collinear vectors will have
-a dot of their products. This is all then multiplied by how affected the customer is by the marking of the company and the
+a dot of their products. This is all then multiplied by how affected the customer is by the marketing of the company and the
 person's loyalty to the company. \footnote{
 	Note: Loyalty is not fully implemented in the current version of the game} The "max" function ensures the loyalty coefficient is not less than 1.
 }
@@ -237,3 +237,5 @@ For each of the other products, he has the following opinions:
 
 John likes "Eco Coffee 150" the most, and so he tries to go and buy it, upon trying to buy it he realises it's out of
 stock so settles for the "Coffee Supreme".
+
+\subsection{Simulation Realism}
