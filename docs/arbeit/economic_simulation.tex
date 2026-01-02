@@ -30,8 +30,10 @@ with populations up to 100 million with very minor performance issues\footnote{
 	\noindent World record:
 	\href{https://www.guinnessworldrecords.com/world-records/418977-largest-simcity-4-city-region}
 	{www.guinnessworldrecords.com/world-records/418977-largest-simcity-4-city-region}
-}, while over 20 years later, games like Cities: Skylines 2 are still plagued by
-performance issues from simulating just 100'000 agents on modern multicore
+}, while over 20 years later, games like Cities: Skylines 2\footnote{Cities: Skylines 2
+	is a modern-day city builder released by Paradox Interactive in 2023. For more info see
+	\href{https://www.paradoxinteractive.com/games/cities-skylines-ii/about}{https://www.paradoxinteractive.com/games/cities-skylines-ii/about}}
+are still plagued by performance issues from simulating just 100'000 agents on modern, multicore
 hardware.
 
 The biggest downside of statistical modelling for this project is flexibility.
@@ -42,9 +44,9 @@ to rework aspects of the simulation to optimise certain aspects.
 
 \subsection{How it works}
 
-The game works in 2 phases: the decisions phase and the purchasing phase. During the decisions phase, players can
+The game works in 2 phases: the decisions phase and the simulation phase. During the decisions phase, players can
 analyse the data provided to them and adjust their companies, designing new products, hiring workers, purchasing
-production machines, etc. When every player is ready, the purchasing phase begins, during which the decisions made in
+production machines, etc. When every player is ready, the simulation phase begins, during which the decisions made in
 the previous phase are executed.
 
 \subsubsection{Products}
@@ -56,7 +58,7 @@ construction will make your product slightly more ecological, whereas using plas
 Players have to balance quality, ecology, durability and ethics with the manufacturing difficulty, design costs and price.
 This forces players to attempt to target a specific customer base, lest they lose against someone who does. For example:
 the product that objectively has the best stats may be so expensive to produce that it has to be sold for multiple
-thousands of Francs, making it out of reach for most of the consumer base.
+thousands of Francs, making it out of reach for the mass market.
 
 \subsubsection{Production}
 
@@ -68,8 +70,9 @@ how much "production" can be produced per month, thus how many of a specific pro
 
 The second ingredient of production is employees, without them machines won't run. The key gameplay impact of employees
 is that, as well as their salaries, the product of their skill and motivation determines how efficiently they work. If
-a machine has highly skilled, motivated workers, it will produce even more than its listed production capacity. This
-encourages players to retain their best workers and treating them well. If they are over-worked, they can burn out and
+a machine has highly skilled, motivated workers, it will produce even more than its listed production capacity. As workers
+work on the job, they slowly increase in skill, allowing you to produce more with the same machines. This
+encourages players to retain their best workers and treat them well. If they are over-worked, they can burn out and
 become virtually useless. However, if you fire them, they might be snatched up by your competition, with them perhaps
 profiting off years of investment.
 
@@ -136,11 +139,13 @@ of their preferences, these are then weighted and shifted based on results of pl
 properties most people don't necessarily care all that much, however when looking at an individual, they might care a
 lot about a certain property, like getting the best value product there is.
 
-I planned to eventually implement a system of archetypes as described in Malclom Gladwell's The Tipping Point, such that
+I planned to eventually implement a system of personas as described in Malcolm Gladwell's The Tipping Point\footnote{The Tipping
+	Point by Malcolm Gladwell is a non-fiction book that attempts to explain sudden, seemingly mysterious sociological changes that
+	mark everyday life. Source: Wikipedia \href{https://en.wikipedia.org/wiki/The\_Tipping\_Point}{https://en.wikipedia.org/wiki/The\_Tipping\_Point}}, such that
 each archetype has some preset preferences and others that are more muted like for example some extremely knowledgeable
 people that recommend the best products to everyone else (like influencers), but this was cut due to time issues.
 
-\subsection{Purchasing phase}
+\subsection{Simulation phase}
 
 When all companies are ready, the internal workings of the companies are simulated and marketing impressions are calculated,
 each customer makes a decision on which product (if any) they buy.
@@ -153,18 +158,22 @@ This is calculated for each product using the following formula\footnote{Note: T
 		                            \text{ product quality } \cdot \text{ marketing style quality} \\
 		                            ...                                                            \\
 		                            \text{ product durability } \cdot \text{ marketing style durability}
-	                            \end{pmatrix}                                                \\
+	                            \end{pmatrix}                                 \\
 	                          & \cdot \begin{pmatrix}
 		                                  \text{ quality preference } \\
 		                                  ...                         \\
 		                                  \text{ durability preference }
-	                                  \end{pmatrix} \frac{ \text{marketing quality} \cdot \text{loyalty to company} }{ \text{customer savviness} }
+	                                  \end{pmatrix} \frac{ \text{marketing quality}}{ \text{customer savviness}}                    \\
+	                          & \cdot \text{max} \left(\frac{\text{loyalty to company}}{\text{susceptibility to loyalty}}, 1\right)
 \end{align}
 
 {\small Explaining the formula: The calculates the dot product of the product's properties and the marketing style
 (putting the focus on what was mentioned in the marketing). The dot product is used here as it can be used to calculate
 how "aligned" two vectors are; two orthogonal vectors will have a dot product of 0 while two collinear vectors will have
-a dot of their products. This is all then multiplied by how affected the customer is by the marking.}
+a dot of their products. This is all then multiplied by how affected the customer is by the marking of the company and the
+person's loyalty to the company. \footnote{
+	Note: Loyalty is not fully implemented in the current version of the game} The "max" function ensures the loyalty coefficient is not less than 1.
+}
 
 Finally, the customer tries to buy as many of their chosen product as they need. If the product is not in stock, they
 don't buy anything.
