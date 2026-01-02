@@ -24,7 +24,7 @@ contents={%
 
 \begin{titlepage}
 
-	Kantonsschule im Lee Winterthur\\
+	Kantonsschule im Lee, Winterthur\\
 	Maturitätsarbeit HS 2025/26
 
 	\vspace{0.25cm}
@@ -54,17 +54,67 @@ contents={%
 \input{concept.tex}
 
 \clearpage
+\input{economic_simulation.tex}
+
+\clearpage
 \input{design.tex}
 
 \clearpage
 \input{technology.tex}
 
-%NOTE: Talk about results of simulation / accuracy
-\clearpage
-\input{economic_simulation.tex}
-
 \clearpage
 \input{tweaks_and_balancing.tex}
+
+\clearpage
+\section{Final Product}
+
+In the end, the product turned out pretty well with me being able to add in most of the features I wanted to, at least for the beta.
+
+In the game, which you can currently download onto your computer (See: Appendix), players have the ability to:
+
+\begin{itemize}
+	\item Develop, produce, market and sell their products,
+	\item Upgrade their production lines to increase efficiency and productivity,
+	\item Invest in research to their products and marketing,
+	\item Predict future results using prediction mode and
+	\item Play with their friends for extended periods.
+\end{itemize}
+
+I believe the game is generally fun to play and that it is bug-free enough that other people can be able to play it
+without extra assistance. All in all, I'm quite proud of the project and hope you check it out!
+
+\begin{figure}[h]
+	\begin{center}
+		\includegraphics[width=0.85\textwidth]{assets/wisimImage2.png}
+	\end{center}
+	\caption{Screenshot of game}
+\end{figure}
+
+
+These are the main things I wanted to implement, however there were some things that had to be cut due to time constraints.
+This list includes, but is not limited to:
+
+\subsection{Improved Marketing}
+
+One major feature that was cut was a better marketing system along with loyalty. I wanted to have an advanced system where, instead
+of just selecting how much money to invest in marketing and hiring more staff, the player would develop intricate marketing campaigns.
+Each campaign would be able to target one or multiple personas so that you would be able to promote certain aspects to certain people.
+
+The campaigns would also further involve the marketing employees, forcing players to be more selective about who they hire. A campaign
+might need an employee that understands the target audience to be successful. Campaigns would also involve the player more into the running
+of the company as well as encouraging a smaller range of products (leading to more specialisation) as a player would get overwhelmed managing
+dozens of products.
+
+\subsection{Research Tree}
+
+This feature would involve having a research tree with items that the player could research. These items would have to be researched by dedicated
+R\&D personnel. When an item would be researched, the player would unlock various new production techniques as well as components that
+would allow the company to specialise or run more efficiently.
+
+The research tree would also slow down the dominance of game winners, since the have to wait or spend more resources to
+become able to properly scale.
+
+
 
 \clearpage
 \input{what_i_learned.tex}
@@ -135,13 +185,6 @@ After starting the program, a browser window should open, which shows the game's
 \begin{figure}[h]
 	\begin{center}
 		\includegraphics[width=0.85\textwidth]{assets/wisimImage1.png}
-	\end{center}
-	\caption{Screenshot of game}
-\end{figure}
-
-\begin{figure}[h]
-	\begin{center}
-		\includegraphics[width=0.85\textwidth]{assets/wisimImage2.png}
 	\end{center}
 	\caption{Screenshot of game}
 \end{figure}

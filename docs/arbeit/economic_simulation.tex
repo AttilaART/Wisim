@@ -14,11 +14,11 @@ you could choose between. The vast majority of models fall into 2 categories:
 
 There are 2 main advantages to statistical models: they are simpler to build, as
 you can often base them around simple regressions while still returning convincing
-results, and performance, unless the implementer makes grave mistakes, statistical
-models almost always outperform (in terms of speed) agent-based models of the same
-calibre.
+results. And their performance: statistical models almost always outperform, in terms
+of speed, agent-based models of the same calibre.
 
-For example, the cult classic city builder SimCity 4 was able to simulate regions
+For example, the cult classic city building game SimCity 4\footnote{SimCity 4 is a modern city building game released in 2003 by EA.
+	It was the second last mainline game of the SimCity franchise.} was able to simulate regions
 with populations up to 100 million with very minor performance issues\footnote{
 	This Kotaku article from 2014 shows off a city of over 100 million
 	inhabitants, the Guinness world record, without any performance problems.
@@ -37,17 +37,20 @@ are still plagued by performance issues from simulating just 100'000 agents on m
 hardware.
 
 The biggest downside of statistical modelling for this project is flexibility.
-An agent-based model can simulate virtually anything, should the designer choose
-to, without necessarily major changes. This was the deciding factor for me, as
+An agent-based model can simulate virtually anything that the developers want it to
+without needing major changes. This was the deciding factor for me, as
 the development of the game would take time, during which I would inevitably want
 to rework aspects of the simulation to optimise certain aspects.
 
 \subsection{How it works}
 
-The game works in 2 phases: the decisions phase and the simulation phase. During the decisions phase, players can
-analyse the data provided to them and adjust their companies, designing new products, hiring workers, purchasing
-production machines, etc. When every player is ready, the simulation phase begins, during which the decisions made in
-the previous phase are executed.
+The game works using a system of rounds. After the game has reached the final round (set when starting the game), the
+player whose company is the most valuable wins. Each round has 2 phases: the decision and simulation phase. During the
+decision phase players buy machines, hire employees, develop products and market them to make their company the most competitive. When
+all players are ready, the simulation phase begins. During the simulation phase the decisions enacted in the previous phase
+are executed.
+
+At the start of the game each player starts with some money to set up their company and start producing their first product.
 
 \subsubsection{Products}
 
@@ -55,10 +58,10 @@ Players will develop many products during the course of the game. The products a
 components along with the research levels of the company impact the properties of the product, for example using wooden
 construction will make your product slightly more ecological, whereas using plastic will make it less so.
 
-Players have to balance quality, ecology, durability and ethics with the manufacturing difficulty, design costs and price.
-This forces players to attempt to target a specific customer base, lest they lose against someone who does. For example:
-the product that objectively has the best stats may be so expensive to produce that it has to be sold for multiple
-thousands of Francs, making it out of reach for the mass market.
+When designing their products, players have to balance quality, ecology, durability and ethics with the manufacturing difficulty, design costs and price.
+This forces players to attempt to target a specific customer base, lest they lose to someone who does. For example:
+the product that objectively has the best stats may be so expensive to produce that it has to be sold for an extremely high price,
+making it out of reach for the mass market.
 
 \subsubsection{Production}
 
@@ -69,12 +72,12 @@ high cost, all else being equal. Every machine has a specific "production capaci
 how much "production" can be produced per month, thus how many of a specific product.
 
 The second ingredient of production is employees, without them machines won't run. The key gameplay impact of employees
-is that, as well as their salaries, the product of their skill and motivation determines how efficiently they work. If
+is that the product of their skill and motivation determines how efficiently they work. If
 a machine has highly skilled, motivated workers, it will produce even more than its listed production capacity. As workers
 work on the job, they slowly increase in skill, allowing you to produce more with the same machines. This
 encourages players to retain their best workers and treat them well. If they are over-worked, they can burn out and
-become virtually useless. However, if you fire them, they might be snatched up by your competition, with them perhaps
-profiting off years of investment.
+become virtually useless. However, if you fire them, they might be snatched up by your competition, as they go back onto
+a common market of employees. Then you competition may profit off years of investment.
 
 Last but not least is money. As with any physical good, they have to be made out of something, and that something costs
 money. In fact, during hard economic times the cost of materials could increase dramatically\footnote{This feature, along
@@ -84,10 +87,10 @@ impact the company's profits.
 \subsubsection{Marketing}
 
 For people to buy a product, they have to know it exists. With marketing, you can spread the word of your product and
-influence peoples' views on it at the same time. By investing large amounts in marketing quantity, you increase how many
+influence peoples' views on it at the same time. By investing large amounts in marketing effort, you increase how many
 people see your product; later, when deciding which product to buy, customers only choose between the products they
 know. You can also influence how the product is perceived by configuring the marketing style. Marketing
-quantity is determined by the skill, motivation and quantity of marketing employees. Marketing style along with
+quality is determined by the skill, motivation and number of marketing employees. Marketing style along with
 marketing quality will positively impact how potential customers see the promoted properties of the product.
 
 For example, you might be able to have a lot of people buy a bad product (low quality, ecology, etc. at a high price) if
@@ -135,14 +138,14 @@ properties:\footnote{The names provided in the table may not be accurate to the
 	\end{tabular}}
 
 The preferences of each customer are determined when the game is created using samples of a normal distribution for each
-of their preferences, these are then weighted and shifted based on results of playtesting. This means that for most
-properties most people don't necessarily care all that much, however when looking at an individual, they might care a
+of their preferences, these are then weighted and shifted based on results of playtesting. This means that for most of the 100'000
+consumers in a market, they won't necessarily care all that much about most properties, however when looking at an individual, they might care a
 lot about a certain property, like getting the best value product there is.
 
 I planned to eventually implement a system of personas as described in Malcolm Gladwell's The Tipping Point\footnote{The Tipping
 	Point by Malcolm Gladwell is a non-fiction book that attempts to explain sudden, seemingly mysterious sociological changes that
 	mark everyday life. Source: Wikipedia \href{https://en.wikipedia.org/wiki/The\_Tipping\_Point}{https://en.wikipedia.org/wiki/The\_Tipping\_Point}}, such that
-each persona has some strong preferences others that are more muted. For example people would be some extremely knowledgeable
+each persona has some strong preferences and others that are more muted. For example some people would be extremely knowledgeable
 and recommend the best products to everyone else (like influencers). This was cut due to time issues.
 
 \subsection{Simulation phase}
