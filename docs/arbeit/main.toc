@@ -1,44 +1,45 @@
 \babel@toc {english}{}\relax 
-\contentsline {section}{\numberline {1}Motivation}{4}{section.1}%
-\contentsline {section}{\numberline {2}Concept}{5}{section.2}%
-\contentsline {section}{\numberline {3}Simulation}{6}{section.3}%
-\contentsline {subsection}{\numberline {3.1}How it works}{6}{subsection.3.1}%
-\contentsline {subsubsection}{\numberline {3.1.1}Products}{7}{subsubsection.3.1.1}%
-\contentsline {subsubsection}{\numberline {3.1.2}Production}{7}{subsubsection.3.1.2}%
-\contentsline {subsubsection}{\numberline {3.1.3}Marketing}{8}{subsubsection.3.1.3}%
-\contentsline {subsubsection}{\numberline {3.1.4}Consumers}{8}{subsubsection.3.1.4}%
-\contentsline {subsection}{\numberline {3.2}Simulation phase}{9}{subsection.3.2}%
-\contentsline {subsection}{\numberline {3.3}An Example}{10}{subsection.3.3}%
-\contentsline {section}{\numberline {4}Design}{12}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Design Philosophy and Layout}{12}{subsection.4.1}%
-\contentsline {subsubsection}{\numberline {4.1.1}Attempt \#1: Tabular Dashboard}{12}{subsubsection.4.1.1}%
-\contentsline {subsubsection}{\numberline {4.1.2}Attempt \#2: Desktop Management system}{13}{subsubsection.4.1.2}%
-\contentsline {subsubsection}{\numberline {4.1.3}Attempt \#3: Desktop Management system Godot}{13}{subsubsection.4.1.3}%
-\contentsline {subsubsection}{\numberline {4.1.4}Attempt \#4: Desktop Management: Finale}{14}{subsubsection.4.1.4}%
-\contentsline {subsection}{\numberline {4.2}Key Design Elements}{14}{subsection.4.2}%
-\contentsline {subsubsection}{\numberline {4.2.1}Product Designer}{15}{subsubsection.4.2.1}%
-\contentsline {subsubsection}{\numberline {4.2.2}Prediction mode}{17}{subsubsection.4.2.2}%
-\contentsline {section}{\numberline {5}Technology}{18}{section.5}%
-\contentsline {subsection}{\numberline {5.1}Implementation Details}{18}{subsection.5.1}%
-\contentsline {subsubsection}{\numberline {5.1.1}The Server and Simulation}{19}{subsubsection.5.1.1}%
-\contentsline {subsubsection}{\numberline {5.1.2}User Interface}{19}{subsubsection.5.1.2}%
-\contentsline {subsubsection}{\numberline {5.1.3}The Orchestrator}{20}{subsubsection.5.1.3}%
-\contentsline {subsection}{\numberline {5.2}Web-Sockets and Inter-process communication}{20}{subsection.5.2}%
-\contentsline {subsubsection}{\numberline {5.2.1}Implementing Web-Sockets}{22}{subsubsection.5.2.1}%
-\contentsline {subsection}{\numberline {5.3}WebAssembly}{22}{subsection.5.3}%
-\contentsline {section}{\numberline {6}Tweaks and Balancing}{24}{section.6}%
-\contentsline {subsection}{\numberline {6.1}Economic Balancing}{24}{subsection.6.1}%
-\contentsline {subsection}{\numberline {6.2}Research and Development}{24}{subsection.6.2}%
-\contentsline {section}{\numberline {7}Final Product}{25}{section.7}%
-\contentsline {subsection}{\numberline {7.1}Improved Marketing}{25}{subsection.7.1}%
-\contentsline {subsection}{\numberline {7.2}Research Tree}{26}{subsection.7.2}%
-\contentsline {section}{\numberline {8}What I Learned}{27}{section.8}%
-\contentsline {subsection}{\numberline {8.1}Premature Optimisation}{27}{subsection.8.1}%
-\contentsline {subsection}{\numberline {8.2}Testing Optimisations}{28}{subsection.8.2}%
-\contentsline {subsection}{\numberline {8.3}Feature Creep}{29}{subsection.8.3}%
-\contentsline {section}{\numberline {9}Conclusion and Future}{30}{section.9}%
-\contentsline {section}{\numberline {10}Acknowledgements}{31}{section.10}%
-\contentsline {section}{\numberline {11}Appendix}{32}{section.11}%
-\contentsline {subsection}{\numberline {11.1}Download the Game}{32}{subsection.11.1}%
-\contentsline {subsection}{\numberline {11.2}Images}{32}{subsection.11.2}%
+\contentsline {section}{\numberline {1}Motivation}{5}{section.1}%
+\contentsline {section}{\numberline {2}Concept}{6}{section.2}%
+\contentsline {section}{\numberline {3}Simulation}{7}{section.3}%
+\contentsline {subsection}{\numberline {3.1}How it works}{7}{subsection.3.1}%
+\contentsline {subsubsection}{\numberline {3.1.1}Products}{8}{subsubsection.3.1.1}%
+\contentsline {subsubsection}{\numberline {3.1.2}Production}{8}{subsubsection.3.1.2}%
+\contentsline {subsubsection}{\numberline {3.1.3}Marketing}{9}{subsubsection.3.1.3}%
+\contentsline {subsubsection}{\numberline {3.1.4}Consumers}{9}{subsubsection.3.1.4}%
+\contentsline {subsection}{\numberline {3.2}Simulation phase}{10}{subsection.3.2}%
+\contentsline {subsection}{\numberline {3.3}An Example}{11}{subsection.3.3}%
+\contentsline {section}{\numberline {4}Design}{13}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Design Philosophy and Layout}{13}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Attempt \#1: Tabular Dashboard}{13}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Attempt \#2: Desktop Management system}{14}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.3}Attempt \#3: Desktop Management system Godot}{14}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}Attempt \#4: Desktop Management: Finale}{15}{subsubsection.4.1.4}%
+\contentsline {subsection}{\numberline {4.2}Key Design Elements}{15}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Product Designer}{16}{subsubsection.4.2.1}%
+\contentsline {subsubsection}{\numberline {4.2.2}Prediction mode}{18}{subsubsection.4.2.2}%
+\contentsline {section}{\numberline {5}Technology}{19}{section.5}%
+\contentsline {subsection}{\numberline {5.1}Implementation Details}{19}{subsection.5.1}%
+\contentsline {subsubsection}{\numberline {5.1.1}The Server and Simulation}{20}{subsubsection.5.1.1}%
+\contentsline {subsubsection}{\numberline {5.1.2}User Interface}{20}{subsubsection.5.1.2}%
+\contentsline {subsubsection}{\numberline {5.1.3}The Orchestrator}{21}{subsubsection.5.1.3}%
+\contentsline {subsection}{\numberline {5.2}Web-Sockets and Inter-process communication}{21}{subsection.5.2}%
+\contentsline {subsubsection}{\numberline {5.2.1}Implementing Web-Sockets}{23}{subsubsection.5.2.1}%
+\contentsline {subsection}{\numberline {5.3}WebAssembly}{23}{subsection.5.3}%
+\contentsline {section}{\numberline {6}Tweaks and Balancing}{25}{section.6}%
+\contentsline {subsection}{\numberline {6.1}Economic Balancing}{25}{subsection.6.1}%
+\contentsline {subsection}{\numberline {6.2}Research and Development}{25}{subsection.6.2}%
+\contentsline {section}{\numberline {7}Final Product}{26}{section.7}%
+\contentsline {subsection}{\numberline {7.1}Improved Marketing}{26}{subsection.7.1}%
+\contentsline {subsection}{\numberline {7.2}Research Tree}{27}{subsection.7.2}%
+\contentsline {subsection}{\numberline {7.3}Automatic Win Conditions}{27}{subsection.7.3}%
+\contentsline {section}{\numberline {8}What I Learned}{28}{section.8}%
+\contentsline {subsection}{\numberline {8.1}Premature Optimisation}{28}{subsection.8.1}%
+\contentsline {subsection}{\numberline {8.2}Testing Optimisations}{29}{subsection.8.2}%
+\contentsline {subsection}{\numberline {8.3}Feature Creep}{30}{subsection.8.3}%
+\contentsline {section}{\numberline {9}Conclusion and Future}{31}{section.9}%
+\contentsline {section}{\numberline {10}Acknowledgements}{32}{section.10}%
+\contentsline {section}{\numberline {11}Appendix}{33}{section.11}%
+\contentsline {subsection}{\numberline {11.1}Download the Game}{33}{subsection.11.1}%
+\contentsline {subsection}{\numberline {11.2}Images}{33}{subsection.11.2}%
 \providecommand \tocbasic@end@toc@file {}\tocbasic@end@toc@file 

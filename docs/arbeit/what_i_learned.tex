@@ -1,7 +1,8 @@
 \section{What I Learned}
 
-As with any software project, there are few things that go to plan and many lessons that were learnt along the way. One
-of the key lessons I learnt during the  development of this project  is to avoid \textit{premature optimisation}.
+As with any software project, there are few things that go to plan and many lessons that were learnt along the way.
+Most of the lessons learnt are small, incremental changes, but some lessons came with their fair share of stumbling
+and falling.
 
 \subsection{Premature Optimisation}
 
@@ -11,8 +12,8 @@ of the key lessons I learnt during the  development of this project  is to avoid
 	\raggedleft{\textbf{Donald Knuth}}
 \end{quote}
 
-"Premature optimisation is the act of devoting a significant amount of optimising for a task you might not truly need to
-optimise for."
+Premature optimisation is the act of devoting a significant amount of optimising for a task you might not truly need to
+optimise for.
 
 A funny example of this was while developing budget mode. In budget mode, the player is able to see the predicted outcome
 of the decisions they are about to make. To be able to clearly differentiate between budget mode and normal mode, I
@@ -81,23 +82,19 @@ Having learnt about these almost magical performance boosts, I set out to implem
 completely changing the order in which the simulation would calculate purchasing decisions, and making sure the data was
 in the right structure to work with SIMD.
 
-All that work for \textbf{worse performance}. That's right, worse performance. The problem is that converting the data
+All that work for \textbf{worse performance}. That's right! Worse performance. The problem is that converting the data
 structures I was using to compatible ones for SIMD took longer than the actual calculations.
 
-Sometimes, when programming, optimisations that you expect to increase the speed of your code dramatically perform just
-as well as the naive implementation, and sometimes worse. You often cannot rely on your intuition in matters of
-performance, especially when dealing with modern CPUs that have built-in optimisations that you would need a PhD to
-understand. You should always test optimisations to see if they really work.
+I learnt that day that I couldn't trust my intuition when it comes to performance. Especially when dealing with modern
+CPUs and compilers that you would need multiple PhDs to fully understand, the only way I can be sure an optimisation really
+improves the speed of my code, instead of just making it more complex, is by testing it.
 
 \subsection{Feature Creep}
 
-Whenever you start a big project, especially in programming, you have to fight a constant battle against what is called
-"feature creep". Feature creep is the urge to constantly increase the scope of a project. For example, in this project,
+During this project I fought a constant battle against what is called "feature creep".
+Feature creep is the urge to constantly increase the scope of a project. For example, in this project,
 while reworking the product designer, I thought about a new, more advanced production line system that would completely
-change the way the game worked. It would involve creating entire production lines, sourcing materials, buying machines
-that could handle specific parts of the manufacturing process, slowly specialising as you grow, etc. This, to be honest,
-would have been pretty cool, however it would probably have extended the development cycle  of the game by a factor of
-two.
-
-When making a large project, you always have to fight this urge of adding "just one more feature".
-
+revolutionise the gameplay. It would have involved creating entire production lines, sourcing materials, buying machines
+that could handle specific parts of the manufacturing process, slowly specialising as you grow, etc. It would also have
+required so many changes to both the front-end and the simulation's internals that it quite probably could have increased
+development time by a factor of two.
