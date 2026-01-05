@@ -19,49 +19,74 @@ game works.
 The players compete against each other to make the most money while having to
 bear events like recessions and shortages (etc.).
 
-#### Endgame
-
-As the competing companies grow, they are given the ability to buy each others' stocks.
-When a single company owns more than 50% of another's stocks, they can commit
-to a "hostile takeover", where they buy out all of the assets of their competit-
-or and the player, whose company was bought, looses. When only one player is left,
-they win.
-
 ### Rough Progress
 
 - [x] Core simulation
 - [x] Core GUI
 - [x] Core gameplay loop
 - [x] Core online
-- [ ] Balancing
-- [ ] Polish
+- [x] Balancing
+- [x] Polish
 - [ ] Deeper / advanced features
 
 ## Running the beta
 
-Before running the program, make sure to have the following programs installed
+Download the latest release on the "releases" page (see the sidebar on the right).
 
-- Node (npm)
-- Go
+- For Windows download the file ending in ".exe".
+- For older Macs (Intel) download the file ending in "darwin-amd64"
+- For newer Macs (Apple Silicon) download the file ending in "darwin-arm64"
+- For Linux download the file ending in "linux-amd64"
 
-1. Clone the Git repository onto your computer.
+Run the file. On MacOS and Linux you may have to make the file executable by running
 
-```zsh
-git clone https://github.com/AttilaART/Wisim.git
+```
+chmod +x wisim-darwin-arn64
 ```
 
-2. Install dependencies
+In the terminal (replacing "wisim-darwin-arn64" with the name of the file you downloaded)
 
-```zsh
-cd wisim-nouveau
-npm install
-cd ..
+## Building from source
+
+### Step 0
+
+Make sure you have the following programs installed:
+
+- Go (programming language)
+- Node (or a compatible JS runtime)
+- Bash (or a compatible shell)
+
+### Step 1
+
+Clone the Github repo and navigate into it.
+
+```Bash
+git clone "https://github.com/AttilaART/Wisim"
+cd Wisim
 ```
 
-3. Start the servers
+### Step 2
 
-```zsh
-./start.sh
+Download the Node JS runtime for each version from [their website](https://nodejs.org/en/download) as standalone binary.
+
+- MacOS ARM64
+- MacOS x64
+- Windows x64
+- Linux x64
+
+### Step 3
+
+Extract each archive and rename and move the executables to the following paths in the repo:
+
+- Windows: build/wisim-nouveau/static/node-windows-amd64.exe
+- MacOS ARM64 (Apple Silicon): build/wisim-nouveau/static/node-darwin-arm64
+- MacOS x86 (Intel): build/wisim-nouveau/static/node-darwin-amd64
+- Linux: build/wisim-nouveau/static/node-linux-amd64
+
+### Step 4
+
+Navigate to directory folder and run build script.
+
 ```
-
-After which you should be able to navigate to [localhost:5173](http://localhost:5173/).
+./build.sh
+```
